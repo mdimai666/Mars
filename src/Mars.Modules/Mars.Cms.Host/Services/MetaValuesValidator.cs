@@ -42,7 +42,6 @@ internal class MetaValuesValidator : IMetaValuesValidator
                                                                                        IReadOnlyDictionary<string, JsonNode>? meta,
                                                                                        bool requireAll,
                                                                                        MetaValueValidationContext context,
-                                                                                       string? contentFieldKey = null,
                                                                                        CancellationToken cancellationToken = default)
     {
         var errors = new List<MetaValueValidationError>();
@@ -50,7 +49,6 @@ internal class MetaValuesValidator : IMetaValuesValidator
         foreach (var field in fields)
         {
             if (field.Type == MetaFieldType.Query) continue;
-            if (contentFieldKey is not null && field.Key == contentFieldKey) continue; // значение — в posts.Content
 
             JsonNode? node = null;
             var present = meta is not null && meta.TryGetValue(field.Key, out node) && node is not null;

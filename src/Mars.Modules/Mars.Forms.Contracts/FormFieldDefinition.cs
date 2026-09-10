@@ -75,9 +75,6 @@ public class FormFieldDefinition
     /// <summary>Поле защищено владельцем: нельзя удалить и сменить тип (feature-поле поста)</summary>
     public bool Protected { get; set; }
 
-    /// <summary>Ключ поля зафиксирован владельцем (поле контента поста)</summary>
-    public bool KeyLocked { get; set; }
-
     /// <summary>Тип поля поддерживает ограничитель min/max</summary>
     public bool SupportsLimits { get; set; }
 

@@ -19,9 +19,6 @@ public partial class MetaFieldsGroup
     /// <summary>Ключ поля, на который указывает фича типа (картинка поста): защищено от удаления и смены типа</summary>
     [Parameter] public string? FeatureFieldKey { get; set; }
 
-    /// <summary>Фича «Контент» включена: поле с фиксированным ключом защищено и не переименовывается</summary>
-    [Parameter] public bool ContentFeatureEnabled { get; set; }
-
     /// <summary>Поле переименовано (старый ключ, новый ключ) — владелец двигает указатель фичи</summary>
     [Parameter] public Action<string, string>? OnFieldKeyRenamed { get; set; }
 
@@ -38,7 +35,6 @@ public partial class MetaFieldsGroup
         }
 
         Definitions.FeatureFieldKey = FeatureFieldKey;
-        Definitions.ContentFeatureEnabled = ContentFeatureEnabled;
         Definitions.OnFieldKeyRenamed = OnFieldKeyRenamed;
 
         // состав строк и защита полей зависят от фич типа; пересборка сохраняет экземпляры определений,

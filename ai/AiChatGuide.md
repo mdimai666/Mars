@@ -285,7 +285,7 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 
 - `CreatePost(type, title, contentText, tagsCsv, excerpt)`:
   - редактор контента берётся из `IPostService.GetEditModelBlank(type)` (`PostType.ContentEditorKey()` —
-    редактор поля контента фичи «Контент»);
+    редактор системного слота `content`, из параметров слота в `post_types.Options["systemFields"]`);
   - текст адаптируется под редактор: BlockEditor → Editor.js JSON (абзацы, `BuildBlockEditorJson`),
     WYSIWYG → `<p>…</p>`, обычный текст/код → как есть;
   - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус — черновик;

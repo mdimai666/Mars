@@ -84,7 +84,7 @@
                 @if (Capabilities.CanEditKey)
                 {
                     <div class="col">
-                        <FluentTextField Label="Ключ" Required Disabled="Definition.KeyLocked"
+                        <FluentTextField Label="Ключ" Required
                                          Value="@Definition.Key" ValueChanged="SetKeyAsync" />
                         @if (ValidationMessage(nameof(Definition.Key)) is { } keyError)
                         {

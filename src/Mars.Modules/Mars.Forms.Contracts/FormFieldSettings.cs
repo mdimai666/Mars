@@ -17,6 +17,9 @@ public record FormFieldSettings
     /// <summary>Переопределение редактора; null — редактор по умолчанию для типа</summary>
     public string? Editor { get; init; }
 
+    /// <summary>Язык редактора кода; null — язык по умолчанию</summary>
+    public string? CodeLang { get; init; }
+
     public IReadOnlyCollection<FormRuleDefinition> Rules { get; init; } = [];
 }
 

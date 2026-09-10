@@ -85,8 +85,16 @@ FormEditorLocator.Register(FormEditorCatalog.Tags, typeof(FormTagsEditor), true,
 FormEditorLocator.Register(FormEditorCatalog.TextDisplay, typeof(FormTextDisplayEditor), false,
     FormFieldType.String, FormFieldType.Relation);
 
+// тяжёлые редакторы значения контента — общие редакторы формы для текстовых полей:
+// один компонент, ветку выбирает ключ редактора; набор ключей и подписей — из каталога слотов
+foreach (var (editorKey, editorTitle) in SystemFieldsCatalog.ContentEditors)
+    FormEditorLocator.Register(editorKey, typeof(PostContentEditor), false, editorTitle, FormFieldType.Text);
+
 // доменные панели настроек метаполей в общем редакторе определений (скоуп meta, все типы)
 FormFieldTypeSettingsLocator.Register(MetaFieldSettingsPanel.Scope, typeof(MetaFieldSettingsPanel));
+
+// доменные настройки системных слотов типа поста (язык кода контента)
+FormFieldTypeSettingsLocator.Register(PostContentSettingsPanel.Scope, typeof(PostContentSettingsPanel));
 
 // редакторы значений метаполей в общем реестре формы: примитивы и кастомные редакторы
 // (инлайн-редактор значения сам выбирает компонент по Options.editor), связи и медиа — свои

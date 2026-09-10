@@ -91,10 +91,7 @@ public static class PostFormTestHost
         Order = 0,
     };
 
-    /// <summary>Поле контента, которое создаёт фича Content</summary>
-    public static MetaFieldDto Content() => Meta(FeatureFieldsCatalog.ContentFieldKey, 0,
-        type: MetaFieldType.Text, featureKey: FeatureFieldsCatalog.Content);
-
+    /// <summary>Метаполе типа с ключом и порядком</summary>
     public static MetaFieldDto Meta(string key, int order, MetaFieldType type = MetaFieldType.String,
                                     bool hidden = false, bool disabled = false, string? featureKey = null) => new()
     {

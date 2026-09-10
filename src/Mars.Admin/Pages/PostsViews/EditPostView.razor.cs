@@ -109,12 +109,7 @@ public partial class EditPostView : IAiChatPageHandler
     }
 
     async Task BeforeSave(PostEditModel post)
-    {
-        await _commits.CommitAllAsync();
-
-        if (_contentHolder.Current is { } content)
-            post.Content = await content.GetContentAsync();
-    }
+        => await _commits.CommitAllAsync();
 
     public void Dispose()
     {
@@ -138,7 +133,7 @@ public partial class EditPostView : IAiChatPageHandler
     static readonly string[] AgentEditableFields =
     [
         SystemFieldsCatalog.Title, SystemFieldsCatalog.Slug, SystemFieldsCatalog.Excerpt,
-        SystemFieldsCatalog.Tags, SystemFieldsCatalog.Categories, FeatureFieldsCatalog.ContentFieldKey,
+        SystemFieldsCatalog.Tags, SystemFieldsCatalog.Categories, SystemFieldsCatalog.Content,
     ];
 
     string ContentEditorKey => f?.Model.PostType.ContentEditorKey() ?? "";
@@ -164,7 +159,7 @@ public partial class EditPostView : IAiChatPageHandler
         await _commits.CommitAllAsync();
 
         var model = f?.Model ?? throw new InvalidOperationException("Модель поста ещё не загружена.");
-        var content = _contentHolder.Current is { } editor ? await editor.GetContentAsync() : model.Content;
+        var content = model.Content;
 
         return JsonSerializer.Serialize(new
         {
@@ -207,8 +202,13 @@ public partial class EditPostView : IAiChatPageHandler
                 }
                 model.CategoryIds = [.. ids];
                 break;
-            case FeatureFieldsCatalog.ContentFieldKey:
-                if (_contentHolder.Current is not { } editor) return "Редактор контента ещё не инициализирован.";
+            case SystemFieldsCatalog.Content:
+                // обычный текст правит встроенный редактор: он привязан к модели, мост не нужен
+                if (_contentHolder.Current is not { } editor)
+                {
+                    model.Content = value;
+                    break;
+                }
 
                 var contentError = await editor.TrySetContentAsync(value);
                 if (contentError is not null) return contentError;

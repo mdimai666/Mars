@@ -5,6 +5,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Forms.Abstractions;
 using Mars.Forms.Contracts;
+using System.Text.Json.Nodes;
 using static Mars.Cms.Contracts.PostTypes.SystemFieldsCatalog;
 
 namespace Mars.Cms.Abstractions.Forms;
@@ -45,18 +46,13 @@ public static class PostFormBuilder
 
         AddSlot(Title);
         AddSlot(Slug);
-
-        var content = postType.ContentField();
-        if (content is not null) items.Add(MetaItem(content));
-
+        AddSlot(Content);
         AddSlot(Excerpt);
 
         foreach (var field in postType.MetaFields
                      .Where(f => !f.Disabled)
                      .Where(f => f.Type != MetaFieldType.Query)
                      .Where(f => !client || !f.Hidden)
-                     // контент уже размещён выше — в общем потоке метаполей он не участвует
-                     .Where(f => f.Options.GetFeatureKey() != FeatureFieldsCatalog.Content)
                      .OrderBy(f => f.Order))
             items.Add(MetaItem(field));
 
@@ -97,6 +93,10 @@ public static class PostFormBuilder
             Multiple = slot.Multiple,
             Editor = settings?.Editor ?? slot.Editor,
             ModelName = slot.ModelName,
+            // язык редактора кода едет в дескрипторе: редактору не нужно знать про настройки типа
+            Options = settings?.CodeLang is { Length: > 0 } codeLang
+                ? new JsonObject { [MetaFieldEditorCatalog.CodeLangOption()] = codeLang }
+                : null,
             Choices = slot.Key == Status
                 ? postType.PostStatusList.Select(s => new FormChoiceOption { Key = s.Slug, Title = s.Title }).ToList()
                 : [],

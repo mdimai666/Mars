@@ -4,85 +4,67 @@
 @using EditorJsBlazored.Core
 @using Mars.AiChat.Front.Services
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
 @using Microsoft.FluentUI.AspNetCore.Components
 @using MarsCodeEditor2
 @implements IDisposable
 
-@* Редактор значения контента поста: ветка по ключу редактора поля контента (фича Content).
-   Контент — метаполе-определение, значение живёт в posts.Content, поэтому редактор пишет
-   прямо в модель поста, а не в мешок значений формы. *@
+@* Тяжёлые редакторы слота контента — общие редакторы поля формы: ветку выбирает ключ
+   редактора (WYSIWYG, код, блочный), значение пишется через привязку. WYSIWYG и код отдают
+   его при коммите перед сохранением (FormCommitHooks), блочный — сразу. Обычный текст (ключ не
+   задан) рисует встроенный редактор типа, поэтому сюда не попадает. *@
 
-<div class="my-2">
-    @if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
-    {
-        <WysiwygEditor Content="@Post.Content" @ref=_wysiwyg />
-    }
-    else if (EditorKey == MetaFieldEditorCatalog.Code)
-    {
-        <div>
-            <div class="text-end mb-1">
-                <FluentSelect Value="@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)"
-                              TOption="string"
-                              Style="width: 180px;"
-                              Items="CodeEditor2.Language.Array"
-                              ValueChanged="v => { _lang = v; _code?.SetModelLanguage(v); }">
-                </FluentSelect>
-            </div>
-
-            <MarsCodeEditor2.CodeEditor2 @ref=_code
-                                         Lang=@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)
-                                         OnSave="OnCodeEditorSave"
-                                         Value="@Post.Content" />
-            <HandlebarsHintsText />
-        </div>
-    }
-    else if (EditorKey == "")
-    {
-        <FormItem2 For="@(() => Post.Content)">
-            <FluentTextArea Rows="8" @bind-Value=@Post.Content Class="w-100" />
-        </FormItem2>
-    }
-    else if (EditorKey == MetaFieldEditorCatalog.BlockEditor)
-    {
-        <div class="text-end">
-            <FluentButton id="@_blockMenuButtonId"
-                          Appearance="Appearance.Stealth"
-                          @onclick="@(() => _blockMenuOpen = !_blockMenuOpen)">
-                Действия
-                <span slot="end">
-                    <i class="bi bi-chevron-down"></i>
-                </span>
-            </FluentButton>
+@if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
+{
+    <WysiwygEditor @ref=_wysiwyg Content="@Content" />
+}
+else if (EditorKey == MetaFieldEditorCatalog.Code)
+{
+    <div>
+        <div class="text-end mb-1">
+            <FluentSelect Value="@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)"
+                          TOption="string"
+                          Style="width: 180px;"
+                          Items="CodeEditor2.Language.Array"
+                          ValueChanged="v => { _lang = v; _code?.SetModelLanguage(v); }">
+            </FluentSelect>
         </div>
 
-        <FluentMenu Anchor="@_blockMenuButtonId" @bind-Open="_blockMenuOpen">
-            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => _block?.Clear()) />
-            <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
-        </FluentMenu>
+        <MarsCodeEditor2.CodeEditor2 @ref=_code
+                                     Lang=@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)
+                                     OnSave="OnCodeEditorSave"
+                                     Value="@Content" />
+        <HandlebarsHintsText />
+    </div>
+}
+else if (EditorKey == MetaFieldEditorCatalog.BlockEditor)
+{
+    <div class="text-end">
+        <FluentButton id="@_blockMenuButtonId"
+                      Appearance="Appearance.Stealth"
+                      @onclick="@(() => _blockMenuOpen = !_blockMenuOpen)">
+            Действия
+            <span slot="end">
+                <i class="bi bi-chevron-down"></i>
+            </span>
+        </FluentButton>
+    </div>
 
-        <EditorJsBlazored.BlockEditor1 @bind-ContentJson=@Post.Content
-                                       @ref=_block
-                                       OnImageFileRequest="OnImageFileRequest"
-                                       OnAttachmentFileRequest="OnImageFileRequest" />
-    }
-    else
-    {
-        <div class="card">
-            <div class="card-body">
-                <FluentLabel Color="@Color.Warning">
-                    content editor <strong>'@EditorKey'</strong> not implement
-                </FluentLabel>
-            </div>
-        </div>
-    }
-</div>
+    <FluentMenu Anchor="@_blockMenuButtonId" @bind-Open="_blockMenuOpen">
+        <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => _block?.Clear()) />
+        <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
+    </FluentMenu>
+
+    <EditorJsBlazored.BlockEditor1 @bind-ContentJson=Content
+                                   @ref=_block
+                                   OnImageFileRequest="OnImageFileRequest"
+                                   OnAttachmentFileRequest="OnImageFileRequest" />
+}
 
 @code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
     [CascadingParameter] public PostFormContext Context { get; set; } = default!;
-
-    [Parameter] public PostContentEditorHolder Holder { get; set; } = default!;
-
-    PostEditModel Post => Context.Post;
 
     [Inject] IAppMediaService mediaService { get; set; } = default!;
     [Inject] IAIToolAppService aiTool { get; set; } = default!;
@@ -91,29 +73,43 @@
     CodeEditor2? _code;
     BlockEditor1? _block;
 
+    /// <summary>Значение слота — в модели поста. Блочный редактор пишет сразу (<c>@bind</c>),
+    /// WYSIWYG и код отдают значение при коммите: пока печатают, модель не трогается.</summary>
+    string Content
+    {
+        get => Binding.Value as string ?? "";
+        set => Binding.Value = value;
+    }
+
     string _lang = "";
     readonly string _blockMenuButtonId = "blockEditorMenuButton-" + Guid.NewGuid();
     bool _blockMenuOpen;
 
-    public string EditorKey => Post.PostType.ContentEditorKey();
+    string EditorKey => Binding.Editor ?? "";
 
-    string CodeLang => Post.PostType.ContentCodeLang();
+    /// <summary>Язык редактора кода: из параметров слота (<c>Options.codeLang</c>) — тот же ключ, что у метаполя</summary>
+    string CodeLang => Binding.Field.Options.GetCodeLang();
 
-    protected override void OnInitialized() => Holder.Current = this;
-
-    /// <summary>Забрать значение из тяжёлого редактора в модель — вызывать перед сохранением.
-    /// Блочный редактор реактивный: модель всегда актуальна.</summary>
-    public async Task<string> GetContentAsync()
+    protected override void OnInitialized()
     {
-        if (EditorKey == MetaFieldEditorCatalog.Wysiwyg && _wysiwyg is not null) return await _wysiwyg.GetHTML();
-        if (EditorKey == MetaFieldEditorCatalog.Code && _code is not null) return await _code.GetValue();
-
-        return Post.Content;
+        Context.ContentHolder.Current = this;
+        Context.Commits.Register(CommitAsync);
     }
 
-    /// <summary>Запись значения инструментом ИИ; возвращает текст ошибки или null</summary>
+    /// <summary>Забрать значение тяжёлого редактора в модель (форма вызывает перед сохранением)</summary>
+    public async Task CommitAsync()
+    {
+        if (_wysiwyg is not null) Content = await _wysiwyg.GetHTML();
+        else if (_code is not null) Content = await _code.GetValue();
+    }
+
+    /// <summary>Запись значения инструментом ИИ; возвращает текст ошибки или null.
+    /// Обычный текст правит встроенный редактор типа — сюда такой ключ не приходит.</summary>
     public async Task<string?> TrySetContentAsync(string value)
     {
+        if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
+            return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
+
         if (EditorKey == MetaFieldEditorCatalog.BlockEditor)
         {
             if (_block is null) return "Редактор блоков ещё не инициализирован.";
@@ -121,30 +117,21 @@
             var json = BuildBlockEditorJson(value);
             _block.Content = EditorJsContent.FromJson(json);
             await _block.SetContent();
-            Post.Content = json; // страховка, если JS onChange запаздывает
+            Content = json; // страховка, если JS onChange запаздывает
             return null;
         }
 
-        if (EditorKey == MetaFieldEditorCatalog.Code)
-        {
-            if (_code is null) return "Редактор кода ещё не инициализирован.";
+        if (_code is null) return "Редактор кода ещё не инициализирован.";
 
-            await _code.SetValue(value);
-            Post.Content = value;
-            return null;
-        }
-
-        if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
-            return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
-
-        Post.Content = value;
+        await _code.SetValue(value);
+        Content = value;
         return null;
     }
 
     Task OnCodeEditorSave(string value)
     {
-        Post.Content = value;
-        return Holder.RequestSave?.Invoke() ?? Task.CompletedTask;
+        Content = value;
+        return Context.ContentHolder.RequestSave?.Invoke() ?? Task.CompletedTask;
     }
 
     async Task<BlockImage.ImageFileData?> OnImageFileRequest()
@@ -186,7 +173,8 @@
 
     public void Dispose()
     {
-        if (ReferenceEquals(Holder.Current, this)) Holder.Current = null;
+        Context.Commits.Unregister(CommitAsync);
+        if (ReferenceEquals(Context.ContentHolder.Current, this)) Context.ContentHolder.Current = null;
         _code?.Dispose();
     }
 }

@@ -26,22 +26,20 @@ public record PostTypeDetail : PostTypeSummary
     public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
-/// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
+/// <summary>Контент типа поста — системный слот <see cref="SystemFieldsCatalog.Content"/> (фича «Контент»)</summary>
 public static class PostTypeDetailContentExtensions
 {
-    /// <summary>Поле контента: фича включена и поле с фиксированным ключом существует</summary>
-    public static MetaFieldDto? ContentField(this PostTypeDetail postType)
-        => postType.EnabledFeatures.Contains(PostTypeConstants.Features.Content)
-            ? postType.MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
-            : null;
+    /// <summary>Параметры слота контента: выбранный редактор и язык кода</summary>
+    public static FormFieldSettings? ContentSettings(this PostTypeDetail postType)
+        => postType.SystemFields?.FirstOrDefault(s => s.Key == SystemFieldsCatalog.Content);
 
-    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
+    /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
     public static string ContentEditorKey(this PostTypeDetail postType)
-        => postType.ContentField()?.Options.GetEditor() ?? "";
+        => SystemFieldsCatalog.ContentEditorKey(postType.SystemFields);
 
     /// <summary>Язык кода редактора контента</summary>
     public static string ContentCodeLang(this PostTypeDetail postType)
-        => postType.ContentField()?.Options.GetCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
+        => SystemFieldsCatalog.ContentCodeLang(postType.SystemFields);
 }
 
 public record PostTypePresentation

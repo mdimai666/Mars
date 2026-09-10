@@ -37,9 +37,6 @@ public class MetaFieldDefinitions
     /// <summary>Ключ поля, на который указывает фича типа (картинка поста): нельзя удалить и сменить тип</summary>
     public string? FeatureFieldKey { get; set; }
 
-    /// <summary>Фича «Контент» включена: поле с фиксированным ключом защищено и не переименовывается</summary>
-    public bool ContentFeatureEnabled { get; set; }
-
     /// <summary>Поле переименовано (старый ключ, новый ключ) — владелец двигает указатель фичи</summary>
     public Action<string, string>? OnFieldKeyRenamed { get; set; }
 
@@ -83,7 +80,7 @@ public class MetaFieldDefinitions
 
     public void Delete(FormFieldDefinition definition)
     {
-        if (Source(definition) is not { } field || IsProtected(field)) return;
+        if (Source(definition) is not { } field || IsFeatureField(field)) return;
 
         _fields.Remove(field);
         Rebuild();
@@ -175,8 +172,7 @@ public class MetaFieldDefinitions
         definition.Tags = field.Tags;
         definition.Order = field.Order;
         definition.Options = field.Options;
-        definition.Protected = IsProtected(field);
-        definition.KeyLocked = IsContentFeatureField(field);
+        definition.Protected = IsFeatureField(field);
         // редакторы значения метаполя — из своего реестра (контракт Value/ValueChanged),
         // а не из общего реестра формы: ключи каталогов пересекаются, компоненты разные
         definition.Editors = MetaFieldEditors.EditorsFor(field.Type);
@@ -185,14 +181,8 @@ public class MetaFieldDefinitions
         definition.Rules = ToRules(field);
     }
 
-    bool IsContentFeatureField(MetaFieldEditModel field)
-        => ContentFeatureEnabled && field.Key == FeatureFieldsCatalog.ContentFieldKey;
-
     bool IsFeatureField(MetaFieldEditModel field)
         => FeatureFieldKey is not null && field.Key == FeatureFieldKey;
-
-    /// <summary>Поле защищено фичей типа: нельзя удалить и сменить тип</summary>
-    bool IsProtected(MetaFieldEditModel field) => IsFeatureField(field) || IsContentFeatureField(field);
 
     static MetaFieldEditModel? Source(FormFieldDefinition definition) => definition.Source as MetaFieldEditModel;
 

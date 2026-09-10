@@ -1,3 +1,4 @@
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Resources;
 using Mars.Forms.Contracts;
 
@@ -15,6 +16,7 @@ public static class SystemFieldsCatalog
 {
     public const string Title = "title";
     public const string Slug = "slug";
+    public const string Content = "content";
     public const string Excerpt = "excerpt";
     public const string Status = "status";
     public const string CreatedAt = "created_at";
@@ -58,6 +60,8 @@ public static class SystemFieldsCatalog
         new(Title, nameof(AppRes.Title), FormFieldType.String, Zones.Main,
             Editor: PostFormEditors.Title),
         new(Slug, nameof(AppRes.Slug), FormFieldType.String, Zones.Main),
+        new(Content, nameof(AppRes.Content), FormFieldType.Text, Zones.Main,
+            Feature: PostTypeConstants.Features.Content, Editor: MetaFieldEditorCatalog.BlockEditor),
         new(Excerpt, nameof(AppRes.Excerpt), FormFieldType.Text, Zones.Main,
             Feature: PostTypeConstants.Features.Excerpt),
         new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish),
@@ -77,6 +81,30 @@ public static class SystemFieldsCatalog
 
     public static SystemFieldSlot? Find(string? key)
         => string.IsNullOrEmpty(key) ? null : All.FirstOrDefault(s => s.Key == key);
+
+    /// <summary>Слот контента (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
+    public static SystemFieldSlot ContentSlot => Find(Content)!;
+
+    /// <summary>
+    /// Редакторы значения контента — тяжёлые редакторы админки, зарегистрированные в общем реестре
+    /// формы для <see cref="FormFieldType.Text"/>. Пустой ключ («обычный для типа» — многострочный
+    /// текст) строка добавки не несёт: он есть в выборе всегда. Набор хранится в параметрах слота
+    /// (<see cref="FormFieldSettings.Editor"/>), язык кода — в <see cref="FormFieldSettings.CodeLang"/>.
+    /// </summary>
+    public static IReadOnlyList<(string Key, string Title)> ContentEditors { get; } =
+    [
+        (MetaFieldEditorCatalog.Wysiwyg, "WYSIWYG (Quill)"),
+        (MetaFieldEditorCatalog.Code, "Код (Monaco)"),
+        (MetaFieldEditorCatalog.BlockEditor, "Блочный (Editor.js)"),
+    ];
+
+    /// <summary>Выбранный редактор контента: параметры слота типа → редактор слота по умолчанию</summary>
+    public static string ContentEditorKey(IReadOnlyCollection<FormFieldSettings>? systemFields)
+        => systemFields?.FirstOrDefault(s => s.Key == Content)?.Editor ?? ContentSlot.Editor ?? "";
+
+    /// <summary>Язык кода редактора контента</summary>
+    public static string ContentCodeLang(IReadOnlyCollection<FormFieldSettings>? systemFields)
+        => systemFields?.FirstOrDefault(s => s.Key == Content)?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
 
     /// <summary>
     /// Слот обязателен независимо от настроек типа: пол задан DataAnnotations транспорта записи

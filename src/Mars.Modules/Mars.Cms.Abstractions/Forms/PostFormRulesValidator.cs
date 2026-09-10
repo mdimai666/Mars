@@ -13,7 +13,7 @@ namespace Mars.Cms.Abstractions.Forms;
 /// не меняется (решение B(ii) плана): значения берутся из <see cref="IGeneralPostQuery"/> и
 /// проверяются общим валидатором формы, поэтому правила действуют на всех путях записи —
 /// и админ-форма, и JSON-API проходят валидаторы <c>CreatePostQuery</c>/<c>UpdatePostQuery</c>.
-/// Метаполя проверяет <c>MetaValuesValidator</c>, контент — свой пайплайн; обязательность и
+/// Метаполя проверяет <c>MetaValuesValidator</c>, контент идёт свойством транспорта записи; обязательность и
 /// пределы слотов из дескриптора здесь сняты — их пол это DataAnnotations транспорта и правила
 /// <see cref="GeneralPostQueryValidator"/>, а правила раскладки добавляются сверху.
 /// </summary>
@@ -27,6 +27,7 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
     {
         [Title] = nameof(CreatePostQuery.Title),
         [Slug] = nameof(CreatePostQuery.Slug),
+        [Content] = nameof(CreatePostQuery.Content),
         [Excerpt] = nameof(CreatePostQuery.Excerpt),
         [Status] = nameof(CreatePostQuery.Status),
         [Lang] = nameof(CreatePostQuery.LangCode),
@@ -99,6 +100,7 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
     {
         Title => query.Title,
         Slug => query.Slug,
+        Content => query.Content,
         Excerpt => query.Excerpt,
         Status => query.Status,
         Lang => query.LangCode,

@@ -1,6 +1,7 @@
 @page "/EditPostType"
 @page "/EditPostType/{ID:guid}"
 
+@using Mars.Admin.Components
 @using Mars.Admin.Framework.Components.Forms
 @using Mars.Cms.Contracts.PostTypes
 @using Mars.Forms.Contracts
@@ -129,7 +130,9 @@
                         </div>
                         <FieldDefinitionsEditor Definitions="context.SystemFieldDefinitions()"
                                                 Capabilities="FormDefinitionCapabilities.SystemFields"
-                                                OnChanged="context.ApplySystemFieldDefinition" />
+                                                SettingsScope="@PostContentSettingsPanel.Scope"
+                                                OnChanged="context.ApplySystemFieldDefinition"
+                                                OnSourceChanged="context.ApplySystemFieldDefinition" />
                     </div>
                 </div>
 
@@ -142,7 +145,6 @@
                             <MetaFieldsGroup Fields="context.MetaFields"
                                              MetaRelationModels="context.MetaRelationModels"
                                              FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
-                                             ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
                                              OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
                         </div>
                     </div>

@@ -44,19 +44,6 @@ public class UpdatePostTypeQueryValidator : AbstractValidator<UpdatePostTypeQuer
             });
 
         RuleFor(x => x)
-            .Custom((x, context) =>
-            {
-                if (!x.EnabledFeatures.Contains(PostTypeConstants.Features.Content)) return;
-
-                if (!x.MetaFields.Any(f => f.Key == FeatureFieldsCatalog.ContentFieldKey
-                                           && (f.Type == MetaFieldType.String || f.Type == MetaFieldType.Text)))
-                {
-                    context.AddFailure(nameof(x.MetaFields),
-                        $"Для фичи «Контент» требуется поле с ключом «{FeatureFieldsCatalog.ContentFieldKey}» типа Текст или Строка");
-                }
-            });
-
-        RuleFor(x => x)
             .CustomAsync(async (x, context, cancellationToken) =>
             {
                 if (!x.EnabledFeatures.Contains(PostTypeConstants.Features.Single)) return;

@@ -26,6 +26,7 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
         {
             SystemFieldsCatalog.Title => post.Title,
             SystemFieldsCatalog.Slug => post.Slug,
+            SystemFieldsCatalog.Content => post.Content,
             SystemFieldsCatalog.Excerpt => post.Excerpt,
             SystemFieldsCatalog.Status => post.Status,
             SystemFieldsCatalog.Lang => post.LangCode,
@@ -77,6 +78,9 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
                 break;
             case SystemFieldsCatalog.Slug:
                 post.Slug = value as string ?? "";
+                break;
+            case SystemFieldsCatalog.Content:
+                post.Content = value as string ?? "";
                 break;
             case SystemFieldsCatalog.Excerpt:
                 post.Excerpt = value as string ?? "";

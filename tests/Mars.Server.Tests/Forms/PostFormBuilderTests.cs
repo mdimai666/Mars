@@ -13,14 +13,14 @@ public class PostFormBuilderTests
     [Fact]
     public void DefaultTree_KeepsHistoricOrderAndZones()
     {
-        var postType = Type(AllFeatures, Content(), Meta("subtitle", 1), Meta("note", 2));
+        var postType = Type(AllFeatures, Meta("subtitle", 1), Meta("note", 2));
 
         var form = PostFormBuilder.Build(postType, Normalizer);
 
         form.Items.Select(i => (i.Key, i.Zone)).Should().Equal(
             (SystemFieldsCatalog.Title, "main"),
             (SystemFieldsCatalog.Slug, "main"),
-            (FeatureFieldsCatalog.ContentFieldKey, "main"),
+            (SystemFieldsCatalog.Content, "main"),
             (SystemFieldsCatalog.Excerpt, "main"),
             ("subtitle", "main"),
             ("note", "main"),
@@ -37,12 +37,12 @@ public class PostFormBuilderTests
     [Fact]
     public void FeatureGates_RemoveSlots()
     {
-        var postType = Type([PostTypeConstants.Features.Content], Content(), Meta("subtitle", 1));
+        var postType = Type([PostTypeConstants.Features.Content], Meta("subtitle", 1));
 
         var keys = PostFormBuilder.Build(postType, Normalizer).Items.Select(i => i.Key);
 
         keys.Should().Equal(SystemFieldsCatalog.Title, SystemFieldsCatalog.Slug,
-            FeatureFieldsCatalog.ContentFieldKey, "subtitle",
+            SystemFieldsCatalog.Content, "subtitle",
             SystemFieldsCatalog.CreatedAt, SystemFieldsCatalog.ModifiedAt, SystemFieldsCatalog.Author);
     }
 
@@ -66,18 +66,39 @@ public class PostFormBuilderTests
     }
 
     [Fact]
-    public void ContentSlot_TakenFromMetaField_WithOptionsAndNotDuplicated()
+    public void ContentSlot_IsSystemSlot_WithHeavyEditorFromTypeSettings()
     {
-        var postType = Type(AllFeatures, Meta(FeatureFieldsCatalog.ContentFieldKey, 1,
-            type: MetaFieldType.Text, featureKey: FeatureFieldsCatalog.Content));
+        var postType = Type(AllFeatures);
 
-        var form = PostFormBuilder.Build(postType, Normalizer);
+        var content = PostFormBuilder.Build(postType, Normalizer).Items.Single(i => i.Key == SystemFieldsCatalog.Content);
 
-        var content = form.Items.Single(i => i.Key == FeatureFieldsCatalog.ContentFieldKey);
+        content.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
         content.Field!.Type.Should().Be(FormFieldType.Text);
-        content.Field.Options.GetFeatureKey().Should().Be(FeatureFieldsCatalog.Content);
-        content.Field.Rules.Should().BeEmpty("правила метаполя применяет его собственный валидатор");
-        form.Items.Count(i => i.Key == FeatureFieldsCatalog.ContentFieldKey).Should().Be(1);
+        content.Field.TitleKey.Should().Be("Content");
+        content.Field.Editor.Should().Be(MetaFieldEditorCatalog.BlockEditor, "по умолчанию контент правит блочный редактор");
+        content.Field.Rules.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ContentSlot_TakesEditorAndCodeLangFromTypeSettings()
+    {
+        var postType = Type(AllFeatures) with
+        {
+            SystemFields =
+            [
+                new FormFieldSettings
+                {
+                    Key = SystemFieldsCatalog.Content,
+                    Editor = MetaFieldEditorCatalog.Code,
+                    CodeLang = "scriban",
+                },
+            ],
+        };
+
+        var content = PostFormBuilder.Build(postType, Normalizer).Items.Single(i => i.Key == SystemFieldsCatalog.Content);
+
+        content.Field!.Editor.Should().Be(MetaFieldEditorCatalog.Code);
+        content.Field.Options.GetCodeLang().Should().Be("scriban", "язык кода едет в дескрипторе — редактору он нужен без настроек типа");
     }
 
     [Fact]

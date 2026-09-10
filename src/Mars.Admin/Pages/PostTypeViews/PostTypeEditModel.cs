@@ -78,8 +78,7 @@ public class PostTypeEditModel : IBasicEntity
     /// дополнительно оркестрирует выбор/создание поля-указателя
     /// (см. <see cref="CreateFeatureImageField"/>); серверная согласованность —
     /// на валидаторе (<c>UpdatePostTypeQueryValidator</c>).
-    /// Поле контента создаётся сразу при включении фичи (ключ фиксированный,
-    /// кандидатов нет — диалог выбора не нужен).
+    /// Контент — системный слот: фича только открывает его, полей не создаёт.
     /// </summary>
     public void ToggleFeature(string feature, bool enabled)
     {
@@ -91,12 +90,6 @@ public class PostTypeEditModel : IBasicEntity
 
         if (feature == PostTypeConstants.Features.PostImage && !enabled)
             ImageFieldKey = null;
-
-        if (feature == PostTypeConstants.Features.Content && enabled
-            && MetaFields.All(f => f.Key != FeatureFieldsCatalog.ContentFieldKey))
-        {
-            CreateFeatureContentField();
-        }
     }
 
     List<FormFieldDefinition>? _systemFieldDefinitions;
@@ -119,7 +112,7 @@ public class PostTypeEditModel : IBasicEntity
         {
             if (slot.Feature is not null && !EnabledFeatures.Contains(slot.Feature)) continue;
 
-            var settings = SystemFields.FirstOrDefault(s => s.Key == slot.Key);
+            var settings = SystemFieldSettings(slot.Key);
             definitions.Add(new FormFieldDefinition
             {
                 Key = slot.Key,
@@ -133,24 +126,51 @@ public class PostTypeEditModel : IBasicEntity
                 Feature = slot.Feature,
                 Editor = settings?.Editor ?? slot.Editor,
                 Rules = settings?.Rules.ToList() ?? [],
+                // у контента свои редакторы значения (обычный текст, WYSIWYG, код, блочный),
+                // а панель языка кода правит параметры типа
+                Editors = slot.Key == SystemFieldsCatalog.Content ? SystemFieldsCatalog.ContentEditors : [],
+                Source = this,
             });
         }
 
         return definitions;
     }
 
+    /// <summary>Параметры системного слота типа (null — не заданы)</summary>
+    public FormFieldSettings? SystemFieldSettings(string key)
+        => SystemFields.FirstOrDefault(s => s.Key == key);
+
     /// <summary>Правка определения системного поля → параметры типа; пустые параметры не храним</summary>
     public void ApplySystemFieldDefinition(FormFieldDefinition definition)
     {
+        var existing = SystemFieldSettings(definition.Key);
         SystemFields.RemoveAll(s => s.Key == definition.Key);
 
-        if (string.IsNullOrEmpty(definition.Editor) && definition.Rules.Count == 0) return;
-
-        SystemFields.Add(new FormFieldSettings
+        var settings = new FormFieldSettings
         {
             Key = definition.Key,
             Editor = definition.Editor,
+            CodeLang = existing?.CodeLang,
             Rules = definition.Rules.ToList(),
+        };
+
+        if (string.IsNullOrEmpty(settings.Editor) && string.IsNullOrEmpty(settings.CodeLang) && settings.Rules.Count == 0) return;
+
+        SystemFields.Add(settings);
+    }
+
+    /// <summary>Язык редактора кода слота (панель настроек контента)</summary>
+    public void SetSystemFieldCodeLang(string key, string codeLang)
+    {
+        var existing = SystemFieldSettings(key);
+        SystemFields.RemoveAll(s => s.Key == key);
+
+        SystemFields.Add(new FormFieldSettings
+        {
+            Key = key,
+            Editor = existing?.Editor,
+            CodeLang = string.IsNullOrEmpty(codeLang) ? null : codeLang,
+            Rules = existing?.Rules.ToList() ?? [],
         });
     }
 
@@ -195,41 +215,11 @@ public class PostTypeEditModel : IBasicEntity
         return field;
     }
 
-    /// <summary>Поле контента типа: фича включена и поле с фиксированным ключом существует</summary>
-    public MetaFieldEditModel? ContentField()
-        => FeatureActivated(PostTypeConstants.Features.Content)
-            ? MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
-            : null;
-
-    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
-    public string ContentEditorKey() => ContentField()?.Editor ?? "";
+    /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
+    public string ContentEditorKey() => SystemFieldsCatalog.ContentEditorKey(SystemFields);
 
     /// <summary>Язык кода редактора контента</summary>
-    public string ContentCodeLang() => ContentField()?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
-
-    /// <summary>Создаёт поле фичи «Контент» (ключ фиксированный) и добавляет в поля типа</summary>
-    public MetaFieldEditModel CreateFeatureContentField()
-    {
-        var field = new MetaFieldEditModel
-        {
-            Id = Guid.NewGuid(),
-            Title = FeatureFieldsCatalog.ContentFieldTitle,
-            Key = FeatureFieldsCatalog.ContentFieldKey,
-            Type = MetaFieldType.Text,
-            IsNullable = true,
-            IsNew = true,
-            Order = MetaFields.Count == 0 ? 0 : MetaFields.Max(f => f.Order) + 1,
-            Options = new JsonObject
-            {
-                [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
-                [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
-            },
-            Editor = MetaFieldEditorCatalog.BlockEditor
-        };
-
-        MetaFields.Add(field);
-        return field;
-    }
+    public string ContentCodeLang() => SystemFieldsCatalog.ContentCodeLang(SystemFields);
 
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = [];
 

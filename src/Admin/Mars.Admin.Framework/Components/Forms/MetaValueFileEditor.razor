@@ -1,0 +1,49 @@
+@using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
+
+@* Файл/изображение метаполя: мульти-загрузка (список файлов) или одиночный выбор медиа.
+   Папка загрузки, дроп-зона и фильтр типов — из настройки поля. *@
+
+@if (Meta is null)
+{
+    <div class="text-secondary fz12px">нет определения поля @Binding.Field.Key</div>
+}
+else if (Meta.IsMultiple)
+{
+    <MetaValueFileMulti Meta="@Meta" />
+}
+else if (Row is not null)
+{
+    <FSelectMedia @bind-Value="ModelId"
+                  UploadFolder="@Meta.UploadFolder"
+                  DropZoneEnabled="@Meta.DropZoneEnabled"
+                  Accept="@(Meta.Type == MetaFieldType.Image ? "image/*" : "*")" />
+}
+else
+{
+    <div class="text-secondary fz12px">нет значения для поля @Binding.Field.Key</div>
+}
+
+@code {
+    [CascadingParameter] public List<MetaFieldEditModel> MetaFields { get; set; } = default!;
+
+    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    MetaFieldEditModel? Meta => MetaFields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
+
+    MetaValueEditModel? Row
+        => MetaValues?.FirstOrDefault(value => value.MetaField.Key == Binding.Field.Key && value.Index == 0);
+
+    Guid ModelId
+    {
+        get => Row?.ModelId ?? Guid.Empty;
+        set
+        {
+            if (Row is not null) Row.ModelId = value;
+        }
+    }
+}

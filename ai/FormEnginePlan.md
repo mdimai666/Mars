@@ -572,7 +572,32 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   `SelectMany` теперь отдаёт его, а не общий `FormListEditor` (тест
   `DefaultEditor_ForSelectMany_ResolvesChoicesEditor`).
 
-Рецепт для оставшихся шагов C2/C4/C5/C6 (собрано по коду 2026-09-10, чтобы не
+- **C4 — значения метаполей поста идут через общий рендерер**: ключи редакторов
+  `MetaFormEditors` (`Mars.Cms.Contracts`) приезжают в дескрипторе
+  (`MetaFieldFormMapping`: `For(type, isMultiple)`), а компоненты зарегистрированы
+  в `FormEditorLocator` (`Mars.Admin/Program.cs`). Обёртки — тонкие, в
+  `Mars.Admin.Framework/Components/Forms`: `MetaValueRowEditor` (примитивы по типу
+  и кастомные редакторы из `IMetaFieldEditorLocator` — через существующий
+  `RowMetaValue`), `MetaValueRelationEditor` (ChildrenList/Multi/Single по
+  настройке поля), `MetaValueFileEditor` (FileMulti или `FSelectMedia`).
+  `PostFormField` больше не ветвится по происхождению поля: контент — свой
+  редактор, всё остальное — `FormFieldRow`. Маркер `IFormSelfLabeledEditor`
+  (Forms.Front) говорит общему рендереру не рисовать подпись/описание, когда их
+  рисует сам редактор — иначе подпись дублировалась бы.
+  Кратность учтена в ключах: рендерер ищет редактор по (ключ, тип элемента,
+  multiple), поэтому список значений — отдельный ключ `ValueMulti`
+  (и для `SelectMany` он же, независимо от флага кратности).
+  Значения при этом по-прежнему живут в EAV-строках (`MetaValueEditModel`) и
+  каскадах `PostFormZone` — `MetaValueStore` (C2) для этого не понадобился:
+  обёртки берут строку из каскада `MetaValues`, как и прежние компоненты.
+
+Осталось по этапу C: C2 (`MetaValueStore` — нужен, когда примитивы перейдут на
+встроенные редакторы движка вместо `RowMetaValue`), обобщение pull-протокола
+тяжёлых редакторов, C6 (провайдеры `user.*`/`postcategory.*` и перевод
+`EditUserPage`/`EditPostCategoryView` — до этого `FormMetaValue`/`FormMetaValueItems`/
+`FormMetaValueItem`/`RowMetaValue` остаются живыми для этих двух владельцев).
+
+Рецепт для оставшихся шагов C2/C5/C6 (собрано по коду 2026-09-10, чтобы не
 выводить заново):
 
 - **Соответствие CLR-значения и EAV-колонки** (`MetaValueEditModel`, источник —

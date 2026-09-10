@@ -3,16 +3,14 @@
 @using Mars.Forms.Contracts
 @using Mars.Forms.Front
 
-@* Лист дерева формы поста: контент — свой редактор, метаполе — существующий компонент
-   значения, системный слот — общий рендерер слоя Mars.Forms *@
+@* Лист дерева формы поста: контент — свой редактор (пять веток тяжёлых редакторов и мост
+   ИИ-агента), всё остальное — общий рендерер слоя Mars.Forms; редакторы значений метаполей
+   зарегистрированы в общем реестре (MetaFormEditors), поэтому ветвления по происхождению
+   поля здесь больше нет. *@
 
 @if (IsContent)
 {
     <PostContentEditor Holder="@Holder" />
-}
-else if (Meta is not null)
-{
-    <FormMetaValueItem Meta="@Meta" />
 }
 else
 {
@@ -20,12 +18,9 @@ else
 }
 
 @code {
-    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
     [CascadingParameter] public PostContentEditorHolder Holder { get; set; } = default!;
 
     [Parameter, EditorRequired] public FormItem Item { get; set; } = default!;
 
     bool IsContent => Item.Field?.Options.GetFeatureKey() == FeatureFieldsCatalog.Content;
-
-    MetaFieldEditModel? Meta => Post.PostType.MetaFields.FirstOrDefault(f => f.Key == Item.Key);
 }

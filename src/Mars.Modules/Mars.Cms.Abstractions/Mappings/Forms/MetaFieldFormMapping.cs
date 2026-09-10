@@ -19,7 +19,9 @@ public static class MetaFieldFormMapping
         Required = !field.IsNullable,
         Multiple = field.IsMultiple,
         Description = field.Description,
-        Editor = field.Options.GetEditor(),
+        // ключ редактора значения в общем реестре формы — доменный по типу и кратности;
+        // выбранный администратором редактор (Options.editor) рисует редактор значения метаполя
+        Editor = MetaFormEditors.For(field.Type, field.IsMultiple),
         Min = field.MinValue,
         Max = field.MaxValue,
         ModelName = field.ModelName,

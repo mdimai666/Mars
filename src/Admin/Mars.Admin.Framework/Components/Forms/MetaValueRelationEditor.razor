@@ -1,0 +1,34 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
+
+@* Связь метаполя: список объектов (дочерние записи), несколько связей или одна —
+   выбирается по настройке поля (вид поля и кратность). *@
+
+@if (Meta is not null)
+{
+    @if (Meta.IsListKind)
+    {
+        <MetaValueChildrenList Meta="@Meta" />
+    }
+    else if (Meta.IsMultiple)
+    {
+        <MetaValueRelationMulti Meta="@Meta" />
+    }
+    else
+    {
+        <MetaValueRelationSingle Meta="@Meta" />
+    }
+}
+else
+{
+    <div class="text-secondary fz12px">нет определения поля @Binding.Field.Key</div>
+}
+
+@code {
+    [CascadingParameter] public List<MetaFieldEditModel> MetaFields { get; set; } = default!;
+
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    MetaFieldEditModel? Meta => MetaFields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
+}

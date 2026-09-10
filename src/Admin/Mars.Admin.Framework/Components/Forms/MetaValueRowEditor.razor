@@ -1,0 +1,29 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Forms.Front
+@implements IFormSelfLabeledEditor
+
+@* Значение метаполя: примитивы по типу и кастомные редакторы из реестра IMetaFieldEditorLocator
+   (WYSIWYG, Monaco, EditorJS, цвет, ссылка, email, дата…). Подпись и описание рисует сам
+   инлайн-редактор значения, поэтому общий рендерер их не дублирует. *@
+
+@if (Row is not null)
+{
+    <RowMetaValue Value="Row" Client="Client" />
+}
+else
+{
+    <div class="text-secondary fz12px">нет значения для поля @Binding.Field.Key</div>
+}
+
+@code {
+    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+
+    [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
+
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    MetaValueEditModel? Row
+        => MetaValues?.FirstOrDefault(value => value.MetaField.Key == Binding.Field.Key && value.Index == 0);
+
+    bool Client => Context?.Client ?? false;
+}

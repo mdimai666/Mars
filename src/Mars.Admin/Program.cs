@@ -82,6 +82,21 @@ FormEditorLocator.Register(PostFormEditors.Author, typeof(PostAuthorEditor), fal
 // доменные панели настроек метаполей в общем редакторе определений (скоуп meta, все типы)
 FormFieldTypeSettingsLocator.Register(MetaFieldSettingsPanel.Scope, typeof(MetaFieldSettingsPanel));
 
+// редакторы значений метаполей в общем реестре формы: примитивы и кастомные редакторы
+// (инлайн-редактор значения сам выбирает компонент по Options.editor), связи и медиа — свои
+FormEditorLocator.Register(MetaFormEditors.Value, typeof(MetaValueRowEditor), false,
+    FormFieldType.String, FormFieldType.Text, FormFieldType.Bool, FormFieldType.Int, FormFieldType.Long,
+    FormFieldType.Float, FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select,
+    FormFieldType.Computed);
+FormEditorLocator.Register(MetaFormEditors.ValueMulti, typeof(MetaValueRowEditor), true,
+    FormFieldType.String, FormFieldType.Text, FormFieldType.Bool, FormFieldType.Int, FormFieldType.Long,
+    FormFieldType.Float, FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select,
+    FormFieldType.Computed);
+FormEditorLocator.Register(MetaFormEditors.Relation, typeof(MetaValueRelationEditor), false, FormFieldType.Relation);
+FormEditorLocator.Register(MetaFormEditors.RelationMulti, typeof(MetaValueRelationEditor), true, FormFieldType.Relation);
+FormEditorLocator.Register(MetaFormEditors.File, typeof(MetaValueFileEditor), false, FormFieldType.File, FormFieldType.Image);
+FormEditorLocator.Register(MetaFormEditors.FileMulti, typeof(MetaValueFileEditor), true, FormFieldType.File, FormFieldType.Image);
+
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()

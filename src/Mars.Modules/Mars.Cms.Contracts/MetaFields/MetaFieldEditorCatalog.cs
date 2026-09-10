@@ -3,17 +3,15 @@ using System.Text.Json.Nodes;
 namespace Mars.Cms.Contracts.MetaFields;
 
 /// <summary>
-/// Каталог доступных редакторов значений мета-полей (общий для сервера и админки).
-/// Выбор редактора поля хранится в <c>Options.editor</c>; пусто = дефолтный редактор типа.
-/// Схема ключей: <c>&lt;происхождение&gt;.&lt;семейство&gt;.&lt;реализация&gt;</c> —
-/// встроенные редакторы <c>core.*</c>, плагины <c>plugin.*</c>.
-/// Реестр «ключ → компонент + совместимые типы» — на фронте (<c>MetaFieldEditors</c>): контракт
-/// параметров у этих редакторов свой (<c>Value</c>/<c>ValueChanged</c>), поэтому реестр отделён от
-/// общего реестра редакторов формы (<c>IFormEditorLocator</c>), хотя ключи частично пересекаются.
+/// Каталог ключей редакторов значений полей (общий для сервера и админки). Выбор редактора поля
+/// хранится в <c>Options.editor</c>; пусто = дефолтный редактор типа. Схема ключей:
+/// <c>&lt;происхождение&gt;.&lt;семейство&gt;.&lt;реализация&gt;</c> — встроенные редакторы <c>core.*</c>,
+/// плагины <c>plugin.*</c>. Компоненты всех редакторов (и метаполей, и системных слотов) — в общем
+/// реестре фронта (<c>IFormEditorLocator</c>); здесь остаются только ключи.
 /// </summary>
 public static class MetaFieldEditorCatalog
 {
-    // ---------- Первая волна: простые редакторы ввода ----------
+    // ---------- Простые редакторы ввода ----------
 
     /// <summary>Выбор цвета (для полей String)</summary>
     public const string Color = "core.input.color";
@@ -33,7 +31,7 @@ public static class MetaFieldEditorCatalog
     /// <summary>Дата и время (для полей DateTime)</summary>
     public const string DateTime = "core.input.datetime";
 
-    // ---------- Вторая волна: редакторы контента (для полей String/Text) ----------
+    // ---------- Тяжёлые редакторы текста ----------
 
     /// <summary>WYSIWYG — Quill (Blazored.TextEditor)</summary>
     public const string Wysiwyg = "core.wysiwyg.quilljs";
@@ -65,18 +63,4 @@ public static class MetaFieldEditorCatalog
             && value.TryGetValue<string>(out var lang) && lang.Length > 0
             ? lang
             : DefaultCodeLang;
-
-    /// <summary>Ключи и названия для UI выбора редактора</summary>
-    public static IReadOnlyCollection<(string Key, string Title)> All { get; } =
-    [
-        (Color, "Цвет"),
-        (Url, "URL-адрес"),
-        (Email, "Email"),
-        (DateTime, "Дата и время"),
-        (Date, "Дата"),
-        (Time, "Время"),
-        (Wysiwyg, "WYSIWYG (Quill)"),
-        (Code, "Код (Monaco)"),
-        (BlockEditor, "Блочный (Editor.js)"),
-    ];
 }

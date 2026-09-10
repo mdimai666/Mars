@@ -33,12 +33,9 @@ else
 
     MetaFieldEditModel? Meta => MetaContext?.Fields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
 
-    MetaValueEditModel? Row => Binding.Value as MetaValueEditModel ?? FirstRow;
-
-    /// <summary>У множественного поля значение — список строк, для одиночного выбора берём первую</summary>
-    MetaValueEditModel? FirstRow
-        => (Binding.Values.NativeValue(Binding.Field) as List<MetaValueEditModel>)
-            ?.FirstOrDefault(v => v.MetaField.Key == Binding.Field.Key && v.Index == 0);
+    /// <summary>Строка значения поля: значение формы у медиа — Guid, сам носитель — строка владельца</summary>
+    MetaValueEditModel? Row
+        => MetaContext?.Values.FirstOrDefault(value => value.MetaField.Key == Binding.Field.Key && value.Index == 0);
 
     Guid ModelId
     {

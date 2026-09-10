@@ -247,6 +247,50 @@ Mars.Forms.Abstractions
 (ввод тегов) буфер затирался и контент сохранялся пустым. Буфер убран: блочный редактор пишет в
 модель сразу (как раньше), WYSIWYG и код — при коммите перед сохранением.
 
+## R8 — метаполя стали данными, редакторы — общими — выполнено 2026-09-11
+
+Редакторы значения жили в двух мирах: у метаполей свой реестр (`MetaFieldEditors`, контракт
+`Value`/`ValueChanged` с EAV-строкой) и девять компонентов, у системных слотов — общий реестр
+формы (`FormEditorLocator`) и один компонент контента, ветвившийся по ключу внутри. Теперь
+редактор значения один на все поля: общий реестр, контракт `Binding`, канонические CLR-значения
+(`FormValueCodec`), а метаполе для формы — обычное поле данных.
+
+- `MetaValueStore` (`Mars.Admin.Framework`) — единственное место перевода EAV-строк метаполя в
+  канонические значения формы и обратно: строка/число/дата, ключ варианта `Select`
+  (в EAV — `VariantId`), список ключей `SelectMany` (в EAV — `VariantsIds`), Guid связи,
+  множественные — строками по индексу (`Id` строки сохраняется при записи, лишние строки
+  снимаются). Строки остались носителем значения (`NativeValue`) — связи, медиа и списки
+  объектов правят их напрямую; стор формы поста делегирует метаполя этому же классу.
+- Удалены: девять мета-редакторов (`MetaValue*Editor`), реестр `MetaFieldEditors`,
+  `RowMetaValue`, `MetaValueRowEditor`, мёртвый `IHeavyMetaValueEditor`,
+  `MetaValueEditModelLookup` и осиротевший маркер `IFormSelfLabeledEditor` (подпись и описание
+  поля рисует только `FormFieldRow`). Встроенные редакторы общего слоя рисуют и метаполя, и
+  системные слоты: текст, число, дата, выбор, чекбоксы вариантов, множественный список.
+- `PostContentEditor` разбит на общие редакторы: `FormWysiwygEditor`, `FormCodeEditor`
+  (язык из `Options.codeLang` + селект в редакторе, Ctrl+S сохраняет форму), `FormBlockEditor`
+  (админка — EditorJsBlazored), `FormColorEditor`, `FormUrlEditor`, `FormEmailEditor`,
+  `FormTimeEditor`, `FormDateTimeEditor`. Регистрируются для String/Text/DateTime, и
+  **в выборе редактора поля предлагаются только зарегистрированные с названием** — встроенные
+  дефолты и обёртки провайдеров в список не попадают (`EditorsFor` = предложение UI).
+- Выбор редактора больше не захардкожен под контент: любой текстовый слот типа поста
+  (`content`, `excerpt`, будущие) получает тот же список из реестра; `FormFieldDefinition.Editors`
+  и `SystemFieldsCatalog.ContentEditors` удалены как дубль реестра.
+- ИИ-мост: вместо `PostContentEditorHolder` — `FormLiveEditors` в контексте рендера (редактор
+  поля регистрируется по ключу и принимает значение извне, там же `SaveRequest`); панель языка
+  кода — `SystemFieldSettingsPanel` (скоуп `post.systemfields`), общая для любого системного
+  слота с редактором «код»; `SystemFieldsCatalog.ContentEditorKey/ContentCodeLang` →
+  `EditorKey`/`CodeLang` по ключу слота.
+- В дескрипторе метаполя `Editor` = `Options.editor`, а для связей и медиа — доменные
+  `MetaFormEditors` (`core.meta.relation[.multi]`, `core.meta.file[.multi]`): только у них нет
+  типизированного значения. Обёртки примитивов (`core.meta.value[.multi]`) удалены.
+
+Проверка: сборка 0 ошибок; `Mars.Forms.Tests` 82/82; `Mars.Server.Tests` 471/471;
+`Mars.Admin.Framework.Tests` 34/34 (новый `MetaValueStoreTests`: соответствие типов, индексы,
+ключи вариантов, сохранение `Id` строк); интеграционные `Controllers.PostTypes` 19/19 и
+`Nodes` 14/14; E2E `CreatePostTests`, `EditUserPageTests` и новый `EditPostMetaFieldsTests`
+(тип поста дополняется метаполями через API, значения правятся общими редакторами, сохраняются
+в EAV) — зелёные.
+
 ## E2E-проверка формы (рецепт)
 
 Сьют `Mars.E2E.Tests` выключен по умолчанию: тесты помечены `[E2EFact]`, включение — переменная

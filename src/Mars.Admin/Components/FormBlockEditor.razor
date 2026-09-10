@@ -1,0 +1,102 @@
+@using System.Text.Json
+@using EditorJsBlazored
+@using EditorJsBlazored.Blocks
+@using EditorJsBlazored.Core
+@using Mars.Forms.Front
+@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDisposable
+
+@* Общий редактор «Блочный (Editor.js)»: значение — JSON редактора. Живёт в админке, а не в общей
+   библиотеке, потому что EditorJsBlazored подключён только здесь. Реактивный: пишет значение в форму
+   при каждом изменении. *@
+
+<div class="text-end">
+    <FluentButton id="@_menuButtonId" Appearance="Appearance.Stealth" @onclick="@(() => _menuOpen = !_menuOpen)">
+        Действия
+        <span slot="end">
+            <i class="bi bi-chevron-down"></i>
+        </span>
+    </FluentButton>
+</div>
+
+<FluentMenu Anchor="@_menuButtonId" @bind-Open="_menuOpen">
+    <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => _editor?.Clear()) />
+    <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
+</FluentMenu>
+
+<EditorJsBlazored.BlockEditor1 @bind-ContentJson=Json
+                               @ref=_editor
+                               OnImageFileRequest="OnImageFileRequest"
+                               OnAttachmentFileRequest="OnImageFileRequest" />
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
+
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+    [Inject] IAIToolAppService aiTool { get; set; } = default!;
+
+    BlockEditor1? _editor;
+    readonly string _menuButtonId = "blockEditorMenuButton-" + Guid.NewGuid();
+    bool _menuOpen;
+
+    string Json
+    {
+        get => Binding.Value as string ?? "";
+        set => Binding.Value = value;
+    }
+
+    protected override void OnInitialized()
+        => Context.LiveEditors.Register(Binding.Field.Key, SetValueAsync);
+
+    async Task<string?> SetValueAsync(string value)
+    {
+        if (_editor is null) return "Редактор блоков ещё не инициализирован.";
+
+        var json = BuildBlockEditorJson(value);
+        _editor.Content = EditorJsContent.FromJson(json);
+        await _editor.SetContent();
+        Json = json; // страховка, если JS onChange запаздывает
+        return null;
+    }
+
+    async Task<BlockImage.ImageFileData?> OnImageFileRequest()
+    {
+        var mediaFile = await mediaService.OpenSelectMedia();
+
+        if (mediaFile is null) return null;
+
+        return new BlockImage.ImageFileData
+        {
+            Url = mediaFile.Url,
+            FileName = mediaFile.Name,
+            Size = (long)mediaFile.Size,
+        };
+    }
+
+    /// <summary>Editor.js JSON из обычного текста: каждая непустая строка — абзац</summary>
+    static string BuildBlockEditorJson(string text)
+    {
+        var blocks = text.Split('\n')
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0)
+            .Select(line => new { type = "paragraph", data = new { text = line } })
+            .Cast<object>()
+            .ToList();
+
+        if (blocks.Count == 0)
+            blocks.Add(new { type = "paragraph", data = new { text = "" } });
+
+        return JsonSerializer.Serialize(new
+        {
+            time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            blocks,
+            version = "2.31.0",
+        }, JsonOptions);
+    }
+
+    static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = false };
+
+    public void Dispose() => Context.LiveEditors.Unregister(Binding.Field.Key, SetValueAsync);
+}

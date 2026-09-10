@@ -19,13 +19,24 @@ public static class MetaFieldFormMapping
         Required = !field.IsNullable,
         Multiple = field.IsMultiple,
         Description = field.Description,
-        // ключ редактора значения в общем реестре формы — доменный по типу и кратности;
-        // выбранный администратором редактор (Options.editor) рисует редактор значения метаполя
-        Editor = MetaFormEditors.For(field.Type, field.IsMultiple),
+        Editor = EditorKey(field),
         Min = field.MinValue,
         Max = field.MaxValue,
         ModelName = field.ModelName,
         Choices = field.Variants?.Select(v => new FormChoiceOption { Key = v.Key, Title = v.Title }).ToList() ?? [],
         Options = field.Options?.DeepClone(),
     };
+
+    /// <summary>
+    /// Ключ редактора значения: у связей и медиа — доменный (типизированного значения нет),
+    /// у остальных типов — выбранный администратором. Пусто — встроенный редактор общего слоя.
+    /// </summary>
+    static string? EditorKey(MetaFieldDto field)
+    {
+        var key = field.Type is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image
+            ? MetaFormEditors.For(field.Type, field.IsMultiple)
+            : field.Options.GetEditor();
+
+        return key.Length > 0 ? key : null;
+    }
 }

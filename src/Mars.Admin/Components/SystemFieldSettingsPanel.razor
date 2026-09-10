@@ -8,7 +8,7 @@
 @* Доменные настройки системного слота в общем редакторе определений: язык редактора кода.
    Всё остальное (редактор, правила) — общие параметры определения, правит сам редактор. *@
 
-@if (Model is not null && Definition.Key == SystemFieldsCatalog.Content && Definition.Editor == MetaFieldEditorCatalog.Code)
+@if (Model is not null && Definition.Editor == MetaFieldEditorCatalog.Code)
 {
     <div class="vstack">
         <label>Язык кода</label>
@@ -35,7 +35,7 @@
     /// <summary>Источник определений системных слотов — модель типа поста (её <c>SystemFields</c>)</summary>
     PostTypeEditModel? Model => Definition.Source as PostTypeEditModel;
 
-    string CodeLang => SystemFieldsCatalog.ContentCodeLang(Model?.SystemFields);
+    string CodeLang => SystemFieldsCatalog.CodeLang(Definition.Key, Model?.SystemFields);
 
     async Task SetCodeLangAsync(string value)
     {

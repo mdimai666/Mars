@@ -1,0 +1,80 @@
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDisposable
+
+@* Общий редактор «Код (Monaco)»: значение — строка поля, язык — из параметров поля
+   (Options.codeLang), переключается и в самом редакторе. Тяжёлый: значение уходит в форму перед
+   сохранением, Ctrl+S сохраняет форму. *@
+
+<div>
+    <div class="text-end mb-1">
+        <FluentSelect TOption="string" Style="width: 180px;"
+                      Items="CodeEditor2.Language.Array"
+                      Value="@Lang"
+                      ValueChanged="OnLangChanged" />
+    </div>
+
+    <MarsCodeEditor2.CodeEditor2 @ref=_editor Lang="@Lang" OnSave="OnSave" Value="@Text" />
+    <HandlebarsHintsText />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
+
+    CodeEditor2? _editor;
+    string _lang = "";
+
+    string Text
+    {
+        get => Binding.Value as string ?? "";
+        set => Binding.Value = value;
+    }
+
+    string CodeLang => Binding.Field.Options.GetCodeLang();
+
+    string Lang => string.IsNullOrEmpty(_lang) ? CodeLang : _lang;
+
+    protected override void OnInitialized()
+    {
+        Context.Commits.Register(CommitAsync);
+        Context.LiveEditors.Register(Binding.Field.Key, SetValueAsync);
+    }
+
+    async Task<string?> SetValueAsync(string value)
+    {
+        if (_editor is null) return "Редактор кода ещё не инициализирован.";
+
+        _lang = "";
+        Text = value;
+        await _editor.SetValue(value);
+        return null;
+    }
+
+    async Task CommitAsync()
+    {
+        if (_editor is not null) Text = await _editor.GetValue();
+    }
+
+    void OnLangChanged(string lang)
+    {
+        _lang = lang;
+        _editor?.SetModelLanguage(lang);
+    }
+
+    async Task OnSave(string value)
+    {
+        Text = value;
+        if (Context.LiveEditors.SaveRequest is { } save) await save();
+    }
+
+    public void Dispose()
+    {
+        Context.Commits.Unregister(CommitAsync);
+        Context.LiveEditors.Unregister(Binding.Field.Key, SetValueAsync);
+        _editor?.Dispose();
+    }
+}

@@ -81,9 +81,6 @@ public class FormFieldDefinition
     /// <summary>Тип поля поддерживает несколько значений</summary>
     public bool SupportsMultiple { get; set; }
 
-    /// <summary>Редакторы значения, которые источник предлагает для поля; пусто — реестр фронта</summary>
-    public IReadOnlyCollection<(string Key, string Title)> Editors { get; set; } = [];
-
     /// <summary>Доступные правила валидации с заголовками; пусто — каталог общего слоя</summary>
     public IReadOnlyCollection<(string Key, string Title)> RuleOptions { get; set; } = [];
 

@@ -26,12 +26,15 @@ public partial class MetaValuesForm
     /// <summary>Хуки отложенной записи — одни на все зоны формы</summary>
     public FormCommitHooks Commits { get; } = new();
 
+    /// <summary>Живые редакторы полей (блочный, код) — одни на все зоны формы</summary>
+    public FormLiveEditors LiveEditors { get; } = new();
+
     MetaValueContext? _context;
-    MetaValueListStore? _store;
+    MetaValueStore? _store;
 
     MetaValueContext Context => _context ??= new MetaValueContext { Values = MetaValues, Fields = MetaFields };
 
-    IFormValueStore Store => _store ??= new MetaValueListStore(MetaValues);
+    IFormValueStore Store => _store ??= new MetaValueStore(MetaValues, MetaFields);
 
     /// <summary>Забрать значения всех тяжёлых редакторов в модель — вызывать перед сохранением формы</summary>
     public Task CommitAllAsync() => Commits.CommitAllAsync();

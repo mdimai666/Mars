@@ -33,8 +33,6 @@ public class FormEditorLocatorTests
         _locator.GetDefaultEditor(FormFieldType.SelectMany, false).Should().Be(typeof(FormChoicesEditor));
         _locator.GetEditorComponent(FormEditorCatalog.Choices, FormFieldType.SelectMany, false)
                 .Should().Be(typeof(FormChoicesEditor));
-        _locator.EditorsFor(FormFieldType.SelectMany, false).Select(e => e.Key)
-                .Should().Contain(FormEditorCatalog.Choices);
     }
 
     [Fact]
@@ -62,19 +60,19 @@ public class FormEditorLocatorTests
     }
 
     [Fact]
-    public void Register_AddsProviderEditor_AndShowsItInCatalog()
+    public void EditorsFor_OffersOnlyNamedEditors()
     {
+        // безымянная регистрация (доменный редактор провайдера) доступна по ключу, но не в выборе
         FormEditorLocator.Register("post.picker.author", typeof(FakeEditor), false, FormFieldType.Relation);
 
         _locator.GetEditorComponent("post.picker.author", FormFieldType.Relation, false).Should().Be(typeof(FakeEditor));
-        _locator.EditorsFor(FormFieldType.Relation, false).Select(e => e.Key).Should().Contain("post.picker.author");
-        _locator.EditorsFor(FormFieldType.Relation, false).Select(e => e.Title).Should().Contain("post.picker.author");
+        _locator.EditorsFor(FormFieldType.Relation, false).Select(e => e.Key).Should().NotContain("post.picker.author");
     }
 
     [Fact]
     public void Register_WithTitle_ShowsItInCatalog()
     {
-        // ключи вне общего каталога (редакторы метаполей, плагины) приходят со своим названием
+        // название делает редактор предлагаемым в выборе редактора поля
         FormEditorLocator.Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
 
         _locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false).Should().Be(typeof(FakeEditor));

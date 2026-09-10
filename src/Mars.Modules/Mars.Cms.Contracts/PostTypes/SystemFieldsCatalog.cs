@@ -86,25 +86,16 @@ public static class SystemFieldsCatalog
     public static SystemFieldSlot ContentSlot => Find(Content)!;
 
     /// <summary>
-    /// Редакторы значения контента — тяжёлые редакторы админки, зарегистрированные в общем реестре
-    /// формы для <see cref="FormFieldType.Text"/>. Пустой ключ («обычный для типа» — многострочный
-    /// текст) строка добавки не несёт: он есть в выборе всегда. Набор хранится в параметрах слота
-    /// (<see cref="FormFieldSettings.Editor"/>), язык кода — в <see cref="FormFieldSettings.CodeLang"/>.
+    /// Выбранный редактор слота: параметры слота в типе → редактор слота по умолчанию (пусто —
+    /// встроенный редактор типа). Ключи редакторов и их состав — у реестра фронта
+    /// (<c>FormEditorLocator</c>), слот лишь объявляет свой по умолчанию.
     /// </summary>
-    public static IReadOnlyList<(string Key, string Title)> ContentEditors { get; } =
-    [
-        (MetaFieldEditorCatalog.Wysiwyg, "WYSIWYG (Quill)"),
-        (MetaFieldEditorCatalog.Code, "Код (Monaco)"),
-        (MetaFieldEditorCatalog.BlockEditor, "Блочный (Editor.js)"),
-    ];
+    public static string EditorKey(string key, IReadOnlyCollection<FormFieldSettings>? systemFields)
+        => systemFields?.FirstOrDefault(settings => settings.Key == key)?.Editor ?? Find(key)?.Editor ?? "";
 
-    /// <summary>Выбранный редактор контента: параметры слота типа → редактор слота по умолчанию</summary>
-    public static string ContentEditorKey(IReadOnlyCollection<FormFieldSettings>? systemFields)
-        => systemFields?.FirstOrDefault(s => s.Key == Content)?.Editor ?? ContentSlot.Editor ?? "";
-
-    /// <summary>Язык кода редактора контента</summary>
-    public static string ContentCodeLang(IReadOnlyCollection<FormFieldSettings>? systemFields)
-        => systemFields?.FirstOrDefault(s => s.Key == Content)?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
+    /// <summary>Язык кода выбранного редактора слота (пусто — язык по умолчанию)</summary>
+    public static string CodeLang(string key, IReadOnlyCollection<FormFieldSettings>? systemFields)
+        => systemFields?.FirstOrDefault(settings => settings.Key == key)?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
 
     /// <summary>
     /// Слот обязателен независимо от настроек типа: пол задан DataAnnotations транспорта записи

@@ -7,31 +7,41 @@ using Mars.Forms.Front;
 namespace Mars.Admin.Pages.PostsViews.Forms;
 
 /// <summary>
-/// Значения формы поста живут в самой модели: стор читает и пишет её свойства напрямую
-/// (системные слоты — типизированные свойства, метаполя — строки <see cref="PostEditModel.MetaValues"/>).
-/// Отдельного мешка значений у формы поста нет — сохранение отправляет модель как есть.
+/// Значения формы поста живут в самой модели: системные слоты — типизированные свойства, метаполя —
+/// строки <see cref="PostEditModel.MetaValues"/>. Отдельного мешка значений у формы поста нет —
+/// сохранение отправляет модель как есть.
 /// </summary>
-public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
+public sealed class PostFormValueStore : IFormValueStore
 {
+    readonly PostEditModel _post;
+    readonly MetaValueStore _meta;
+
+    public PostFormValueStore(PostEditModel post)
+    {
+        _post = post;
+        _meta = new MetaValueStore(post.MetaValues, post.PostType.MetaFields);
+        _meta.Changed += () => Changed?.Invoke();
+    }
+
     public IReadOnlyCollection<FormError> Errors { get; set; } = [];
 
     public event Action? Changed;
 
     public object? GetValue(FormFieldDescriptor field)
     {
+        if (IsMeta(field)) return _meta.GetValue(field);
         if (IsList(field)) return GetList(field);
-        if (IsMeta(field)) return Row(field);
 
         return field.Key switch
         {
-            SystemFieldsCatalog.Title => post.Title,
-            SystemFieldsCatalog.Slug => post.Slug,
-            SystemFieldsCatalog.Content => post.Content,
-            SystemFieldsCatalog.Excerpt => post.Excerpt,
-            SystemFieldsCatalog.Status => post.Status,
-            SystemFieldsCatalog.Lang => post.LangCode,
-            SystemFieldsCatalog.CreatedAt => post.CreatedAt,
-            SystemFieldsCatalog.ModifiedAt => post.ModifiedAt,
+            SystemFieldsCatalog.Title => _post.Title,
+            SystemFieldsCatalog.Slug => _post.Slug,
+            SystemFieldsCatalog.Content => _post.Content,
+            SystemFieldsCatalog.Excerpt => _post.Excerpt,
+            SystemFieldsCatalog.Status => _post.Status,
+            SystemFieldsCatalog.Lang => _post.LangCode,
+            SystemFieldsCatalog.CreatedAt => _post.CreatedAt,
+            SystemFieldsCatalog.ModifiedAt => _post.ModifiedAt,
             // автор только для чтения: показываем подпись, пикера пользователя нет
             SystemFieldsCatalog.Author => AuthorName(),
             _ => null,
@@ -40,26 +50,23 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
 
     public IReadOnlyList<object?> GetList(FormFieldDescriptor field)
     {
-        if (IsMeta(field))
-        {
-            return post.MetaValues.Where(v => v.MetaField.Key == field.Key)
-                                  .OrderBy(v => v.Index)
-                                  .Cast<object?>()
-                                  .ToList();
-        }
+        if (IsMeta(field)) return _meta.GetList(field);
 
         return field.Key switch
         {
-            SystemFieldsCatalog.Tags => post.Tags.Cast<object?>().ToList(),
-            SystemFieldsCatalog.Categories => post.CategoryIds.Cast<object?>().ToList(),
+            SystemFieldsCatalog.Tags => _post.Tags.Cast<object?>().ToList(),
+            SystemFieldsCatalog.Categories => _post.CategoryIds.Cast<object?>().ToList(),
             _ => [],
         };
     }
 
     public void SetValue(FormFieldDescriptor field, object? value)
     {
-        // строка метаполя правится на месте — записывать нечего
-        if (IsMeta(field)) return;
+        if (IsMeta(field))
+        {
+            _meta.SetValue(field, value);
+            return;
+        }
 
         // множественный слот: редактор отдаёт значение целиком списком (теги, категории)
         if (IsList(field))
@@ -72,27 +79,27 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
         {
             case SystemFieldsCatalog.Title:
                 var title = value as string ?? "";
-                if (post.Title == title) return;
-                post.Title = title;
-                post.AutoFillSlug();
+                if (_post.Title == title) return;
+                _post.Title = title;
+                _post.AutoFillSlug();
                 break;
             case SystemFieldsCatalog.Slug:
-                post.Slug = value as string ?? "";
+                _post.Slug = value as string ?? "";
                 break;
             case SystemFieldsCatalog.Content:
-                post.Content = value as string ?? "";
+                _post.Content = value as string ?? "";
                 break;
             case SystemFieldsCatalog.Excerpt:
-                post.Excerpt = value as string ?? "";
+                _post.Excerpt = value as string ?? "";
                 break;
             case SystemFieldsCatalog.Status:
-                post.Status = value as string ?? "";
+                _post.Status = value as string ?? "";
                 break;
             case SystemFieldsCatalog.Lang:
-                post.LangCode = value as string ?? "";
+                _post.LangCode = value as string ?? "";
                 break;
             case SystemFieldsCatalog.CreatedAt when value is DateTimeOffset created:
-                post.CreatedAt = created;
+                _post.CreatedAt = created;
                 break;
             default:
                 return;
@@ -103,23 +110,21 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
 
     public void SetList(FormFieldDescriptor field, IEnumerable<object?> values)
     {
-        var items = values.ToList();
-
         if (IsMeta(field))
         {
-            var rows = items.OfType<MetaValueEditModel>().ToList();
-            for (var i = 0; i < rows.Count; i++) rows[i].Index = i;
-
-            post.MetaValues.RemoveAll(v => v.MetaField.Key == field.Key);
-            post.MetaValues.AddRange(rows);
+            _meta.SetList(field, values);
+            return;
         }
-        else if (field.Key == SystemFieldsCatalog.Tags)
+
+        var items = values.ToList();
+
+        if (field.Key == SystemFieldsCatalog.Tags)
         {
-            post.Tags = items.OfType<string>().ToArray();
+            _post.Tags = items.OfType<string>().ToArray();
         }
         else if (field.Key == SystemFieldsCatalog.Categories)
         {
-            post.CategoryIds = items.OfType<Guid>().ToArray();
+            _post.CategoryIds = items.OfType<Guid>().ToArray();
         }
         else
         {
@@ -129,12 +134,12 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
         Changed?.Invoke();
     }
 
-    /// <summary>Носитель значения — строки владельца: доменные редакторы правят их напрямую</summary>
-    public object? NativeValue(FormFieldDescriptor field) => post.MetaValues;
+    /// <summary>Носитель значения — строки метазначений владельца: доменные редакторы правят их напрямую</summary>
+    public object? NativeValue(FormFieldDescriptor field) => IsMeta(field) ? _meta.NativeValue(field) : null;
 
     string AuthorName()
     {
-        var author = post.Author;
+        var author = _post.Author;
         return string.IsNullOrWhiteSpace(author?.DisplayName)
             ? author?.UserName ?? "—"
             : author!.DisplayName!;
@@ -144,9 +149,6 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
         => field.Multiple || field.Type == FormFieldType.SelectMany;
 
     bool IsMeta(FormFieldDescriptor field)
-        => post.MetaValues.Any(v => v.MetaField.Key == field.Key)
-           || post.PostType.MetaFields.Any(f => f.Key == field.Key);
-
-    MetaValueEditModel? Row(FormFieldDescriptor field)
-        => post.MetaValues.FirstOrDefault(v => v.MetaField.Key == field.Key && v.Index == 0);
+        => _post.MetaValues.Any(value => value.MetaField.Key == field.Key)
+           || _post.PostType.MetaFields.Any(meta => meta.Key == field.Key);
 }

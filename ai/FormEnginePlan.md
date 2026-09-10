@@ -737,6 +737,9 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   `MetaFieldEditorCatalog` остаётся серверным источником ключей (его используют
   `PostTypeFeatureFields`, `BlockEditor1PostContentProcessor`, `MarsPostTools`,
   сиды и тесты).
+  **Выполнено в R8** (обратным ходом: свои компоненты у метаполей убраны, редакторы
+  пишутся один раз с контрактом `Binding`, значения метаполей стали каноническими —
+  см. [FormEngineSimplifyPlan.md](./FormEngineSimplifyPlan.md), раздел R8).
 - Публичный фронт не затрагивается: потребителей `MetaFieldViews` вне
   `Mars.Admin`/`Mars.Admin.Framework` нет (проверено 2026-09-10), кроме
   `GroupedSelectDropDown` в нодах.

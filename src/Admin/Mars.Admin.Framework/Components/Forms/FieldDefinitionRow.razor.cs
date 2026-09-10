@@ -77,9 +77,7 @@ public partial class FieldDefinitionRow
     {
         get
         {
-            var editors = Definition.Editors.Count > 0
-                ? Definition.Editors.ToList()
-                : EditorLocator.EditorsFor(Definition.Type, Definition.Multiple).ToList();
+            var editors = EditorLocator.EditorsFor(Definition.Type, Definition.Multiple).ToList();
 
             // текущий ключ показываем и без зарегистрированного компонента, иначе селект потеряет значение
             if (!string.IsNullOrEmpty(Definition.Editor) && editors.All(editor => editor.Key != Definition.Editor))

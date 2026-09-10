@@ -2,6 +2,7 @@ using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Extensions;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Forms.Contracts;
+using Mars.Forms.Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -18,6 +19,8 @@ public partial class MetaFieldTypePicker
     [Parameter] public EventCallback<FormFieldDefinition> OnSourceChanged { get; set; }
 
     [Inject] IDialogService DialogService { get; set; } = default!;
+
+    [Inject] IFormEditorLocator EditorLocator { get; set; } = default!;
 
     /// <summary>Группы пикера типа поля: пресеты («Основные») и сырые типы («Технические»)</summary>
     static readonly IEnumerable<IGrouping<string?, MetaFieldTypePresets.PickerItem>> TypePickerGroups
@@ -68,7 +71,7 @@ public partial class MetaFieldTypePicker
             field.CodeLang = preset.CodeLang ?? ""; // и язык кода для редактора «Код»
             field.IsMultiple = preset.IsMultiple; // и кратность
         }
-        else if (typeChanged && MetaFieldEditors.GetEditorComponent(field.Editor, field.Type) is null)
+        else if (typeChanged && EditorLocator.GetEditorComponent(field.Editor, field.Type.ToFormFieldType(), field.IsMultiple) is null)
         {
             field.Editor = ""; // редактор несовместим с новым типом
         }

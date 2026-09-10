@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Contracts.MetaFields;
@@ -43,16 +44,30 @@ public class MetaFieldsFormBuilderTests
     }
 
     [Fact]
-    public void Build_CarriesDescriptors_WithMetaFormEditorKeys()
+    public void Build_CarriesDescriptors_WithEditorKeys()
     {
         var form = MetaFieldsFormBuilder.Build("user.default",
             [Meta("bio", 0, type: MetaFieldType.Text), Meta("photos", 1, type: MetaFieldType.Image)]);
 
         var bio = form.Items.First(i => i.Key == "bio").Field!;
         bio.Type.Should().Be(FormFieldType.Text);
-        bio.Editor.Should().Be(MetaFormEditors.Value);
+        // у значения простого типа доменного ключа нет — рисует встроенный редактор общего слоя
+        bio.Editor.Should().BeNull();
 
         form.Items.First(i => i.Key == "photos").Field!.Editor.Should().Be(MetaFormEditors.File);
+    }
+
+    [Fact]
+    public void Build_CarriesChosenEditorKey_FromFieldOptions()
+    {
+        var field = Meta("body", 0, type: MetaFieldType.Text) with
+        {
+            Options = new JsonObject { [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.Code },
+        };
+
+        var body = MetaFieldsFormBuilder.Build("user.default", [field]).Items.Single().Field!;
+
+        body.Editor.Should().Be(MetaFieldEditorCatalog.Code);
     }
 
     [Fact]

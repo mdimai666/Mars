@@ -2,6 +2,7 @@ using Flurl.Http;
 using Mars.Admin;
 using Mars.Admin.Components;
 using Mars.Admin.Framework.Components.Forms;
+using Mars.Admin.Framework.Components.Forms.Editors;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Pages.PostsViews.Forms;
@@ -70,42 +71,39 @@ Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
 
-// блочный редактор мета-полей: модуль подключён только в админке
-// (общая фронт-библиотека от EditorJsBlazored не зависит). Реестр редакторов значений метаполей
-// отдельный от общего реестра формы: контракт параметров другой (Value/ValueChanged, не Binding)
-MetaFieldEditors.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor),
-    MetaFieldType.String, MetaFieldType.Text);
+// редакторы значений — общие для всех полей: текстовые (в т.ч. тяжёлые WYSIWYG/код/блочный),
+// строковые и даты. Название делает редактор предлагаемым в выборе редактора поля; безымянные
+// регистрации (обёртки провайдеров, встроенные дефолты) доступны только явным ключом дескриптора
+FormEditorLocator.Register(MetaFieldEditorCatalog.Wysiwyg, typeof(FormWysiwygEditor), false, "WYSIWYG (Quill)",
+    FormFieldType.String, FormFieldType.Text);
+FormEditorLocator.Register(MetaFieldEditorCatalog.Code, typeof(FormCodeEditor), false, "Код (Monaco)",
+    FormFieldType.String, FormFieldType.Text);
+FormEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(FormBlockEditor), false, "Блочный (Editor.js)",
+    FormFieldType.String, FormFieldType.Text);
+FormEditorLocator.Register(MetaFieldEditorCatalog.Color, typeof(FormColorEditor), false, "Цвет", FormFieldType.String);
+FormEditorLocator.Register(MetaFieldEditorCatalog.Url, typeof(FormUrlEditor), false, "URL-адрес", FormFieldType.String);
+FormEditorLocator.Register(MetaFieldEditorCatalog.Email, typeof(FormEmailEditor), false, "Email", FormFieldType.String);
+FormEditorLocator.Register(MetaFieldEditorCatalog.Time, typeof(FormTimeEditor), false, "Время", FormFieldType.DateTime);
+FormEditorLocator.Register(MetaFieldEditorCatalog.DateTime, typeof(FormDateTimeEditor), false, "Дата и время",
+    FormFieldType.DateTime);
 
 // доменный редактор системного слота формы поста (общий слой Mars.Forms): пикер категорий
 // привязан к типу поста, поэтому остаётся редактором провайдера
 FormEditorLocator.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, FormFieldType.Relation);
 
 // общие редакторы слотов: теги и отображение значения строкой годятся любому провайдеру
-FormEditorLocator.Register(FormEditorCatalog.Tags, typeof(FormTagsEditor), true, FormFieldType.String);
+FormEditorLocator.Register(FormEditorCatalog.Tags, typeof(FormTagsEditor), true, "Теги", FormFieldType.String);
 FormEditorLocator.Register(FormEditorCatalog.TextDisplay, typeof(FormTextDisplayEditor), false,
-    FormFieldType.String, FormFieldType.Relation);
-
-// тяжёлые редакторы значения контента — общие редакторы формы для текстовых полей:
-// один компонент, ветку выбирает ключ редактора; набор ключей и подписей — из каталога слотов
-foreach (var (editorKey, editorTitle) in SystemFieldsCatalog.ContentEditors)
-    FormEditorLocator.Register(editorKey, typeof(PostContentEditor), false, editorTitle, FormFieldType.Text);
+    "Текст только для чтения", FormFieldType.String, FormFieldType.Relation);
 
 // доменные панели настроек метаполей в общем редакторе определений (скоуп meta, все типы)
 FormFieldTypeSettingsLocator.Register(MetaFieldSettingsPanel.Scope, typeof(MetaFieldSettingsPanel));
 
-// доменные настройки системных слотов типа поста (язык кода контента)
-FormFieldTypeSettingsLocator.Register(PostContentSettingsPanel.Scope, typeof(PostContentSettingsPanel));
+// доменные настройки системных слотов типа поста (язык кода выбранного редактора)
+FormFieldTypeSettingsLocator.Register(SystemFieldSettingsPanel.Scope, typeof(SystemFieldSettingsPanel));
 
-// редакторы значений метаполей в общем реестре формы: примитивы и кастомные редакторы
-// (инлайн-редактор значения сам выбирает компонент по Options.editor), связи и медиа — свои
-FormEditorLocator.Register(MetaFormEditors.Value, typeof(MetaValueRowEditor), false,
-    FormFieldType.String, FormFieldType.Text, FormFieldType.Bool, FormFieldType.Int, FormFieldType.Long,
-    FormFieldType.Float, FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select,
-    FormFieldType.Computed);
-FormEditorLocator.Register(MetaFormEditors.ValueMulti, typeof(MetaValueRowEditor), true,
-    FormFieldType.String, FormFieldType.Text, FormFieldType.Bool, FormFieldType.Int, FormFieldType.Long,
-    FormFieldType.Float, FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select,
-    FormFieldType.Computed);
+// доменные редакторы метаполей: у связей и медиа нет типизированного CLR-значения, поэтому
+// их строки правят собственные компоненты (остальные значения метаполей — общие редакторы выше)
 FormEditorLocator.Register(MetaFormEditors.Relation, typeof(MetaValueRelationEditor), false, FormFieldType.Relation);
 FormEditorLocator.Register(MetaFormEditors.RelationMulti, typeof(MetaValueRelationEditor), true, FormFieldType.Relation);
 FormEditorLocator.Register(MetaFormEditors.File, typeof(MetaValueFileEditor), false, FormFieldType.File, FormFieldType.Image);

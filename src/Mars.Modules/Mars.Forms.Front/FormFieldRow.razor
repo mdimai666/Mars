@@ -2,10 +2,7 @@
 @inject IFormEditorLocator Editors
 
 <div class="form-field mb-3" data-key="@Item.Key" title="@Item.Key">
-    @if (!SelfLabeled)
-    {
-        <FluentLabel>@Binding.Title</FluentLabel>
-    }
+    <FluentLabel>@Binding.Title</FluentLabel>
 
     @if (EditorComponent is not null)
     {
@@ -22,7 +19,7 @@
         </div>
     }
 
-    @if (!SelfLabeled && !string.IsNullOrEmpty(Item.Field!.Description))
+    @if (!string.IsNullOrEmpty(Item.Field!.Description))
     {
         <div class="text-secondary fz10px">@Item.Field.Description</div>
     }
@@ -66,10 +63,6 @@
            ?? Editors.GetDefaultEditor(_binding.ElementType, _binding.IsList);
 
     FormFieldType LookupType => _binding.IsList ? _binding.ElementType : _binding.Field.Type;
-
-    /// <summary>Редактор сам рисует подпись и описание — общий рендерер их не дублирует</summary>
-    bool SelfLabeled
-        => EditorComponent is not null && typeof(IFormSelfLabeledEditor).IsAssignableFrom(EditorComponent);
 
     Dictionary<string, object> EditorParameters => new() { ["Binding"] = _binding };
 }

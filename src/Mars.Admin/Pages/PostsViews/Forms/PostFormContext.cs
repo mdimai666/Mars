@@ -6,20 +6,20 @@ using Mars.Forms.Front;
 namespace Mars.Admin.Pages.PostsViews.Forms;
 
 /// <summary>
-/// Контекст формы поста: модель (значения живут в ней), хуки отложенной записи и доступ
-/// к редактору контента. Каскадируется в редакторы полей одним объектом — вместо россыпи
-/// отдельных каскадов (модель, значения, метаполя, реестр редакторов, holder).
+/// Контекст формы поста: модель (значения живут в ней), хуки отложенной записи и живые редакторы
+/// полей. Каскадируется в редакторы полей одним объектом — вместо россыпи отдельных каскадов
+/// (модель, значения, метаполя, реестр редакторов, holder).
 /// </summary>
 public sealed class PostFormContext(PostEditModel post,
                                     IFormValueStore values,
-                                    PostContentEditorHolder contentHolder,
+                                    FormLiveEditors liveEditors,
                                     FormCommitHooks commits)
 {
     public PostEditModel Post { get; } = post;
 
     public IFormValueStore Values { get; } = values;
 
-    public PostContentEditorHolder ContentHolder { get; } = contentHolder;
+    public FormLiveEditors LiveEditors { get; } = liveEditors;
 
     public FormCommitHooks Commits { get; } = commits;
 

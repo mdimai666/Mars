@@ -25,4 +25,10 @@ public sealed record FormRenderContext
     /// регистрируются в общем на форму списке. Один экземпляр на все зоны.
     /// </summary>
     public FormCommitHooks Commits { get; init; } = new();
+
+    /// <summary>
+    /// Живые редакторы полей: по ключу поля доступно значение редактора, который держит его у себя
+    /// (запись извне и сохранение формы из редактора кода). Один экземпляр на все зоны.
+    /// </summary>
+    public FormLiveEditors LiveEditors { get; init; } = new();
 }

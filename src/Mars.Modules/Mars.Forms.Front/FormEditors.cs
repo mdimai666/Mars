@@ -17,7 +17,7 @@ public interface IFormEditorLocator
     /// <summary>Встроенный редактор по типу поля (когда явный ключ не задан); null — встроенного нет</summary>
     Type? GetDefaultEditor(FormFieldType fieldType, bool multiple);
 
-    /// <summary>Редакторы, совместимые с полем (для выбора в дизайнере формы)</summary>
+    /// <summary>Редакторы, совместимые с полем и предлагаемые в UI выбора</summary>
     IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple);
 }
 
@@ -65,7 +65,8 @@ public class FormEditorLocator : IFormEditorLocator
     public static void Register(string editorKey, Type component, bool multiple, params FormFieldType[] fieldTypes)
         => Register(editorKey, component, multiple, null, fieldTypes);
 
-    /// <summary>То же с названием для UI выбора редактора (иначе название — из <see cref="FormEditorCatalog"/>, иначе ключ)</summary>
+    /// <summary>То же с названием для UI выбора редактора (иначе название — из <see cref="FormEditorCatalog"/>, иначе ключ).
+    /// Название делает редактор предлагаемым в UI выбора: безымянные регистрации доступны только явным ключом дескриптора</summary>
     public static void Register(string editorKey, Type component, bool multiple, string? title, params FormFieldType[] fieldTypes)
     {
         lock (RegistrationLock)
@@ -109,7 +110,9 @@ public class FormEditorLocator : IFormEditorLocator
     {
         lock (RegistrationLock)
         {
-            return Registry.Where(kv => kv.Value.Multiple == multiple && kv.Value.FieldTypes.Contains(fieldType))
+            // предлагаются редакторы с названием: безымянные (встроенные дефолты, обёртки провайдеров)
+            // приезжают в дескрипторе, но выбирать их вручную нечего
+            return Registry.Where(kv => Titles.ContainsKey(kv.Key) && kv.Value.Multiple == multiple && kv.Value.FieldTypes.Contains(fieldType))
                            .Select(kv => (kv.Key, Title(kv.Key)))
                            .ToList();
         }

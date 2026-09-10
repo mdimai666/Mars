@@ -126,9 +126,6 @@ public class PostTypeEditModel : IBasicEntity
                 Feature = slot.Feature,
                 Editor = settings?.Editor ?? slot.Editor,
                 Rules = settings?.Rules.ToList() ?? [],
-                // у контента свои редакторы значения (обычный текст, WYSIWYG, код, блочный),
-                // а панель языка кода правит параметры типа
-                Editors = slot.Key == SystemFieldsCatalog.Content ? SystemFieldsCatalog.ContentEditors : [],
                 Source = this,
             });
         }
@@ -216,10 +213,10 @@ public class PostTypeEditModel : IBasicEntity
     }
 
     /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
-    public string ContentEditorKey() => SystemFieldsCatalog.ContentEditorKey(SystemFields);
+    public string ContentEditorKey() => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, SystemFields);
 
     /// <summary>Язык кода редактора контента</summary>
-    public string ContentCodeLang() => SystemFieldsCatalog.ContentCodeLang(SystemFields);
+    public string ContentCodeLang() => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, SystemFields);
 
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = [];
 

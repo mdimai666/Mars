@@ -1,0 +1,21 @@
+@using Mars.Forms.Front
+
+@* Общий редактор «Время»: время живёт на фиксированной дате значения (дата смысла не несёт) *@
+
+<input type="time" value="@TimeValue" @onchange="OnTimeChanged" class="form-control" style="max-width:200px;"
+       disabled="@Binding.ReadOnly" />
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    DateTimeOffset? Value => Binding.Value as DateTimeOffset?;
+
+    string TimeValue => Value?.ToString("HH:mm") ?? "";
+
+    void OnTimeChanged(ChangeEventArgs args)
+    {
+        if (!TimeSpan.TryParse(args.Value?.ToString(), out var time)) return;
+
+        Binding.Value = new DateTimeOffset((Value?.Date ?? DateTime.MinValue.Date).Add(time));
+    }
+}

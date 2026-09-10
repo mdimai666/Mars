@@ -122,9 +122,9 @@ public static class PostTypeDetailResponseContentExtensions
 
     /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
     public static string ContentEditorKey(this PostTypeDetailResponse postType)
-        => SystemFieldsCatalog.ContentEditorKey(postType.SystemFields);
+        => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, postType.SystemFields);
 
     /// <summary>Язык кода редактора контента</summary>
     public static string ContentCodeLang(this PostTypeDetailResponse postType)
-        => SystemFieldsCatalog.ContentCodeLang(postType.SystemFields);
+        => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, postType.SystemFields);
 }

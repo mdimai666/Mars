@@ -173,9 +173,6 @@ public class MetaFieldDefinitions
         definition.Order = field.Order;
         definition.Options = field.Options;
         definition.Protected = IsFeatureField(field);
-        // редакторы значения метаполя — из своего реестра (контракт Value/ValueChanged),
-        // а не из общего реестра формы: ключи каталогов пересекаются, компоненты разные
-        definition.Editors = MetaFieldEditors.EditorsFor(field.Type);
         definition.RuleOptions = MetaFieldValidatorCatalog.For(field.Type);
         definition.RuleParams = ValidatorParams;
         definition.Rules = ToRules(field);

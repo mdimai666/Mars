@@ -42,8 +42,8 @@ public partial class EditPostView : IAiChatPageHandler
     /// <summary>Хуки отложенной записи (WYSIWYG, код, блочный редактор) — одни на все зоны формы</summary>
     readonly FormCommitHooks _commits = new();
 
-    /// <summary>Доступ к редактору контента, который рендерится внутри дерева</summary>
-    readonly PostContentEditorHolder _contentHolder = new();
+    /// <summary>Живые редакторы полей (WYSIWYG, код, блочный) — рендерятся внутри дерева формы</summary>
+    readonly FormLiveEditors _liveEditors = new();
 
     PostFormContext? _formContext;
     PostEditModel? _formContextOwner;
@@ -56,12 +56,12 @@ public partial class EditPostView : IAiChatPageHandler
     {
         if (_formContext is not null && ReferenceEquals(_formContextOwner, model)) return _formContext;
 
-        _contentHolder.RequestSave = () => f.OnSubmit();
+        _liveEditors.SaveRequest = () => f.OnSubmit();
 
         var values = new PostFormValueStore(model);
         values.Changed += StateHasChanged;
 
-        _formContext = new PostFormContext(model, values, _contentHolder, _commits);
+        _formContext = new PostFormContext(model, values, _liveEditors, _commits);
         _formContextOwner = model;
 
         return _formContext;
@@ -203,16 +203,25 @@ public partial class EditPostView : IAiChatPageHandler
                 model.CategoryIds = [.. ids];
                 break;
             case SystemFieldsCatalog.Content:
-                // обычный текст правит встроенный редактор: он привязан к модели, мост не нужен
-                if (_contentHolder.Current is not { } editor)
+                // значение контента держит редактор (блочный, код) — мост пишет прямо в него
+                if (_liveEditors.Find(SystemFieldsCatalog.Content) is { } setContent)
+                {
+                    var contentError = await setContent(value);
+                    if (contentError is not null) return contentError;
+                    break;
+                }
+
+                if (ContentEditorKey == MetaFieldEditorCatalog.Wysiwyg)
+                    return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
+
+                // обычный многострочный редактор привязан к модели, мост ему не нужен
+                if (ContentEditorKey.Length == 0)
                 {
                     model.Content = value;
                     break;
                 }
 
-                var contentError = await editor.TrySetContentAsync(value);
-                if (contentError is not null) return contentError;
-                break;
+                return "Редактор контента ещё не инициализирован.";
             default:
                 return $"Неизвестное поле '{field}'. Доступны: {string.Join(", ", AgentEditableFields)}.";
         }

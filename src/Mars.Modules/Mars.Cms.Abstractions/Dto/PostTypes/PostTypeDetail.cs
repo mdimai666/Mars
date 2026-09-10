@@ -35,11 +35,11 @@ public static class PostTypeDetailContentExtensions
 
     /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
     public static string ContentEditorKey(this PostTypeDetail postType)
-        => SystemFieldsCatalog.ContentEditorKey(postType.SystemFields);
+        => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, postType.SystemFields);
 
     /// <summary>Язык кода редактора контента</summary>
     public static string ContentCodeLang(this PostTypeDetail postType)
-        => SystemFieldsCatalog.ContentCodeLang(postType.SystemFields);
+        => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, postType.SystemFields);
 }
 
 public record PostTypePresentation

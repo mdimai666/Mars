@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostCategories;
 using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Mappings.PostCategories;
 using Mars.Cms.Abstractions.Mappings.PostCategoryTypes;
 using Mars.Cms.Abstractions.Repositories;
@@ -146,7 +147,11 @@ internal class PostCategoryService : IPostCategoryService
         return new()
         {
             PostCategory = category.ToResponse(),
-            PostCategoryType = postCategoryType.ToResponse()
+            PostCategoryType = postCategoryType.ToResponse(),
+            Form = MetaFieldsFormBuilder.Build(
+                MetaFieldsFormBuilder.PostCategoryOwnerModel(postCategoryType.TypeName),
+                postCategoryType.Title,
+                postCategoryType.MetaFields),
         };
     }
 
@@ -165,7 +170,11 @@ internal class PostCategoryService : IPostCategoryService
         return Task.FromResult<PostCategoryEditViewModel>(new()
         {
             PostCategory = category.ToResponse(),
-            PostCategoryType = categoryTypeDetail.ToResponse()
+            PostCategoryType = categoryTypeDetail.ToResponse(),
+            Form = MetaFieldsFormBuilder.Build(
+                MetaFieldsFormBuilder.PostCategoryOwnerModel(categoryTypeDetail.TypeName),
+                categoryTypeDetail.Title,
+                categoryTypeDetail.MetaFields),
         });
     }
 

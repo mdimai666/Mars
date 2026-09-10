@@ -3,6 +3,7 @@ using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Pages.PostCategoryTypeViews;
 using Mars.Cms.Contracts.PostCategories;
 using Mars.Cms.Contracts.PostCategoryTypes;
+using Mars.Forms.Contracts;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.Core.Exceptions;
@@ -39,6 +40,9 @@ public class PostCategoryEditModel : IBasicEntity
     [Display(Name = nameof(AppRes.Tags), ResourceType = typeof(AppRes))]
     public string[] Tags { get; set; } = [];
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
+
+    /// <summary>Дерево формы метаполей владельца (общий слой Mars.Forms)</summary>
+    public FormDefinition? Form { get; set; }
 
     //--
 
@@ -125,7 +129,11 @@ public class PostCategoryEditModel : IBasicEntity
         };
 
     public static PostCategoryEditModel FromViewModel(PostCategoryEditViewModel vm)
-        => ToModel(vm.PostCategory, vm.PostCategoryType);
+    {
+        var model = ToModel(vm.PostCategory, vm.PostCategoryType);
+        model.Form = vm.Form;
+        return model;
+    }
 
     public static PostCategoryEditModel ToModel(PostCategoryEditResponse response, PostCategoryTypeDetailResponse postType)
         => new()

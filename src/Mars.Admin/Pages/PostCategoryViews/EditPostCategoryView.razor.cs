@@ -1,4 +1,4 @@
-using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Core.Features;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -19,7 +19,7 @@ public partial class EditPostCategoryView
     [Parameter] public EventCallback AfterDelete { get; set; }
 
     StandardEditForm1<PostCategoryEditModel> _editForm1 = default!;
-    FormMetaValue? metaValueForm;
+    MetaValuesForm? metaValueForm;
 
     async Task OnBeforeSave(PostCategoryEditModel model)
     {

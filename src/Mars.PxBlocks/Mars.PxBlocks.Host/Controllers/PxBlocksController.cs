@@ -1,9 +1,10 @@
 using System.Net.Mime;
-using Mars.PxBlocks.Host.Shared.Dto;
-using Mars.PxBlocks.Host.Shared.Services;
-using Mars.PxBlocks.Shared.Definitions;
+using Mars.PxBlocks.Contracts.Dto;
+using Mars.PxBlocks.Contracts.Services;
+using Mars.PxBlocks.Core.Definitions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Mars.PxBlocks.Abstractions.Services;
 
 namespace Mars.PxBlocks.Host.Controllers;
 

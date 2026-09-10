@@ -1,5 +1,5 @@
-using Mars.PxBlocks.Host.Shared;
-using Mars.PxBlocks.Host.Shared.Hubs;
+using Mars.PxBlocks.Contracts;
+using Mars.PxBlocks.Contracts.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.PxBlocks.Host.Hubs;

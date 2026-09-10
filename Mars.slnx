@@ -33,6 +33,10 @@
     <Project Path="devstands/StandNodesApp/StandNodesApp.Client/StandNodesApp.Client.csproj" Id="066f97d1-e81a-4403-bb53-95c66d7ad382" />
     <Project Path="devstands/StandNodesApp/StandNodesApp/StandNodesApp.csproj" Id="a82544eb-8493-462c-81ce-a27d0d38f4e3" />
   </Folder>
+  <Folder Name="/DevStands/PxBlocksApp/">
+    <Project Path="devstands/StandPxBlocksApp/StandPxBlocksApp.Client/StandPxBlocksApp.Client.csproj" />
+    <Project Path="devstands/StandPxBlocksApp/StandPxBlocksApp/StandPxBlocksApp.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/" />
   <Folder Name="/Mars.Modules/AiChat/">
     <Project Path="src/Mars.Modules/Mars.AiChat.Abstractions/Mars.AiChat.Abstractions.csproj" />
@@ -158,6 +162,14 @@
     <Project Path="src/Mars.Nodes/Mars.Nodes.Host/Mars.Nodes.Host.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Workspace/Mars.Nodes.Workspace.csproj" />
   </Folder>
+  <Folder Name="/PxBlocks/">
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Abstractions/Mars.PxBlocks.Abstractions.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Contracts/Mars.PxBlocks.Contracts.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Core/Mars.PxBlocks.Core.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Host/Mars.PxBlocks.Host.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Runtime/Mars.PxBlocks.Runtime.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Workspace/Mars.PxBlocks.Workspace.csproj" />
+  </Folder>
   <Folder Name="/Plugin/">
     <Project Path="src/Plugin/Mars.Plugin.Abstractions/Mars.Plugin.Abstractions.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Contracts/Mars.Plugin.Contracts.csproj" />
@@ -216,6 +228,7 @@
     <Project Path="tests/Mars.Nodes.Tests/Mars.Nodes.Tests.csproj" />
     <Project Path="tests/Mars.Plugin.Integration.Tests/Mars.Plugin.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Plugin.Tests/Mars.Plugin.Tests.csproj" />
+    <Project Path="tests/Mars.PxBlocks.Tests/Mars.PxBlocks.Tests.csproj" />
     <Project Path="tests/Mars.Server.Tests/Mars.Server.Tests.csproj" />
     <Project Path="tests/Mars.SiteEngine.Integration.Tests/Mars.SiteEngine.Integration.Tests.csproj" />
     <Project Path="tests/Mars.SiteEngine.Tests/Mars.SiteEngine.Tests.csproj" />

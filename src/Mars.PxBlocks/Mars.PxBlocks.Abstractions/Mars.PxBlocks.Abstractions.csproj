@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.PxBlocks.Abstractions</PackageId>
+        <Description>
+            PxBlock — это Programming x Block: среда, где код собирается как конструктор.
+            Abstractions: серверные контракты PxBlocks — каталог блоков, реестр контекстов
+            редактора, менеджер и брокер запусков.
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.PxBlocks.Contracts\Mars.PxBlocks.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
+        <ProjectReference Include="..\Mars.PxBlocks.Core\Mars.PxBlocks.Core.csproj" />
+    </ItemGroup>
+
+</Project>

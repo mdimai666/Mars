@@ -8,6 +8,10 @@ PxBlocks — визуальный редактор блоков в духе Micr
 добор блоков до parity), 14 (расширения текста, массивы MakeCode, редактор функций PXT)
 готовы. Без симулятора и без кодогенерации. Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`.
 Цели: `Mars.PxBlocks.Workspace/Mission.md`.
+Семейство следует конвенциям решения (`ai/ProjectStructureGuide.md`): Core — модели без JS,
+Runtime — AST и интерпретатор, Contracts — wire-DTO и клиентские контракты (WASM-безопасно),
+Abstractions — серверные контракты, Host — серверное исполнение, Workspace — RCL-редактор;
+тесты — `tests/Mars.PxBlocks.Tests`.
 
 ## Архитектура: гибридная обёртка Blockly
 
@@ -23,7 +27,7 @@ PxBlocks — визуальный редактор блоков в духе Micr
 Трёхуровневые имена `уровень.категория.имя`:
 - **`core.категория.имя`** — встроенные блоки библиотеки: события `core.events.start/loop`,
   стандартные категории языка `core.logic.*`, `core.loops.*`, `core.math.*`, `core.text.*`,
-  `core.variables.get/set/change` (определения — `PxEventBlocks`/`PxStandardBlocks` в Shared,
+  `core.variables.get/set/change` (определения — `PxEventBlocks`/`PxStandardBlocks` в Core,
   исполнение — ядро PxInterpreter/PxParser + листья `Standard/`; сервер отдаёт их в
   КАЖДЫЙ контекст — редактор не зависит от встроенных определений Blockly).
 - **`пакет.категория.имя`** — блоки хостов: у стенда `demostand.demo.*` и
@@ -48,7 +52,7 @@ PxBlocks — визуальный редактор блоков в духе Micr
 
 ## Состав
 
-### `src/Mars.PxBlocks/Mars.PxBlocks.Shared` — модели без JS
+### `src/Mars.PxBlocks/Mars.PxBlocks.Core` — модели без JS
 - `Toolbox/` — `PxToolbox` + `PxToolboxCategory`/`PxToolboxSeparator`/`PxToolboxBlock`;
   `ToJson()` → toolbox JSON Blockly (`custom: VARIABLE/PROCEDURE` — динамические категории).
 - `Types/` — `PxType`/`PxShape`/`PxTypeRegistry`: канонические типы стыковок.
@@ -151,13 +155,14 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
 - npm-инфраструктура: `package.json` (blockly 13.1.1), `vite.config.js` (lib → ESM),
   `tsconfig.json`, `copy-media.mjs` (media blockly → wwwroot/media).
 
-### `src/Mars.PxBlocks/Mars.PxBlocks.Host.Shared` + `Mars.PxBlocks.Host` — серверное исполнение
-- Host.Shared — контракты: DTO (`PxRunRequest` с клиентским RunId и `ContextName`,
-  `PxRunResponse`, `PxRunResultDto`, `PxDefinitionsResponse`, `PxEditorContextInfo`),
-  `IPxRunManager`, `IPxBlockCatalog`, `IPxBlocksBroadcaster`, `IPxBlocksApiClient`,
-  `IPxRunTransport`, `IPxEditorContextRegistry`, `PxEditorContext` (fluent
-  `PxEditorContext.Define("имя")…` — состав контекста и политика запуска), константы
-  (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+### `src/Mars.PxBlocks/Mars.PxBlocks.Contracts` + `Mars.PxBlocks.Abstractions` + `Mars.PxBlocks.Host` — серверное исполнение
+- `Mars.PxBlocks.Contracts` (WASM-безопасно) — wire-DTO и клиентские контракты: DTO
+  (`PxRunRequest` с клиентским RunId и `ContextName`, `PxRunResponse`, `PxRunResultDto`,
+  `PxDefinitionsResponse`, `PxEditorContextInfo`), `IPxBlocksApiClient`, `IPxRunTransport`,
+  `IPxBlocksClient` (типизированный хаб), константы (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+- `Mars.PxBlocks.Abstractions` (только сервер) — контракты исполнения: `IPxRunManager`,
+  `IPxBlockCatalog`, `IPxBlocksBroadcaster`, `IPxEditorContextRegistry`, `PxEditorContext`
+  (fluent `PxEditorContext.Define("имя")…` — состав контекста и политика запуска).
 - Host — `PxBlockCatalog` (определения + локатор имплементаций; toolbox = дефолт +
   доменные категории), `PxRunManager`+`PxRunSession` (разбор синхронно, исполнение
   фоном, события пакетируются 100 мс/256, политика из контекста — явные поля запроса
@@ -196,7 +201,9 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
   фильтруются `PxEditorContext.EventBlocks`), только событие Start. Селекторы/
   тексты — value-входы String c shadow-блоками из тулбокса (`PxToolboxBlock.InputsJson`).
   Состояние запуска создаёт PxRunController по `request.ContextName`.
-- `tests/Test.Mars.PxBlocks` — xunit: сериализация toolbox, реестра типов, определений блоков.
+- `tests/Mars.PxBlocks.Tests` — xunit.v3 + Microsoft.Testing.Platform (`OutputType=Exe`):
+  сериализация toolbox, реестра типов, определений блоков; интерпретатор; серверный
+  запуск (реальный Kestrel + SignalR-хаб через штатный PxServerRunClient).
 
 ## Сборка и запуск
 
@@ -210,8 +217,9 @@ npm run build        # Vite → wwwroot/dist + media
 # Стенд:
 dotnet run --project devstands/StandPxBlocksApp/StandPxBlocksApp/StandPxBlocksApp
 
-# Тесты:
-dotnet test tests/Test.Mars.PxBlocks
+# Тесты (xunit.v3/MTP-проект собирается в exe; на SDK 10 путь `dotnet test` заблокирован,
+# корневой test-all.ps1 запускает exe-файлы напрямую):
+tests/Mars.PxBlocks.Tests/bin/Debug/net10.0/Mars.PxBlocks.Tests.exe
 ```
 
 ## Грабли (проверено на практике)

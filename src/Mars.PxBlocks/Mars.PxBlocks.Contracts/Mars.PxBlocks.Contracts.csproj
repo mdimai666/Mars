@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.PxBlocks.Contracts</PackageId>
+        <Description>
+            PxBlock — это Programming x Block: среда, где код собирается как конструктор.
+            Contracts: wire-DTO и клиентские контракты PxBlocks — DTO запуска и определений,
+            типизированный клиент API и хаба, транспорт событий (WASM-безопасно).
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
+        <ProjectReference Include="..\Mars.PxBlocks.Core\Mars.PxBlocks.Core.csproj" />
+    </ItemGroup>
+
+</Project>

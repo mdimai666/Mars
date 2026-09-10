@@ -1,8 +1,9 @@
 using Mars.PxBlocks.Host.Services;
-using Mars.PxBlocks.Host.Shared.Services;
-using Mars.PxBlocks.Shared.Definitions;
+using Mars.PxBlocks.Contracts.Services;
+using Mars.PxBlocks.Core.Definitions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Mars.PxBlocks.Abstractions.Services;
 
 namespace Mars.PxBlocks.Host;
 

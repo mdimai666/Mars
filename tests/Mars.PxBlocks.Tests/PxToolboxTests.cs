@@ -1,0 +1,79 @@
+using System.Text.Json.Nodes;
+using Mars.PxBlocks.Core.Toolbox;
+
+namespace Mars.PxBlocks.Tests;
+
+public class PxToolboxTests
+{
+    [Fact]
+    public void ToJson_CategoryToolbox_Structure()
+    {
+        var toolbox = new PxToolbox
+        {
+            Contents =
+            [
+                new PxToolboxCategory
+                {
+                    Name = "Logic",
+                    Colour = "#006C9E",
+                    Items =
+                    [
+                        new PxToolboxLabel { Text = "Logic", WebClass = "blocklyFlyoutHeading" },
+                        new PxToolboxBlock { Type = "core.logic.if" }
+                    ]
+                },
+                new PxToolboxSeparator { Colour = "#808080" },
+                new PxToolboxCategory { Name = "Variables", Colour = "#A80000", Custom = "VARIABLE" }
+            ]
+        };
+
+        var root = JsonNode.Parse(toolbox.ToJson())!.AsObject();
+
+        Assert.Equal("categoryToolbox", (string)root["kind"]!);
+
+        var contents = root["contents"]!.AsArray();
+        Assert.Equal(3, contents.Count);
+
+        var logic = contents[0]!.AsObject();
+        Assert.Equal("category", (string)logic["kind"]!);
+        Assert.Equal("Logic", (string)logic["name"]!);
+        Assert.Equal("#006C9E", (string)logic["colour"]!);
+
+        var blocks = logic["contents"]!.AsArray();
+
+        var heading = blocks[0]!.AsObject();
+        Assert.Equal("label", (string)heading["kind"]!);
+        Assert.Equal("Logic", (string)heading["text"]!);
+        Assert.Equal("blocklyFlyoutHeading", (string)heading["web-class"]!);
+
+        Assert.Equal("block", (string)blocks[1]!["kind"]!);
+        Assert.Equal("core.logic.if", (string)blocks[1]!["type"]!);
+
+        var sep = contents[1]!.AsObject();
+        Assert.Equal("sep", (string)sep["kind"]!);
+        Assert.Equal("#808080", (string)sep["colour"]!);
+
+        var vars = contents[2]!.AsObject();
+        Assert.Equal("VARIABLE", (string)vars["custom"]!);
+    }
+
+    [Fact]
+    public void ToJson_FlyoutToolbox_WhenNoCategories()
+    {
+        var toolbox = new PxToolbox
+        {
+            Contents =
+            [
+                new PxToolboxBlock { Type = "core.math.number", FieldsJson = """{"NUM": 42}""" }
+            ]
+        };
+
+        var root = JsonNode.Parse(toolbox.ToJson())!.AsObject();
+
+        Assert.Equal("flyoutToolbox", (string)root["kind"]!);
+
+        var block = root["contents"]!.AsArray()[0]!.AsObject();
+        Assert.Equal("core.math.number", (string)block["type"]!);
+        Assert.Equal(42, (int)block["fields"]!["NUM"]!);
+    }
+}

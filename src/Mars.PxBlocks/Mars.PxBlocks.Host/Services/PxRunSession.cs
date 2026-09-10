@@ -1,6 +1,7 @@
-using Mars.PxBlocks.Host.Shared.Dto;
-using Mars.PxBlocks.Host.Shared.Services;
+using Mars.PxBlocks.Contracts.Dto;
+using Mars.PxBlocks.Contracts.Services;
 using Mars.PxBlocks.Runtime.Execution;
+using Mars.PxBlocks.Abstractions.Services;
 
 namespace Mars.PxBlocks.Host.Services;
 

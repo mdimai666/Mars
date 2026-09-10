@@ -1,10 +1,11 @@
 using Mars.PxBlocks.Host.Hubs;
-using Mars.PxBlocks.Host.Shared;
-using Mars.PxBlocks.Host.Shared.Dto;
-using Mars.PxBlocks.Host.Shared.Hubs;
-using Mars.PxBlocks.Host.Shared.Services;
+using Mars.PxBlocks.Contracts;
+using Mars.PxBlocks.Contracts.Dto;
+using Mars.PxBlocks.Contracts.Hubs;
+using Mars.PxBlocks.Contracts.Services;
 using Mars.PxBlocks.Runtime.Execution;
 using Microsoft.AspNetCore.SignalR;
+using Mars.PxBlocks.Abstractions.Services;
 
 namespace Mars.PxBlocks.Host.Services;
 

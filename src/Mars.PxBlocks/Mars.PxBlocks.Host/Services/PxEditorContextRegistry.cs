@@ -1,5 +1,7 @@
-using Mars.PxBlocks.Host.Shared;
-using Mars.PxBlocks.Host.Shared.Services;
+using Mars.PxBlocks.Contracts;
+using Mars.PxBlocks.Contracts.Services;
+using Mars.PxBlocks.Abstractions.Services;
+using Mars.PxBlocks.Abstractions;
 
 namespace Mars.PxBlocks.Host.Services;
 

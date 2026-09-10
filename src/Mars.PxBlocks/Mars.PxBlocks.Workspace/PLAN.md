@@ -45,7 +45,7 @@
   (пример кастомного `extends Blockly.ConnectionChecker`).
 
 ### Собственная система типов (поверх PXT-маппинга)
-- Канонический реестр типов `PxType` живёт в **C#** (Mars.PxBlocks.Shared): имя, форма,
+- Канонический реестр типов `PxType` живёт в **C#** (Mars.PxBlocks.Core): имя, форма,
   правила совместимости/подтипов. В JS при старте уходит сериализованная матрица.
 - JS-сторона: `check` на коннекторах + кастомный `ConnectionChecker` + расширение
   `shapeFor()` на наши типы (объекты и т.п.).
@@ -75,26 +75,36 @@
 
 ## Структура проекта (по образцу Mars.Nodes.Workspace + EditorJsBlazored)
 
+Реструктуризация 2026-09-10 (после вливания master): семейство приведено к конвенциям
+решения (`ai/ProjectStructureGuide.md`) — `Mars.PxBlocks.Shared` → `Mars.PxBlocks.Core`,
+`Mars.PxBlocks.Host.Shared` разделён на `Mars.PxBlocks.Contracts` (wire-DTO и клиентские
+контракты, WASM-безопасно) и `Mars.PxBlocks.Abstractions` (серверные контракты),
+тесты — `tests/Mars.PxBlocks.Tests`, стенд — `devstands/StandPxBlocksApp/`.
+
 ```
 src/Mars.PxBlocks/
-├─ Mars.PxBlocks.Shared/          # модели, сериализуемые, без JS
-│  ├─ Toolbox/                    # PxToolboxCategory, элементы toolbox
-│  ├─ Types/                      # PxType — реестр типов и правил стыковки
-│  └─ Serialization/              # PxWorkspaceState ⇄ Blockly JSON
-├─ Mars.PxBlocks.Runtime/         # исполнение: AST + интерпретатор (Этап 7)
+├─ Mars.PxBlocks.Core/            # модели без JS: определения блоков (fluent PxMaster), реестр типов, toolbox
+├─ Mars.PxBlocks.Runtime/         # исполнение: AST + tree-walking интерпретатор (Этап 7)
+├─ Mars.PxBlocks.Contracts/       # wire-DTO, клиент API/хаба, транспорт событий (WASM-безопасно)
+├─ Mars.PxBlocks.Abstractions/    # серверные контракты: каталог блоков, менеджер/брокер запусков, контексты
+├─ Mars.PxBlocks.Host/            # серверное исполнение: api/PxBlocks (read) + SignalR-хаб
 └─ Mars.PxBlocks.Workspace/       # RCL-редактор
    ├─ JsSrc/                      # TypeScript-исходники (наши + портированные из pxtblocks)
-   │  ├─ index.ts                 # export initWorkspace / api
-   │  ├─ workspace.ts             # Blockly.inject + options
-   │  ├─ renderer/                # порт pxtblocks/plugins/renderer/* (5 файлов)
-   │  ├─ interop.ts               # события → .NET (DotNetObjectReference)
-   │  └─ definitions.ts           # регистрация блоков из JSON-определений
+   │  ├─ index.ts                 # export injectWorkspace / api
+   │  ├─ renderer/                # порт pxtblocks/plugins/renderer/*
+   │  ├─ functions/               # порт редактора функций PXT (Этап 14C)
+   │  └─ extensions/              # px_hat_cap, objectBuilder
    ├─ package.json / vite.config.js / tsconfig.json
    ├─ wwwroot/dist/               # артефакт Vite (ESM) + media/ из blockly
-   ├─ PxBlocksEditor.razor(.cs)   # основной компонент
-   ├─ Interop/PxWorkspaceJsInterop.cs
-   └─ Components/                 # blazor-хром: тулбар, панели
-devstands/StandPxBlocksApp/       # уже есть — стенд для проверки (WASM)
+   ├─ pxblocks.css                # хром редактора (подключается хостом link-ом)
+   ├─ PxBlocksWorkspace.razor     # полотно (inject + примитивы Save/Load/Undo)
+   ├─ PxBlocksEditor.razor        # чистая форма редактирования
+   ├─ PxSandboxEditor.razor       # браузерная песочница (запуск)
+   ├─ PxToolboxRail.razor         # рейка категорий в стиле MakeCode
+   ├─ e2e/                        # headless-проверки стенда (playwright, msedge)
+   └─ PxWorkspaceJsInterop.cs     # ESM-загрузка и вызовы JS
+tests/Mars.PxBlocks.Tests/        # xunit.v3 + Microsoft.Testing.Platform
+devstands/StandPxBlocksApp/       # стенд: Blazor Web App + WASM (песочница, форма, /browser)
 ```
 
 Загрузка JS: ESM через `import("./_content/Mars.PxBlocks.Workspace/dist/...")`
@@ -216,7 +226,7 @@ Mars.PxBlocks.Runtime/
    `RegisterAssembly` (паттерн `NodesLocator`). Стандартные листья: литералы
    `math_number`/`text`/`logic_boolean`, `math_arithmetic`, `math_number_property`,
    `logic_compare`, `logic_negate`, `text_join`, `text_length`, `text_print`.
-5. **Тесты** (Test.Mars.PxBlocks): фикстуры Blockly JSON → AST; семантика control flow
+5. **Тесты** (Mars.PxBlocks.Tests): фикстуры Blockly JSON → AST; семантика control flow
    (вложенные if, границы циклов, break из вложенного, скоупы функций, рекурсия,
    short-circuit); лимит шагов; неизвестный блок; ошибки с blockId.
 6. **Стенд.** Кнопка «Run» в тулбаре `PxBlocksEditor` — исполнение in-process; панель
@@ -272,10 +282,12 @@ Loop тоже всегда после всех (включая Start). В ред
 (in-process путь в редакторе) сохранён как задел.
 
 Новые сборки:
-- `Mars.PxBlocks.Host.Shared` — контракты: DTO (PxRunRequest с клиентским RunId,
-  PxRunResponse, PxRunResultDto, PxDefinitionsResponse), IPxRunManager, IPxBlockCatalog,
-  IPxBlocksBroadcaster, IPxBlocksApiClient, IPxRunTransport, IPxBlocksClient (типизированный
-  хаб), константы (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+- `Mars.PxBlocks.Contracts` (WASM-безопасно) — wire-DTO и клиентские контракты: DTO
+  (PxRunRequest с клиентским RunId, PxRunResponse, PxRunResultDto, PxDefinitionsResponse),
+  IPxBlocksApiClient, IPxRunTransport, IPxBlocksClient (типизированный хаб), константы
+  (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+- `Mars.PxBlocks.Abstractions` (только сервер) — контракты исполнения: IPxRunManager,
+  IPxBlockCatalog, IPxBlocksBroadcaster, IPxEditorContextRegistry, PxEditorContext.
 - `Mars.PxBlocks.Host` — `PxBlockCatalog` (определения PxBlockSet + локатор
   имплементаций; toolbox = PxDefaultToolbox + доменные категории перед
   "Variables"/"Functions"), `PxRunManager` + `PxRunSession` (разбор синхронно в
@@ -288,7 +300,7 @@ Loop тоже всегда после всех (включая Start). В ред
 Изменения:
 - `PxRunOptions.OutputLimit` (PxContext.Print): накопленный вывод ограничен — защита
   памяти при бесконечных Loop на сервере (стриминг Output не ограничен).
-- Определения `PxEventBlocks` и `PxDefaultToolbox` перенесены в Shared (без демо-
+- Определения `PxEventBlocks` и `PxDefaultToolbox` перенесены в Core (без демо-
   категории); демо-домен (`PxDemoBlocks` + имплементации + категория toolbox) — в
   серверном проекте стенда StandPxBlocksApp (server-only пример).
 - Редактор: параметр `RunTransport` (IPxRunTransport) — Run через сервер

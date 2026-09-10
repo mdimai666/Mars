@@ -142,12 +142,21 @@ Mars.Forms.Abstractions
 Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 79/79;
 `Mars.Server.Tests` 476/476. Визуальная проверка дизайнера — в запущенном приложении.
 
-### R4 — правила на фронте
+### R4 — правила на фронте — выполнено 2026-09-10
 
-- `FormFieldValidator` в `Contracts`: клиент показывает ошибки мгновенно по простым правилам,
-  сервер вызывает те же функции в `FormValidator`.
-- Шов `PostFormRulesValidator` → `GeneralPostQueryValidator` (FluentValidation) сохраняется.
-- `IFormRuleRegistry` — только `unique` и правила провайдеров.
+- Встроенные правила (required, regex, length, min, max) перенесены в
+  `Mars.Forms.Contracts.FormRuleEvaluator` — чистые функции без доступа к данным: **один код
+  на клиент и сервер**. `BuiltInFormRules` удалён, в `IFormRuleRegistry` остались только правила
+  провайдеров (`unique` и подобные), `FormValidator` считает встроенные напрямую, а неизвестные
+  типа ищет в реестре.
+- Фронт проверяет мгновенно: `FormFieldBinding.ValidationErrors` прогоняет правила поля тем же
+  `FormRuleEvaluator`, `FormFieldRow` показывает сообщения рядом с полем. `required` на клиенте
+  намеренно не проверяется — пустое поле не подсвечивается до сохранения, обязательность
+  обеспечивает серверный валидатор.
+- Шов записи не менялся: `PostFormRulesValidator` → `GeneralPostQueryValidator` (FluentValidation).
+
+Проверка: сборка 0 ошибок; `Mars.Forms.Tests` 82/82 (добавлены `FormRuleEvaluatorTests`);
+`Mars.Server.Tests` 476/476.
 
 ### R5 — общие редакторы вместо постовых
 

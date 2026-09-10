@@ -1,5 +1,4 @@
 using Mars.Forms.Abstractions.Services;
-using Mars.Forms.Abstractions.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -20,9 +19,9 @@ public static class FormsServiceCollectionExtensions
         services.TryAddSingleton<IFormRuleRegistry>(provider =>
         {
             var registry = new FormRuleRegistry();
-            BuiltInFormRules.RegisterAll(registry);
 
-            // правила, которым нужны данные владельца, привозят провайдеры форм
+            // встроенные правила считает FormRuleEvaluator (общий код с клиентом),
+            // в реестре живут только правила, которым нужны данные владельца
             foreach (var contributor in provider.GetServices<IFormRulesContributor>())
                 contributor.Register(registry);
 

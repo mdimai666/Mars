@@ -95,6 +95,31 @@ public sealed class FormFieldBinding
     public IReadOnlyCollection<FormError> Errors
         => Values.Errors.Where(e => e.Key == Field.Key).ToList();
 
+    /// <summary>
+    /// Мгновенная проверка значения встроенными правилами поля — те же функции, что вызывает
+    /// серверный валидатор. <c>required</c> не проверяется: пустое поле не подсвечивается,
+    /// пока форма не отправлена (обязательность обеспечена на сервере).
+    /// </summary>
+    public IReadOnlyList<string> ValidationErrors
+    {
+        get
+        {
+            if (ReadOnly || Field.Type == FormFieldType.Computed) return [];
+
+            var rules = Field.Rules.Where(rule => rule.Type != FormRuleCatalog.Required).ToList();
+            if (rules.Count == 0) return [];
+
+            var messages = new List<string>();
+            foreach (var value in IsList ? List : [Value])
+            {
+                foreach (var rule in rules)
+                    messages.AddRange(FormRuleEvaluator.Evaluate(rule, value));
+            }
+
+            return messages;
+        }
+    }
+
     public IReadOnlyCollection<FormError> ErrorsAt(int index)
         => Errors.Where(e => e.Index == index).ToList();
 }

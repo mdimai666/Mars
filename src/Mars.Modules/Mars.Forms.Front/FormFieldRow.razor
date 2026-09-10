@@ -30,6 +30,10 @@
     {
         <div class="text-danger fz10px">@error.Message</div>
     }
+    @foreach (var message in _validationErrors)
+    {
+        <div class="text-danger fz10px">@message</div>
+    }
 </div>
 
 @code {
@@ -38,15 +42,21 @@
     [Parameter] public FormItem Item { get; set; } = default!;
 
     FormFieldBinding _binding = default!;
+    IReadOnlyList<string> _validationErrors = [];
 
     protected override void OnParametersSet()
-        => _binding = new FormFieldBinding
+    {
+        _binding = new FormFieldBinding
         {
             Item = Item,
             Field = Item.Field!,
             Values = Context.Values,
             TitleResolver = Context.TitleResolver,
         };
+
+        // встроенные правила проверяются тут же: ошибка появляется без похода на сервер
+        _validationErrors = _binding.ValidationErrors;
+    }
 
     FormFieldBinding Binding => _binding;
 

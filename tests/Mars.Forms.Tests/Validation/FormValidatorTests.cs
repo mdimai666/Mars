@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Forms.Abstractions.Services;
-using Mars.Forms.Abstractions.Validation;
 using Mars.Forms.Contracts;
 
 namespace Mars.Forms.Tests.Validation;
@@ -13,7 +12,6 @@ public class FormValidatorTests
 
     public FormValidatorTests()
     {
-        BuiltInFormRules.RegisterAll(_registry);
         _validator = new FormValidator(_registry);
     }
 

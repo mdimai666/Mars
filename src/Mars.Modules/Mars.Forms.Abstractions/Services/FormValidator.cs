@@ -51,6 +51,15 @@ internal class FormValidator(IFormRuleRegistry rules) : IFormValidator
 
                 foreach (var rule in fieldRules)
                 {
+                    // встроенные правила считаются тем же кодом, что и на клиенте
+                    if (FormRuleCatalog.BuiltIn.Contains(rule.Type))
+                    {
+                        foreach (var message in FormRuleEvaluator.Evaluate(rule, value))
+                            errors.Add(new FormError { Key = field.Key, Index = index, Message = message });
+
+                        continue;
+                    }
+
                     foreach (var message in await rules.ValidateAsync(rule, value, fieldContext, cancellationToken))
                         errors.Add(new FormError { Key = field.Key, Index = index, Message = message });
                 }
@@ -76,7 +85,7 @@ internal class FormValidator(IFormRuleRegistry rules) : IFormValidator
     {
         error = null;
         if (field.Min is null && field.Max is null) return false;
-        if (!BuiltInFormRules.TryReadDecimal(value, out var actual)) return false;
+        if (!FormRuleEvaluator.TryReadDecimal(value, out var actual)) return false;
 
         if (field.Min is decimal min && actual < min)
         {

@@ -5,6 +5,10 @@ using Mars.Forms.Contracts;
 
 namespace Mars.Forms.Tests.Validation;
 
+/// <summary>
+/// Реестр правил держит только правила, которым нужны данные владельца: встроенные считает
+/// <see cref="FormRuleEvaluator"/> (общий код с клиентом) и в реестр не регистрируются.
+/// </summary>
 public class FormRuleRegistryTests
 {
     readonly FormRuleRegistry _registry = new();
@@ -59,22 +63,12 @@ public class FormRuleRegistryTests
     }
 
     [Fact]
-    public void KnownTypes_MergesGlobalAndScopes()
+    public void KnownTypes_ListsOnlyProviderRules()
     {
-        BuiltInFormRules.RegisterAll(_registry);
         _registry.Register("sql.*", "notNull", Handler("sql"));
 
-        _registry.KnownTypes("sql.ds.orders").Should().Contain("notNull").And.Contain(FormRuleCatalog.Required);
-        _registry.KnownTypes("post.article").Should().NotContain("notNull");
-    }
-
-    [Fact]
-    public void BuiltInRules_CoverCatalogWithoutUnique()
-    {
-        BuiltInFormRules.RegisterAll(_registry);
-
-        _registry.KnownTypes("any.owner").Should().BeEquivalentTo(FormRuleCatalog.BuiltIn);
-        FormRuleCatalog.BuiltIn.Should().NotContain(FormRuleCatalog.Unique);
+        _registry.KnownTypes("sql.ds.orders").Should().Contain("notNull");
+        _registry.KnownTypes("post.article").Should().BeEmpty();
     }
 
     static FormFieldValidationContext Context(string ownerModel) => new() { OwnerModel = ownerModel };

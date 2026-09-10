@@ -59,7 +59,7 @@ public class FormDataProviderLocatorTests
     }
 
     [Fact]
-    public void AddMarsForms_RegistersEngineServices_WithBuiltInRules()
+    public void AddMarsForms_RegistersEngineServices()
     {
         var services = new ServiceCollection().AddMarsForms();
         using var provider = services.BuildServiceProvider();
@@ -67,8 +67,9 @@ public class FormDataProviderLocatorTests
         provider.GetRequiredService<IFormDefinitionNormalizer>().Should().NotBeNull();
         provider.GetRequiredService<IFormDataProviderLocator>().Should().NotBeNull();
         provider.GetRequiredService<IFormValidator>().Should().NotBeNull();
-        provider.GetRequiredService<IFormRuleRegistry>().KnownTypes("any.owner")
-                .Should().BeEquivalentTo(FormRuleCatalog.BuiltIn);
+
+        // встроенные правила считает FormRuleEvaluator, в реестре — только правила провайдеров
+        provider.GetRequiredService<IFormRuleRegistry>().KnownTypes("any.owner").Should().BeEmpty();
     }
 
     static IFormDataProvider? Resolve(IServiceCollection services, string ownerModel)

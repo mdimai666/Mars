@@ -591,14 +591,46 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   каскадах `PostFormZone` — `MetaValueStore` (C2) для этого не понадобился:
   обёртки берут строку из каскада `MetaValues`, как и прежние компоненты.
 
-Осталось по этапу C: C2 (`MetaValueStore` — нужен, когда примитивы перейдут на
-встроенные редакторы движка вместо `RowMetaValue`), обобщение pull-протокола
-тяжёлых редакторов, C6 (провайдеры `user.*`/`postcategory.*` и перевод
-`EditUserPage`/`EditPostCategoryView` — до этого `FormMetaValue`/`FormMetaValueItems`/
-`FormMetaValueItem`/`RowMetaValue` остаются живыми для этих двух владельцев).
+- **C6 — users и post categories на общем рендерере**: строитель
+  `MetaFieldsFormBuilder` (`Mars.Cms.Abstractions/Forms`) собирает плоское дерево
+  метаполей владельца в одну зону (порядок по `Order`, без `Disabled` и `Query`;
+  сохранённой раскладки у таких владельцев нет, поэтому нормализатор не
+  задействован), ключи владельца — `user.<type>` и `postcategory.<type>`.
+  Дерево отдают `UserService`/`PostCategoryService` в `UserEditViewModel.Form` и
+  `PostCategoryEditViewModel.Form` (оба метода — `GetEditModel` и
+  `GetEditModelBlank`), клиентские модели несут его в `Form`.
+  Хост рендера — `MetaValuesForm` (`Mars.Admin.Framework/Components/Forms`):
+  раздаёт каскады (EAV-строки, определения полей, реестр тяжёлых редакторов) и
+  рендерит `FormRenderer`; мешок формы пустой — значения метаполей живут в
+  строках владельца, редакторы берут их из каскада. `PullAsync()` перед
+  сохранением страницы остался (тяжёлые редакторы пушат значение по запросу).
+  Тесты: `tests/Mars.Server.Tests/Forms/MetaFieldsFormBuilderTests.cs`.
+- **D (частично) — стек рендера мета-значений удалён**: `FormMetaValue`,
+  `FormMetaValueItems`, `FormMetaValueItem`, `MetaValueRelationSelect` (сирота).
+  `RowMetaValue` остался — он начинка зарегистрированного редактора
+  `MetaFormEditors.Value`; там же остались доменные компоненты значений
+  (Relation single/multi, ChildrenList, FileMulti, `Editors/*`), модели
+  (`MetaFieldEditModel`, `MetaValueEditModel`, `MetaFieldTypePresets`,
+  `MetaValueListHelper`, `EditMetaFieldVariants`, `GroupedSelectDropDown`) и
+  реестр `IMetaFieldEditorLocator`.
+- **Изменение поведения (сознательное)**: скрытые (`Hidden`) метаполя теперь
+  видны в админ-формах пользователей и категорий — прежний `FormMetaValueItems`
+  отсекал их везде, а общий строитель следует правилу формы поста
+  (`Hidden` скрывается только в клиентском рендере, `client: true`).
 
-Рецепт для оставшихся шагов C2/C5/C6 (собрано по коду 2026-09-10, чтобы не
-выводить заново):
+Осталось по этапу D: слияние реестров (`IMetaFieldEditorLocator` →
+`IFormEditorLocator`, чтобы ключи редакторов и их компоненты жили в одном месте)
+и перенос выживших файлов из `MetaFieldViews` (модели — в слой моделей
+Cms-админки, `GroupedSelectDropDown` — в общие компоненты: его используют три
+формы нод). Оба шага косметические: на поведение не влияют, поэтому отложены —
+слияние реестров задевает тяжёлые редакторы (WYSIWYG/Monaco/EditorJS) и требует
+визуальной проверки формы поста. `MetaValueStore` (C2) и обобщение
+pull-протокола тяжёлых редакторов не понадобились: зарегистрированные редакторы
+метаполей работают с EAV-строками из каскадов, а протокол `IHeavyMetaValueEditors`
+теперь владеет и `MetaValuesForm`.
+
+Справка по внутренностям стека значений (собрано по коду 2026-09-10 — понадобится
+для оставшихся шагов D и для фаз 4–6, где значения пойдут через мешок):
 
 - **Соответствие CLR-значения и EAV-колонки** (`MetaValueEditModel`, источник —
   ветки `RowMetaValue.razor`): Bool→`Bool`, String→`StringShort`, Text→`StringText`,

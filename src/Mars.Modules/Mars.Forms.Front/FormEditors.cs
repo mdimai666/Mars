@@ -6,11 +6,19 @@ namespace Mars.Forms.Front;
 /// <summary>
 /// Реестр редакторов значений формы: ключ редактора → компонент + совместимые типы полей.
 /// Встроенные примитивы вшиты, тяжёлые и доменные (WYSIWYG, код, блочный, пикеры связей и медиа)
-/// приходят регистрациями DI — <c>AddFormEditor</c> в админке, модулях и плагинах.
+/// регистрируют админка, модули и плагины через <see cref="Register"/> — реестр открыт откуда
+/// угодно, а записи собираются в момент запроса (см. <see cref="FormEditorLocator"/>).
 /// Компонент редактора принимает один параметр — <see cref="FormFieldBinding"/>.
 /// </summary>
 public interface IFormEditorLocator
 {
+    /// <summary>
+    /// Регистрация редактора значения. Название делает редактор предлагаемым в UI выбора;
+    /// безымянные регистрации (обёртки провайдеров, встроенные дефолты) доступны только явным
+    /// ключом дескриптора. Один и тот же ключ, зарегистрированный дважды, перекрывается последним.
+    /// </summary>
+    void Register(string editorKey, Type component, bool multiple, string? title, params FormFieldType[] fieldTypes);
+
     /// <summary>Компонент редактора; null — ключ неизвестен или несовместим с типом поля</summary>
     Type? GetEditorComponent(string? editorKey, FormFieldType fieldType, bool multiple);
 
@@ -21,15 +29,15 @@ public interface IFormEditorLocator
     IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple);
 }
 
-/// <summary>
-/// Регистрация редактора значения: ключ → компонент + совместимые типы полей.
-/// Название делает редактор предлагаемым в UI выбора; безымянные регистрации (обёртки
-/// провайдеров, встроенные дефолты) доступны только явным ключом дескриптора.
-/// Один и тот же ключ, зарегистрированный дважды, перекрывается последним.
-/// </summary>
+/// <summary>Запись реестра редакторов: ключ → компонент + совместимые типы полей</summary>
 public sealed record FormEditorRegistration(string Key, Type Component, bool Multiple, string? Title,
                                              IReadOnlyCollection<FormFieldType> FieldTypes);
 
+/// <summary>
+/// Экземпляр реестра редакторов (регистрируется синглтоном в DI): зарегистрировать редактор можно
+/// откуда угодно и когда угодно — записи складываются в список, а словарь по ключу собирается
+/// в момент запроса и подменяется атомарно (аналогично локатору типов нод).
+/// </summary>
 public sealed class FormEditorLocator : IFormEditorLocator
 {
     /// <summary>Встроенный редактор типа, когда явный ключ редактора не задан</summary>
@@ -63,20 +71,24 @@ public sealed class FormEditorLocator : IFormEditorLocator
              FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select]),
     ];
 
-    readonly Dictionary<string, FormEditorRegistration> _registry;
+    readonly object _lock = new();
+    readonly List<FormEditorRegistration> _registrations = [];
+    volatile Dictionary<string, FormEditorRegistration>? _registry;
 
-    public FormEditorLocator(IEnumerable<FormEditorRegistration>? registrations = null)
+    public FormEditorLocator() => _registrations.AddRange(BuiltIn);
+
+    public void Register(string editorKey, Type component, bool multiple, string? title, params FormFieldType[] fieldTypes)
     {
-        _registry = new Dictionary<string, FormEditorRegistration>(StringComparer.Ordinal);
-
-        // встроенные, затем регистрации потребителей: их ключ перекрывает встроенный
-        foreach (var builtIn in BuiltIn) _registry[builtIn.Key] = builtIn;
-        foreach (var registration in registrations ?? []) _registry[registration.Key] = registration;
+        lock (_lock)
+        {
+            _registrations.Add(new FormEditorRegistration(editorKey, component, multiple, title, fieldTypes));
+            _registry = null;
+        }
     }
 
     public Type? GetEditorComponent(string? editorKey, FormFieldType fieldType, bool multiple)
         => !string.IsNullOrEmpty(editorKey)
-           && _registry.TryGetValue(editorKey, out var entry)
+           && Registry.TryGetValue(editorKey, out var entry)
            && entry.Multiple == multiple
            && entry.FieldTypes.Contains(fieldType)
             ? entry.Component
@@ -100,10 +112,28 @@ public sealed class FormEditorLocator : IFormEditorLocator
     }
 
     public IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple)
-        => _registry.Values
-                    .Where(entry => !string.IsNullOrEmpty(entry.Title)
-                                    && entry.Multiple == multiple
-                                    && entry.FieldTypes.Contains(fieldType))
-                    .Select(entry => (entry.Key, entry.Title!))
-                    .ToList();
+        => Registry.Values
+                   .Where(entry => !string.IsNullOrEmpty(entry.Title)
+                                   && entry.Multiple == multiple
+                                   && entry.FieldTypes.Contains(fieldType))
+                   .Select(entry => (entry.Key, entry.Title!))
+                   .ToList();
+
+    /// <summary>Словарь по ключу: собирается в новый экземпляр и подменяется атомарно, чтобы
+    /// читатели из других потоков не увидели полусобранный или устаревший</summary>
+    Dictionary<string, FormEditorRegistration> Registry
+    {
+        get
+        {
+            var registry = _registry;
+            if (registry is not null) return registry;
+
+            lock (_lock)
+            {
+                return _registry ??= _registrations
+                    .GroupBy(registration => registration.Key, StringComparer.Ordinal)
+                    .ToDictionary(group => group.Key, group => group.Last(), StringComparer.Ordinal);
+            }
+        }
+    }
 }

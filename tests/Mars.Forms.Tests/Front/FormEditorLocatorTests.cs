@@ -2,20 +2,22 @@ using FluentAssertions;
 using Mars.Forms.Contracts;
 using Mars.Forms.Front;
 using Mars.Forms.Front.Editors;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Forms.Tests.Front;
 
 /// <summary>
-/// Реестр редакторов — экземпляр с состоянием, собранным в конструкторе: встроенные примитивы
-/// плюс регистрации потребителя. Тесты не влияют друг на друга, а чтение безопасно из нескольких
-/// потоков (после сборки реестр не меняется).
+/// Реестр редакторов — экземпляр, открытый для регистрации откуда угодно: записи складываются
+/// в список, а поиск по ключу собирается в момент запроса. Поэтому регистрация, сделанная после
+/// первого чтения (например, из загруженного позже плагина), видна сразу, а параллельное чтение
+/// не мешает регистрации.
 /// </summary>
 public class FormEditorLocatorTests
 {
     [Fact]
     public void DefaultEditor_ResolvesByFieldType()
     {
-        var locator = Locator();
+        var locator = new FormEditorLocator();
 
         locator.GetDefaultEditor(FormFieldType.String, false).Should().Be(typeof(FormStringEditor));
         locator.GetDefaultEditor(FormFieldType.Text, false).Should().Be(typeof(FormTextEditor));
@@ -28,13 +30,13 @@ public class FormEditorLocatorTests
     [Fact]
     public void DefaultEditor_ForMultiple_ResolvesListEditor()
     {
-        Locator().GetDefaultEditor(FormFieldType.String, true).Should().Be(typeof(FormListEditor));
+        new FormEditorLocator().GetDefaultEditor(FormFieldType.String, true).Should().Be(typeof(FormListEditor));
     }
 
     [Fact]
     public void DefaultEditor_ForSelectMany_ResolvesChoicesEditor()
     {
-        var locator = Locator();
+        var locator = new FormEditorLocator();
 
         // множественный выбор — чекбоксы вариантов поля, а не общий список значений
         locator.GetDefaultEditor(FormFieldType.SelectMany, false).Should().Be(typeof(FormChoicesEditor));
@@ -45,7 +47,7 @@ public class FormEditorLocatorTests
     [Fact]
     public void DefaultEditor_ForDomainTypes_IsNull_ProviderRegistersItsOwn()
     {
-        var locator = Locator();
+        var locator = new FormEditorLocator();
 
         locator.GetDefaultEditor(FormFieldType.Relation, false).Should().BeNull();
         locator.GetDefaultEditor(FormFieldType.Image, true).Should().BeNull();
@@ -56,14 +58,14 @@ public class FormEditorLocatorTests
     [Fact]
     public void ExplicitKey_ResolvesWhenCompatible()
     {
-        Locator().GetEditorComponent(FormEditorCatalog.Multiline, FormFieldType.String, false)
-                  .Should().Be(typeof(FormTextEditor));
+        new FormEditorLocator().GetEditorComponent(FormEditorCatalog.Multiline, FormFieldType.String, false)
+                               .Should().Be(typeof(FormTextEditor));
     }
 
     [Fact]
     public void IncompatibleOrUnknownKey_ReturnsNull()
     {
-        var locator = Locator();
+        var locator = new FormEditorLocator();
 
         locator.GetEditorComponent(FormEditorCatalog.Date, FormFieldType.String, false).Should().BeNull();
         locator.GetEditorComponent(FormEditorCatalog.Text, FormFieldType.String, true).Should().BeNull();
@@ -75,7 +77,8 @@ public class FormEditorLocatorTests
     public void UnnamedRegistration_IsResolvableButNotOffered()
     {
         // доменный редактор провайдера: доступен по ключу дескриптора, в выборе не предлагается
-        var locator = Locator(Registration("post.picker.author", FormFieldType.Relation));
+        var locator = new FormEditorLocator();
+        locator.Register("post.picker.author", typeof(FakeEditor), false, null, FormFieldType.Relation);
 
         locator.GetEditorComponent("post.picker.author", FormFieldType.Relation, false).Should().Be(typeof(FakeEditor));
         locator.EditorsFor(FormFieldType.Relation, false).Select(editor => editor.Key)
@@ -86,7 +89,21 @@ public class FormEditorLocatorTests
     public void NamedRegistration_IsOfferedInCatalog()
     {
         // название делает редактор предлагаемым в выборе редактора поля
-        var locator = Locator(Registration("plugin.rich", FormFieldType.Text, "Рич-текст"));
+        var locator = new FormEditorLocator();
+        locator.Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
+
+        locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false).Should().Be(typeof(FakeEditor));
+        locator.EditorsFor(FormFieldType.Text, false).Should().Contain(("plugin.rich", "Рич-текст"));
+    }
+
+    [Fact]
+    public void RegistrationAfterRead_IsPickedUp()
+    {
+        var locator = new FormEditorLocator();
+        locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false)
+               .Should().BeNull("реестр ещё не знает ключ");
+
+        locator.Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
 
         locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false).Should().Be(typeof(FakeEditor));
         locator.EditorsFor(FormFieldType.Text, false).Should().Contain(("plugin.rich", "Рич-текст"));
@@ -95,39 +112,53 @@ public class FormEditorLocatorTests
     [Fact]
     public void Registration_OverridesBuiltIn_ForSameKey()
     {
-        var locator = Locator(new FormEditorRegistration(FormEditorCatalog.Date, typeof(FakeEditor), false, null,
-            [FormFieldType.DateTime]));
+        var locator = new FormEditorLocator();
+        locator.Register(FormEditorCatalog.Date, typeof(FakeEditor), false, null, FormFieldType.DateTime);
 
         locator.GetDefaultEditor(FormFieldType.DateTime, false).Should().Be(typeof(FakeEditor));
     }
 
     [Fact]
-    public void Reading_IsThreadSafe()
+    public void RegisteredFromServiceProvider_IsVisibleToReaders()
     {
-        var locator = Locator(Registration("plugin.rich", FormFieldType.Text, "Рич-текст"));
+        // админка наполняет реестр после сборки контейнера, резолвя синглтон из провайдера
+        var services = new ServiceCollection();
+        services.AddMarsFormsFront();
+
+        var provider = services.BuildServiceProvider();
+
+        provider.GetRequiredService<IFormEditorLocator>()
+                .Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
+
+        provider.GetRequiredService<IFormEditorLocator>()
+                .GetEditorComponent("plugin.rich", FormFieldType.Text, false)
+                .Should().Be(typeof(FakeEditor));
+    }
+
+    [Fact]
+    public void Reading_IsThreadSafe_DuringRegistration()
+    {
+        var locator = new FormEditorLocator();
+        locator.Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
         var failures = 0;
 
-        Parallel.For(0, 2000, _ =>
+        Parallel.For(0, 2000, i =>
         {
-            if (locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false) != typeof(FakeEditor))
-                Interlocked.Increment(ref failures);
+            if (i % 100 == 0)
+                locator.Register($"plugin.editor{i}", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
 
             if (locator.GetDefaultEditor(FormFieldType.Text, false) != typeof(FormTextEditor))
                 Interlocked.Increment(ref failures);
 
-            if (locator.EditorsFor(FormFieldType.Text, false).Count == 0)
+            if (locator.GetEditorComponent(FormEditorCatalog.Multiline, FormFieldType.Text, false) != typeof(FormTextEditor))
+                Interlocked.Increment(ref failures);
+
+            if (!locator.EditorsFor(FormFieldType.Text, false).Any(editor => editor.Key == "plugin.rich"))
                 Interlocked.Increment(ref failures);
         });
 
         failures.Should().Be(0);
     }
-
-    //=====================================
-
-    static FormEditorLocator Locator(params FormEditorRegistration[] registrations) => new(registrations);
-
-    static FormEditorRegistration Registration(string key, FormFieldType fieldType, string? title = null)
-        => new(key, typeof(FakeEditor), false, title, [fieldType]);
 
     sealed class FakeEditor;
 }

@@ -5,8 +5,8 @@ using Mars.Forms.Front;
 namespace Mars.Forms.Tests.Front;
 
 /// <summary>
-/// Реестр панелей настроек — экземпляр, собранный в конструкторе: общие панели скоупа
-/// плюс панели конкретного типа поля.
+/// Реестр панелей настроек — экземпляр, открытый для регистрации: общие панели скоупа
+/// плюс панели конкретного типа поля; записи собираются в момент запроса.
 /// </summary>
 public class FormFieldTypeSettingsLocatorTests
 {
@@ -15,9 +15,9 @@ public class FormFieldTypeSettingsLocatorTests
     [Fact]
     public void PanelsFor_ReturnsScopePanels_ThenTypePanels()
     {
-        var locator = Locator(
-            new FormFieldTypeSettingsRegistration(PostScope, typeof(ScopePanel), []),
-            new FormFieldTypeSettingsRegistration(PostScope, typeof(TextPanel), [FormFieldType.Text]));
+        var locator = new FormFieldTypeSettingsLocator();
+        locator.Register(PostScope, typeof(ScopePanel));
+        locator.Register(PostScope, typeof(TextPanel), FormFieldType.Text);
 
         locator.PanelsFor(PostScope, FormFieldType.Text).Should().Equal(typeof(ScopePanel), typeof(TextPanel));
         locator.PanelsFor(PostScope, FormFieldType.String).Should().Equal(typeof(ScopePanel));
@@ -26,23 +26,29 @@ public class FormFieldTypeSettingsLocatorTests
     [Fact]
     public void PanelsFor_UnknownScope_IsEmpty()
     {
-        Locator().PanelsFor(PostScope, FormFieldType.Text).Should().BeEmpty();
+        new FormFieldTypeSettingsLocator().PanelsFor(PostScope, FormFieldType.Text).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RegistrationAfterRead_IsPickedUp()
+    {
+        var locator = new FormFieldTypeSettingsLocator();
+        locator.PanelsFor(PostScope, FormFieldType.Text).Should().BeEmpty();
+
+        locator.Register(PostScope, typeof(TextPanel), FormFieldType.Text);
+
+        locator.PanelsFor(PostScope, FormFieldType.Text).Should().Equal(typeof(TextPanel));
     }
 
     [Fact]
     public void SamePanel_InScope_IsRegisteredOnce()
     {
-        var locator = Locator(
-            new FormFieldTypeSettingsRegistration(PostScope, typeof(TextPanel), [FormFieldType.Text]),
-            new FormFieldTypeSettingsRegistration(PostScope, typeof(TextPanel), [FormFieldType.Text]));
+        var locator = new FormFieldTypeSettingsLocator();
+        locator.Register(PostScope, typeof(TextPanel), FormFieldType.Text);
+        locator.Register(PostScope, typeof(TextPanel), FormFieldType.Text);
 
         locator.PanelsFor(PostScope, FormFieldType.Text).Should().Equal(typeof(TextPanel));
     }
-
-    //=====================================
-
-    static FormFieldTypeSettingsLocator Locator(params FormFieldTypeSettingsRegistration[] registrations)
-        => new(registrations);
 
     sealed class ScopePanel;
 

@@ -64,8 +64,6 @@ Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
 
-builder.RegisterFormEditors();
-
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()
@@ -97,7 +95,8 @@ app.Services.UseMarsAdminFramework()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront()
             .UseAiChatFront()
-            .UseMarsFormsFront();
+            .UseMarsFormsFront()
+            .RegisterFormEditors();
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
 app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()

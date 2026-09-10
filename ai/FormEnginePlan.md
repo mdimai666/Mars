@@ -647,8 +647,8 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   доменные слоты поста (`post.*`) и обёртки метаполей (`core.meta.*`).
   Перегрузка регистрации с названием сохранена (тест
   `NamedRegistration_IsOfferedInCatalog`) — она нужна плагинам и провайдерам;
-  **обновлено 2026-09-11:** регистрация через DI (`services.AddFormEditor(...)`), реестр —
-  экземпляр-синглтон с состоянием из конструктора.
+  **обновлено 2026-09-11:** реестр — экземпляр-синглтон из DI (как локатор типов нод):
+  регистрация через `Register` откуда угодно, словарь собирается в момент запроса.
 - **D — `name` у полей формы возвращён**: встроенные редакторы общего слоя
   проставляют `Name="@Binding.Field.Key"` (String/Text/Number/Date/Bool/Select).
   Атрибут пропал в `a8fe5d91` (переход формы поста на дерево): хардкод-разметка
@@ -708,7 +708,7 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   `Editor = field.Options.GetEditor() ?? <ключ по типу/кратности/виду>`
   (каталог ключей — в `Mars.Forms.Contracts`, по образцу `PostFormEditors`),
   а регистрацию обёрток делать в `Mars.Admin/Startups/StartupFormEditors.cs` через
-  `services.AddFormEditor(key, component, multiple, title, types)`.
+  `editors.Register(key, component, multiple, title, types)`.
 - **Тяжёлые редакторы** (WYSIWYG/Monaco/EditorJS) пишут значение не на каждое
   изменение, а по `PullAsync` перед сохранением: контракт `IHeavyMetaValueEditor`,
   реестр `IHeavyMetaValueEditors` (владельцы — `FormMetaValue` и `EditPostView`,

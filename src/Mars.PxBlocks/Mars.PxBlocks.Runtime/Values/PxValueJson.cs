@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 
 namespace Mars.PxBlocks.Runtime.Values;
@@ -37,7 +38,14 @@ public static class PxValueJson
                     return new PxNumberValue(number);
                 if (jsonValue.TryGetValue(out string? text))
                     return new PxStringValue(text ?? "");
-                throw new InvalidOperationException($"Unsupported JSON value: {jsonValue.ToJsonString()}");
+
+                // Число, созданное в памяти (JsonValue.Create(42) и т.п.): TryGetValue<double>
+                // конвертирует только числовой бэкинг JsonElement, а int/long/decimal — нет.
+                var raw = jsonValue.ToJsonString();
+                if (double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var memoryNumber))
+                    return new PxNumberValue(memoryNumber);
+
+                throw new InvalidOperationException($"Unsupported JSON value: {raw}");
 
             default:
                 throw new InvalidOperationException($"Unsupported JSON node: {node.ToJsonString()}");

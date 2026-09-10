@@ -578,7 +578,8 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - **C4 — значения метаполей поста идут через общий рендерер**: ключи редакторов
   `MetaFormEditors` (`Mars.Cms.Contracts`) приезжают в дескрипторе
   (`MetaFieldFormMapping`: `For(type, isMultiple)`), а компоненты зарегистрированы
-  в `FormEditorLocator` (`Mars.Admin/Program.cs`). Обёртки — тонкие, в
+  в `FormEditorLocator` (`Mars.Admin/Startups/StartupFormEditors.cs`; до выноса —
+  в `Mars.Admin/Program.cs`). Обёртки — тонкие, в
   `Mars.Admin.Framework/Components/Forms`: `MetaValueRowEditor` (примитивы по типу
   и кастомные редакторы из `IMetaFieldEditorLocator` — через существующий
   `RowMetaValue`), `MetaValueRelationEditor` (ChildrenList/Multi/Single по
@@ -703,8 +704,8 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   возвращает null, поэтому дефолтный ключ должен приезжать в дескрипторе —
   в `MetaFieldFormMapping.ToFormFieldDescriptor` подставлять
   `Editor = field.Options.GetEditor() ?? <ключ по типу/кратности/виду>`
-  (каталог ключей — в `Mars.Cms.Contracts`, по образцу `PostFormEditors`),
-  а регистрацию обёрток делать в `Mars.Admin/Program.cs` через
+  (каталог ключей — в `Mars.Forms.Contracts`, по образцу `PostFormEditors`),
+  а регистрацию обёрток делать в `Mars.Admin/Startups/StartupFormEditors.cs` через
   `FormEditorLocator.Register(key, component, multiple, types)`.
 - **Тяжёлые редакторы** (WYSIWYG/Monaco/EditorJS) пишут значение не на каждое
   изменение, а по `PullAsync` перед сохранением: контракт `IHeavyMetaValueEditor`,

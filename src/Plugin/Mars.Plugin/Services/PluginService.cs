@@ -1,15 +1,19 @@
-//#define USE_EXAMPLE_PLUGINS
+using System.Reflection;
+using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Host.Shared.Services;
-using Mars.Options.Models;
+using Mars.Options.Abstractions.Services;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Catalog;
+using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Handlers;
 using Mars.Plugin.Mappings;
-using Mars.Shared.Common;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.Services;
 
@@ -18,36 +22,95 @@ internal class PluginService : IPluginService
     private readonly IFileStorage _fileStorage;
     private readonly PluginManager _pluginManager;
     private readonly IOptionService _optionService;
-    
-    public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
-    internal IReadOnlyCollection<PluginData> Plugins => _pluginManager.Plugins;
+    private readonly IPluginCatalogClient _catalogClient;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<PluginService> _logger;
 
-    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService)
+    /// <summary>Версия Марса для фильтра совместимости каталога («0.8.3» из «0.8.3-alpha.13+…»).</summary>
+    private static readonly Lazy<string> MarsVersion = new(() =>
+        (typeof(PluginService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0")
+            .Split('+')[0].Split('-')[0]);
+
+    public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
+    public static readonly string ErrorPluginBlockedMessage = "Plugin installation is blocked by settings";
+    public static readonly string ErrorPluginLockedMessage = "Plugin is locked by configuration — cannot be modified.";
+    internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
+
+    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager,
+                         IOptionService optionService, IPluginCatalogClient catalogClient,
+                         ILoggerFactory loggerFactory, ILogger<PluginService> logger)
     {
         _fileStorage = fileStorage;
         _pluginManager = pluginManager;
         _optionService = optionService;
+        _catalogClient = catalogClient;
+        _loggerFactory = loggerFactory;
+        _logger = logger;
     }
 
     public ListDataResult<PluginInfoDto> List(ListPluginQuery query)
     {
-#if USE_EXAMPLE_PLUGINS
-        return PluginExampleData.GetExamplePluginList(query).AsListDataResult(query);
-#endif
-
-        return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-                        .Select(s => s.Info.ToInfoDto())
+        return AllPlugins().Where(s => (query.Search == null || s.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .AsListDataResult(query);
     }
 
     public PagingResult<PluginInfoDto> ListTable(ListPluginQuery query)
     {
-#if USE_EXAMPLE_PLUGINS
-        return PluginExampleData.GetExamplePluginList(query).AsPagingResult(query);
-#endif
-        return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-                        .Select(s => s.Info.ToInfoDto())
+        return AllPlugins().Where(s => (query.Search == null || s.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .AsPagingResult(query);
+    }
+
+    /// <summary>
+    /// Загруженные плагины плюс только-реестровые записи (отключённые и отмеченные
+    /// к удалению — они не грузятся, но управляются из админки).
+    /// </summary>
+    IEnumerable<PluginInfoDto> AllPlugins()
+    {
+        var registry = _pluginManager.Registry;
+        var loaded = Plugins.Select(s => s.Info.ToInfoDto(registry.Get(s.Info.PackageId)?.PendingDelete == true)).ToList();
+
+        var loadedIds = loaded.Select(d => d.PackageId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var registryOnly = registry.Entries
+            .Where(kv => !loadedIds.Contains(kv.Key))
+            .Select(kv => ToInfoDto(kv.Key, kv.Value));
+
+        return loaded.Concat(registryOnly);
+    }
+
+    PluginInfoDto ToInfoDto(string packageId, PluginRegistryEntry entry)
+    {
+        var descriptor = TryReadInstalledDescriptor(packageId);
+        var keyName = string.IsNullOrWhiteSpace(descriptor?.EntryAssembly)
+            ? packageId
+            : Path.GetFileNameWithoutExtension(descriptor!.EntryAssembly);
+
+        return new()
+        {
+            PackageId = packageId,
+            Title = string.IsNullOrWhiteSpace(descriptor?.Title) ? packageId : descriptor!.Title!,
+            Description = string.IsNullOrWhiteSpace(descriptor?.Description) ? null : descriptor!.Description,
+            Version = entry.Version,
+            AssemblyName = string.Empty,
+            Enabled = false,
+            InstalledAt = entry.InstalledAtUtc,
+            FrontManifest = null,
+            PackageTags = [],
+            RepositoryUrl = null,
+            PackageIconUrl = string.IsNullOrEmpty(descriptor?.IconFile) ? null : $"/_plugin/{keyName}/{descriptor!.IconFile}",
+            Source = entry.Source,
+            Locked = false,
+            PendingDelete = entry.PendingDelete,
+        };
+    }
+
+    /// <summary>Дескриптор установленного (но ещё не загруженного) плагина — для списка до рестарта.</summary>
+    PluginPackageDescriptor? TryReadInstalledDescriptor(string packageId)
+    {
+        var descriptorPath = Path.Combine(PluginManager.PluginsDefaultPath, packageId, PluginPackageDescriptor.FileName);
+        if (!_fileStorage.FileExists(descriptorPath)) return null;
+
+        var physicalPath = _fileStorage.GetFileInfo(descriptorPath)?.PhysicalPath;
+        return physicalPath is null ? null : PluginDescriptorHelper.TryRead(physicalPath);
     }
 
     public IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests()
@@ -63,8 +126,84 @@ internal class PluginService : IPluginService
         if (!pluginOptions.AllowUploadZipManually)
             throw new UserActionException(ErrorNotAllowUploadZipManuallyMessage);
 
-        var handler = new PluginZipInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginZipInstaller>());
+        var handler = new PluginZipInstaller(_fileStorage, _loggerFactory.CreateLogger<PluginZipInstaller>(), _pluginManager.Registry);
         return handler.Handle(files, cancellationToken);
+    }
+
+    public async Task<PluginInstallResultDto> InstallFromNuget(string packageId, string? version, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var pluginOptions = _optionService.GetOption<PluginManagerSettingsOption>();
+            if (pluginOptions.GetBlockedPackageIds().Contains(packageId))
+                throw new UserActionException(ErrorPluginBlockedMessage);
+
+            var sources = pluginOptions.GetNugetSources().ToList();
+            var installer = new PluginNugetInstaller(_fileStorage, _loggerFactory.CreateLogger<PluginNugetInstaller>(), _pluginManager.Registry);
+            var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
+
+            _logger.LogInformation("Plugin '{PackageId}' {Version} installed from nuget", result.PackageId, result.Version);
+            return new PluginInstallResultDto
+            {
+                PackageId = result.PackageId,
+                Version = result.Version,
+                InstalledAtUtc = DateTimeOffset.UtcNow,
+            };
+        }
+        catch (Exception ex) when (ex is not UserActionException)
+        {
+            _logger.LogError(ex, "Plugin '{PackageId}' installation from nuget failed", packageId);
+            throw;
+        }
+    }
+
+    public Task SetEnabled(string packageId, bool enabled)
+    {
+        var loaded = EnsureInstalled(packageId);
+        if (loaded?.Locked == true)
+            throw new UserActionException(ErrorPluginLockedMessage);
+
+        _pluginManager.Registry.SetDisabled(packageId, !enabled);
+        _logger.LogInformation("Plugin '{PackageId}' {State}", packageId, enabled ? "enabled" : "disabled");
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Отмечает плагин к удалению: файлы залочены загруженной сборкой до рестарта,
+    /// поэтому папка и запись реестра чистятся при следующем старте.
+    /// </summary>
+    public Task Uninstall(string packageId)
+    {
+        var loaded = EnsureInstalled(packageId);
+        if (loaded?.Locked == true)
+            throw new UserActionException(ErrorPluginLockedMessage);
+
+        _pluginManager.Registry.MarkPendingDelete(packageId);
+        _logger.LogInformation("Plugin '{PackageId}' marked for deletion (removed on next restart)", packageId);
+        return Task.CompletedTask;
+    }
+
+    public bool MarketplaceEnabled() => _catalogClient.IsEnabled;
+
+    public Task<CatalogPagedResponse<CatalogPluginDto>?> SearchMarketplace(MarketplaceSearchRequest query, CancellationToken cancellationToken)
+        => _catalogClient.SearchAsync(query, MarsVersion.Value, cancellationToken);
+
+    public Task<CatalogPluginDto?> GetMarketplacePlugin(string packageId, CancellationToken cancellationToken)
+        => _catalogClient.GetAsync(packageId, cancellationToken);
+
+    public Task<CatalogPagedResponse<CatalogReviewDto>?> GetMarketplaceReviews(string packageId, int? page, int? take, CancellationToken cancellationToken)
+        => _catalogClient.GetReviewsAsync(packageId, page, take, cancellationToken);
+
+    /// <summary>Ищет плагин среди загруженных или в реестре; бросает, если не установлен.</summary>
+    PluginInfo? EnsureInstalled(string packageId)
+    {
+        var info = Plugins.Select(p => p.Info).FirstOrDefault(i => i.PackageId == packageId);
+        if (info is not null) return info;
+
+        if (_pluginManager.Registry.Get(packageId) is null)
+            throw new UserActionException($"Plugin '{packageId}' is not installed.");
+
+        return null;
     }
 
 }

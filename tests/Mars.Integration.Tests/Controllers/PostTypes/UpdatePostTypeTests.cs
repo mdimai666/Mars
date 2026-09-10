@@ -1,14 +1,14 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +21,10 @@ public class UpdatePostTypeTests : ApplicationTests
 
     public UpdatePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task UpdatePostType_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Update);
@@ -35,7 +34,7 @@ public class UpdatePostTypeTests : ApplicationTests
         var postType = _fixture.Create<PostTypeEntity>();
         var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
-        postType.MetaFields = new(metaFields);
+        postType.MetaFields = metaFields.ToList();
         ef.PostTypes.Add(postType);
         ef.SaveChanges();
         ef.ChangeTracker.Clear();
@@ -62,17 +61,16 @@ public class UpdatePostTypeTests : ApplicationTests
 
         var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields!)
                                                 .ThenInclude(s => s.Variants)
-                                            .Include(s => s.PostStatusList)
+                                            .Include(s => s.Statuses)
                                             .FirstOrDefault(s => s.Id == updatingId);
         postTypeEntity.Should().NotBeNull();
         postTypeEntity.Should().BeEquivalentTo(request, options => options
             .ComparingRecordsByValue()
             .ComparingByMembers<UpdatePostTypeRequest>()
-            .WithMapping(nameof(PostTypeEntity.PostContentType), nameof(CreatePostTypeRequest.PostContentSettings))
             .Excluding(s => s.PostStatusList)
             .Excluding(s => s.MetaFields)
             .ExcludingMissingMembers());
-        postTypeEntity.PostStatusList.Should().AllSatisfy(e =>
+        postTypeEntity.Statuses.Should().AllSatisfy(e =>
         {
             var req = request.PostStatusList.First(s => s.Id == e.Id);
             e.Should().BeEquivalentTo(req, options => options

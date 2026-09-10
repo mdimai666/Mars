@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
 using ClosedXML.Excel;
 using ClosedXML.Report;
+using Mars.Excel.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Excel.Host.Services;
@@ -13,9 +13,9 @@ internal class ExcelService : IExcelService
         wb.SaveAs(outStream);
     }
 
-    public FileContentResult ExcelRespone(ControllerBase controller, MemoryStream stream, string downloadFilename)
+    public FileContentResult ExcelResponse(ControllerBase controller, MemoryStream stream, string downloadFilename)
     {
-        return controller.ExcelRespone(stream, downloadFilename);
+        return controller.ExcelResponse(stream, downloadFilename);
     }
 
     IXLWorkbook BuildExcelFile(string templateFileName, object viewModel)
@@ -25,7 +25,7 @@ internal class ExcelService : IExcelService
             throw new FileNotFoundException($"templateFileName: ({templateFileName}) not found", templateFileName);
 
 
-        XLTemplate template = new XLTemplate(templateFileName);
+        XLTemplate template = new(templateFileName);
 
         template.AddVariable(viewModel);
         template.Generate();
@@ -36,7 +36,7 @@ internal class ExcelService : IExcelService
 
 public static class ExcelServiceExtensions
 {
-    public static FileContentResult ExcelRespone(this ControllerBase controller, MemoryStream stream, string downloadFilename)
+    public static FileContentResult ExcelResponse(this ControllerBase controller, MemoryStream stream, string downloadFilename)
     {
         var content = stream.ToArray();
 

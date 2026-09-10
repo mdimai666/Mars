@@ -1,5 +1,3 @@
-using System.Xml.Linq;
-
 public class HeaderDictionaryWithDefault<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
 {
     TValue _default = default!;

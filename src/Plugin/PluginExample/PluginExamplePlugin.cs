@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +10,11 @@ using PluginExample.Data;
 using PluginExample.Data.Seeds;
 using PluginExample.Options;
 
-[assembly: WebApplicationPlugin(typeof(PluginExamplePlugin))]
+[assembly: MarsPlugin(typeof(PluginExamplePlugin))]
 
 namespace PluginExample;
 
-public class PluginExamplePlugin : WebApplicationPlugin, IPluginDatabaseMigrator
+public class PluginExamplePlugin : MarsPlugin, IPluginDatabaseMigrator
 {
     public const string PluginName = "PluginExample";
     public const string PluginNameFullName = "PackageName.PluginExample";
@@ -32,8 +32,7 @@ public class PluginExamplePlugin : WebApplicationPlugin, IPluginDatabaseMigrator
 
     public override void ConfigureWebApplication(WebApplication app, PluginSettings settings)
     {
-        var logger = MarsLogger.GetStaticLogger<PluginExamplePlugin>();
-
+        var logger = app.Services.GetRequiredService<ILogger<PluginExamplePlugin>>();
         logger.LogWarning("> Example1Plugin - Work!!!!");
 
         var op = app.Services.GetRequiredService<IOptionService>();
@@ -41,6 +40,10 @@ public class PluginExamplePlugin : WebApplicationPlugin, IPluginDatabaseMigrator
         op.RegisterOption<PluginExampleOption1>(appendToInitialSiteData: true);
         op.SaveOption(new PluginExampleOption1 { Value = "200" });
         op.SetConstOption(new PluginConstOption2() { Value = "222" }, appendToInitialSiteData: true);
+
+        // минимал-апи плагина: обычный эндпоинт и с резолвом сервиса из DI
+        app.MapGet("/api/PluginExample/Ping", () => "pong");
+        app.MapGet("/api/PluginExample/OptionValue", (IOptionService optionService) => optionService.GetOption<PluginExampleOption1>().Value);
     }
 
     public async Task ApplyMigrations(IServiceProvider rootServices, IConfiguration configuration, PluginSettings settings)

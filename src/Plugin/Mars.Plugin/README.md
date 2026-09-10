@@ -1,65 +1,42 @@
-#Mars plugin
+# Mars.Plugin
 
-##usage
-```csharp
-//CreateBuilder
-builder.AddPlugins();
-builder.Services.AddControllers().AddPluginsAsPartOfMvc();
+Хост плагинной подсистемы Марса: загрузка плагинов из конфигурации и `data/plugins`,
+статика и фронт-манифесты плагинов, миграции, установка из zip.
 
-//Configure
-app.UsePlugins();
-```
-
-## exaple
+## Подключение в composition root
 
 ```csharp
-using Mars.Plugin;
-using Shared;
-
-var builder = WebApplication.CreateBuilder(args);
-
-//builder.Services.AddControllers().PartManager;
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Add services to the container.
-
-
-builder.Services.AddControllers();
-builder.Services.AddRazorPages();
-
-builder.Services.AddScoped<PostService>();
-
+// CreateBuilder
 builder.AddPlugins();
-builder.Services.AddControllers().AddPluginsAsPartOfMvc();
 
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    options.RoutePrefix = "api";
-});
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
+// Configure (после app.Build())
 app.UsePlugins();
-app.MapControllers();
-app.MapRazorPages();
-
-
-app.Run();
-
-
+app.ApplyPluginMigrations();
 ```
+
+`AddPlugins` загружает и инстанцирует плагины до сборки контейнера (они регистрируют
+свои сервисы и MVC-части), поэтому `PluginManager` создаётся сразу и кладётся
+в контейнер синглтоном.
+
+## Источники плагинов
+
+- Секция `Plugins` конфигурации: ключ — имя, значение `{ AssemblyPath, ContentRootPath }`
+  (dev-режим, когда сборка плагина лежит рядом с кодом).
+- Папка `data/plugins/<имя>` — развёрнутая публикация плагина (`<имя>.runtimeconfig.json`
+  рядом с `<имя>.dll`). Установка — загрузкой zip через админку (`PluginController.UploadPlugin`).
+- Ключи/папки, начинающиеся с `_`, пропускаются.
+
+## Точка входа плагина
+
+Плагин наследует `Mars.Plugin.Abstractions.MarsPlugin` и объявляется атрибутом сборки
+`[assembly: MarsPluginAttribute(typeof(MyPlugin))]`. Переопределяемые хуки:
+`ConfigureWebApplicationBuilder` (до сборки контейнера) и `ConfigureWebApplication`
+(роуты/статика/пайплайн). Миграции — `IPluginDatabaseMigrator`.
+
+## Что сервится для каждого плагина
+
+`/_plugin/<keyName>/`:
+- статика из `wwwroot` плагина;
+- `_front_plugins.json` — фронт-манифест для админки (генерирует `PluginManifestProvider`,
+  фильтруя общие с Марсом ассеты);
+- `/health`.

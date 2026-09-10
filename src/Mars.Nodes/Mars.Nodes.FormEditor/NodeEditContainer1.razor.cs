@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Nodes.Core;
-using Mars.Nodes.Front.Shared.Editor.Interfaces;
+using Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
@@ -12,7 +12,7 @@ namespace Mars.Nodes.FormEditor;
 
 public partial class NodeEditContainer1
 {
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILogger<NodeEditContainer1> _logger { get; set; } = default!;
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
 

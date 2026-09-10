@@ -1,11 +1,11 @@
+using FluentAssertions;
+using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Posts;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Options;
 
@@ -13,11 +13,10 @@ public class GetOptionTests : BaseWebApiClientTests
 {
     public GetOptionTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async void GetOption_Request_Unauthorized()
+    public async Task GetOption_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);
@@ -30,7 +29,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetOption_ValidRequest_ShouldSuccess()
+    public async Task GetOption_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -43,7 +42,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetOption_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetOption_NotExistEntity_Fails404ReturnsNull()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,13 +56,13 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetSysOptions_RequestAnonim_ShouldSuccess()
+    public async Task GetSiteSettings_RequestAnonim_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);
 
         //Act
-        var action = () => client.Option.GetSysOptions();
+        var action = () => client.Option.GetSiteSettings();
 
         //Assert
         await action.Should().NotThrowAsync<UnauthorizedException>();

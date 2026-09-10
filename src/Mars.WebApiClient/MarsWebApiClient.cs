@@ -21,7 +21,9 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IRoleServiceClient Role { get; }
     public INavMenuServiceClient NavMenu { get; }
     public IOptionServiceClient Option { get; }
+    public INotificationsServiceClient Notifications { get; }
     public IActServiceClient Act { get; }
+    public ISearchServiceClient Search { get; }
     public IAppDebugServiceClient AppDebug { get; }
     public IMediaServiceClient Media { get; }
     public IPostJsonServiceClient PostJson { get; }
@@ -31,6 +33,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IPageRenderServiceClient PageRender { get; }
     public IFrontServiceClient Front { get; }
     public IAIServiceClient AITool { get; }
+    public IAiChatServiceClient AiChat { get; }
 
     public MarsWebApiClient(IServiceProvider serviceProvider, IFlurlClient flurlClient)
     {
@@ -48,7 +51,9 @@ public class MarsWebApiClient : IMarsWebApiClient
         Role = new RoleServiceClient(serviceProvider, targetClient);
         NavMenu = new NavMenuServiceClient(serviceProvider, targetClient);
         Option = new OptionServiceClient(serviceProvider, targetClient);
+        Notifications = new NotificationsServiceClient(serviceProvider, targetClient);
         Act = new ActServiceClient(serviceProvider, targetClient);
+        Search = new SearchServiceClient(serviceProvider, targetClient);
         AppDebug = new AppDebugServiceClient(serviceProvider, targetClient);
         Media = new MediaServiceClient(serviceProvider, targetClient);
         PostJson = new PostJsonServiceClient(serviceProvider, targetClient);
@@ -58,5 +63,6 @@ public class MarsWebApiClient : IMarsWebApiClient
         PageRender = new PageRenderServiceClient(serviceProvider, targetClient);
         Front = new FrontServiceClient(serviceProvider, targetClient);
         AITool = new AIServiceClient(serviceProvider, targetClient);
+        AiChat = new AiChatServiceClient(serviceProvider, targetClient);
     }
 }

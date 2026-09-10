@@ -1,0 +1,64 @@
+@if (Service.IsOpen)
+{
+    var placeholder = _view == PaletteView.Pages
+        ? "Выберите страницу…  (Esc — назад)"
+        : "Команда или поиск…  (> — команды, # — поиск)";
+
+    <div class="ac-overlay" @onclick="OnOverlayClick">
+        <div class="ac-dialog" @onclick:stopPropagation>
+
+            <div class="ac-input-wrap">
+                <i class="bi bi-search ac-input-icon"></i>
+                <input class="ac-input"
+                       @ref="_inputRef"
+                       value="@_search"
+                       @oninput="OnInput"
+                       @onkeydown="OnKeyDown"
+                       placeholder="@placeholder"
+                       autocomplete="off"
+                       spellcheck="false" />
+                @if (_searching)
+                {
+                    <span class="ac-spinner" title="Идёт поиск…"></span>
+                }
+            </div>
+
+            <div class="ac-list">
+                @if (_loading)
+                {
+                    <div class="ac-empty">Загрузка…</div>
+                }
+                else if (_flat.Count == 0)
+                {
+                    <div class="ac-empty">Ничего не найдено</div>
+                }
+                else
+                {
+                    @foreach (var section in _sections)
+                    {
+                        @if (section.DividerBefore)
+                        {
+                            <div class="ac-divider"></div>
+                        }
+                        @foreach (var item in section.Items)
+                        {
+                            var captured = item;
+                            <div id="ac-item-@item.FlatIndex"
+                                 class="ac-item @(item.FlatIndex == _selected ? "ac-selected" : "")"
+                                 @onclick="() => ExecuteItemAsync(captured)"
+                                 @onmouseover="() => _selected = captured.FlatIndex">
+                                <i class="@(captured.IconClass ?? "bi bi-dot") ac-item-icon"></i>
+                                <span class="ac-item-title">@captured.Title</span>
+                                @if (!string.IsNullOrEmpty(captured.Description))
+                                {
+                                    <span class="ac-item-desc">@captured.Description</span>
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+}

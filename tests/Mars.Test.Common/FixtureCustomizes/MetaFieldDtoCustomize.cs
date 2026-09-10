@@ -1,6 +1,6 @@
 using AutoFixture;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Test.Common.FixtureCustomizes;
 
@@ -14,16 +14,18 @@ public sealed class MetaFieldDtoCustomize : ICustomization
                                         return new MetaFieldDto()
                                         {
                                             Id = Guid.NewGuid(),
-                                            ParentId = Guid.Empty,
                                             Key = fixture.Create<string>("key-"),
                                             Title = fixture.Create<string>("Title"),
                                             Disabled = false,
                                             Hidden = false,
                                             Description = "Description",
                                             IsNullable = false,
+                                            IsMultiple = false,
                                             MaxValue = null,
                                             MinValue = null,
                                             ModelName = null,
+                                            Default = null,
+                                            Options = null,
                                             Order = 0,
                                             Tags = [],
                                             Type = MetaFieldType.Bool,

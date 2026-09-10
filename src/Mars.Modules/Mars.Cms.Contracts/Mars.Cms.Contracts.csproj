@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Cms.Contracts</PackageId>
+        <Description>Mars CMS wire contracts: posts, meta fields, categories and taxonomies DTOs.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

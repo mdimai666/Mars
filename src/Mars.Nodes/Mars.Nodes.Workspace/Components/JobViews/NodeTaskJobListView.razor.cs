@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
-using Mars.Nodes.Front.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
+using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+using Mars.Nodes.Front.Abstractions.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;

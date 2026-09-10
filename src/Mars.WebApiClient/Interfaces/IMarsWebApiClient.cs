@@ -18,7 +18,9 @@ public interface IMarsWebApiClient
     IRoleServiceClient Role { get; }
     INavMenuServiceClient NavMenu { get; }
     IOptionServiceClient Option { get; }
+    INotificationsServiceClient Notifications { get; }
     IActServiceClient Act { get; }
+    ISearchServiceClient Search { get; }
     IAppDebugServiceClient AppDebug { get; }
     IMediaServiceClient Media { get; }
     IPostJsonServiceClient PostJson { get; }
@@ -28,5 +30,6 @@ public interface IMarsWebApiClient
     IPageRenderServiceClient PageRender { get; }
     IFrontServiceClient Front { get; }
     IAIServiceClient AITool { get; }
+    IAiChatServiceClient AiChat { get; }
 
 }

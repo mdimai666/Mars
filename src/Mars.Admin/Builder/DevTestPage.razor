@@ -1,0 +1,72 @@
+@page "/builder/DevTestPage"
+@using Mars.Admin.Framework.Interfaces
+@using Mars.Admin.Framework.Models
+@using Mars.Plugin.Front
+@using System.Reflection
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IBlazorPagesService blazorPagesService
+
+<ContentWrapper Title="DevTestPage">
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="d-flex flex-column gap-3">
+                @if (pagesGroup is not null)
+                {
+                    foreach (var (assembly, pages) in pagesGroup)
+                    {
+                        <div>
+                            <div>
+                                <FluentLabel Typo="Typography.Subject" Class="fw-bold">
+                                    @assembly.GetName().Name
+                                </FluentLabel>
+                            </div>
+
+                            @foreach (var p in pages)
+                            {
+                                <div>
+                                    <span>@p.Name</span> |
+                                    @foreach (var url in p.Routes)
+                                    {
+                                        <a href=@($"/dev{url}")>@url</a>
+                                    }
+                                    @if (p.Roles.Count > 0)
+                                    {
+                                        <text>
+                                            | <span style="color:red;"> @string.Join(";", p.Roles) </span>
+                                        </text>
+                                    }
+                                    @if (p.LayoutType is not null)
+                                    {
+                                        <text> | <span title="layout">@p.LayoutType.Name</span></text>
+                                    }
+                                    @if (!string.IsNullOrEmpty(p.SourceFilePath ?? p.SourceRelativePath))
+                                    {
+                                        <text> | <span style="color:gray;" title="исходник">@(p.SourceFilePath ?? p.SourceRelativePath)</span></text>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+</ContentWrapper>
+
+@code {
+    Dictionary<Assembly, List<BlazorPageInfo>> pagesGroup = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        this.pagesGroup = blazorPagesService.GetRoutedPages(
+            [
+                typeof(Program).Assembly,
+                .. WebAssemblyPluginFrontExtensions.PluginLoadAssemblies
+            ]).GroupBy(x => x.Assembly).ToDictionary(x => x.Key, x => x.ToList());
+    }
+}

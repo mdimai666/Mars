@@ -6,6 +6,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Flurl.Http;
+using Mars.Test.Common.Helpers;
 using MySqlConnector;
 using Testcontainers.MySql;
 
@@ -36,7 +37,7 @@ public class WordPressFixture : IAsyncLifetime
             .RuleFor(p => p.Type, "post");
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await EnsureWpCliInTempPath();
         await EnsurePluginExistInTempPath();
@@ -111,7 +112,7 @@ public class WordPressFixture : IAsyncLifetime
         await CreateMockPosts(10);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         _client?.Dispose();
         await _wordPressContainer.StopAsync();
@@ -147,7 +148,7 @@ public class WordPressFixture : IAsyncLifetime
         Console.WriteLine($"Database '{databaseName}' created or already exists.");
     }
 
-    protected string MountFilesDir => Path.Combine(Path.GetFullPath("../../..", Environment.CurrentDirectory), "WordPressTests", "MountFiles");
+    protected string MountFilesDir => SolutionPathHelper.Resolve("tests", "ExternalServices.Integration.Tests", "WordPressTests", "MountFiles");
 
     protected virtual int GetNextFreePort(int port = 0)
     {

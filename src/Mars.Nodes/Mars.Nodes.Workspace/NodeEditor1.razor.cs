@@ -2,20 +2,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Web;
-using AppFront.Shared;
+using Mars.Admin.Framework;
+using Mars.Contracts.Resources;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.FormEditor;
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
 using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Models;
-using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -32,13 +32,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
     [Inject] ILogger<NodeEditor1> _logger { get; set; } = default!;
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
     [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
-    [Inject] AppFrontJs _appFrontJs { get; set; } = default!;
+    [Inject] AdminJs _adminJs { get; set; } = default!;
     [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
     [Inject] INodeFormsLocator _nodeFormsLocator { get; set; } = default!;
 
@@ -147,7 +147,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
-        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _appFrontJs);
+        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _adminJs);
         _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();

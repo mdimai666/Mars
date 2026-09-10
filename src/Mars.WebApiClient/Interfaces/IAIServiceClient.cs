@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 
 namespace Mars.WebApiClient.Interfaces;
 

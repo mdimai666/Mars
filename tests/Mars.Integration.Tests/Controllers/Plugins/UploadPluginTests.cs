@@ -1,21 +1,22 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.Options.Abstractions.Services;
 using Mars.Plugin;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Options;
+using Mars.Plugin.Contracts.Plugins;
+using Mars.Plugin.Controllers;
 using Mars.Plugin.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Plugin.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Test.Mars.Plugin.Extensions;
 
 namespace Mars.Integration.Tests.Controllers.Plugins;
 
@@ -28,7 +29,6 @@ public class UploadPluginTests : ApplicationTests
 
     public UploadPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _pluginService = appFixture.ServiceProvider.GetRequiredService<IPluginService>();
         _optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
         SetAllowUploadZipManually(true);
@@ -51,15 +51,16 @@ public class UploadPluginTests : ApplicationTests
         _ = nameof(IPluginService.UploadPlugin);
         var client = AppFixture.GetClient(true);
 
-        //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostAsync();
+        //Act — с пустым POST запрос не матчится на form-file экшен и уходит в api-fallback (404),
+        //поэтому отправляем multipart-заглушку, как прочие Unauthorized-тесты загрузки
+        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostMultipartAsync(mp => mp.AddString("s", "v"));
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
     }
 
     [IntegrationFact]
-    public async Task UploadPlugin_Request_ShouldSuccess()
+    public async Task UploadPlugin_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PluginController.UploadPlugin);
@@ -101,11 +102,23 @@ public class UploadPluginTests : ApplicationTests
         item.ErrorMessage.Should().BeNullOrEmpty();
 
         var pluginDllFileName = Path.Combine(PluginManager.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"), pluginName + ".dll");
-        _fileStorage.FileExists(pluginDllFileName).Should().BeTrue("Plugin DLL file should be created in the plugins directory");
+        try
+        {
+            _fileStorage.FileExists(pluginDllFileName).Should().BeTrue("Plugin DLL file should be created in the plugins directory");
+        }
+        finally
+        {
+            // инсталл пишет в общую data-папку теста и в реестр — чистим за собой
+            var pluginManager = AppFixture.ServiceProvider.GetRequiredService<PluginManager>();
+            pluginManager.Registry.Remove(Path.GetFileNameWithoutExtension("plugin1.zip"));
+            var dir = Path.Combine(PluginManager.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"));
+            if (_fileStorage.DirectoryExists(dir))
+                _fileStorage.DeleteDirectory(dir, recursive: true);
+        }
     }
 
     [IntegrationFact]
-    public void UploadPlugin_BadContentType_Should400()
+    public void UploadPlugin_BadContentType_Fails400()
     {
         //Arrange
         _ = nameof(PluginController.UploadPlugin);
@@ -126,7 +139,7 @@ public class UploadPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public void UploadPlugin_OnDisallowUploadZipManually_Should466Denied()
+    public void UploadPlugin_OnDisallowUploadZipManually_FailsWith466Denied()
     {
         //Arrange
         SetAllowUploadZipManually(false);

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Nodes.Abstractions</PackageId>
+        <Product>Mars.Nodes.Abstractions</Product>
+        <Description>
+            Mars Nodes server abstractions: services, runtime contracts and extension points.
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+    </ItemGroup>
+</Project>

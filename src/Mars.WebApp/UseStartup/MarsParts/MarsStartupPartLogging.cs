@@ -9,19 +9,24 @@ internal static class MarsStartupPartLogging
         //https://github.com/nreco/logging
         builder.Services.AddLogging(loggingBuilder =>
         {
-
             loggingBuilder.AddConfiguration(builder.Configuration);
-            loggingBuilder.SetMinimumLevel(LogLevel.Warning);
 
+            // уровни не хардкодим: правила фильтрации (в т.ч. "Logging:File:LogLevel"
+            // по алиасу провайдера [ProviderAlias("File")]) приходят из конфигурации
+            // и перечитываются на лету при изменении appsettings без перезапуска
             loggingBuilder.AddFile("data/logs/app_{0:yyyy}-{0:MM}-{0:dd}.log", fileLoggerOpts =>
             {
                 fileLoggerOpts.FormatLogFileName = fName =>
                 {
                     return String.Format(fName, DateTime.Now);
                 };
-                fileLoggerOpts.FilterLogEntry = (msg) =>
+
+                // предохранитель: NReco открывает файл жадно и без обработчика бросает исключение —
+                // процесс не должен умирать из-за недоступного лога (нет прав, файл залочен).
+                // Не подставляем fallback-файл: ошибка глотается, файловый лог этого процесса отключается
+                fileLoggerOpts.HandleFileError = fileErr =>
                 {
-                    return msg.LogLevel >= LogLevel.Warning;
+                    Console.WriteLine($"mars: file logging disabled ({fileErr.ErrorException.Message})");
                 };
             });
         });

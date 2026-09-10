@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Flurl.Http;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.JsonConverters;
+using Mars.Server.Abstractions.JsonConverters;
 using Microsoft.AspNetCore.Http;
 using static Mars.Nodes.Core.Nodes.Network.HttpRequestNode;
 

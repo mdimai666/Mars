@@ -7,17 +7,12 @@ namespace Mars.SemanticKernel.CMS;
 
 public static class MainAiCms
 {
-    public static WebApplicationBuilder AddAiCmsHost(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddMarsAiCms(this WebApplicationBuilder builder)
     {
         CmsAgentHandler.RegisterCmsAgent(builder.Services, builder.Environment);
 
         builder.Services.AddTransient<IAiCreatePostHandler, AiCreatePostHandler>();
 
         return builder;
-    }
-
-    public static IApplicationBuilder UseAiCmsHost(this IApplicationBuilder app)
-    {
-        return app;
     }
 }

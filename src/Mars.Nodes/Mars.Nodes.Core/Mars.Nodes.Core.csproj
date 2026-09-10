@@ -1,40 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <!--Project-->
-
-        <!--Author-->
         <PackageId>mdimai666.Mars.Nodes.Core</PackageId>
-        <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <Version>$(MarsAppVersion)</Version>
-        <Authors>mdimai666</Authors>
-        <Company>mdimai666</Company>
         <Product>Mars.Nodes.Core</Product>
-        <PackageTags>Mars;Nodes;</PackageTags>
         <Description>
             Mars Nodes core entities;
         </Description>
-        <PackageIcon>icon-nuget.png</PackageIcon>
-        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
-
-    <PropertyGroup>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
@@ -43,7 +19,7 @@
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
+            <_Parameter1>Mars.Nodes.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

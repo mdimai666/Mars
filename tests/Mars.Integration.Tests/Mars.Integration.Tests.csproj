@@ -3,33 +3,28 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <NoWarn>RCS1139</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="FluentAssertions" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Microsoft.Testing.Platform" />
         <PackageReference Include="NSubstitute" />
         <PackageReference Include="Respawn" />
         <PackageReference Include="Testcontainers" />
         <PackageReference Include="Testcontainers.PostgreSql" />
-        <PackageReference Include="xunit" />
-        <PackageReference Include="xunit.runner.visualstudio">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="xunit.v3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Host.Repositories\Mars.Host.Repositories.csproj" />
+        <ProjectReference Include="..\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
         <ProjectReference Include="..\..\src\Mars.WebApp\Mars.WebApp.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
-        <ProjectReference Include="..\Test.Mars.Plugin\Test.Mars.Plugin.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Tests\Mars.Plugin.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -38,12 +33,6 @@
 
     <ItemGroup>
         <Folder Include="Controllers\Medias\ExampleFiles\" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Mars.E2E.Tests</_Parameter1>
-        </AssemblyAttribute>
     </ItemGroup>
 
 </Project>

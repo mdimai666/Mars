@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.MetaModelGenerator;

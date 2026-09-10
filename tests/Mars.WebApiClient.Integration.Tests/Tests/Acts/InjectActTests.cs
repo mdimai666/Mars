@@ -1,11 +1,14 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 
@@ -13,11 +16,11 @@ public class InjectActTests : BaseWebApiClientTests
 {
     public InjectActTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
+#if DEBUG
     [IntegrationFact]
-    public async Task Inject_ValidRequest_ShouldSuccess()
+    public async Task Inject_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(ActController.Inject);
@@ -25,11 +28,14 @@ public class InjectActTests : BaseWebApiClientTests
         var client = GetWebApiClient();
 
         //Act
-        var result = await client.Act.Inject(DummyAct.XAction.Id, []);
+        var result = await client.Act.Inject(DummyAct.CommandId);
 
         //Assert
         result.Ok.Should().BeTrue();
+        result.Effects.Should().ContainEquivalentOf(new NavigateEffect("/dev"));
+        result.Effects.OfType<TriggerEventEffect>().Should().Contain(e => e.Name == "dummy-act-executed");
     }
+#endif
 
     [IntegrationFact]
     public async Task Inject_InvalidRequest_Fail404Exception()
@@ -41,9 +47,57 @@ public class InjectActTests : BaseWebApiClientTests
         var invalidActionid = "ActX_invalidId";
 
         //Act
-        var action = () => client.Act.Inject(invalidActionid, []);
+        var action = () => client.Act.Inject(invalidActionid);
 
         //Assert
         await action.Should().ThrowAsync<NotFoundException>();
+    }
+
+    [IntegrationFact]
+    public async Task Inject_NamedArgs_Succeeds()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var postTypeName = $"xactp1{Guid.NewGuid():N}";
+
+        //Act
+        var result = await client.Act.Inject(
+            CreatePostTypePresentationTemplateAct.CommandId,
+            new Dictionary<string, string>
+            {
+                [CreatePostTypePresentationTemplateAct.PostTypeNameArg] = postTypeName,
+            });
+
+        //Assert
+        result.Ok.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task Inject_MissingRequiredArg_ReturnsFailResult()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Act.Inject(CreatePostTypePresentationTemplateAct.CommandId);
+
+        //Assert
+        result.Ok.Should().BeFalse();
+        result.Message.Should().Contain(CreatePostTypePresentationTemplateAct.PostTypeNameArg);
+    }
+
+    [IntegrationFact]
+    public async Task Inject_LinkCommand_ReturnsWarningResult()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var linkId = nameof(GenSourceCodeController.MetaTypesSourceCode) + "+csharp";
+
+        //Act
+        var result = await client.Act.Inject(linkId);
+
+        //Assert
+        result.Ok.Should().BeFalse();
+        result.Message.Should().Contain("ссылка");
     }
 }

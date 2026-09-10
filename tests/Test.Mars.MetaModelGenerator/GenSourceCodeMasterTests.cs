@@ -1,7 +1,7 @@
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.MetaModelGenerator;
 using Mars.Test.Common.FixtureCustomizes;
 using Test.Mars.MetaModelGenerator.Tools;
@@ -15,11 +15,10 @@ public class GenSourceCodeMasterTests
     public GenSourceCodeMasterTests()
     {
         _fixture = new Fixture();
-        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
     }
 
     [Fact]
-    public void Generate_PrimitiveTypes_ShouldSuccess()
+    public void Generate_PrimitiveTypes_Succeeds()
     {
         //Arrange
         MetaFieldEntity[] metaFields = [
@@ -57,7 +56,7 @@ public class GenSourceCodeMasterTests
     [InlineData([EMetaFieldType.DateTime])]
     [InlineData([EMetaFieldType.String])]
     [InlineData([EMetaFieldType.Text])]
-    public void Generate_AllPrimitiveTypes_ShouldSuccess(EMetaFieldType fieldType)
+    public void Generate_AllPrimitiveTypes_Succeeds(EMetaFieldType fieldType)
     {
         //Arrange
         MetaFieldEntity[] metaFields = [
@@ -86,9 +85,7 @@ public class GenSourceCodeMasterTests
     [InlineData([EMetaFieldType.Image])]
     [InlineData([EMetaFieldType.File])]
     [InlineData([EMetaFieldType.Relation])]// add relation Post Post.page File and other, add Plugin
-    //[InlineData([EMetaFieldType.List])]
-    //[InlineData([EMetaFieldType.Group])]
-    public void Generate_AllNonPrimitiveTypes_ShouldSuccess(EMetaFieldType fieldType)
+    public void Generate_AllNonPrimitiveTypes_Succeeds(EMetaFieldType fieldType)
     {
         //Arrange
         _ = nameof(MtFieldInfo);

@@ -21,13 +21,13 @@ public class KeycloakTestContainerFixture : IAsyncLifetime
     private IContainer _container = default!;
     public string BaseUrl { get; private set; } = default!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var password = "admin";
         var user = "admin";
 
         _container = new ContainerBuilder("quay.io/keycloak/keycloak:26.0")
-            .WithName("test-keycloak")
+            .WithName($"test-keycloak-{Guid.NewGuid()}")
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", user)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)
             .WithCommand("start-dev")
@@ -129,7 +129,7 @@ public class KeycloakTestContainerFixture : IAsyncLifetime
 
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _container.StopAsync();
         await _container.DisposeAsync();

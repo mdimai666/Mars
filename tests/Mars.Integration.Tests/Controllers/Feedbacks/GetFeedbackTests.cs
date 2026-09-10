@@ -1,13 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Feedbacks;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -19,11 +18,10 @@ public class GetFeedbackTests : ApplicationTests
 
     public GetFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task GetFeedback_ValidRequest_ShouldSuccess()
+    public async Task GetFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Get);
@@ -63,7 +61,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedback_Request_ShouldSuccess()
+    public async Task ListFeedback_Request_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.List);
@@ -92,7 +90,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedback_SearchRequest_ShouldSuccess()
+    public async Task ListFeedback_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.List);
@@ -125,7 +123,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedbackPagination_Request_ShouldValidTotalCount()
+    public async Task ListFeedbackPagination_Request_ReturnsValidTotalCount()
     {
         //Arrange
         _ = nameof(FeedbackController.List);

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -12,7 +12,6 @@ public sealed class DeletePostTypeTests : BaseWebApiClientTests
 {
     public DeletePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -30,7 +29,7 @@ public sealed class DeletePostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostType_ValidRequest_ShouldSuccess()
+    public async Task DeletePostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +56,7 @@ public sealed class DeletePostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPostType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

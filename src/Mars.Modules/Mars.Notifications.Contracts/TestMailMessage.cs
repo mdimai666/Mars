@@ -1,0 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Contracts.Resources;
+
+namespace Mars.Notifications.Contracts;
+
+public class TestMailMessage
+{
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    [Display(Name = "Кому. Почта.")]
+    public string Email { get; set; } = "";
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    [Display(Name = "Тема")]
+    public string Subject { get; set; } = "";
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    [Display(Name = "Сообщение")]
+    public string Message { get; set; } = "";
+
+}

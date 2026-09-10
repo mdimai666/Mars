@@ -1,5 +1,5 @@
-using Mars.Integration.Tests.Attributes;
 using FluentAssertions;
+using Mars.Integration.Tests.Attributes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PluginExample.Data;

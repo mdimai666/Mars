@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Cms.Contracts.Posts;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class CreatePostTests : BaseWebApiClientTests
 
     public CreatePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.Post.Create(req));
     }
@@ -26,7 +25,7 @@ public class CreatePostTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async Task CreatePost_ValidRequest_ShouldSuccess()
+    public async Task CreatePost_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

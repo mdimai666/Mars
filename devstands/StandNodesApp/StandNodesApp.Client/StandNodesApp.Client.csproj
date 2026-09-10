@@ -1,4 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
     <PropertyGroup>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>

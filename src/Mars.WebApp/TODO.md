@@ -15,8 +15,8 @@
 [x] - inject node
 
 # Admin
-[ ] - style editor
-[ ] - post type list view mode
+[x] - style editor
+[x] - post type list view mode
 [.] - PostType Manage page edit
 [ ] - Add hotkeys page
 [ ] - Privacy page
@@ -60,7 +60,7 @@
 
 # Core Libs
 [.] - rm Mars.Core any depends
-[ ] - check requirments of DateOnlyJsonConverter in actione System.Text.Json 
+[x] - check requirments of DateOnlyJsonConverter in actione System.Text.Json 
 
 # asp net core
 [ ] - read https://learn.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-9.0

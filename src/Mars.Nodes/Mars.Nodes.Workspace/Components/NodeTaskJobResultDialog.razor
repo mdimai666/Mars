@@ -1,5 +1,5 @@
-@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
-@using Mars.Nodes.Front.Shared.Services
+@using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob
+@using Mars.Nodes.Front.Abstractions.Services
 @using Mars.Nodes.Workspace.Components.JobViews
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
@@ -25,7 +25,7 @@
             }
             else
             {
-                <AppFront.Shared.Components.SharedContentNoRecords />
+                <Mars.Admin.Framework.Components.SharedContentNoRecords />
             }
         </div>
     </div>

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- harness-память и скиллы (FileMemoryStore, AgentSkillsSource) — experimental API Microsoft.Agents.AI -->
+    <NoWarn>$(NoWarn);MAAI001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI" />
+    <PackageReference Include="Microsoft.Agents.AI.Harness" />
+    <PackageReference Include="Microsoft.Extensions.AI.Ollama" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
+    <PackageReference Include="OpenAI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- bundled-скиллы агента (SKILL.md), рядом со сборкой читаются AgentFileSkillsSource;
+         папка ai-skills, чтобы не смешиваться со skills/ модуля SemanticKernel -->
+    <Content Include="ai-skills\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Datasource\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.AiChat.Abstractions\Mars.AiChat.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

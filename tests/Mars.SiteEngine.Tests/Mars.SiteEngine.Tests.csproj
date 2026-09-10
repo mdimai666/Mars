@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Testing.Platform" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.v3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Admin\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />
+        <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+</Project>

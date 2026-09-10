@@ -1,5 +1,5 @@
-@using AppFront.Shared.Components
-@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Mars.Admin.Framework.Components
+@using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
@@ -25,7 +25,7 @@
                             Virtualize
                             ShowHover
                             GenerateHeader="GenerateHeaderOption.Sticky"
-                            Class="adaptive-table"
+                            Class="data-table--adaptive"
                             GridTemplateColumns="min-content min-content auto min-content min-content min-content min-content"
                             TGridItem="NodeTaskResultSummaryResponse">
                 <TemplateColumn Title="Status"

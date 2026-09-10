@@ -1,12 +1,11 @@
 using System.Drawing;
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
-using Mars.Shared.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;

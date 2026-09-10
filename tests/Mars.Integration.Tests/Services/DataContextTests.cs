@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Interfaces;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Interfaces;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.TestControllers;
@@ -20,7 +20,7 @@ public sealed class DataContextTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DataContext_AuthorizedUserDataResponse_ShouldResponseDataContext()
+    public async Task DataContext_AuthorizedUserDataResponse_RespondsWithDataContext()
     {
         //Arrange
         _ = nameof(TestApi1Controller.CheckRequestContext);
@@ -44,7 +44,7 @@ public sealed class DataContextTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DataContext_NonAuthorizedUser_ShouldEmpty()
+    public async Task DataContext_NonAuthorizedUser_IsEmpty()
     {
         //Arrange
         _ = nameof(TestApi1Controller.CheckRequestContext);

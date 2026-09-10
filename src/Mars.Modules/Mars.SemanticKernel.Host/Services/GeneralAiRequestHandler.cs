@@ -1,0 +1,39 @@
+using Mars.Core.Extensions;
+using Mars.SemanticKernel.Abstractions.Dto;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+
+namespace Mars.SemanticKernel.Host.Services;
+
+internal class GeneralAiRequestHandler
+{
+    private readonly IKernelFactory _kernelFactory;
+
+    public GeneralAiRequestHandler(IKernelFactory kernelFactory)
+    {
+        _kernelFactory = kernelFactory;
+    }
+
+    public Task<AgentOutput> Handle(string prompt, string? systemPrompt = null, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    {
+        ChatHistory history = [];
+        if (systemPrompt.IsNotNullOrEmpty())
+            history.AddSystemMessage(systemPrompt!);
+        //history.AddSystemMessage(_instructions.ReadBasicConcepts());
+        history.AddUserMessage(prompt);
+
+        return Handle(history, promptExecutionSettings, cancellationToken);
+    }
+
+    public async Task<AgentOutput> Handle(ChatHistory chatMessages, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    {
+        var kernel = _kernelFactory.Create();
+
+        var executionSettings = promptExecutionSettings ?? _kernelFactory.ResolvePromptExecutionSettings();
+        var chat = kernel.GetRequiredService<IChatCompletionService>();
+        var response = await chat.GetChatMessageContentAsync(chatMessages, executionSettings, kernel, cancellationToken: cancellationToken);
+
+        return new() { Content = response.Content! };
+    }
+}

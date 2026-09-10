@@ -3,26 +3,22 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
-using Mars.Plugin.PluginProvider.Dto;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.PluginProvider.Providers;
 
 public class PluginManifestProvider
 {
-    private readonly Assembly _assembly;
-
     public IReadOnlyCollection<EndpointJsonDto> Files { get; private set; }
 
-    public PluginManifestProvider(Assembly assembly)
+    public PluginManifestProvider(Assembly assembly, string contentRootPath)
     {
-        _assembly = assembly;
-        var projectName = _assembly.GetName().Name;
-        var targetDir = Path.GetDirectoryName(_assembly.Location)!;
+        var projectName = assembly.GetName().Name;
 
         var manifestFileName = projectName + ".staticwebassets.endpoints.json";
-        var manifestFilePath = Path.Combine(targetDir, manifestFileName);
+        var manifestFilePath = Path.Combine(contentRootPath, manifestFileName);
         if (!File.Exists(manifestFilePath))
         {
             Files = [];
@@ -85,7 +81,7 @@ public class PluginManifestProvider
             //.Where(s => !marsOriginalFilesMap.Contains(NormalizePath(s)))
             .Where(s =>
             {
-                //s.AssetFile.Contains("AppFront.Main") && s.AssetFile.EndsWith(".wasm")
+                //s.AssetFile.Contains("Mars.Admin.Framework") && s.AssetFile.EndsWith(".wasm")
                 string v = NormalizePath(s);
                 return !marsOriginalFilesMap.Contains(v);
             })
@@ -95,35 +91,17 @@ public class PluginManifestProvider
         return pluginEndpoints;
     }
 
-    private ProjectDependencies MarsDeps()
-    {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var marsReleaseDepsJsonFile = Path.Combine(assemblyFolder, "Mars.deps.json");
-        var marsWebAppDependencies = new ProjectDependencies(marsReleaseDepsJsonFile);
-        return marsWebAppDependencies;
-    }
-
-    StaticwebassetsEndpointsManifestJson? MarsEndpoints()
-    {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var manifestFileName = "Mars.staticwebassets.endpoints.json";
-        var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
-        if (!File.Exists(manifestFilePath)) return null;
-        var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
-        return manifest;
-    }
-
     StaticwebassetsEndpointsManifestJson MarsDevAdminEndpoints()
     {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var manifestFileName = "AppAdmin.staticwebassets.endpoints.json";
+        var assemblyFolder = Path.GetDirectoryName(typeof(PluginManifestProvider).Assembly.Location)!;
+        var manifestFileName = "Mars.Admin.staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
         if (!File.Exists(manifestFilePath)) throw new FileNotFoundException($"{manifestFileName} not found. File is Required!");
         var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
         return manifest;
     }
 
-    public MarsFrontPluginManifest GenerateManifest(WebApplication app, PluginData pluginData, ILogger logger)
+    public MarsFrontPluginManifest GenerateManifest(WebApplication app, LoadedPlugin pluginData, ILogger logger)
     {
         var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
         pluginData.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
@@ -144,11 +122,9 @@ public class PluginManifestProvider
             }
         };
 
-        var isDebug = true;
-
         var manifest = new MarsFrontPluginManifest()
         {
-            IsDebug = isDebug,
+            IsDebug = app.Environment.IsDevelopment(),
         };
         manifest.Plugins[pluginData.Info.KeyName] = pluginInfo;
 

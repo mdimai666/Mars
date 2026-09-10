@@ -1,13 +1,10 @@
 using AutoFixture;
 using Bogus;
-using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Host.Data.OwnedTypes.PostTypes;
-using Mars.Host.Data.OwnedTypes.Users;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.NavMenus;
+using Mars.Data.OwnedTypes.Users;
+using Mars.Identity.Abstractions.Utils;
 using Mars.Test.Common.Constants;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 
@@ -15,9 +12,9 @@ namespace Mars.Test.Common.FixtureCustomizes;
 
 public sealed class EntitiesCustomize : ICustomization
 {
-    public static Dictionary<string, PostTypeEntity> PostTypeDict = default!;
-    public static Dictionary<string, UserTypeEntity> UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
-    public static Dictionary<string, PostCategoryTypeEntity> PostCategoryTypeDict = [];
+    private readonly TestEntityRefs _refs;
+
+    public EntitiesCustomize(TestEntityRefs refs) => _refs = refs;
 
     public void Customize(IFixture fixture)
     {
@@ -36,7 +33,7 @@ public sealed class EntitiesCustomize : ICustomization
             .RuleFor(s => s.SecurityStamp, Guid.NewGuid().ToString())
             .RuleFor(s => s.Status, EUserStatus.Activated)
             .RuleFor(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
-            .RuleFor(s => s.UserTypeId, UserTypeDict[UserTypeEntity.DefaultTypeName].Id)
+            .RuleFor(s => s.UserTypeId, _refs.UserType.Id)
             .RuleFor(s => s.MetaValues, [])
             .Generate();
 
@@ -67,18 +64,12 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    );
 
-        fixture.Customize<PostContentSettings>(composer => composer
-                                    .OmitAutoProperties()
-                                    .With(s => s.PostContentType, PostTypeConstants.DefaultPostContentTypes.PlainText)
-                                    );
-
         fixture.Customize<PostTypeEntity>(composer => composer
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
                                    .With(s => s.Title, () => fixture.Create("Title - "))
                                    //.With(s => s.PostStatusList, PostStatus.DefaultStatuses())
                                    .With(s => s.TypeName)
-                                   .With(s => s.PostContentType)
                                    .With(s => s.EnabledFeatures, [nameof(PostEntity.Content)])
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    //.With(s => s.ModifiedAt, DateTime.MinValue)
@@ -99,11 +90,10 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.Id)
                                    .With(s => s.Title, () => fixture.Create("Title - "))
                                    .With(s => s.Content, () => "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
-                                   .With(s => s.Status, () => PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
                                    //.With(s => s.Image, "")
                                    .With(s => s.LangCode, () => Random.Shared.GetItems(["", "ru"], 1)[0])
                                    //.With(s => s.Type, "post")
-                                   .With(s => s.PostTypeId, PostTypeDict["post"].Id)
+                                   .With(s => s.PostTypeId, _refs.PostType.Id)
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    //.With(s => s.ModifiedAt, null!)
                                    .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
@@ -166,16 +156,28 @@ public sealed class EntitiesCustomize : ICustomization
                                     })
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.Order)
                                     .With(s => s.Tags)
                                     .With(s => s.Variants)
                                    );
 
-        fixture.Customize<MetaValueEntity>(composer => composer
+        fixture.Customize<PostMetaValueEntity>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
+                                    .With(s => s.Type, EMetaFieldType.String)
+                                    .With(s => s.VariantsIds, [])
+                                   );
+
+        fixture.Customize<UserMetaValueEntity>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Type, EMetaFieldType.String)
+                                    .With(s => s.VariantsIds, [])
+                                   );
+
+        fixture.Customize<PostCategoryMetaValueEntity>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
                                     .With(s => s.Type, EMetaFieldType.String)
                                     .With(s => s.VariantsIds, [])
                                    );
@@ -207,8 +209,8 @@ public sealed class EntitiesCustomize : ICustomization
                                     })
                                    .OmitAutoProperties()
                                    .With(s => s.Title, () => fixture.Create("PostCategory - "))
-                                   .With(s => s.PostCategoryTypeId, PostCategoryTypeDict[PostCategoryTypeEntity.DefaultTypeName].Id)
-                                   .With(s => s.PostTypeId, PostTypeDict["post"].Id)
+                                   .With(s => s.PostCategoryTypeId, _refs.PostCategoryType.Id)
+                                   .With(s => s.PostTypeId, _refs.PostType.Id)
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
                                    );

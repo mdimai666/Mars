@@ -61,7 +61,7 @@ public class BearerTokenStrategyTests : IClassFixture<KeycloakTestContainerFixtu
             Mode = AuthMode.BearerToken,
             TokenUrl = _keycloak.TokenEndpoint,
             Username = Username,
-            Password = "invalid_passwrod",
+            Password = "invalid_password",
             ClientId = ClientId,
             ClientSecret = ClientSecret,
             Scope = "openid email"

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Admin.Contracts</PackageId>
+        <Description>Mars admin panel wire contracts: DTOs shared between admin front and server.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

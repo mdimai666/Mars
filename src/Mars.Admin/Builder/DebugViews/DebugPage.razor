@@ -1,0 +1,67 @@
+@page "/builder/debug"
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IMarsWebApiClient client
+
+<ContentWrapper Title="Debug" FullWidth>
+
+    <FluentToolbar Class="flex-fill mb-1 w-100">
+
+        <FluentAutocomplete TOption="string"
+                            AutoComplete="off"
+                            Items="levelOptions"
+                            Placeholder="Все уровни"
+                            @bind-SelectedOptions="selectedLevels"
+                            @bind-SelectedOptions:after="Load"
+                            Style="width:280px;flex:0 0 auto;">
+            <OptionTemplate Context="level">
+                <span class="hstack gap-2 align-items-center">
+                    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:@LevelColor(level);"></span>
+                    <span style="color:@LevelColor(level);font-weight:600;">@level</span>
+                </span>
+            </OptionTemplate>
+            <SelectedOptionTemplate Context="level">
+                <span style="color:@LevelColor(level);font-weight:700;">@level</span>
+            </SelectedOptionTemplate>
+        </FluentAutocomplete>
+
+        <div class="hstack gap-1 align-items-center">
+            @foreach (var p in periodOptions)
+            {
+                <FluentButton Appearance=@(period == p.Key ? Appearance.Accent : Appearance.Stealth)
+                              OnClick=@(() => SetPeriod(p.Key))>
+                    @p.Value
+                </FluentButton>
+            }
+        </div>
+
+        <FluentButton OnClick="Load">
+            <i class="bi bi-arrow-clockwise"></i>
+        </FluentButton>
+    </FluentToolbar>
+
+    @if (Busy)
+    {
+        <SharedLoader1 />
+    }
+    else if (error is not null)
+    {
+        <div>
+            <div class="alert alert-danger">
+                @error
+            </div>
+        </div>
+    }
+    else if (string.IsNullOrWhiteSpace(text))
+    {
+        <div class="alert alert-info">
+            Нет записей по выбранным фильтрам.
+        </div>
+    }
+    else
+    {
+        <MarsCodeEditor2.CodeEditor2 Lang="@CodeEditor2.Language.log" Value="@text" @ref=editor1 OnInit="OnInit"
+                                     OptionsJson='{"wordWrap":"off","minimap":{"enabled":false}}' />
+    }
+</ContentWrapper>

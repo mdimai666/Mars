@@ -1,11 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.UserTypes;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.UserTypes;
@@ -14,7 +14,6 @@ public sealed class UpdateUserTypeTests : BaseWebApiClientTests
 {
     public UpdateUserTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -32,7 +31,7 @@ public sealed class UpdateUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUserType_ValidRequest_ShouldSuccess()
+    public async Task UpdateUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

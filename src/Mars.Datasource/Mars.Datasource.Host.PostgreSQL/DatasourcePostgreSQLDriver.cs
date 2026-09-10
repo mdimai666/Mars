@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Interfaces;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
 using Npgsql;
 using Npgsql.Schema;
 
@@ -157,6 +157,35 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         catch (Exception ex)
         {
             return Result(ex.Message);
+        }
+    }
+
+    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string sql)
+    {
+        try
+        {
+            await using var conn = new NpgsqlConnection(_config.ConnectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = true,
+                Message = "success",
+                DatabaseDriver = _config.Driver,
+                RowsAffected = rowsAffected,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = false,
+                Message = ex.Message,
+                DatabaseDriver = _config.Driver,
+            };
         }
     }
 

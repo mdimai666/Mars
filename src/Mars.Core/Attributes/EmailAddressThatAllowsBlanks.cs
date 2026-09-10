@@ -5,7 +5,7 @@ namespace Mars.Core.Attributes;
 public class EmailAddressThatAllowsBlanks : ValidationAttribute
 {
     public const string DefaultErrorMessage = "{0} must be a valid email address";
-    private EmailAddressAttribute _validator = new EmailAddressAttribute();
+    private EmailAddressAttribute _validator = new();
 
     public EmailAddressThatAllowsBlanks() : base(DefaultErrorMessage)
     {

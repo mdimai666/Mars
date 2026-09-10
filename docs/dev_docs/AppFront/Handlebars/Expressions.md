@@ -4,7 +4,7 @@
 
 Для просмотра подобной информации в процессе создания шаблона можно воспользоваться командой `{{#help}}`, которая выведет список доступных хелперов и их описание.
 
-Исходный код можно посмотреть [здесь](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.WebSiteProcessor.Handlebars/HandlebarsFunc/MyHandlebars.cs)
+Исходный код можно посмотреть [здесь](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.SiteEngine.Handlebars/HandlebarsFunc/MyHandlebars.cs)
 
 | Helper Name         | Type   | Example                                                   | Description |
 |---------------------|--------|------------------------------------------------------------|-------------|
@@ -83,7 +83,7 @@ request = Req("GET", "http://localhost:5003/api/posts")
 
 ## Registered #context functions
 
-Встроенные функции [Исходник](https://github.com/mdimai666/Mars/blob/master/src/Mars.Host/Templators/TemplatorRegisterFunctions.cs)
+Встроенные функции [Исходник](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.SiteEngine/Templators/TemplatorRegisterFunctions.cs)
 
 | Helper Name  | Example                                                  | Description |
 |--------------|----------------------------------------------------------|-------------|

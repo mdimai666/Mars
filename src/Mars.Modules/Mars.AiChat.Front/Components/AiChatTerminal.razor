@@ -1,0 +1,180 @@
+@using Mars.AiChat.Front.Services
+@using Mars.AiChat.Contracts.Dto
+@using Microsoft.AspNetCore.Components.Forms
+@implements IDisposable
+
+<link href="@AiChatAssets.CssUrl" rel="stylesheet" />
+
+<div class="aichat-root">
+    @if (!_visible)
+    {
+        <div class="aichat-fab" style="@FabStyle"
+             @ref=_fabEl
+             @onpointerdown="OnFabPointerDown"
+             @onpointerdown:stopPropagation="true"
+             title="ИИ агент: нажмите — открыть; зажмите и тяните — переместить">
+            <span class="aichat-fab-icon">✦</span>
+            <span class="aichat-fab-label">ИИ агент</span>
+        </div>
+    }
+    else
+    {
+        <div class="aichat-modal" @ref=_termEl style="@TermStyle">
+            @if (_modelMenuOpen)
+            {
+                // клик в любое место окна (кроме самого меню) закрывает список моделей
+                <div class="aichat-model-backdrop" @onclick="() => _modelMenuOpen = false"></div>
+            }
+            <div class="aichat-header" @onpointerdown="OnTermHeaderPointerDown" @onpointerdown:preventDefault="true" title="тяни за шапку — окно переедет">
+                <span class="aichat-title">mars-ai</span>
+                <span class="aichat-status">@StatusText</span>
+                <div class="aichat-header-actions" @onpointerdown:stopPropagation="true">
+                    @if (_connections.Count > 1)
+                    {
+                        <div class="aichat-model-picker">
+                            <button class="aichat-model-btn" @onclick="ToggleModelMenu"
+                                    disabled="@(_running || _sending)"
+                                    title="Модель для этого чата (меняется для новых сообщений)">
+                                @CurrentConnectionLabel
+                            </button>
+                            @if (_modelMenuOpen)
+                            {
+                                <div class="aichat-model-menu">
+                                    @foreach (var c in _connections)
+                                    {
+                                        <button class="aichat-model-item @(c.Name == EffectiveConnectionName ? "active" : "")"
+                                                title="@c.ProviderType.ToString()"
+                                                @onclick="() => PickConnectionAsync(c)">
+                                            @c.Name · @c.ModelId
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    <select class="aichat-sessions" @onchange="OnSessionSelectChanged" title="Сменить чат">
+                        @foreach (var s in _sessions)
+                        {
+                            <option value="@s.Id" selected="@(s.Id == _chatId)">@Truncate(s.Title, 22)</option>
+                        }
+                    </select>
+                    <button class="aichat-btn" @onclick="NewChatAsync" title="Новый чат">＋</button>
+                    <button class="aichat-btn" @onclick="Close" title="Свернуть">✕</button>
+                </div>
+            </div>
+
+            <div class="aichat-messages" @ref=_messagesEl>
+                @if (_loading)
+                {
+                    <div class="aichat-line aichat-line-info">загрузка…</div>
+                }
+                else if (_startupError is not null)
+                {
+                    <div class="aichat-line aichat-line-error">ошибка: @_startupError</div>
+                }
+                else
+                {
+                    @foreach (var m in _messages)
+                    {
+                        @switch (m.Role)
+                        {
+                            case AiChatMessageRole.User:
+                                <div class="aichat-line aichat-line-user">
+                                    <span class="aichat-prompt">user@mars:~$</span> @m.Content
+                                    @if (m.Attachments is { Count: > 0 } msgAtts)
+                                    {
+                                        <div class="aichat-msg-attachments">
+                                            @foreach (var a in msgAtts)
+                                            {
+                                                @if (a.IsImage)
+                                                {
+                                                    <a class="spotlight aichat-msg-attach-img" href="@a.UrlRelative" title="@a.Name">
+                                                        <img src="@a.UrlRelative" alt="@a.Name" />
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="aichat-msg-attach-file" href="@a.UrlRelative" target="_blank" rel="noopener">📄 @a.Name</a>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                break;
+                            case AiChatMessageRole.Assistant:
+                                <div class="aichat-line aichat-line-assistant">@RenderWithImages(m.Content)</div>
+                                break;
+                            case AiChatMessageRole.Tool when !m.IsToolResult:
+                                <div class="aichat-line aichat-line-tool">⚙ <span class="tool-name">@m.ToolName</span> @Truncate(m.Content?.Replace("\n", " "), 160)</div>
+                                break;
+                            case AiChatMessageRole.Tool:
+                                <div class="aichat-line aichat-line-tool-result">← @Truncate(m.Content, 300)</div>
+                                break;
+                            case AiChatMessageRole.Error:
+                                <div class="aichat-line aichat-line-error">✗ @m.Content</div>
+                                break;
+                            case AiChatMessageRole.Info:
+                                <div class="aichat-line aichat-line-info">@m.Content</div>
+                                break;
+                        }
+                    }
+
+                    @if (_running)
+                    {
+                        <div class="aichat-line aichat-line-assistant">@_stream<span class="aichat-spinner">@_spinnerFrame</span></div>
+                    }
+
+                    @if (_pendingQuestion is not null)
+                    {
+                        <div class="aichat-line aichat-line-question">❓ @_pendingQuestion</div>
+                    }
+                }
+            </div>
+
+            @if (_attachments.Count > 0 || _uploading)
+            {
+                <div class="aichat-attachbar">
+                    @foreach (var a in _attachments)
+                    {
+                        <span class="aichat-chip" title="@a.UrlRelative">
+                            @if (a.IsImage)
+                            {
+                                <img class="aichat-chip-img" src="@a.UrlRelative" alt="" />
+                            }
+                            else
+                            {
+                                <span class="aichat-chip-icon">📄</span>
+                            }
+                            <span class="aichat-chip-name">@Truncate(a.Name, 28)</span>
+                            <button class="aichat-chip-x" @onclick="() => RemoveAttachment(a)" title="Убрать из сообщения">✕</button>
+                        </span>
+                    }
+                    @if (_uploading)
+                    {
+                        <span class="aichat-chip aichat-chip-busy">загрузка…</span>
+                    }
+                </div>
+            }
+
+            <div class="aichat-inputline">
+                <span class="aichat-input-prompt">❯</span>
+                <InputFile @ref="_fileInput" OnChange="OnFilesSelected" multiple style="display:none" />
+                <button class="aichat-btn" @onclick="PickFilesAsync" disabled="@(_sending || _uploading || _startupError is not null)" title="Приложить файлы (можно вставить из буфера — Ctrl+V)">
+                    <svg style="display:block" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                    </svg>
+                </button>
+                <input class="aichat-input"
+                       @ref=_inputEl
+                       @bind="_input"
+                       @bind:event="oninput"
+                       @onkeydown="OnInputKeyDown"
+                       placeholder="@InputPlaceholder"
+                       disabled="@(_sending || _startupError is not null)"
+                       maxlength="4000" />
+                <button class="aichat-btn danger" @onclick="StopAsync" disabled="@(!_running)" title="Остановить выполнение">■</button>
+            </div>
+        </div>
+    }
+</div>

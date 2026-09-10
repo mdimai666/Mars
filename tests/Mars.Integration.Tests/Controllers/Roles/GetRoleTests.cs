@@ -1,13 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -19,7 +18,6 @@ public class GetRoleTests : ApplicationTests
 
     public GetRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -38,7 +36,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetRole_ValidRequest_ShouldSuccess()
+    public async Task GetRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Get);
@@ -93,7 +91,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListRole_Request_ShouldSuccess()
+    public async Task ListRole_Request_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.List);
@@ -117,7 +115,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListRole_SearchRequest_ShouldSuccess()
+    public async Task ListRole_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.List);

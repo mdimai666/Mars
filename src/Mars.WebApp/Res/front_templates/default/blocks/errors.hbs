@@ -1,0 +1,15 @@
+<div id="errors-list" style="position: sticky; top: 10px;">
+    <div class="container">
+
+        {{#each $errors}}
+        <div class="alert alert-danger">
+            {{{ this }}}
+        </div>
+        {{/each}}
+    </div>
+</div>
+<style>
+#errors-list pre{
+    white-space: break-spaces;
+}
+</style>

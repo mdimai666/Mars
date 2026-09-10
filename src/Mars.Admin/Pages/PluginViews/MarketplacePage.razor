@@ -1,0 +1,170 @@
+@page "/marketplace"
+@attribute [Authorize(Roles = "Admin")]
+
+@using Mars.Plugin.Contracts.Catalog
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<ContentWrapper Title="Маркетплейс" WrapperClass="vstack">
+    <ChildContent>
+        @if (_statusLoading)
+        {
+            <SharedLoader1 />
+        }
+        else if (_initError is not null)
+        {
+            <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss="false">
+                @_initError
+            </FluentMessageBar>
+            <div class="mt-2">
+                <FluentButton Appearance="Appearance.Accent" OnClick="InitAsync">Повторить</FluentButton>
+            </div>
+        }
+        else if (!_catalogEnabled)
+        {
+            <FluentMessageBar Title="Каталог плагинов выключен" Intent="@MessageIntent.Info" AllowDismiss="false">
+                Витрина маркетплейса питается от каталога плагинов. Настройте секцию <code>PluginCatalog</code>
+                (Url и Enabled) в <code>appsettings.json</code> инстанса и перезапустите его.
+            </FluentMessageBar>
+        }
+        else
+        {
+            <div class="hstack gap-3">
+                <FluentSearch @bind-Value=_searchText
+                              @bind-Value:after=ReloadAsync
+                              Immediate
+                              ImmediateDelay="300"
+                              Appearance="FluentInputAppearance.Filled"
+                              AriaLabel="Поиск"
+                              Placeholder="Поиск по каталогу" />
+                <FluentSwitch @bind-Value=_recommendedOnly @bind-Value:after=ReloadAsync>
+                    Только рекомендованные
+                </FluentSwitch>
+                <FluentSpacer />
+                <FluentSelect TOption="string" @bind-Value=_sort @bind-Value:after=ReloadAsync Width="200px" AriaLabel="Сортировка">
+                    <FluentOption TOption="string" Value="downloads">По загрузкам</FluentOption>
+                    <FluentOption TOption="string" Value="rating">По рейтингу</FluentOption>
+                    <FluentOption TOption="string" Value="newest">Сначала новые</FluentOption>
+                </FluentSelect>
+            </div>
+
+            @if (_errorMessage is not null)
+            {
+                <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss="false" Class="mt-4">
+                    @_errorMessage
+                </FluentMessageBar>
+                <div class="mt-2">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="RetryAsync">Повторить</FluentButton>
+                </div>
+            }
+            else if (_loading && _plugins.Count == 0)
+            {
+                <div class="mt-4"><SharedLoader1 /></div>
+            }
+            else if (_plugins.Count == 0)
+            {
+                <div class="mt-4 text-secondary">Ничего не найдено.</div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-2">
+                    @foreach (var plugin in _plugins)
+                    {
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body vstack gap-2">
+                                    <div class="hstack gap-3">
+                                        @if (plugin.IconUrl is not null)
+                                        {
+                                            <img src="@plugin.IconUrl" alt="icon" style="width:48px;height:48px;object-fit:contain;" />
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-plugin text-secondary" style="font-size:36px;"></i>
+                                        }
+                                        <div class="vstack" style="min-width:0;">
+                                            <div class="hstack gap-2">
+                                                <h5 class="mb-0">@plugin.DisplayName</h5>
+                                                @if (plugin.IsRecommended)
+                                                {
+                                                    <FluentBadge Appearance="Appearance.Accent">Рекомендован</FluentBadge>
+                                                }
+                                            </div>
+                                            <span class="text-secondary">@plugin.AuthorName</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-secondary">@plugin.Summary</div>
+
+                                    <div class="hstack gap-3 flex-wrap">
+                                        <span class="hstack gap-1" title="Рейтинг">
+                                            <FluentRating Max="5" Value="@((int)Math.Round(plugin.AvgRating))" ReadOnly="true"
+                                                          Style="zoom:0.5" IconColor="@Color.Accent" />
+                                            <span class="text-secondary">@plugin.AvgRating.ToString("0.#") (@plugin.ReviewsCount)</span>
+                                        </span>
+                                        <span class="text-secondary" title="Загрузки">
+                                            <i class="bi bi-download"></i> @plugin.TotalDownloads.ToString("N0")
+                                        </span>
+                                        <span class="text-secondary" title="Последняя версия">
+                                            <i class="bi bi-tag"></i> @plugin.LatestVersion
+                                        </span>
+                                    </div>
+
+                                    @if (plugin.Tags.Count > 0)
+                                    {
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            @foreach (var tag in plugin.Tags)
+                                            {
+                                                <FluentBadge Appearance="Appearance.Neutral">@tag</FluentBadge>
+                                            }
+                                        </div>
+                                    }
+
+                                    <div class="hstack gap-2 mt-auto pt-2">
+                                        @if (IsInstalled(plugin))
+                                        {
+                                            @if (HasUpdate(plugin))
+                                            {
+                                                <FluentButton Appearance="Appearance.Accent"
+                                                              Disabled="_installing.Contains(plugin.PackageId)"
+                                                              OnClick="() => InstallAsync(plugin)">
+                                                    @(_installing.Contains(plugin.PackageId) ? "Установка…" : "Обновить")
+                                                </FluentButton>
+                                            }
+                                            else
+                                            {
+                                                <FluentBadge Appearance="Appearance.Neutral">Установлен</FluentBadge>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <FluentButton Appearance="Appearance.Accent"
+                                                          Disabled="_installing.Contains(plugin.PackageId)"
+                                                          OnClick="() => InstallAsync(plugin)">
+                                                @(_installing.Contains(plugin.PackageId) ? "Установка…" : "Установить")
+                                            </FluentButton>
+                                        }
+                                        <FluentSpacer />
+                                        <FluentButton Appearance="Appearance.Lightweight" OnClick="() => OpenDetails(plugin)">
+                                            Подробнее
+                                        </FluentButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (_plugins.Count < _total)
+                {
+                    <div class="hstack mt-3">
+                        <FluentSpacer />
+                        <FluentButton Appearance="Appearance.Lightweight" Disabled="_loading" OnClick="LoadMoreAsync">
+                            Загрузить ещё (@(_total - _plugins.Count))
+                        </FluentButton>
+                        <FluentSpacer />
+                    </div>
+                }
+            }
+        }
+    </ChildContent>
+</ContentWrapper>

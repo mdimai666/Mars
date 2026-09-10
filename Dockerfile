@@ -3,11 +3,12 @@
 
 # ===========================
 # Base runtime image
+# Chiseled Ubuntu 24.04 (distroless: без shell/apt; ICU+tzdata включены),
+# non-root: USER app (uid 1654) задан базовым образом.
 # ===========================
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-WORKDIR /app
-EXPOSE 80
-#EXPOSE 443
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra AS base
+# ВАЖНО: WORKDIR /app здесь не ставить — /app обязан создать COPY --chown в final-стадии,
+# чтобы владельцем каталога был uid 1654 (в chiseled нет shell, RUN/chown недоступны).
 
 # ===========================
 # Build stage
@@ -75,6 +76,7 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
         dotnet publish "./Mars.WebApp.csproj" \
             -c $BUILD_CONFIGURATION \
             -o /app/publish \
+            --self-contained false \
             -p:UseAppHost=false \
             -p:DockerBuild=true \
             -p:SourceRevisionId="${GIT_SHA}" \
@@ -85,21 +87,20 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
 # ===========================
 FROM base AS final
 
-# ---------------------------
-# Create non-root user
-# ---------------------------
-#RUN useradd -m marsuser
-#
-## Ensure app folders exist + permissions
-#RUN mkdir -p /app/data \
-    #&& chown -R marsuser:marsuser /app
-#
-#USER marsuser
+# Non-root uid 1654 (USER задан базовым образом). В chiseled нет shell, поэтому
+# никаких RUN: /app создаётся первым же COPY с владельцем 1654 (иначе каталог
+# остался бы root и не-root процесс не смог бы писать в /app).
+COPY --from=publish --chown=1654:1654 /app/publish /app
+
+# DataProtection-ключи по умолчанию хранятся в $HOME/.aspnet/DataProtection-Keys:
+# фиксируем HOME=/app, чтобы путь был детерминированным (/app/.aspnet/...),
+# его монтирует оркестратор CloudPanel.
+ENV HOME=/app
+
+# Приложение слушает порт 80 (Urls в appsettings.json перекрывает дефолтные 8080
+# базового образа); не-root контейнеру порт 80 доступен (ip_unprivileged_port_start=0).
+EXPOSE 80
 
 WORKDIR /app
 
-# Copy published output
-COPY --from=publish /app/publish ./
-
 ENTRYPOINT ["dotnet", "Mars.dll"]
-#CMD ["sleep","3600"]

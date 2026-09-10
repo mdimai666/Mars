@@ -1,0 +1,36 @@
+@page "/Post"
+@page "/Post/{POSTTYPE}"
+@inject IStringLocalizer<AppRes> L
+@inject Mars.Admin.Framework.Services.IActAppService actApp
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
+    <SectionActions>
+        @if (!_isSingle)
+        {
+            <XActionsDropDown ContextPart="@POSTTYPE" AlsoShowRootContext="true" />
+        }
+    </SectionActions>
+    <ChildContent>
+
+        @if (POSTTYPE == "NONE-gallery")
+        {
+            <div>
+                @* <Mars.Admin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
+                gallery
+            </div>
+        }
+        else if (_isSingle)
+        {
+            @if (_singlePostId != Guid.Empty)
+            {
+                <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard />
+            }
+        }
+        else
+        {
+            <ManagePostView @ref=_managePostView PostType=@postType />
+        }
+
+    </ChildContent>
+</ContentWrapper>

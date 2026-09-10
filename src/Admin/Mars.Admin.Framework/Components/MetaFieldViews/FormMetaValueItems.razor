@@ -1,0 +1,87 @@
+@using Mars.Cms.Contracts.MetaFields
+
+@if (MetaValues is not null && MetaFields is not null)
+{
+    @foreach (var f in MetaFields.Where(s => !s.Disabled).Where(s => s.Type != MetaFieldType.Query).Where(s => !Client || !s.Hidden).Where(s => s.Options.GetFeatureKey() != FeatureFieldsCatalog.Content).OrderBy(s => s.Order))
+    {
+        var meta = f;
+        <div class=@($"card1rounded-0 mb-3 1p-3 {(Vertical?"FormMetaField_Vertical":"FormMetaField_Row")} {(Client?"":"FormMetaField_Client")}")
+             data-tags="@meta.Tags?.JoinStr(",")" data-key="@meta.Key" title="@meta.Key" @key="meta" >
+            <div class="1card-body 1p-2">
+                @{
+                    var field = MetaValues.FirstOrDefault(s => s.MetaField.Key == meta.Key && s.Index == 0);
+                }
+                @if (meta.Type == MetaFieldType.Relation)
+                {
+                    <div class="d-flex">
+                        <div class="me-2 d-row-meta-value__left">
+                            @meta.Title
+                            @if (!Client)
+                            {
+                                <div class="text-secondary fz10px">@meta.Type</div>
+                            }
+                        </div>
+                        <div class="d-metafield-metavalue-body flex-fill">
+                            @if (meta.IsListKind)
+                            {
+                                <MetaValueChildrenList Meta=@meta />
+                            }
+                            else if (meta.IsMultiple)
+                            {
+                                <MetaValueRelationMulti Meta=@meta />
+                            }
+                            else
+                            {
+                                <MetaValueRelationSingle Meta=@meta />
+                            }
+                        </div>
+                    </div>
+                }
+                else if (meta.Type is MetaFieldType.File or MetaFieldType.Image)
+                {
+                    <div class="d-flex">
+                        <div class="me-2 d-row-meta-value__left">
+                            @meta.Title
+                            @if (!Client)
+                            {
+                                <div class="text-secondary fz10px">@meta.Type</div>
+                            }
+                        </div>
+                        <div class="d-metafield-metavalue-body">
+                            @if (meta.IsMultiple)
+                            {
+                                <MetaValueFileMulti Meta=@meta />
+                            }
+                            else if (field is not null)
+                            {
+                                <Mars.Admin.Framework.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId
+                                                                                     UploadFolder="@meta.UploadFolder"
+                                                                                     DropZoneEnabled="@meta.DropZoneEnabled"
+                                                                                     Accept="@(meta.Type == MetaFieldType.Image ? "image/*" : "*")" />
+                            }
+                        </div>
+                    </div>
+                }
+                else if (field is not null)
+                {
+                    <RowMetaValue @bind-Value=@field Client=@Client />
+                }
+                else
+                {
+                    <div>
+                        field is null : @meta.Title
+                    </div>
+                }
+            </div>
+        </div>
+
+    }
+}
+
+@code {
+    [CascadingParameter] List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [CascadingParameter] List<MetaFieldEditModel> MetaFields { get; set; } = default!;
+
+    [Parameter] public bool Vertical { get; set; }
+    [Parameter] public bool Client { get; set; }
+}

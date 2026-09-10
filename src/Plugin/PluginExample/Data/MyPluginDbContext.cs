@@ -1,8 +1,8 @@
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Contexts.Abstractions;
-using Mars.Host.Data.Options;
-using Mars.Host.Data.PostgreSQL;
+using Mars.Data.Constants;
+using Mars.Data.Contexts;
+using Mars.Data.Contexts.Abstractions;
+using Mars.Data.Options;
+using Mars.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;

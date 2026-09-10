@@ -1,10 +1,11 @@
 using System.Drawing;
 using System.Text.Json.Serialization;
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace.EditorParts;
+
 // This class provides an example of how JavaScript functionality can be wrapped
 // in a .NET class for easy consumption. The associated JavaScript module is
 // loaded on demand when first needed.

@@ -1,0 +1,63 @@
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
+
+namespace Mars.Cms.Abstractions.Mappings.MetaFields;
+
+public static class MetaFieldDetailMapping
+{
+    public static MetaFieldDetailResponse ToDetailResponse(this MetaFieldDto entity)
+        => new()
+        {
+            Id = entity.Id,
+            Title = entity.Title,
+            Type = entity.Type,
+            Description = entity.Description,
+            Disabled = entity.Disabled,
+            Hidden = entity.Hidden,
+            IsNullable = entity.IsNullable,
+            IsMultiple = entity.IsMultiple,
+            Key = entity.Key,
+            MaxValue = entity.MaxValue,
+            MinValue = entity.MinValue,
+            ModelName = entity.ModelName,
+            Default = entity.Default,
+            Options = entity.Options,
+            Order = entity.Order,
+            Tags = entity.Tags,
+            Variants = entity.Variants?.ToResponse(),
+
+        };
+
+    public static MetaValueDetailResponse ToDetailResponse(this MetaValueDetailDto entity)
+        => new()
+        {
+            Id = entity.Id,
+            Index = entity.Index,
+            MetaField = entity.MetaField.ToDetailResponse(),
+
+            Bool = entity.Bool,
+            Int = entity.Int,
+            Float = entity.Float,
+            Decimal = entity.Decimal,
+            Long = entity.Long,
+            StringShort = entity.StringShort,
+            StringText = entity.StringText,
+            DateTime = entity.DateTime,
+            VariantId = entity.VariantId,
+            VariantsIds = entity.VariantsIds,
+            ModelId = entity.ModelId,
+        };
+
+    public static IReadOnlyCollection<MetaFieldDetailResponse> ToDetailResponse(this IReadOnlyCollection<MetaFieldDto> list)
+        => list.Select(ToDetailResponse).ToList();
+
+    public static IReadOnlyCollection<MetaValueDetailResponse> ToDetailResponse(this IReadOnlyCollection<MetaValueDetailDto> list)
+        => list.Select(ToDetailResponse).ToList();
+
+    public static IReadOnlyDictionary<string, MetaFieldDetailResponse> ToDetailResponse(this IReadOnlyDictionary<string, MetaFieldDto> list)
+        => list.ToDictionary(s => s.Key, s => s.Value.ToDetailResponse());
+
+    public static IReadOnlyDictionary<string, MetaValueDetailResponse> ToDetailResponse(this IReadOnlyDictionary<string, MetaValueDetailDto> list)
+        => list.ToDictionary(s => s.Key, s => s.Value.ToDetailResponse());
+
+}

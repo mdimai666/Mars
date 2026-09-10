@@ -14,10 +14,10 @@ public class NodeBasicObj : INodeBasic
     public bool Disabled { get; init; }
 
     public List<NodeInput> Inputs { get; set; } = [];
-    public List<NodeOutput> Outputs { get; init; } = new();
-    public List<string> OutputLabels { get; init; } = new List<string>();
+    public List<NodeOutput> Outputs { get; init; } = [];
+    public List<string> OutputLabels { get; init; } = [];
 
-    public List<List<NodeWire>> Wires { get; init; } = new();
+    public List<List<NodeWire>> Wires { get; init; } = [];
 
     public bool IsConfigNode { get; init; }
 

@@ -1,4 +1,4 @@
-using Mars.Nodes.Front.Shared.Services;
+using Mars.Nodes.Front.Abstractions.Services;
 
 namespace Mars.Nodes.Workspace.ActionManager.Actions.Globals;
 

@@ -1,4 +1,4 @@
-using Mars.Host.Data.Contexts;
+using Mars.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Data;

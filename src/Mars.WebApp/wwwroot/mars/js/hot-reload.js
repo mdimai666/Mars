@@ -4,7 +4,7 @@
 window.addEventListener("load", (event) => {
     /** @type {import('./HubConnection').HubConnection} */
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/_ws/ws")
+        .withUrl("/_ws/admin")
         .configureLogging(signalR.LogLevel.Information)
         .build();
 

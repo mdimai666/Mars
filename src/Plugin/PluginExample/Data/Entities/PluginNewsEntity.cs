@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using PluginExample.Data.Configurations;
 

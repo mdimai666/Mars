@@ -1,17 +1,16 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Host.Controllers;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostCategories;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -19,18 +18,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostCategories;
 
-/// <seealso cref="Mars.Controllers.PostCategoryController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostCategoryController"/>
 public sealed class UpdatePostCategoryTests : ApplicationTests
 {
     const string _apiUrl = "/api/PostCategory";
 
     public UpdatePostCategoryTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.Update);
@@ -44,7 +42,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
         postCategoryType.MetaFields = metaFields;
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<PostCategoryMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();
@@ -126,7 +124,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_UpdateParentSlug_ShouldChildElementRecalcPath()
+    public async Task UpdatePostCategory_UpdateParentSlug_RecalcsChildPaths()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Update);
@@ -179,7 +177,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_UpdateParentElement_ShouldRecalcChildTree()
+    public async Task UpdatePostCategory_UpdateParentElement_RecalcsChildTree()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Update);

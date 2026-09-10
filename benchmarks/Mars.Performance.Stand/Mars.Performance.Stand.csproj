@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Переиспользуем E2EServerFixture (теперь в Mars.Test.AppHost): реальный Kestrel + Testcontainers PostgreSQL + сидинг -->
+        <ProjectReference Include="..\..\tests\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+</Project>

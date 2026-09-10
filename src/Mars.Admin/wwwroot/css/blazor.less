@@ -1,0 +1,160 @@
+/*@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');*/
+
+/*html, body {*/
+/*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
+/*background:red;*/
+/*}*/
+
+/*a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}*/
+
+/*.content {
+    padding-top: 1.1rem;
+}*/
+/*
+.valid.modified:not([type=checkbox]):not(.hide-valid-style) {
+    // outline: 1px solid #26b050;
+    border-color: #28C76F;
+    padding-right: calc(1.45em + 0.876rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'8\' height=\'8\' viewBox=\'0 0 8 8\'%3e%3cpath fill=\'%2328c76f\' d=\'M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z\'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.3625em + 0.219rem) center;
+    background-size: calc(0.725em + 0.438rem) calc(0.725em + 0.438rem);
+}
+
+.invalid:not(.hide-invalid-style) {
+    // outline: 1px solid red;
+    border-color: #EA5455 !important;
+    padding-right: calc(1.45em + 0.876rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'none\' stroke=\'%23ea5455\' viewBox=\'0 0 12 12\'%3e%3ccircle cx=\'6\' cy=\'6\' r=\'4.5\'/%3e%3cpath stroke-linejoin=\'round\' d=\'M5.8 3.6h.4L6 6.5z\'/%3e%3ccircle cx=\'6\' cy=\'8.2\' r=\'.6\' fill=\'%23ea5455\' stroke=\'none\'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.3625em + 0.219rem) center;
+    background-size: calc(0.725em + 0.438rem) calc(0.725em + 0.438rem);
+}
+*/
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: #ffdfd7;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 4000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+
+
+#components-reconnect-modal {
+    background-color: rgb(107, 141, 171) !important;
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#components-reconnect-modal > h5 {
+    color: white !important;
+}
+
+/*a {
+    cursor:pointer;
+}*/
+
+/*.pagination a {
+    user-select: none !important;
+}*/
+
+.spinner-border {
+    border-width: .15em;
+}
+
+//Dashboard items
+/*.bg-success {
+    background-color: #00c689 !important;
+}
+
+.bg-info {
+    background-color: #3da5f4 !important;
+}*/
+
+/////////////////////////////////////////////////////////
+///file uploader
+
+.d-document-uploader {
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    .d-file-list {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .d-file-item {
+            display: flex;
+            width: 104px;
+            height: 104px;
+            padding: 0px;
+            border: 1px solid var(--mars-border-default);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+
+            .d-file-preview-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .d-file-item-actions-top, .d-file-item-actions-bottom {
+                display: flex;
+                z-index: 1;
+                left: 0;
+                right: 0;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            &:hover .d-file-item-actions-top, &:hover .d-file-item-actions-bottom {
+                opacity: 1;
+            }
+
+            .d-file-item-actions-top {
+                position: absolute;
+                top: 0;
+                justify-content: space-between;
+            }
+
+            .d-file-item-actions-bottom {
+                position: absolute;
+                bottom: 0;
+            }
+        }
+    }
+}
+

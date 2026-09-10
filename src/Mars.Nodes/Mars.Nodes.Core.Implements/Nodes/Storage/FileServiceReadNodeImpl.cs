@@ -1,8 +1,9 @@
 using System.Text;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Services;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes.Storage;
-using Mars.Nodes.Host.Shared;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Storage;
@@ -80,7 +81,7 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>
 
     private void ReadAsBuffer(IFileStorage fs, string filepath, NodeMsg input, ExecuteAction callback)
     {
-        var buffer = fs.Read(filepath);
+        var buffer = fs.ReadAllBytes(filepath);
         input.Payload = buffer;
         callback(input);
     }
@@ -101,8 +102,7 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>
     {
         const int bufferSize = 8192;
 
-        fs.Read(filepath, out var fileStream);
-        using (fileStream)
+        using (var fileStream = fs.OpenRead(filepath))
         using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize))
         {
             string? line;
@@ -115,17 +115,5 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>
             }
         }
     }
-
-    //private void ReadAsStream(IFileStorage fs, string filepath, NodeMsg input, ExecuteAction callback)
-    //{
-    //    // Вариант А: Если в IFileStorage есть метод OpenRead (рекомендуемый)
-    //    // var stream = fs.OpenRead(filepath);
-
-    //    // Вариант Б: Если используется ваш текущий API с out параметром
-    //    fs.Read(filepath, out var stream);
-
-    //    input.Payload = stream;
-    //    callback(input);
-    //}
 
 }

@@ -1,0 +1,41 @@
+using FluentAssertions;
+using Mars.Server.Abstractions.Models;
+
+namespace Mars.Server.Tests.Models;
+
+public class VersionTokenHexTests
+{
+    [Fact]
+    public void ToString_Version255_ReturnsFF()
+    {
+        // Arrange
+        uint entityVersion = 255;
+        var hex = new VersionTokenHex(entityVersion);
+        var expect = "FF";
+
+        // Act
+        var result = hex.ToString();
+        var compare = result == expect;
+
+        // Assert
+        expect.Should().Be(result);
+        compare.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ConvertFrom_HexString_EqualsOriginal()
+    {
+        // Arrange
+        var request = "FF";
+
+        // Act
+        VersionTokenHex version = "FF";
+
+        // Assert
+        version.Should().Be(request);
+        if (version != request)// != operator test
+        {
+            Assert.Fail();
+        }
+    }
+}

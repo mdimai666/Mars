@@ -3,18 +3,17 @@ using HandlebarsDotNet;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Host.Shared.Hubs;
 using Mars.HttpSmartAuthFlow;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.ExceptionModule;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Nodes.Abstractions.Models;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Host.Helpers;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.ExceptionModule;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //for NSubstitute
@@ -52,7 +51,7 @@ internal class NodeRuntime : INodeRuntime
 
     private int _assignedCount = 0;
 
-    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher { get; private set; } = default!;
+    public HttpCatchRouteMatcher HttpCatchRouteMatcher { get; private set; } = default!;
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
@@ -142,7 +141,7 @@ internal class NodeRuntime : INodeRuntime
         _assignedCount++;
         _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
 
-        CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
+        HttpCatchRouteMatcher = new HttpCatchRouteMatcher(HttpRegisterdCatchers);
         ErrorHandlerRegistry = new NodesErrorHandlerRegistry(_basicNodesDict.Values.OfType<CatchErrorNode>().Where(node => !node.Disabled));
 
         NodeLifecycleOnAssigned(Nodes, cancellationToken);

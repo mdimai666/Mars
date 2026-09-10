@@ -1,0 +1,92 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Shared.ActionCenter
+@inject NavigationManager Navigation
+@inject IStringLocalizer<AppRes> L
+@inject DeveloperControlService pageService
+@inject ActionCenterService actionCenter
+
+<div class="top-navbar__menu">
+    <nav class="navbar top-navbar 1bg-dark-accent p-1 shadow-sm">
+        <div class="container-fluid px-0 px-sm-2">
+            <div class="hstack w-100 justify-content-between">
+                <div class="leftside d-flex flex-nowrap align-items-center">
+                    <div class="custom-menu">
+                        <button class="icon-button d-block d-md-none" @onclick=ToggleMenu>
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+                    </div>
+                    <a href="#" class="d-flex align-items-center text-black2 flex-shrink-1">
+                        <div class="logo d-none d-xl-block"></div>
+                        <div class="vr mx-3"></div>
+                        <h5 class="mb-0 text-black2 fz24px lines-1">
+                            @*Администрирование «@Q.Site.SiteSettings.SiteName»*@
+                            @Q.Site.SiteSettings.SiteName
+                        </h5>
+                    </a>
+                </div>
+                @if (App.IsDevelopment && false)
+                {
+                    <div>
+                        <span class="me-2 text-black">
+                            <a class="me-1" @onclick=pageService.OpenPageSource>[open source]</a>
+                            <a class="me-1" href="/StyleGuide">[styles]</a>
+                            <a class="me-1" href="/test">[test]</a>
+                        </span>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-none d-md-block">
+                        <button class="ac-trigger" @onclick="OpenActionCenter" title="Палитра команд (F1 / Ctrl+K)">
+                            <i class="bi bi-search me-2"></i>
+                            <span class="ac-trigger-text">Команда или поиск…</span>
+                            <span class="ac-trigger-kbd">F1</span>
+                        </button>
+                    </div>
+                }
+                <div class="d-flex align-items-center">
+                    @* <a class="text-white text-fade me-5">Уведомления</a> *@
+                    <UserBar />
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+@code {
+
+    public int NotifyCount { get; set; }
+
+    [CascadingParameter] AdminLayout mainLayout { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //Q.Root.On(Q.Profile.GetType(), EmitTypeMode.All, OnUpdateProfile);
+
+        Q.Root.On("UpdateNotifyCount", s => UpdateNotifyCount(s));
+    }
+
+    protected void OnUpdateProfile()
+    {
+        StateHasChanged();
+    }
+
+    protected void UpdateNotifyCount(int count)
+    {
+        NotifyCount = count;
+        StateHasChanged();
+    }
+
+    void ToggleMenu()
+    {
+        mainLayout.MenuDrawerVisible = !mainLayout.MenuDrawerVisible;
+    }
+
+    void OpenActionCenter()
+    {
+        actionCenter.Open();
+    }
+
+}

@@ -1,8 +1,8 @@
+using FluentAssertions;
+using Flurl.Http;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.TestControllers;
-using FluentAssertions;
-using Flurl.Http;
 
 namespace Mars.Integration.Tests.Services;
 

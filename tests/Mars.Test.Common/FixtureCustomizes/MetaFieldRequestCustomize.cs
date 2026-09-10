@@ -1,7 +1,7 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Entities;
 
 namespace Mars.Test.Common.FixtureCustomizes;
 
@@ -13,15 +13,38 @@ public sealed class MetaFieldRequestCustomize : ICustomization
         fixture.Customize<CreateMetaFieldRequest>(composer => composer
                                     //.OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
+                                    .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
+                                    // примитивный тип: случайный не пройдёт валидацию целей связей
+                                    .With(s => s.Type, MetaFieldType.String)
                                     .With(s => s.Variants)
+                                    .Without(s => s.Default)
+                                    .Without(s => s.Options)
+                                    );
+
+        fixture.Customize<UpdateMetaFieldRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
+                                    // примитивный тип: случайный не пройдёт валидацию целей связей
+                                    .With(s => s.Type, MetaFieldType.String)
+                                    .With(s => s.Variants)
+                                    .Without(s => s.Default)
+                                    .Without(s => s.Options)
                                     );
 
         fixture.Customize<CreateMetaValueRequest>(composer => composer
                                     //.OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.VariantsIds, [])
+                                    );
+
+        fixture.Customize<CreateMetaFieldVariantRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"variant_{Guid.NewGuid():N}")
+                                    );
+
+        fixture.Customize<UpdateMetaFieldVariantRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"variant_{Guid.NewGuid():N}")
                                     );
 
     }
@@ -34,7 +57,6 @@ public static class MetaValueFixtureCustomizeExtension
         return fixture.Build<CreateMetaValueRequest>()
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.VariantsIds, [])
                                     .Create()
@@ -46,30 +68,30 @@ public static class MetaValueFixtureCustomizeExtension
         return fixture.Build<UpdateMetaValueRequest>()
                                     .OmitAutoProperties()
                                     .With(s => s.Id, metaValueId)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.VariantsIds, [])
                                     .Create()
                                     .SetMetaValue(fixture, type);
     }
 
-    public static MetaValueEntity MetaValueEntity(this IFixture fixture, Guid metaFieldId, EMetaFieldType type)
+    public static TValue MetaValueEntity<TValue>(this IFixture fixture, Guid metaFieldId, EMetaFieldType type)
+        where TValue : MetaValueBase, new()
     {
-        return fixture.Build<MetaValueEntity>()
+        return fixture.Build<TValue>()
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.Type, type)
                                     .Create()
                                     .SetMetaValue(fixture, type);
     }
 
-    public static MetaValueEntity SetMetaValue(this MetaValueEntity mv, IFixture _fixture, EMetaFieldType type)
+    public static TValue SetMetaValue<TValue>(this TValue mv, IFixture _fixture, EMetaFieldType type)
+        where TValue : MetaValueBase
     {
         if (type == EMetaFieldType.Int) mv.Int = _fixture.Create<int>();
         else if (type == EMetaFieldType.Bool) mv.Bool = _fixture.Create<bool>();
-        else if (type == EMetaFieldType.Float) mv.Float = _fixture.Create<float>();
+        else if (type == EMetaFieldType.Float) mv.Float = _fixture.Create<double>();
         else if (type == EMetaFieldType.Decimal) mv.Decimal = _fixture.Create<decimal>();
         else if (type == EMetaFieldType.Long) mv.Long = _fixture.Create<long>();
         else if (type == EMetaFieldType.String) mv.StringShort = _fixture.Create<string>();
@@ -83,7 +105,7 @@ public static class MetaValueFixtureCustomizeExtension
     {
         if (type == EMetaFieldType.Int) mv = mv with { Int = _fixture.Create<int>() };
         else if (type == EMetaFieldType.Bool) mv = mv with { Bool = _fixture.Create<bool>() };
-        else if (type == EMetaFieldType.Float) mv = mv with { Float = _fixture.Create<float>() };
+        else if (type == EMetaFieldType.Float) mv = mv with { Float = _fixture.Create<double>() };
         else if (type == EMetaFieldType.Decimal) mv = mv with { Decimal = _fixture.Create<decimal>() };
         else if (type == EMetaFieldType.Long) mv = mv with { Long = _fixture.Create<long>() };
         else if (type == EMetaFieldType.String) mv = mv with { StringShort = _fixture.Create<string>() };
@@ -97,7 +119,7 @@ public static class MetaValueFixtureCustomizeExtension
     {
         if (type == EMetaFieldType.Int) mv = mv with { Int = _fixture.Create<int>() };
         else if (type == EMetaFieldType.Bool) mv = mv with { Bool = _fixture.Create<bool>() };
-        else if (type == EMetaFieldType.Float) mv = mv with { Float = _fixture.Create<float>() };
+        else if (type == EMetaFieldType.Float) mv = mv with { Float = _fixture.Create<double>() };
         else if (type == EMetaFieldType.Decimal) mv = mv with { Decimal = _fixture.Create<decimal>() };
         else if (type == EMetaFieldType.Long) mv = mv with { Long = _fixture.Create<long>() };
         else if (type == EMetaFieldType.String) mv = mv with { StringShort = _fixture.Create<string>() };
@@ -112,7 +134,7 @@ public static class MetaValueFixtureCustomizeExtension
         var type = mv.MetaField.Type;
         if (type == MetaFieldType.Int) return mv with { Int = _fixture.Create<int>() };
         else if (type == MetaFieldType.Bool) return mv with { Bool = _fixture.Create<bool>() };
-        else if (type == MetaFieldType.Float) return mv with { Float = _fixture.Create<float>() };
+        else if (type == MetaFieldType.Float) return mv with { Float = _fixture.Create<double>() };
         else if (type == MetaFieldType.Decimal) return mv with { Decimal = _fixture.Create<decimal>() };
         else if (type == MetaFieldType.Long) return mv with { Long = _fixture.Create<long>() };
         else if (type == MetaFieldType.String) return mv with { StringShort = _fixture.Create<string>() };

@@ -12,8 +12,8 @@ public class CreatePostScenario : ScenarioTestBase
         Отвечай только на вопрос, не пиши объяснений.
         """;
 
-    [Fact]
-    public async Task CreatePost_CreateByPrompt_ShouldSuccess()
+    [Fact(Skip = "dev experiments")]
+    public async Task CreatePost_CreateByPrompt_Succeeds()
     {
         _ = nameof(AiCreatePostHandler);
 

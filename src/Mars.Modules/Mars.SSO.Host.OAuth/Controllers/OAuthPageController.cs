@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Features;
+using Mars.Server.Abstractions.Features;
 using Mars.SSO.Host.OAuth.interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;

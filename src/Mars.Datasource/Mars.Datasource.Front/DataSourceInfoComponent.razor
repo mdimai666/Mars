@@ -1,5 +1,7 @@
+@using Mars.Contracts.Common
+@using Mars.Datasource
+@using Mars.Datasource.Abstractions.Models
 @using Mars.Datasource.Front.Services;
-@using Mars.Shared.Common
 @using Mars.WebApiClient.Interfaces
 
 <div class="DataSourceInfoComponent">
@@ -20,7 +22,7 @@
 
     @if (Busy)
     {
-        <AppFront.Shared.Components.SharedLoader2 />
+        <Mars.Admin.Framework.Components.SharedLoader2 />
     }
     else if (lastAction != null)
     {
@@ -82,7 +84,7 @@
         Busy = true;
         StateHasChanged();
 
-        var res = await service.ExecuteAction("default", new ExecuteActionRequest { ActionId = actionName, Arguments = [] });
+        var res = await service.ExecuteAction("default", new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
 
         lastAction = res;
 

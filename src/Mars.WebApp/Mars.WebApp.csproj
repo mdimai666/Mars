@@ -1,10 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <UserSecretsId>aspnet-Mars-56F29B15-4FE5-4248-9243-0A24943CC689</UserSecretsId>
 
-        <!--Author-->
-        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>Mars</Product>
@@ -39,23 +37,12 @@
         <!--<NoWarn>1701;1702;1591;0162;0414;1998;8618</NoWarn>-->
     </PropertyGroup>
     <ItemGroup>
-        <Compile Remove="Areas\Identity\**" />
         <Compile Remove="wwwroot\upload\**" />
-        <Content Remove="Areas\Identity\**" />
         <Content Remove="wwwroot\upload\**" />
-        <EmbeddedResource Remove="Areas\Identity\**" />
         <EmbeddedResource Remove="wwwroot\upload\**" />
-        <None Remove="Areas\Identity\**" />
         <None Remove="wwwroot\upload\**" />
-    </ItemGroup>
-    <ItemGroup>
         <Content Remove="compilerconfig.json" />
-        <Content Remove="Pages\DisplayFF1.razor" />
-        <Content Remove="Pages\EditFF1.razor" />
-    </ItemGroup>
-    <ItemGroup>
         <None Include="compilerconfig.json" />
-        <None Include="wwwroot\js\code.js" />
     </ItemGroup>
 
     <ItemGroup>
@@ -63,14 +50,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" />
-        <PackageReference Include="Duende.IdentityServer" />
-        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" />
+        <!-- Roslyn-пин: без прямых ссылок EFCore.Design даёт конфликт CodeAnalysis 5.0.0/5.3.0 (NU1107) -->
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-        <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" -> -->
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -89,61 +80,49 @@
         <PackageReference Include="OpenTelemetry.Resources.Container" />
         <PackageReference Include="OpenTelemetry.Resources.Host" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
-        <PackageReference Include="PhotoSauce.MagicScaler" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
-        <PackageReference Include="ResXResourceReader.NetStandard" />
-        <PackageReference Include="Humanizer" />
-        <PackageReference Include="System.CommandLine" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-        <PackageReference Include="System.Security.Cryptography.Pkcs" />
-    </ItemGroup>
-
-    <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">
-        <ProjectReference Include="..\AppAdmin\AppAdmin.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
-        <ProjectReference Include="..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
-        <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\Server\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
+        <ProjectReference Include="..\Server\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.XActions.Host\Mars.XActions.Host.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Host\Mars.Admin.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Host\Mars.Identity.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Notifications.Host\Mars.Notifications.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.CMS\Mars.SemanticKernel.CMS.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host.OAuth\Mars.SSO.Host.OAuth.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.SSO\Mars.SSO.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Host\Mars.WebApp.Nodes.Host.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Blazor\Mars.WebSiteProcessor.Blazor.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor\Mars.WebSiteProcessor.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-        <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Options.Host\Mars.Options.Host.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored.Host\EditorJsBlazored.Host.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
 
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host\Mars.SSO.Host.csproj" />
 
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Areas\" />
         <Folder Include="data\logs\" />
         <Folder Include="logs\" />
         <Folder Include="Res\Excel\Feedback\" />
@@ -238,35 +217,31 @@
         <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('$([System.IO.Path]::DirectorySeparatorChar)'))))"></RemoveDir>
     </Target>
 
-    <Target Name="CopyAppAdminStaticWebAssets" AfterTargets="Publish">
+    <!-- Файл нужен рантайму (PluginManifestProvider) рядом со сборками для фильтрации фронт-ассетов плагинов -->
+    <Target Name="CopyMarsAdminStaticWebAssets" AfterTargets="Publish">
         <PropertyGroup>
-            <AppAdminEndpointsPath>$(OutputPath)AppAdmin.staticwebassets.endpoints.json</AppAdminEndpointsPath>
+            <MarsAdminEndpointsPath>$(OutputPath)Mars.Admin.staticwebassets.endpoints.json</MarsAdminEndpointsPath>
         </PropertyGroup>
 
-        <Copy SourceFiles="$(AppAdminEndpointsPath)"
-              DestinationFolder="$(PublishDir)"
-              Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Copy SourceFiles="$(MarsAdminEndpointsPath)" DestinationFolder="$(PublishDir)" Condition="Exists('$(MarsAdminEndpointsPath)')" />
 
-        <Message Text="Copied AppAdmin.staticwebassets.endpoints.json to $(PublishDir)"
-                 Importance="high"
-                 Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Message Text="Copied Mars.Admin.staticwebassets.endpoints.json to $(PublishDir)" Importance="high" Condition="Exists('$(MarsAdminEndpointsPath)')" />
 
-        <Warning Text="AppAdmin.staticwebassets.endpoints.json not found at $(AppAdminEndpointsPath)"
-                 Condition="!Exists('$(AppAdminEndpointsPath)')" />
+        <Warning Text="Mars.Admin.staticwebassets.endpoints.json not found at $(MarsAdminEndpointsPath)" Condition="!Exists('$(MarsAdminEndpointsPath)')" />
     </Target>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>$(MSBuildProjectName).Test</_Parameter1>
-        </AssemblyAttribute>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Test.Mars.Host</_Parameter1>
+            <_Parameter1>Mars.Server.Tests</_Parameter1>
         </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.Integration.Tests</_Parameter1>
         </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.WebApiClient.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.Test.AppHost</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

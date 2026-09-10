@@ -1,7 +1,7 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Repositories;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +36,7 @@ internal class SetupDataHelper
     internal async Task<PostDetail[]> SetupPosts(string postTypeName = "myType",
                                                     int postCount = 3,
                                                     Action<PostEntity, int>? postModifyFunc = null,
-                                                    Func<PostEntity, int, List<MetaValueEntity>>? metaValuesCreateFunc = null)
+                                                    Func<PostEntity, int, List<PostMetaValueEntity>>? metaValuesCreateFunc = null)
     {
         var ef = _appFixture.DbFixture.DbContext;
         var postType = await ef.PostTypes.Include(s => s.MetaFields).FirstAsync();
@@ -47,7 +47,7 @@ internal class SetupDataHelper
     internal async Task<PostDetail[]> SetupPosts(PostTypeEntity postType,
                                                 int postCount = 3,
                                                 Action<PostEntity, int>? postModifyFunc = null,
-                                                Func<PostEntity, int, List<MetaValueEntity>>? metaValuesCreateFunc = null)
+                                                Func<PostEntity, int, List<PostMetaValueEntity>>? metaValuesCreateFunc = null)
     {
         var ef = _appFixture.DbFixture.DbContext;
 
@@ -87,7 +87,7 @@ internal class SetupDataHelper
                                     List<MetaFieldEntity>? metaFields = null,
                                     int postCount = 3,
                                     Action<PostEntity, int>? postModifyFunc = null,
-                                    Func<PostEntity, int, List<MetaValueEntity>>? metaValuesCreateFunc = null)
+                                    Func<PostEntity, int, List<PostMetaValueEntity>>? metaValuesCreateFunc = null)
     {
         var postType = await SetupPostType(postTypeName, metaFields);
         var posts = await SetupPosts(postType, postCount, postModifyFunc, metaValuesCreateFunc);

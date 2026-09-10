@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Hubs;
+using Mars.Nodes.Abstractions.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.Test.Common.Mocks;

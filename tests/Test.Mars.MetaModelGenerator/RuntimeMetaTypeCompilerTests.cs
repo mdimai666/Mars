@@ -1,17 +1,17 @@
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Repositories;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.MetaModelGenerator;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,6 @@ public class RuntimeMetaTypeCompilerTests : MetaModelGeneratorTests
 
     public RuntimeMetaTypeCompilerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _runtimeMetaTypeCompiler = new RuntimeMetaTypeCompiler();
     }
 
@@ -52,7 +51,7 @@ public class RuntimeMetaTypeCompilerTests : MetaModelGeneratorTests
         //Arrange
         var (postType, _) = await SetupPostType(createPostCount: 0);
         var newClassName = GenSourceCodeMasterHelper.GetNormalizedTypeName(postType.TypeName);
-        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields.ToArray(), new());
+        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields!.ToArray(), new());
 
         //Act
         var dict = await _runtimeMetaTypeCompiler.Compile([mti], null);
@@ -70,8 +69,7 @@ public class RuntimeMetaTypeCompilerTests : MetaModelGeneratorTests
     async Task<(PostTypeEntity postType, PostDetail[] posts)> SetupPostType(string typeName = "mytype", int createPostCount = 3)
     {
         var postType = _fixture.Create<CreatePostTypeRequest>().ToQuery() with { TypeName = typeName };
-        var metaField = _fixture.Create<MetaFieldDto>() with { Key = "str1", ParentId = Guid.Empty, Type = MetaFieldType.String };
-        //var metaField = new MetaFieldDto() { Key = "str1", ParentId = Guid.Empty, Type = MetaFieldType.String,  };
+        var metaField = _fixture.Create<MetaFieldDto>() with { Key = "str1", Type = MetaFieldType.String };
         postType = postType with { MetaFields = [metaField] };
         var pts = AppFixture.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         var ps = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();

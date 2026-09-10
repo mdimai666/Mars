@@ -4,19 +4,18 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostJsons;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostJsons;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Data.Repositories.Mappings;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.PostJsons;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,6 @@ public class CreatePostJsonTests : ApplicationTests
 
     public CreatePostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -51,7 +49,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_ValidRequest_ShouldSuccess()
+    public async Task CreatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);
@@ -68,7 +66,7 @@ public class CreatePostJsonTests : ApplicationTests
 
         var metaValuesQuery = metaFields.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.ToDto()).SetMetaValue(_fixture)).ToList();
 
-        var metaValuesCreateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesCreateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<CreatePostJsonRequest>() with
         {
@@ -111,7 +109,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePostJson_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -141,7 +139,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_PassSimpleJsonString_ShouldSuccess()
+    public async Task CreatePostJson_PassSimpleJsonString_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);
@@ -172,7 +170,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_PassSimpleJsonStringWithInvalidProp_ShouldFail400()
+    public async Task CreatePostJson_PassSimpleJsonStringWithInvalidProp_Fails400()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);

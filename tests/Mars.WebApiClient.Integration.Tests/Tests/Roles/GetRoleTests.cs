@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Roles;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class GetRoleTests : BaseWebApiClientTests
 
     public GetRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _getTest = new(
             this,
@@ -25,32 +24,32 @@ public class GetRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetRole_Request_Unauthorized()
+    public async Task GetRole_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetRole_ValidRequest_ShouldSuccess()
+    public async Task GetRole_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public void GetRole_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetRole_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
 
 
     [IntegrationFact]
-    public async void ListRole_Request_Unauthorized()
+    public async Task ListRole_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListRole_ValidRequest_ShouldSuccess()
+    public async Task ListRole_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

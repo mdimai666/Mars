@@ -1,0 +1,25 @@
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+
+namespace Mars.Cms.Host.Seeding;
+
+public static class SeedRoles
+{
+    public static void SeedFirstData(MarsDbContext ef)
+    {
+        if (ef.Roles.Count() > 0) return;
+
+        string[] defaultRoles = ["Viewer", "Admin", "Manager", "Developer"];
+
+        var entities = defaultRoles.Select(name => new RoleEntity
+        {
+            Name = name,
+            NormalizedName = name.ToUpper(),
+            ConcurrencyStamp = Guid.NewGuid().ToString(),
+            IsActive = true,
+        });
+
+        ef.Roles.AddRange(entities);
+        ef.SaveChanges();
+    }
+}

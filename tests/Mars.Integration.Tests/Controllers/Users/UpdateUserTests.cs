@@ -1,29 +1,27 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Identity.Contracts.Users;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.Users;
 
-/// <seealso cref="Mars.Controllers.UserController"/>
+/// <seealso cref="Mars.Identity.Host.Controllers.UserController"/>
 public sealed class UpdateUserTests : ApplicationTests
 {
     const string _apiUrl = "/api/User";
 
     public UpdateUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -44,7 +42,7 @@ public sealed class UpdateUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUser_ValidRequest_ShouldSuccess()
+    public async Task UpdateUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.Update);
@@ -55,10 +53,10 @@ public sealed class UpdateUserTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
         var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
-        userType.MetaFields = new(metaFields);
+        userType.MetaFields = metaFields.ToList();
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<UserMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();

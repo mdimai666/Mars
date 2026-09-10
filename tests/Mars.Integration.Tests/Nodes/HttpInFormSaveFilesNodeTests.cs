@@ -2,16 +2,16 @@ using System.Text;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Implements.Nodes.Network;
-using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Nodes;
@@ -24,7 +24,6 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
 
     public HttpInFormSaveFilesNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 
@@ -39,7 +38,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_SaveInMediaFiles_ShouldSaveFile()
+    public async Task Execute_SaveInMediaFiles_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -68,7 +67,6 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
         //Assert
         result.Should().HaveCount(1);
         var fullPath = result[0].UrlRelative.TrimSubstringStart("/upload/");
-        _toRemoveFiles.Add(fullPath);
         result[0].Name.Should().Be(fileName);
         result[0].UrlRelative.Should().Be($"/upload/media/{DateTime.Now.Year}/q/filefield/{fileName}");
         // fileStorage может быть виртуальным.
@@ -77,7 +75,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_AllowSaveFileOutsideUploads_ShouldSaveFile()
+    public async Task Execute_AllowSaveFileOutsideUploads_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -108,14 +106,13 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_IFileStorage_ShouldSaveFile()
+    public async Task Execute_IFileStorage_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(HttpInFormSaveFilesNodeImpl.Execute);
         var client = AppFixture.GetClient();
-        var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        var hostingInfo = optionService.FileHostingInfo();
+        var fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
 
         var fileContent = "TEST-text";
         var fileName = "file1.txt";
@@ -135,9 +132,8 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
 
         //Assert
         result.Should().HaveCount(1);
-        var fullPath = hostingInfo.FileAbsolutePath(result[0]);
-        _toRemoveFiles.Add(fullPath);
-        File.Exists(fullPath).Should().BeTrue();
+        // fileStorage может быть виртуальным.
+        fileStorage.FileExists(result[0]).Should().BeTrue();
     }
 
     private MemoryStream GenerateStreamFromString(string value)

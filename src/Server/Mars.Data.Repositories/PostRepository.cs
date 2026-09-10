@@ -1,0 +1,453 @@
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
+using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
+using Mars.Data.Repositories.Mappings;
+using Microsoft.EntityFrameworkCore;
+
+namespace Mars.Data.Repositories;
+
+internal class PostRepository : IPostRepository
+{
+    private readonly MarsDbContext _marsDbContext;
+    private bool _disposed;
+
+    IQueryable<PostEntity> _listAllQuery => _marsDbContext.Posts.OrderByDescending(s => s.CreatedAt);
+
+    public PostRepository(MarsDbContext marsDbContext)
+    {
+        _marsDbContext = marsDbContext;
+    }
+
+    public async Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
+        => (await _marsDbContext.Posts.AsNoTracking()
+                                        .Include(s => s.PostType)
+                                        .Include(s => s.PostStatus)
+                                        .Include(s => s.User)
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToSummary();
+
+    IQueryable<PostEntity> InternalDetail => _marsDbContext.Posts.AsNoTracking()
+                                        .Include(s => s.PostType)
+                                        .Include(s => s.PostStatus)
+                                        .Include(s => s.User)
+                                        .Include(s => s.MetaValues!)
+                                            .ThenInclude(s => s.MetaField)
+                                        .Include(s => s.Categories);
+
+    public async Task<PostDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToDetail();
+
+    // Регистронезависимое сравнение через lower() вместо ILike: только так планировщик
+    // PostgreSQL берёт выражение-индекс ix_posts_post_type_id_slug_lower (ILike остаётся seq scan'ом).
+#pragma warning disable CA1862, CA1304, CA1311 // Сравнение выполняется в PostgreSQL как lower(slug) = lower(@p),
+    // а не в .NET: рекомендации анализатора (string.Equals(StringComparison), ToLower(CultureInfo))
+    // не транслируются Npgsql в SQL (проверено: 500 в интеграционных тестах).
+    public async Task<PostDetail?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken)
+#pragma warning disable RCS1155 // Use StringComparison when comparing strings
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.PostType.TypeName == type
+                                                            && s.Slug.ToLower() == slug.ToLower(), cancellationToken))
+                                        ?.ToDetail();
+#pragma warning restore RCS1155 // Use StringComparison when comparing strings
+#pragma warning restore CA1862, CA1304, CA1311
+
+    public async Task<PostEditDetail?> GetPostEditDetail(Guid id, CancellationToken cancellationToken)
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToEditDetail();
+
+    public async Task<Guid> Create(CreatePostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var postType = await _marsDbContext.PostTypes.Include(s => s.Statuses)
+                                                     .FirstAsync(s => s.TypeName == query.Type);
+
+        var entity = query.ToEntity(postType);
+
+        await _marsDbContext.Posts.AddAsync(entity, cancellationToken);
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+        _marsDbContext.Entry(entity).State = EntityState.Detached;
+
+        return entity.Id;
+    }
+
+    public async Task Update(UpdatePostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var entity = await _marsDbContext.Posts.Include(s => s.PostType)
+                                                    .ThenInclude(s => s!.Statuses)
+                                                .Include(s => s.MetaValues!)
+                                                    .ThenInclude(s => s.MetaField)
+                                                .Include(s => s.PostPostCategories)
+                                                .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
+                                                ?? throw new NotFoundException();
+
+        entity.UpdateEntity(query);
+
+        if (query.MetaValues is not null)
+        {
+            MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
+        }
+
+        var targetType = entity.PostType!;
+        if (targetType.TypeName != query.Type)
+        {
+            targetType = await _marsDbContext.PostTypes.Include(s => s.Statuses)
+                                                       .FirstAsync(s => s.TypeName == query.Type);
+            entity.PostTypeId = targetType.Id;
+        }
+        entity.StatusId = PostMapping.ResolveStatusId(targetType, query.Status);
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+        _marsDbContext.Entry(entity).State = EntityState.Detached;
+    }
+
+    public async Task UpsertMetaValuesAsync(IReadOnlyCollection<PostMetaValueUpsert> items, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(items, nameof(items));
+        if (items.Count == 0) return;
+
+        var postIds = items.Select(s => s.PostId).Distinct().ToList();
+        var posts = await _marsDbContext.Posts
+            .Include(s => s.MetaValues)
+            .Where(s => postIds.Contains(s.Id))
+            .ToListAsync(cancellationToken);
+
+        var fieldIds = items.Select(s => s.MetaField.Id).Distinct().ToList();
+        var fields = await _marsDbContext.MetaFields
+            .Where(s => fieldIds.Contains(s.Id))
+            .ToDictionaryAsync(s => s.Id, cancellationToken);
+
+        foreach (var item in items)
+        {
+            var post = posts.FirstOrDefault(s => s.Id == item.PostId)
+                ?? throw new NotFoundException($"post '{item.PostId}' not found");
+            var field = fields[item.MetaField.Id];
+
+            var row = post.MetaValues!.Where(v => v.MetaFieldId == field.Id)
+                                      .OrderBy(v => v.Index)
+                                      .FirstOrDefault();
+
+            if (row is null)
+            {
+                row = new PostMetaValueEntity
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    MetaFieldId = field.Id,
+                    Type = field.Type,
+                    Index = 0,
+                    CreatedAt = DateTimeOffset.Now,
+                };
+                post.MetaValues.Add(row);
+                await _marsDbContext.PostMetaValues.AddAsync(row, cancellationToken);
+            }
+
+            row.Set(field, item.Value);
+            row.ModifiedAt = DateTimeOffset.Now;
+        }
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task Delete(Guid id, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        var entity = await _marsDbContext.Posts.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+
+        if (entity is null) throw new NotFoundException();
+
+        _marsDbContext.Remove(entity);
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<int> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.Posts.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Throws if this class has been disposed.
+    /// </summary>
+    protected void ThrowIfDisposed()
+    {
+        ObjectDisposedThrowHelper.ThrowIf(_disposed, this);
+    }
+
+    /// <summary>
+    /// Dispose the store
+    /// </summary>
+    public void Dispose()
+    {
+        _disposed = true;
+    }
+
+    private IQueryable<PostEntity> ListAllInternal(ListAllPostQuery query)
+    {
+        return _listAllQuery.AsNoTracking()
+                            .Include(s => s.PostType)
+                            .Include(s => s.PostStatus)
+                            .Include(s => s.User)
+                            .Where(s => (query.Ids == null || query.Ids.Contains(s.Id))
+                                        && (query.Type == null || s.PostType.TypeName == query.Type));
+    }
+
+    public async Task<IReadOnlyCollection<PostSummary>> ListAll(ListAllPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        var list = ListAllInternal(query);
+
+        return (await list.ToListAsync(cancellationToken)).ToSummaryList();
+    }
+
+    public async Task<IReadOnlyCollection<PostDetail>> ListAllDetail(ListAllPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        var list = ListAllInternal(query).Include(s => s.MetaValues!)
+                                            .ThenInclude(s => s.MetaField)
+                                        .Include(s => s.Categories);
+
+        return (await list.ToListAsync(cancellationToken)).ToDetailList();
+    }
+
+    async Task<IQueryable<PostEntity>> ListFilterQueryAsync(ListPostQuery query, CancellationToken cancellationToken)
+    {
+        var q = _listAllQuery.AsNoTracking()
+                            .Include(s => s.PostType)
+                            .Include(s => s.PostStatus)
+                            .Include(s => s.User)
+                            .Where(s => query.Type == null || s.PostType.TypeName == query.Type);
+
+        if (query.Ids is { Count: > 0 })
+            q = q.Where(s => query.Ids.Contains(s.Id));
+
+        if (query.CategoryId is not null)
+        {
+            q = q.Include(s => s.Categories);
+            if (query.FilterIncludeDescendantsCategories)
+                q = q.Where(s => s.Categories!.Any(x => x.Path.Contains(query.CategoryId.ToString()!)));
+            else
+                q = q.Where(s => s.Categories!.Any(x => x.Id == query.CategoryId));
+        }
+        else if (query.IncludeCategory) q = q.Include(s => s.Categories);
+
+        q = q.Where(s => query.Search == null
+                        || (EF.Functions.ILike(s.Id.ToString(), query.Search)
+                            || EF.Functions.ILike(s.Slug, $"%{query.Search}%")
+                            || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+
+        return await ApplyGridFiltersAsync(q, query, cancellationToken);
+    }
+
+    /// <summary>Фильтры колонок грида: базовые колонки + значения мета-полей</summary>
+    async Task<IQueryable<PostEntity>> ApplyGridFiltersAsync(IQueryable<PostEntity> q, ListPostQuery query, CancellationToken cancellationToken)
+    {
+        if (query.Filters is not { Count: > 0 }) return q;
+
+        Dictionary<string, MetaFieldEntity>? metaFields = null;
+
+        foreach (var filter in query.Filters)
+        {
+            if (string.IsNullOrEmpty(filter.Key) || string.IsNullOrEmpty(filter.Op)) continue;
+
+            switch (filter.Key)
+            {
+                case PostTypeGridConstants.Title when filter.Op == PostGridFilterOps.Contains && !string.IsNullOrWhiteSpace(filter.Value):
+                    var titlePattern = $"%{filter.Value.Trim()}%";
+                    q = q.Where(p => EF.Functions.ILike(p.Title, titlePattern));
+                    break;
+
+                case PostTypeGridConstants.Author when filter.Op == PostGridFilterOps.Contains && !string.IsNullOrWhiteSpace(filter.Value):
+                    var authorPattern = $"%{filter.Value.Trim()}%";
+                    q = q.Where(p => p.User != null && EF.Functions.ILike(p.User.UserName, authorPattern));
+                    break;
+
+                case PostTypeGridConstants.CreatedAt when DateTimeOffset.TryParse(filter.Value, out var date):
+                    q = filter.Op == PostGridFilterOps.Gte ? q.Where(p => p.CreatedAt >= date)
+                      : filter.Op == PostGridFilterOps.Lte ? q.Where(p => p.CreatedAt <= date)
+                      : q;
+                    break;
+
+                case PostTypeGridConstants.Status when filter.Op == PostGridFilterOps.In && filter.Values is { Length: > 0 } statusSlugs:
+                    q = q.Where(p => p.PostStatus != null && statusSlugs.Contains(p.PostStatus.Slug));
+                    break;
+
+                case PostTypeGridConstants.Categories:
+                    // у страницы собственный фильтр по категориям (CategoryId) — здесь не дублируем
+                    break;
+
+                default:
+                    // колонка мета-поля — нужен тип поста, чтобы найти поле по ключу
+                    if (query.Type is null) break;
+
+                    metaFields ??= await _marsDbContext.MetaFields
+                        .Where(f => f.PostType.TypeName == query.Type)
+                        .ToDictionaryAsync(f => f.Key, cancellationToken);
+
+                    if (!metaFields.TryGetValue(filter.Key, out var field)) break;
+
+                    q = q.Where(PostGridMetaFilterExpressions.Build(field.Id, field.Type, filter));
+                    break;
+            }
+        }
+
+        return q;
+    }
+
+    ListPostQuery RewriteSorting(ListPostQuery query, ref IQueryable<PostEntity> queryable)
+    {
+        if (query.Sort.IsNullOrEmpty()) return query;
+
+        var sortColumnName = query.Sort.TrimStart('-');
+        var desc = query.Sort.StartsWith('-');
+        if (sortColumnName.Equals(nameof(PostListItemResponse.Categories), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.Categories!.FirstOrDefault().Slug)
+                        : queryable.OrderBy(s => s.Categories!.FirstOrDefault().Slug);
+        }
+        else if (sortColumnName.Equals(nameof(PostListItemResponse.Author), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.User.UserName)
+                        : queryable.OrderBy(s => s.User.UserName);
+        }
+        else if (sortColumnName.Equals(nameof(PostListItemResponse.Status), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.PostStatus!.Slug)
+                        : queryable.OrderBy(s => s.PostStatus!.Slug);
+        }
+        return query;
+    }
+
+    public async Task<ListDataResult<PostSummary>> List(ListPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var queryable = await ListFilterQueryAsync(query, cancellationToken);
+        query = RewriteSorting(query, ref queryable);
+
+        var list = await queryable.ToListDataResult(query, cancellationToken);
+
+        return list.ToMap(PostMapping.ToSummaryList);
+    }
+
+    public async Task<PagingResult<PostSummary>> ListTable(ListPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var queryable = await ListFilterQueryAsync(query, cancellationToken);
+        query = RewriteSorting(query, ref queryable);
+
+        var list = await queryable.ToPagingResult(query, cancellationToken);
+
+        return list.ToMap(PostMapping.ToSummaryList);
+    }
+
+    public async Task<ListDataResult<PostDetail>> ListDetail(ListPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        IQueryable<PostEntity> queryable = (await ListFilterQueryAsync(query, cancellationToken)).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+                                                                .Include(s => s.Categories);
+        query = RewriteSorting(query, ref queryable);
+
+        var list = await queryable.ToListDataResult(query, cancellationToken);
+
+        return list.ToMap(PostMapping.ToDetailList);
+    }
+
+    public async Task<PagingResult<PostDetail>> ListTableDetail(ListPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        IQueryable<PostEntity> queryable = (await ListFilterQueryAsync(query, cancellationToken)).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+                                                                .Include(s => s.Categories);
+        query = RewriteSorting(query, ref queryable);
+
+        var list = await queryable.ToPagingResult(query, cancellationToken);
+
+        return list.ToMap(PostMapping.ToDetailList);
+    }
+
+    //============================
+    //Extra methods
+    public async Task<PostDetailWithType?> PostDetailWithType(Guid id, CancellationToken cancellationToken)
+                                    => (await InternalDetail
+                                        .Include(s => s.PostType)
+                                            .ThenInclude(s => s.MetaFields)
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToDetailWithType();
+
+    public Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken)
+                        => _marsDbContext.Posts.AsNoTracking().AnyAsync(s => s.Id == id, cancellationToken);
+
+    public Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken)
+#pragma warning disable RCS1155 // Use StringComparison when comparing strings
+                        => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug.ToLower() == slug.ToLower(), cancellationToken);
+#pragma warning restore RCS1155 // Use StringComparison when comparing strings
+
+    public Task<int> CountByTypeAsync(Guid postTypeId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        return _marsDbContext.Posts.AsNoTracking()
+                                   .CountAsync(s => s.PostTypeId == postTypeId, cancellationToken);
+    }
+
+    public async Task<PostDetail?> GetFirstByTypeAsync(string typeName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentException.ThrowIfNullOrEmpty(typeName, nameof(typeName));
+
+        return (await InternalDetail
+                    .Where(s => s.PostType.TypeName == typeName)
+                    .OrderBy(s => s.CreatedAt)
+                    .FirstOrDefaultAsync(cancellationToken))
+                    ?.ToDetail();
+    }
+
+}

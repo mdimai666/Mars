@@ -1,12 +1,14 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Dto;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
 using Mars.Nodes.Core.Nodes.Storage;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Dto;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using static Mars.Nodes.Core.Nodes.Storage.FileWriteNode;
 
@@ -90,7 +92,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
         }
         else if (physicalExists)
         {
-            fs.Delete(path);
+            fs.DeleteFile(path);
         }
     }
 
@@ -152,7 +154,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
     {
         if (isAppend)
         {
-            var original = fs.FileExists(path) ? fs.Read(path) : Array.Empty<byte>();
+            var original = fs.FileExists(path) ? fs.ReadAllBytes(path) : Array.Empty<byte>();
             using var ms = new MemoryStream(original.Length + buffer.Length);
             ms.Write(original, 0, original.Length);
             ms.Write(buffer, 0, buffer.Length);
@@ -172,7 +174,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
     {
         if (isAppend)
         {
-            var original = fs.FileExists(path) ? fs.Read(path) : Array.Empty<byte>();
+            var original = fs.FileExists(path) ? fs.ReadAllBytes(path) : Array.Empty<byte>();
             using var ms = new MemoryStream();
             ms.Write(original, 0, original.Length);
             await stream.CopyToAsync(ms);

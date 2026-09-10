@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.MetaModelGenerator;
@@ -33,7 +33,8 @@ internal class MetaEntityTypeProvider : IMetaEntityTypeProvider
                 new MetaTypeInfo(
                     GenSourceCodeMasterHelper.GetNormalizedTypeName(postType.TypeName),
                     typeof(PostEntity),
-                    postType.MetaFields.ToArray(),
+                    // Query-поля вычислимые и не имеют хранимой колонки — в Mto-модель не попадают
+                    postType.MetaFields.Where(f => f.Type != EMetaFieldType.Query).ToArray(),
                     new DisplayAttribute() { Name = postType.Title, Description = "" })
                 );
         }

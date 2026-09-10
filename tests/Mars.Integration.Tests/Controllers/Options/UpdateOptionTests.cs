@@ -1,21 +1,20 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Repositories;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Options;
+using Mars.Options.Abstractions.Repositories;
+using Mars.Options.Abstractions.Services;
+using Mars.Options.Host.Controllers;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Options;
 
-/// <seealso cref="Mars.Controllers.OptionController"/>
+/// <seealso cref="Mars.Options.Host.Controllers.OptionController"/>
 public class UpdateOptionTests : ApplicationTests
 {
     const string _apiUrl = "/api/Option";
@@ -24,7 +23,6 @@ public class UpdateOptionTests : ApplicationTests
 
     public UpdateOptionTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _optionRepository = appFixture.ServiceProvider.GetRequiredService<IOptionRepository>();
     }
@@ -48,7 +46,7 @@ public class UpdateOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateOption_ValidRequest_ShouldSuccess()
+    public async Task UpdateOption_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(OptionController.SaveOption);
@@ -74,15 +72,15 @@ public class UpdateOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task SaveSysOptions_AnonimRequest_Unauthorized()
+    public async Task SaveSiteSettings_AnonimRequest_Unauthorized()
     {
         //Arrange
-        _ = nameof(OptionController.SaveSysOptions);
+        _ = nameof(OptionController.SaveSiteSettings);
         _ = nameof(OptionRepository.Update);
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl, "SysOptions").AllowAnyHttpStatus().PutJsonAsync(new SysOptions());
+        var result = await client.Request(_apiUrl, "SiteSettings").AllowAnyHttpStatus().PutJsonAsync(new SiteSettings());
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);

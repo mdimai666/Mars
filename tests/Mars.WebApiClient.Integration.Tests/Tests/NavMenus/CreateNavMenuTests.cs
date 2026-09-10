@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class CreateNavMenuTests : BaseWebApiClientTests
 
     public CreateNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.NavMenu.Create(req));
     }
@@ -26,7 +25,7 @@ public class CreateNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task CreateNavMenu_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

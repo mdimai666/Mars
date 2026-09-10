@@ -1,18 +1,17 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Contracts.UserTypes;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,6 @@ public class UpdateUserTypeTests : ApplicationTests
 
     public UpdateUserTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -48,7 +46,7 @@ public class UpdateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUserType_ValidRequest_ShouldSuccess()
+    public async Task UpdateUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Update);
@@ -113,7 +111,7 @@ public class UpdateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUserType_WithDuplicateName_ShouldReturnValidationError()
+    public async Task UpdateUserType_WithDuplicateName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserTypeController.Update);

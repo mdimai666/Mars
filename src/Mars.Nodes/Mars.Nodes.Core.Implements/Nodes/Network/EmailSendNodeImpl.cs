@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Shared.Dto.Emails;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Nodes.Host.Shared;
-using Mars.Shared.Options;
+using Mars.Notifications.Abstractions;
+using Mars.Notifications.Contracts;
+using Mars.Options.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;

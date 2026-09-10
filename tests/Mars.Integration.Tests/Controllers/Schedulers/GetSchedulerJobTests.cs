@@ -1,12 +1,12 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Scheduler;
+using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Scheduler.Abstractions;
+using Mars.Scheduler.Contracts.Schedulers;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,6 @@ public class GetSchedulerJobTests : ApplicationTests
 
     public GetSchedulerJobTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _scheduler = AppFixture.ServiceProvider.GetRequiredService<ISchedulerManager>();
         _scheduler.Clear().RunSync();
     }
@@ -41,7 +40,7 @@ public class GetSchedulerJobTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListSchedulerJob_Request_ShouldSuccess()
+    public async Task ListSchedulerJob_Request_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.JobListTable);

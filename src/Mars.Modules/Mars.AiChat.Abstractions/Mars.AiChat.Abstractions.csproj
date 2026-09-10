@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.AiChat.Abstractions</PackageId>
+        <Description>Mars AI chat server abstractions: services and extension points.</Description>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -2,8 +2,8 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.E2E.Tests.Fixtures;
+using Mars.Identity.Contracts.Auth;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.Auth;
 using Mars.Test.Common.Constants;
 using Microsoft.Playwright;
 
@@ -17,6 +17,7 @@ public class BaseE2ETestsAppCollection : ICollectionFixture<E2EServerFixture>
 [Collection("E2ETestApp")]
 public class BaseE2ETests : IAsyncLifetime
 {
+    //public const string? SkipE2ETests = null;
     public const string? SkipE2ETests = "Skip";
 
     protected readonly E2EServerFixture AppFixture;
@@ -48,7 +49,7 @@ public class BaseE2ETests : IAsyncLifetime
         );
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
@@ -66,7 +67,7 @@ public class BaseE2ETests : IAsyncLifetime
             await AuthorizeAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Context.CloseAsync();
         await Browser.CloseAsync();
@@ -82,7 +83,7 @@ public class BaseE2ETests : IAsyncLifetime
         if (_cookie is null)
         {
             var response = await AppFixture.GetClient(true).Request("/api/Account/Login")
-                                        .PostJsonAsync(new AuthCreditionalsRequest
+                                        .PostJsonAsync(new AuthCredentialsRequest
                                         {
                                             Login = UserConstants.TestUserUsername,
                                             Password = UserConstants.TestUserPassword

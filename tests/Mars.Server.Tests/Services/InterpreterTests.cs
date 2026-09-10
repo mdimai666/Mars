@@ -1,0 +1,28 @@
+using Mars.SiteEngine.Abstractions.Templators;
+
+namespace Mars.Server.Tests.Services;
+
+public class InterpreterTests
+{
+
+    [Fact]
+    public void Eval_SimpleExpression_Succeeds()
+    {
+        XInterpreter ppt = new();
+
+        var result = ppt.Get.Eval<int>("1+1");
+
+        Assert.Equal(2, result);
+    }
+
+    [Fact]
+    public void Eval_UseVariable_Succeeds()
+    {
+        XInterpreter ppt = new();
+
+        var result = ppt.Get.Eval<int>("1+x", new DynamicExpresso.Parameter("x", 2));
+
+        Assert.Equal(3, result);
+    }
+
+}

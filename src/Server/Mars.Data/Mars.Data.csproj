@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Data</PackageId>
+        <Product>Mars.Data</Product>
+        <Description>
+            Mars data layer: database entities and the shared MarsDbContext.
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="EFCore.NamingConventions" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,12 +1,12 @@
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Repositories;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Data.Common;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.MetaModelGenerator;
@@ -23,7 +23,6 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
 
     public ModelEfRequestRuntimeCompiledTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _runtimeMetaTypeCompiler = new RuntimeMetaTypeCompiler();
     }
 
@@ -47,7 +46,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         var mfKey = $"key_{type}".ToLower();
 
         var mf = new MetaFieldEntity() { Key = mfKey, Type = type, Id = mfId, Title = $"Title - {mfKey}" };
-        MetaValueEntity mv;
+        PostMetaValueEntity mv;
 
         if (type == EMetaFieldType.Select)
         {
@@ -61,11 +60,11 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         }
         else
         {
-            mv = _fixture.MetaValueEntity(mfId, type);
+            mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mfId, type);
         }
 
         var (postType, _) = await SetupPostType2(typeName, [mf], [mv]);
-        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields.ToArray(), new());
+        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields!.ToArray(), new());
         var dict = await _runtimeMetaTypeCompiler.Compile([mti], null);
         var compiledType = dict[newClassName];
 
@@ -138,7 +137,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
 
     async Task<(PostTypeEntity postType, PostDetail[] posts)> SetupPostType2(string postTypeName,
                                                                                     List<MetaFieldEntity> metaFields,
-                                                                                    List<MetaValueEntity> metaValues)
+                                                                                    List<PostMetaValueEntity> metaValues)
     {
         //var pts = AppFixture.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         var ps = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();

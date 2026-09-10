@@ -1,15 +1,17 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Contracts.Files;
+using Mars.Media.Contracts.Options;
+using Mars.Media.Host.Controllers;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,19 +21,18 @@ public class DeleteMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media";
     private readonly IOptionService _optionService;
-    private readonly FileHostingInfo _fileHostingInfo;
+    private readonly IFileStorage _fileStorage;
     private readonly MediaOption _mediaOption;
     private readonly string _exampleFilesPath;
 
     public DeleteMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        _fileHostingInfo = _optionService.FileHostingInfo();
+        _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
         _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
-        _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
+        _exampleFilesPath = SolutionPathHelper.Resolve("tests", "Mars.Integration.Tests", "Controllers", "Medias", "ExampleFiles");
 
     }
 
@@ -41,7 +42,7 @@ public class DeleteMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Delete_ValidRequest_ShouldSuccess()
+    public async Task Delete_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Delete);
@@ -64,12 +65,11 @@ public class DeleteMediaTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == uploadFile.Id);
         dbFile.Should().BeNull();
-        var fullPath = _fileHostingInfo.FileAbsolutePath(uploadFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeFalse();
+        _fileStorage.FileExists(uploadFile.FilePhysicalPath).Should().BeFalse();
     }
 
     [IntegrationFact]
-    public async Task DeleteMany_ValidRequest_ShouldSuccess()
+    public async Task DeleteMany_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.DeleteMany);
@@ -92,8 +92,7 @@ public class DeleteMediaTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == uploadFile.Id);
         dbFile.Should().BeNull();
-        var fullPath = _fileHostingInfo.FileAbsolutePath(uploadFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeFalse();
+        _fileStorage.FileExists(uploadFile.FilePhysicalPath).Should().BeFalse();
     }
 
 }

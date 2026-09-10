@@ -23,7 +23,7 @@ public class PostgresFixture : IAsyncLifetime
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
 
@@ -34,7 +34,7 @@ public class PostgresFixture : IAsyncLifetime
         //    new RespawnerOptions { DbAdapter = DbAdapter.Postgres });
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _container.DisposeAsync();
     }

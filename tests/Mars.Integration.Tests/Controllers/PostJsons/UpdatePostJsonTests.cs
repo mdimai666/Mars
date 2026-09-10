@@ -2,18 +2,17 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostJsons;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostJsons;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Data.Repositories.Mappings;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.PostJsons;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,6 @@ public class UpdatePostJsonTests : ApplicationTests
 
     public UpdatePostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -48,7 +46,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Update);
@@ -62,7 +60,7 @@ public class UpdatePostJsonTests : ApplicationTests
         postType.MetaFields = metaFields;
         var metaValues = metaFields.ConvertAll(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         });
@@ -72,7 +70,7 @@ public class UpdatePostJsonTests : ApplicationTests
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
         var metaValuesQuery = metaValues.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.MetaField!.ToDto(), s.Id).SetMetaValue(_fixture)).ToList();
-        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<UpdatePostJsonRequest>() with
         {
@@ -116,7 +114,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_UpdateNonWrittedValueMetaValueRequest_ShouldSuccess()
+    public async Task UpdatePostJson_UpdateNonWrittedValueMetaValueRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Update);
@@ -135,12 +133,12 @@ public class UpdatePostJsonTests : ApplicationTests
 
         var metaValues = metaFields.ConvertAll(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         });
         var metaValuesQuery = metaValues.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.MetaField!.ToDto(), s.Id).SetMetaValue(_fixture)).ToList();
-        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<UpdatePostJsonRequest>() with
         {
@@ -184,7 +182,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidateQueryValidator_ShouldFail()
+    public async Task UpdatePostJson_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Update);

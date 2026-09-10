@@ -127,7 +127,7 @@ public partial class BlazoredHtml
                                 //will cast
                                 object? castedValue;
 
-                                //if blazor component have BOOL attrubute - default will be TRUE
+                                //if blazor component have BOOL attribute - default will be TRUE
                                 if (a.Value == "" && prop.PropertyType == typeof(bool))
                                 {
                                     ////Type type = prop.PropertyType;

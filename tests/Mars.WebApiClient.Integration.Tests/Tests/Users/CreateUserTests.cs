@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Users;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class CreateUserTests : BaseWebApiClientTests
 
     public CreateUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.User.Create(req));
     }
@@ -25,7 +24,7 @@ public class CreateUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateUser_ValidRequest_ShouldSuccess()
+    public async Task CreateUser_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

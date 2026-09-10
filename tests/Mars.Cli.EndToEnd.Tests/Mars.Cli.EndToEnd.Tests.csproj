@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Testing.Platform" />
+        <PackageReference Include="xunit.v3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Mars.CommandLine: сокет-хелперы и stub-сервер; Mars.WebApp: гарантирует сборку Mars.dll, которую запускают тесты -->
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
+        <ProjectReference Include="..\..\src\Mars.WebApp\Mars.WebApp.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+</Project>

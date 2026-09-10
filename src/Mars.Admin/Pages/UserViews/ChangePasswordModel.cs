@@ -1,0 +1,31 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Contracts.Resources;
+using Mars.Identity.Contracts.Users;
+using Mars.WebApiClient.Interfaces;
+
+namespace Mars.Admin.Pages.UserViews;
+
+public class ChangePasswordModel
+{
+    public Guid UserId { get; set; }
+
+    [Display(Name = nameof(AppRes.NewPassword), ResourceType = typeof(AppRes))]
+    [Length(6, 30, ErrorMessageResourceName = nameof(AppRes.v_range), ErrorMessageResourceType = typeof(AppRes))]
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    public string NewPassword { get; set; } = "";
+
+    public SetUserPasswordByIdRequest ToRequest()
+        => new()
+        {
+            UserId = UserId,
+            NewPassword = NewPassword,
+        };
+
+    public static async Task<ChangePasswordModel> SaveAction(IMarsWebApiClient client, ChangePasswordModel data)
+    {
+        if (data.UserId == Guid.Empty) throw new ArgumentException("UserId cannot be empty");
+        var result = await client.User.SetPassword(data.ToRequest());
+        return data;
+    }
+
+}

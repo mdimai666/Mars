@@ -1,6 +1,6 @@
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 
 namespace Mars.WebApiClient.Interfaces;
 

@@ -1,8 +1,8 @@
+using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Server.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
-using Mars.Controllers;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.AppDebugs;
 
@@ -10,7 +10,6 @@ public class GetAppDebugTests : BaseWebApiClientTests
 {
     public GetAppDebugTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     //[IntegrationFact]
@@ -29,7 +28,7 @@ public class GetAppDebugTests : BaseWebApiClientTests
     //}
 
     [IntegrationFact]
-    public async Task LogFiles_Request_ShouldSuccess()
+    public async Task LogFiles_Request_Succeeds()
     {
         //Arrange
         _ = nameof(AppDebugController.LogFiles);

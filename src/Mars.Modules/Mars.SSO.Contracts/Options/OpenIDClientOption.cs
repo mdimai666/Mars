@@ -1,0 +1,135 @@
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Mars.Core.Attributes;
+
+namespace Mars.SSO.Contracts.Options;
+
+[Display(Name = "OpenID Client")]
+
+public class OpenIDClientOption
+{
+
+    public List<OpenIDClientConfig> OpenIDClientConfigs { get; set; } = [];
+
+    [JsonIgnore]
+    public static Dictionary<string, string> DriverList { get; } = new()
+    {
+        ["mars"] = "Mars",
+        ["keycloak"] = "Keycloak",
+        ["google"] = "Google",
+        ["github"] = "Github",
+        ["microsoft"] = "Microsoft/AzureAD",
+    };
+
+    public static Dictionary<string, OpenIDClientConfig> Examples() => new()
+    {
+        ["mars"] = new()
+        {
+            Title = "Mars",
+            Issuer = "https://example.com",
+            AuthEndpoint = "https://example.com/api/oauth/authorize",
+            TokenEndpoint = "https://example.com/api/oauth/token",
+            Driver = "mars",
+            Slug = "mars1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["keycloak"] = new()
+        {
+            Title = "keycloak",
+            Issuer = "http://localhost:6767/realms/<myrealm>",
+            AuthEndpoint = "http://localhost:6767/realms/<myrealm>/protocol/openid-connect/auth",
+            TokenEndpoint = "http://localhost:6767/realms/<myrealm>/protocol/openid-connect/token",
+            Driver = "keycloak",
+            Slug = "keycloak1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["google"] = new()
+        {
+            Title = "Google",
+            Issuer = "https://accounts.google.com",
+            AuthEndpoint = "https://accounts.google.com/o/oauth2/v2/auth",
+            TokenEndpoint = "https://oauth2.googleapis.com/token",
+            Driver = "google",
+            Slug = "google1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["github"] = new()
+        {
+            Title = "GitHub",
+            Issuer = "https://github.com",
+            AuthEndpoint = "https://github.com/login/oauth/authorize",
+            TokenEndpoint = "https://github.com/login/oauth/access_token",
+            Driver = "github",
+            Slug = "github1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["microsoft"] = new()
+        {
+            Title = "Microsoft_AAD",
+            Issuer = "https://login.microsoftonline.com/<tenant_id>/v2.0",
+            AuthEndpoint = "https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize",
+            TokenEndpoint = "https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token",
+            Driver = "microsoft",
+            Slug = "microsoft1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+    };
+
+    public static Dictionary<string, string> Documentations = new()
+    {
+        ["keycloak"] = "/mars/docs/SSO/KeycloakProvider.startup.md",
+        ["google"] = "/mars/docs/SSO/GoogleProvider.startup.md",
+        ["github"] = "/mars/docs/SSO/GitHubProvider.startup.md",
+        ["microsoft"] = "/mars/docs/SSO/MicrosoftProvider.startup.md",
+    };
+}
+
+public class OpenIDClientConfig
+{
+    [Display(Name = "Display Title", Description = "Display name of the IdP")]
+    [Required]
+    public string Title { get; set; } = default!;
+
+    [Display(Name = "Slug", Description = "key name")]
+    [SlugString]
+    [Required]
+    public string Slug { get; set; } = default!;
+
+    [Display(Name = "IconUrl")]
+    public string IconUrl { get; set; } = "";
+
+    [Display(Name = "Driver")]
+    public string Driver { get; set; } = "";
+
+    [Display(Name = "Включить")]
+    public bool Enable { get; set; }
+
+    [Display(Name = "oauth2_auth_endpoint")]
+    [Required]
+    public string AuthEndpoint { get; set; } = default!;
+
+    [Display(Name = "oauth2_token_endpoint")]
+    [Required]
+    public string TokenEndpoint { get; set; } = default!;
+
+    [Display(Name = "ClientId", Description = "the 'client_id'")]
+    public string ClientId { get; set; } = default!;
+
+    [Display(Name = "ClientSecret", Description = "the 'client_secret'")]
+    public string ClientSecret { get; set; } = default!;
+
+    [Display(Name = "CallbackPath", Description = "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.")]
+    public string CallbackPath { get; set; } = "/signin-oidc"; // /signin-oidc
+
+    [Display(Name = "Scopes", Description = "extra scopes except openid and profile")]
+    public string Scopes { get; set; } = "openid email profile";
+
+    [Display(Name = "Issuer", Description = "Базовый идентификатор (URI) провайдера, указывающий, кто выдал токен.")]
+    [Required]
+    public string Issuer { get; set; } = "";
+}

@@ -1,4 +1,4 @@
-@using AppFront.Shared.Components
+@using Mars.Admin.Framework.Components
 @using Mars.Core.Extensions
 @using Mars.Nodes.Core.Nodes.Network
 @using Mars.Nodes.FormEditor.EditForms.Components
@@ -21,7 +21,7 @@
 
         <div class="spacer-1"></div>
 
-        <FluentLabel Typo="Typography.Subject">Creditionals</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">Credentials</FluentLabel>
 
         @if (Node.Mode != AuthFlowNodeMode.ApiKey && Node.Mode != AuthFlowNodeMode.BearerToken)
         {

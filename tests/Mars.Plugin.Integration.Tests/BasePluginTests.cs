@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using AutoFixture;
-using Mars.Host.Data.Contexts;
+using Mars.Data.Contexts;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Plugin.Dto;

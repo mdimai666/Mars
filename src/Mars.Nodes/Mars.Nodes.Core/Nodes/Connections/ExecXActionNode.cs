@@ -11,6 +11,11 @@ public class ExecXActionNode : Node
 
     public string CommandId { get; set; } = "";
 
+    /// <summary>
+    /// Именованные аргументы вызова команды (имя=значение).
+    /// </summary>
+    public Dictionary<string, string> Args { get; set; } = [];
+
     public ExecXActionNode()
     {
         Inputs = [new()];

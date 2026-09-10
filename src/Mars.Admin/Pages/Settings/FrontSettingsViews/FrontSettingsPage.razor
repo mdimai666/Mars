@@ -1,0 +1,203 @@
+@page "/Settings/Front"
+@using Mars.Admin.Framework.Extensions
+@using Mars.SiteEngine.Contracts.WebSite.Dto
+@using Mars.SiteEngine.Contracts.Options;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Фронты")]
+@inject IMarsWebApiClient client
+@inject NavigationManager nav
+@inject IDialogService dialogService
+
+<SettingsPageWrapper>
+
+    <h1>Фронты</h1>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="hstack gap-2 flex-wrap align-items-end">
+                <FluentTextField @bind-Value="newSlug" Label="Slug" Placeholder="my-front"
+                                 autocomplete="off" Style="min-width:180px;" />
+                <FluentTextField @bind-Value="newUrl" Label="Url" Placeholder="/my-front"
+                                 autocomplete="off" Style="min-width:180px;" />
+                <FluentSelect @bind-Value="newTemplate" Label="Стартовый шаблон"
+                              Items="templates" OptionValue=@(t => t) OptionText=@(t => t)
+                              Style="min-width:180px;" />
+                <FluentButton Appearance="Appearance.Accent" OnClick="CreateFront" Disabled=@creating>
+                    Создать фронт
+                </FluentButton>
+            </div>
+            <div class="text-secondary small mt-2">
+                Фронт создаётся из выбранного стартового шаблона в папку <mark>data/fronts/&lt;slug&gt;</mark>.
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="hstack gap-2 flex-wrap align-items-center">
+                <span class="fs-5 fw-semibold">admin</span>
+                <FluentBadge Fill="info">специальный фронт админки</FluentBadge>
+                <span class="text-secondary small">data/admin/front · только в админ-панели</span>
+                <div class="ms-auto">
+                    <FluentButton Appearance="Appearance.Neutral" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
+                        Редактор
+                    </FluentButton>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <EditOptionForm @ref=form TModel="FrontsOption">
+
+        <div class="vstack gap-3">
+
+            <div class="card">
+                <div class="card-body">
+                    <FluentCheckbox @bind-Value="context.WarmupRenderOnStartup">
+                        Прогревать рендер после запуска
+                    </FluentCheckbox>
+                    <div class="text-secondary small mt-1">
+                        Первый фронт собирается сразу после старта, чтобы первый запрос был быстрее.
+                    </div>
+                </div>
+            </div>
+
+            <div class="hstack gap-2 align-items-center">
+                <h5 class="mb-0">Публичные фронты</h5>
+                <hr class="flex-grow-1 my-0" />
+            </div>
+
+            @foreach (var _front in context.Fronts)
+            {
+                var front = _front;
+                <div class="card" style=@(front.Enabled ? null : "opacity:.55;")>
+                    <div class="card-body vstack gap-2">
+
+                        <div class="hstack gap-2">
+                            <span class="fs-5 fw-semibold">@front.Slug</span>
+                            <FluentBadge>@front.EngineId</FluentBadge>
+                            @if (!front.Enabled)
+                            {
+                                <FluentBadge Fill="warning">выключен</FluentBadge>
+                            }
+                            <div class="ms-auto hstack gap-2 align-items-center">
+                                <FluentButton Appearance="Appearance.Neutral" OnClick=@(() => OpenEditor(front))>
+                                    Редактор
+                                </FluentButton>
+                                <FluentMenuButton Text="..." ButtonAppearance="Appearance.Stealth" Title="Действия">
+                                    <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: false))>Удалить</FluentMenuItem>
+                                    <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: true))>Удалить с папкой</FluentMenuItem>
+                                </FluentMenuButton>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <FluentTextField @bind-Value="front.Title" Label="Title" Class="w-100" autocomplete="off" />
+                            </div>
+                            <div class="col-md-4">
+                                <FluentTextField @bind-Value="front.Url" Label="Url" Placeholder="/" Class="w-100" autocomplete="off" />
+                            </div>
+                            <div class="col-md-4">
+                                <FluentTextField @bind-Value="front.Path" Label="Path" Class="w-100"
+                                                 Placeholder=@($"пусто = data/fronts/{front.Slug}") autocomplete="off" />
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-4">
+                                <FluentSelect @bind-Value="front.EngineId" Label="Движок" Class="w-100"
+                                              Items="engines"
+                                              OptionValue=@(e => e.Id)
+                                              OptionText=@(e => e.Name) />
+                            </div>
+                            <div class="col-md-4">
+                                <FormItem2 For="()=>front.Enabled" Label="&nbsp;">
+                                    <FluentSwitch @bind-Value="front.Enabled" Label="Включен" />
+                                </FormItem2>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            @if (context.Fronts.Count == 0)
+            {
+                <SharedContentNoRecords />
+            }
+        </div>
+
+    </EditOptionForm>
+</SettingsPageWrapper>
+
+@code {
+    EditOptionForm<FrontsOption> form = default!;
+
+    IReadOnlyCollection<FFrontEngineResponse> engines = [];
+    IReadOnlyCollection<string> templates = [];
+
+    string newSlug = "";
+    string newUrl = "";
+    string newTemplate = "default";
+    bool creating;
+
+    protected override async Task OnInitializedAsync()
+    {
+        engines = await client.Front.Engines();
+
+        try
+        {
+            templates = await client.Front.FrontTemplates();
+        }
+        catch
+        {
+            templates = ["default"];
+        }
+    }
+
+    async Task CreateFront()
+    {
+        creating = true;
+        StateHasChanged();
+
+        var result = await client.Front.CreateFront(new FCreateFrontRequest
+        {
+            Slug = newSlug.Trim(),
+            Url = newUrl.Trim(),
+            UseTemplate = true,
+            Template = newTemplate,
+        }).SmartActionResult();
+
+        if (result.Ok)
+        {
+            newSlug = "";
+            newUrl = "";
+            await form.Load();
+        }
+
+        creating = false;
+        StateHasChanged();
+    }
+
+    async Task DeleteFront(FrontItem front, bool withFolder)
+    {
+        var message = withFolder
+            ? $"Удалить фронт '{front.Slug}' вместе с папкой файлов?"
+            : $"Удалить фронт '{front.Slug}'?";
+
+        var ok = await dialogService.MarsDeleteConfirmation(message);
+        if (!ok) return;
+
+        var result = await client.Front.DeleteFront(front.Slug, withFolder).SmartActionResult();
+        if (result.Ok)
+            await form.Load();
+    }
+
+    void OpenEditor(FrontItem front)
+    {
+        nav.NavigateTo($"front/editor/{front.Slug}");
+    }
+}

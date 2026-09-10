@@ -1,6 +1,6 @@
 # VarNode
 
-Declared varibles
+Declared variables
 
 # Support types
 

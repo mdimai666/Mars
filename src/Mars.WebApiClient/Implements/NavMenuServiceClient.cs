@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Contracts.Common;
+using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -46,6 +46,16 @@ internal class NavMenuServiceClient : BasicServiceClient, INavMenuServiceClient
         => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<NavMenuSummaryResponse>>();
+
+    public Task<ListDataResult<NavMenuSummaryResponse>> ListForAdmin(ListNavMenuQueryRequest filter)
+        => _client.Request($"{_basePath}{_controllerName}/admin/list/offset")
+                    .AppendQueryParam(filter)
+                    .GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
+
+    public Task<UserActionResult> Reset(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}", id, "reset")
+                    .PostAsync()
+                    .ReceiveJson<UserActionResult>();
 
     public Task<UserActionResult> Import(Guid id, string json)
     {

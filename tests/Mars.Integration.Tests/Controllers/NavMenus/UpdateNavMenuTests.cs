@@ -1,27 +1,25 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.NavMenus;
 
-/// <seealso cref="Mars.Controllers.NavMenuController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.NavMenuController"/>
 public class UpdateNavMenuTests : ApplicationTests
 {
     const string _apiUrl = "/api/NavMenu";
 
     public UpdateNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -42,7 +40,7 @@ public class UpdateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task UpdateNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Update);
@@ -76,6 +74,57 @@ public class UpdateNavMenuTests : ApplicationTests
             .ComparingByMembers<UpdateNavMenuRequest>()
             .Excluding(s => s.MenuItems)
             .ExcludingMissingMembers());
+    }
+
+    [IntegrationFact]
+    public async Task UpdateNavMenu_MenuItems_IsPersisted()
+    {
+        //Arrange
+        _ = nameof(NavMenuController.Update);
+        _ = nameof(NavMenuRepository.Update);
+        var client = AppFixture.GetClient();
+
+        var createdNavMenu = _fixture.Create<NavMenuEntity>();
+        var ef = AppFixture.MarsDbContext();
+        ef.NavMenus.Add(createdNavMenu);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+
+        var newItemId = Guid.NewGuid();
+        var post = _fixture.Create<UpdateNavMenuRequest>() with
+        {
+            Id = createdNavMenu.Id,
+            MenuItems =
+            [
+                new UpdateNavMenuItemRequest
+                {
+                    Id = newItemId,
+                    ParentId = Guid.Empty,
+                    Title = "Новый пункт",
+                    Url = "/dev/new-item",
+                    Icon = null,
+                    Roles = [],
+                    RolesInverse = false,
+                    Class = "",
+                    Style = "",
+                    OpenInNewTab = false,
+                    Disabled = false,
+                    IsHeader = false,
+                    IsDivider = false,
+                },
+            ],
+        };
+
+        //Act
+        var res = await client.Request(_apiUrl).PutJsonAsync(post).CatchUserActionError();
+
+        //Assert
+        res.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        ef.ChangeTracker.Clear();
+        var dbNavMenu = ef.NavMenus.FirstOrDefault(s => s.Id == post.Id);
+        dbNavMenu.Should().NotBeNull();
+        dbNavMenu!.MenuItems.Should().ContainSingle(s => s.Id == newItemId && s.Title == "Новый пункт");
     }
 
     [IntegrationFact]

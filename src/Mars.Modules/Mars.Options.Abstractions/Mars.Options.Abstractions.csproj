@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Options.Abstractions</PackageId>
+        <Product>Mars.Options.Abstractions</Product>
+        <Description>
+            Mars options engine abstractions: IOptionService/IOptionRepository contracts, option edit form attributes, query DTOs.
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

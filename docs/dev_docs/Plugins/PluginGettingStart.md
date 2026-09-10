@@ -14,15 +14,60 @@ $newPluginName = "MyNewPlugin"; git clone https://github.com/mdimai666/MyMarsPlu
 
 ```
 MyNewPlugin/
-    MyMarsPlugin - основной проект плагина
-    MyMarsPlugin.Shared - общий код для backend и frontend
-    MyMarsPlugin.Front - код для frontend-части
+    src/
+        MyMarsPlugin/           # Backend (SDK: Microsoft.NET.Sdk.Razor)
+        MyMarsPlugin.Shared/    # Общие DTO, настройки, ресурсы
+        MyMarsPlugin.Front/     # Frontend (SDK: Microsoft.NET.Sdk.BlazorWebAssembly)
 ```
 
-## Примеры
-Примеры реализованных плагинов:
+## NuGet пакеты
 
-| Название                                              |  Описание |
-|---|---|
-| https://github.com/mdimai666/Mars.PlayAudioNodePlugin | Для проигрывание звука из ресурса.
-| https://github.com/mdimai666/Mars.TelegramPlugin      | Интеграция Телеграм бота
+**Backend:**
+- `mdimai666.Mars.Plugin.Kit.Host`
+- `mdimai666.Mars.Plugin.Sdk`
+
+**Frontend:**
+- `mdimai666.Mars.Plugin.Kit.Front`
+
+## Паковка
+
+Подключите `mdimai666.Mars.Plugin.Sdk` (`PrivateAssets="all"`) — таргеты паковки приходят
+вместе с пакетом:
+
+- `dotnet publish -c Release` — отсечение сборок, которые уже есть в Марсе, фронт-манифест,
+  дескриптор `mars-plugin.json` и готовый `<PackageId>-<Version>.zip`;
+- `dotnet msbuild -t:MarsPluginPackNuget -c Release` — дополнительно `<PackageId>.<Version>.nupkg`.
+
+SDK автоматически добавляет в nupkg `packageType=MarsPlugin`. Это обязательная конвенция:
+каталог плагинов (моно-репо Mars.Cloud) принимает в витрину только пакеты с этим типом
+(проверяется по search API nuget.org при подаче), а установщик в админке ставит с
+nuget только такие пакеты.
+
+Как устроен пакет, что он выдаёт и как с ним работать — в [PluginSdk](PluginSdk.md).
+
+## Установка и обновление
+
+Готовый плагин устанавливается из админки (`Plugins`):
+
+- **zip** — «Upload from zip-file» (полученный `<PackageId>-<Version>.zip`);
+- **nuget** — «Install from NuGet» по `PackageId` (пакет с `packageType=MarsPlugin`).
+
+После установки/обновления/удаления нужен рестарт сервера. Плагины, заданные в
+конфигурации инстанса (секция `Plugins`), помечены `Locked` и из админки не
+отключаются/не удаляются. Подробнее — в [PluginSdk](PluginSdk.md#установка-и-управление).
+
+## Примеры плагинов
+
+| Плагин | Описание | Сложность |
+|--------|----------|-----------|
+| [MyMarsPlugin](https://github.com/mdimai666/MyMarsPlugin) | Шаблон плагина | Базовый |
+| [Mars.TelegramPlugin](https://github.com/mdimai666/Mars.TelegramPlugin) | Интеграция Telegram бота | Средний |
+| [Mars.PlayAudioNodePlugin](https://github.com/mdimai666/Mars.PlayAudioNodePlugin) | Воспроизведение аудио | Сложный (host services) |
+| [Mars.SberDevApiPlugin](https://github.com/mdimai666/Mars.SberDevApiPlugin) | GigaChat, SaluteSpeech | Сложный (AI интеграция) |
+
+## Инструкция для AI-агента
+
+Если вы используете AI-агента для создания плагина, передайте ему файл:
+> [ai/PluginCreationGuide.md](../../../ai/PluginCreationGuide.md)
+
+Этот файл содержит краткую инструкцию с примерами кода для генерации плагина.

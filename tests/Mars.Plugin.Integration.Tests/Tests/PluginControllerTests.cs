@@ -1,6 +1,6 @@
-using Mars.Integration.Tests.Attributes;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Integration.Tests.Attributes;
 using PluginExample.Controllers;
 
 namespace Mars.Plugin.Integration.Tests.Tests;
@@ -14,7 +14,7 @@ public class PluginControllerTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public async Task PluginEndpoint_ControllerWorked_ShouldResponseOK()
+    public async Task PluginEndpoint_ControllerWorked_RespondsOk()
     {
         //Arrange
         _ = nameof(MyPluginController.PluginEndpoint);

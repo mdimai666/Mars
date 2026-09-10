@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Datasource.Core;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.MySQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Integration.Tests.Attributes;
@@ -29,7 +29,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
-    public async Task CheckConnection()
+    public async Task Open_ValidConnectionString_Connects()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -37,7 +37,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
-    public async Task CreateTable_Valid_ShouldSuccess()
+    public async Task CreateTable_Valid_Succeeds()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -49,7 +49,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
-    public async Task MySqlEngineTests()
+    public async Task Driver_CreatedTodoTable_ReturnsRowsColumnsAndStructure()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -106,7 +106,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
-    public async Task ClearTest()
+    public async Task RemoveAllTables_CreatedTable_TableDoesNotExist()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();

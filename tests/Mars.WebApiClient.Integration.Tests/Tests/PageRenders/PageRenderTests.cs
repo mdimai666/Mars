@@ -1,10 +1,14 @@
-using Mars.Controllers;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
+using AutoFixture;
+using FluentAssertions;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Services;
-using FluentAssertions;
+using Mars.SiteEngine.Host.Controllers;
+using Mars.SiteEngine.Host.Services;
+using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PageRenders;
@@ -13,7 +17,7 @@ public class PageRenderTests : BaseWebApiClientTests
 {
     public PageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
-
+        TestFrontHelper.EnsureFront(AppFixture.ServiceProvider);
     }
 
     private async Task<PostSummary> GetPostFirstByType(string type)
@@ -63,10 +67,24 @@ public class PageRenderTests : BaseWebApiClientTests
     public async Task RenderPageBySlug_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.RenderById);
+        _ = nameof(PageRenderController.RenderPageBySlug);
         _ = nameof(PageRenderService.RenderPageBySlug);
         var client = GetWebApiClient();
-        var post = await GetPostFirstByType("page");
+
+        // тип "page" больше не создаётся в сиде — готовим данные сами
+        var ef = AppFixture.MarsDbContext();
+        var pageType = _fixture.Create<PostTypeEntity>();
+        pageType.TypeName = "page";
+        pageType.Statuses = PostStatusEntity.DefaultStatuses();
+        pageType.EnabledFeatures = [PostTypeConstants.Features.Content];
+        ef.PostTypes.Add(pageType);
+
+        var post = _fixture.Create<PostEntity>();
+        post.PostTypeId = pageType.Id;
+        post.StatusId = null;
+        ef.Posts.Add(post);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
 
         //Act
         var result = await client.PageRender.Render(post.Slug);
@@ -92,6 +110,7 @@ public class PageRenderTests : BaseWebApiClientTests
         //Assert
         result.Should().NotBeNull();
         result.Ok.Should().BeTrue();
+        result.Data.Should().NotBeNull();
     }
 
 }

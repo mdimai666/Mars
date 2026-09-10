@@ -1,4 +1,4 @@
-﻿namespace EditorJsBlazored.Core;
+namespace EditorJsBlazored.Core;
 
 public class EditorContentBlock
 {

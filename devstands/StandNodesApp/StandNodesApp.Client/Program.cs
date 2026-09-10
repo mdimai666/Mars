@@ -1,9 +1,10 @@
-using AppFront.Shared;
 using Flurl.Http;
+using Mars.Admin.Contracts.ViewModels;
+using Mars.Admin.Framework;
+using Mars.Admin.Framework.Features;
 using Mars.Nodes.Workspace;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Options;
-using Mars.Shared.ViewModels;
+using Mars.Server.Contracts.Options;
+using Mars.XActions.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using StandNodesApp.Client.Startups;
 
@@ -19,16 +20,15 @@ builder.Services.AddLocalization();
 builder.ConfigureAppLanguage();
 
 builder.ConfigureWebSockets(backendUrl);
-builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
+builder.Services.AddMarsAdminFramework(builder.Configuration, typeof(Program));
 builder.Services.AddNodeWorkspace();
 
 var vm = new InitialSiteDataViewModel()
 {
-    LocalPages = [],
     NavMenus = [],
     Options = [],
     PostTypes = [],
-    SysOptions = new SysOptions(),
+    SiteSettings = new SiteSettings(),
     UserPrimaryInfo = null,
     XActions = new Dictionary<string, XActionCommand>(),
 };

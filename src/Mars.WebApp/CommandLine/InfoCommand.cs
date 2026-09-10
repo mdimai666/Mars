@@ -1,7 +1,8 @@
 using System.CommandLine;
-using Mars.Host.Data.Constants;
-using Mars.Host.Shared.CommandLine;
-using Mars.Host.Shared.Services;
+using Mars.CommandLine.Abstractions;
+using Mars.Data.Constants;
+using Mars.Options.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
 using Mars.UseStartup;
 using Npgsql;
 
@@ -46,17 +47,30 @@ public class InfoCommand : CommandCli
         Console.WriteLine("upload = " + uploadPath);
         Console.WriteLine("Database = " + databaseName);
         Console.WriteLine("EnvMode = " + env.EnvironmentName);
-        if (StartupFront.AppProvider.SetupMultiApps)
+        try
         {
-            Console.WriteLine("App fronts:");
-            foreach (var af in StartupFront.AppProvider.Apps.Values)
+            var fronts = sp.GetRequiredService<IFrontManager>().Fronts.Where(s => s.Enabled).ToList();
+            if (fronts.Count > 1)
             {
-                Console.WriteLine($"[\"{af.Configuration.Url}\", {af.Configuration.Mode}] {af.Configuration.Path}");
+                Console.WriteLine("App fronts:");
+                foreach (var front in fronts)
+                {
+                    Console.WriteLine($"[\"{(string.IsNullOrEmpty(front.Url) ? "/" : front.Url)}\", {front.EngineId}] {front.Slug}");
+                }
+            }
+            else if (fronts.Count == 1)
+            {
+                var front = fronts[0];
+                Console.WriteLine($"Front = '{front.Slug}' ({front.EngineId})");
+            }
+            else
+            {
+                Console.WriteLine("App fronts: нет включённых");
             }
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Mode = " + StartupFront.AppProvider.FirstApp.Configuration.Mode);
+            Console.WriteLine("App fronts: недоступны (" + ex.Message + ")");
         }
     }
 }

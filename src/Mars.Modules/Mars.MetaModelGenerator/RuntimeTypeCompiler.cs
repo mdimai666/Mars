@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Mars.Cms.Abstractions.Interfaces;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Interfaces;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public class RuntimeMetaTypeCompiler
     private (string fullcode, string[] namespaces, Type[] usingTypes, MetaTypeResultItem[] metaTypeItems)
         PrepareData(MetaTypeInfo[] entityWithMetaFields, IReadOnlyDictionary<string, MetaModelResolveTypeInfo>? metaModelTypesResolverDict, bool useNamespace = true)
     {
-        var _namespace = "AppFront.Host.Data";
+        var _namespace = "Mars.MetaModel";
 
         var master = new GenSourceCodeMaster();
 
@@ -39,7 +39,7 @@ public class RuntimeMetaTypeCompiler
                             typeof(DisplayAttribute),
                             typeof(System.Linq.Expressions.Expression),
                             //typeof(EntityFrameworkQueryableExtensions),
-                            typeof(MetaValueEntity),
+                            typeof(MetaValueBase),
                             typeof(MetaFieldEntity),
                             typeof(IMtoMarker),
                             typeof(MetaFieldVariant),

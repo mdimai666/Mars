@@ -1,5 +1,5 @@
-using Mars.Host.Shared.Managers;
-using Mars.Shared.Contracts.XActions;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 
 namespace StandNodesApp.Mocks;
 
@@ -7,7 +7,12 @@ internal class ActionManagerMock : IActionManager
 {
     public IReadOnlyDictionary<string, XActionCommand> XActions { get; } = new Dictionary<string, XActionCommand>();
 
-    public void AddAction(XActionCommand xAction)
+    public void Add(Action<XActionBuilder> configure)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void AddFrontContexts(string id, params string[] frontContexts)
     {
         //throw new NotImplementedException();
     }
@@ -17,12 +22,17 @@ internal class ActionManagerMock : IActionManager
         //throw new NotImplementedException();
     }
 
-    public void AddXLink(XActionCommand xAction)
+    public void AddOptionsSource(string key, Func<CancellationToken, Task<IReadOnlyCollection<XActionOption>>> factory)
     {
         //throw new NotImplementedException();
     }
 
-    public Task<XActResult> Inject(string id, string[] args, CancellationToken cancellationToken)
+    public Task<IReadOnlyCollection<XActionOption>> GetOptionsAsync(string sourceKey, CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyCollection<XActionOption>>([]);
+    }
+
+    public Task<XActResult> Inject(string id, IReadOnlyDictionary<string, string> args, CancellationToken cancellationToken)
     {
         //throw new NotImplementedException();
         return Task.FromResult(XActResult.ToastSuccess("none"));

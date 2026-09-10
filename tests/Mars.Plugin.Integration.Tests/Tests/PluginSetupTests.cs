@@ -15,7 +15,7 @@ public class PluginSetupTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public async Task Setup_PluginIncluded_ShouldExist()
+    public async Task Setup_PluginIncluded_Exists()
     {
         //Arrange
         _ = nameof(PluginExamplePlugin);

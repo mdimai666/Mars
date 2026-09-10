@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using AppFront.Shared;
+using Mars.Admin.Framework;
 using Mars.Core.Exceptions;
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor.HotKeys2;
@@ -21,7 +21,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly IServiceProvider _serviceProvider;
     private readonly HotKeysContext _hotkeysContext;
     private readonly EditorActionLocator _edittorActionLocator;
-    private readonly AppFrontJs _appFrontJs;
+    private readonly AdminJs _adminJs;
     private ILogger _logger;
     private IReadOnlyDictionary<Type, EditorActionType> _actions;
 
@@ -35,13 +35,13 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                                 IServiceProvider serviceProvider,
                                 HotKeysContext hotkeysContext,
                                 EditorActionLocator edittorActionLocator,
-                                AppFrontJs appFrontJs)
+                                AdminJs adminJs)
     {
         _nodeEditor = nodeEditorApi;
         _serviceProvider = serviceProvider;
         _hotkeysContext = hotkeysContext;
         _edittorActionLocator = edittorActionLocator;
-        _appFrontJs = appFrontJs;
+        _adminJs = adminJs;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
         _actions = _edittorActionLocator.Actions.ToDictionary(s => s.ActionType);
         BuildActions();
@@ -215,7 +215,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 
     public ValueTask CopyToClipboard(string text)
     {
-        return _appFrontJs.CopyToClipboard(text);
+        return _adminJs.CopyToClipboard(text);
     }
 }
 

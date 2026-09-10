@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Managers;
+using Mars.Server.Abstractions.Managers;
 
 namespace StandNodesApp.Mocks;
 

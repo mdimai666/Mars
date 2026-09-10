@@ -1,0 +1,198 @@
+@using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Cms.Contracts.Posts
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+<d-metavalue-children-list class="@Class" style=@Style>
+
+    @if (_busy)
+    {
+        <FluentProgressRing />
+    }
+    else if (_unsupported)
+    {
+        <FluentLabel Color="Color.Neutral">Список объектов: цель поля должна быть типом поста</FluentLabel>
+    }
+    else if (IsCardsView)
+    {
+        @if (_items.Count > 0)
+        {
+            <FluentSortableList Id=@_cardsSortableId
+                                Items="_items"
+                                OnUpdate="OnSortCards"
+                                Context="item"
+                                Class="d-child-cards"
+                                ListItemHeight="auto">
+                <ItemTemplate>
+                    <div class="d-child-card" @key="item" @onclick="@(() => OpenCard(item.Id))">
+                        @if (CardPreviewUrl(item) is string previewUrl && !string.IsNullOrEmpty(previewUrl))
+                        {
+                            <img src="@previewUrl" alt="" class="d-child-card-img" />
+                        }
+                        else
+                        {
+                            <div class="d-child-card-img d-child-card-img-empty xcenter">
+                                <FluentIcon Value="@(new Icons.Regular.Size32.Document())" />
+                            </div>
+                        }
+                        <div class="d-child-card-title text-truncate" title="@item.Title">@item.Title</div>
+                        @* stopPropagation: удаление не должно открывать карточку *@
+                        <div class="d-child-card-actions" @onclick="@(_ => {})" @onclick:stopPropagation>
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(item.Id))">
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </FluentButton>
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </FluentSortableList>
+        }
+        else
+        {
+            <FluentLabel Color="Color.Neutral">— пусто —</FluentLabel>
+        }
+
+        @if (_dropField is not null && Meta.DropZoneEnabled)
+        {
+            <div class="mt-1">
+                <DropTileZone FolderPath="@_dropField.Options.GetUploadFolder()"
+                              Accept="@(_dropField.Type == MetaFieldType.Image ? "image/*" : "*")"
+                              TileClass="d-drop-tile-card"
+                              OnFilesUploaded="OnFilesUploadedAsync" />
+            </div>
+        }
+
+        <div class="mt-2 d-flex gap-2">
+            <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
+            <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
+        </div>
+    }
+    else
+    {
+        @if (_items.Count > 0)
+        {
+            <FluentDataGrid Items="_items.AsQueryable()"
+                            TGridItem="PostListItemResponse"
+                            ShowHover="true"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="@GridColumns">
+                <PropertyColumn Property="@(f => f.Title)" Title="@AppRes.Title" />
+                @foreach (var col in _metaColumns)
+                {
+                    var key = col.Key;
+                    var isImage = col.Type == MetaFieldType.Image;
+                    <TemplateColumn Title="@col.Title">
+                        @if (isImage)
+                        {
+                            var url = context.MetaColumns?.GetValueOrDefault(key)?.Split(", ").FirstOrDefault();
+                            @if (!string.IsNullOrEmpty(url))
+                            {
+                                <img src="@url" alt="" class="d-children-thumb" />
+                            }
+                        }
+                        else
+                        {
+                            @context.MetaColumns?.GetValueOrDefault(key)
+                        }
+                    </TemplateColumn>
+                }
+                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Align="Align.End" />
+                <TemplateColumn Title="">
+                    @* stopPropagation: клик по удалению не должен открывать строку (OnRowClick) *@
+                    <div class="d-inline-block" @onclick="@(_ => {})" @onclick:stopPropagation>
+                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(context.Id))">
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </FluentButton>
+                    </div>
+                </TemplateColumn>
+            </FluentDataGrid>
+        }
+        else
+        {
+            <FluentLabel Color="Color.Neutral">— пусто —</FluentLabel>
+        }
+
+        @if (_dropField is not null && Meta.DropZoneEnabled)
+        {
+            <div class="mt-1">
+                <DropTileZone FolderPath="@_dropField.Options.GetUploadFolder()"
+                              Accept="@(_dropField.Type == MetaFieldType.Image ? "image/*" : "*")"
+                              TileClass="d-drop-tile-row"
+                              OnFilesUploaded="OnFilesUploadedAsync" />
+            </div>
+        }
+
+        <div class="mt-2 d-flex gap-2">
+            <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
+            <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
+        </div>
+    }
+
+</d-metavalue-children-list>
+
+<style>
+    .d-children-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .d-child-card {
+        position: relative;
+        width: 140px;
+        border: 1px solid var(--neutral-stroke-rest);
+        border-radius: 6px;
+        padding: 6px;
+        cursor: pointer;
+        background: var(--neutral-layer-2);
+    }
+
+        .d-child-card:hover {
+            border-color: var(--accent-fill-rest);
+        }
+
+    /* список карточек — сетка; библиотечный sortable-item принудительно 32px высотой,
+       без авто-высоты карточки наезжали бы друг на друга */
+    .d-child-cards.fluent-sortable-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: none;
+        padding: 0;
+        background: transparent;
+        min-height: unset;
+    }
+
+        .d-child-cards.fluent-sortable-list .sortable-item {
+            height: auto !important;
+            align-items: stretch;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+    .d-child-card-img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .d-child-card-img-empty {
+        background: var(--neutral-layer-3);
+    }
+
+    .d-child-card-title {
+        margin-top: 4px;
+        font-size: 13px;
+    }
+
+    .d-child-card-actions {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+    }
+</style>

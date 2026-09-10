@@ -1,11 +1,11 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
+using FluentAssertions;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Roles;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Roles;
 
@@ -15,7 +15,6 @@ public sealed class UpdateRoleTests : BaseWebApiClientTests
 
     public UpdateRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _updateTest = new(this, (client, req) => client.Role.Update(req));
 
     }
@@ -27,7 +26,7 @@ public sealed class UpdateRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateRole_ValidRequest_ShouldSuccess()
+    public async Task UpdateRole_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

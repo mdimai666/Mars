@@ -1,0 +1,254 @@
+@using Mars.Admin.Pages.PostCategoryViews
+@using Mars.Admin.Pages.PostTypeViews
+@using Mars.Cms.Contracts.MetaFields
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@using static Mars.Cms.Contracts.PostTypes.PostTypeConstants;
+
+@inject IStringLocalizer<AppRes> L
+@implements IDisposable
+
+<StandardEditContainer ID=@ID
+                       TitleText="@AppRes.Post"
+                       TModel=PostEditModel
+                       GetAction="@(()=>PostEditModel.GetAction(client,ID,PostTypeName))"
+                       SaveAction="SaveWithCallback"
+                       DeleteAction="@(s=>PostEditModel.DeleteAction(client,s))"
+                       BeforeSave="BeforeSave"
+                       BlankModelFromGetAction
+                       NavigateAfterCreate="@NavigateAfterCreate"
+                       HidePublishCard="@HidePublishCard"
+                       HideDatesSection
+                       Class=@($"post-{PostTypeName}")
+                       @ref=f CanCreate=false>
+    <SectionActions>
+        <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
+            <FluentMenuItem Label="@AppRes.PostType" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            <FluentMenuItem Label="@AppRes.Categories" OnClick=@((e) => navigationManager.NavigateTo(ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName))) />
+            @if (PostTypeName == "page")
+            {
+                <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug == "index" ? "" : f.Model.Slug)}")) />
+            }
+        </XActionsDropDown>
+    </SectionActions>
+    <ChildContent>
+
+        <div class="vstack gap-3">
+
+            <div class="vstack">
+                <FluentTextField Name="@nameof(context.Title)"
+                                 @bind-Value=@context.Title
+                                 @bind-Value:after="OnChangeTitle"
+                                 Label="@AppRes.Title"
+                                 Appearance="@FluentInputAppearance.Filled"
+                                 Required
+                                 Style="zoom:1.4" />
+                <FluentValidationMessage For="@(() => context.Title)" />
+            </div>
+            <div class="">
+                <FluentTextField Name="@nameof(context.Slug)" @bind-Value=@context.Slug Label="@AppRes.Slug" />
+                <FluentValidationMessage For="@(() => context.Slug)" />
+            </div>
+
+        </div>
+
+        <div class="spacer-1"></div>
+
+        @if (context.FeatureActivated(Features.Content))
+        {
+            <div class="my-2">
+                <div class="">
+                    @if (ContentEditorKey == MetaFieldEditorCatalog.Wysiwyg)
+                    {
+                        <WysiwygEditor Content="@context.Content" @ref=editor1 />
+                    }
+                    else if (ContentEditorKey == MetaFieldEditorCatalog.Code)
+                    {
+
+                        <div>
+                            <div class="text-end mb-1">
+                                <FluentSelect Value="@(string.IsNullOrEmpty(lang1) ? ContentCodeLang : lang1)"
+                                              TOption="string"
+                                              Style="width: 180px;"
+                                              Items="CodeEditor2.Language.Array"
+                                              ValueChanged="v=>{ lang1=v; codeEditor1?.SetModelLanguage(v); }">
+                                </FluentSelect>
+                            </div>
+
+                            <MarsCodeEditor2.CodeEditor2 @ref=codeEditor1
+                                                         Lang=@(string.IsNullOrEmpty(lang1) ? ContentCodeLang : lang1)
+                                                         OnSave="OnSaveFromCodeEditor"
+                                                         Value="@f.Model.Content" />
+                            <HandlebarsHintsText />
+                        </div>
+                    }
+                    else if (ContentEditorKey == "")
+                    {
+                        <FormItem2 For="@(() => context.Content)">
+                            <FluentTextArea Rows="8" @bind-Value=@context.Content Class="w-100" />
+                        </FormItem2>
+                    }
+                    else if (ContentEditorKey == MetaFieldEditorCatalog.BlockEditor)
+                    {
+                        <div class="text-end">
+                            <FluentButton id="@blockEditorMenuButtonId"
+                                          Appearance="Appearance.Stealth"
+                                          @onclick="@(() => blockEditorMenuOpen = !blockEditorMenuOpen)">
+                                Действия
+                                <span slot="end">
+                                    <i class="bi bi-chevron-down"></i>
+                                </span>
+                            </FluentButton>
+                        </div>
+
+                        <FluentMenu Anchor="@blockEditorMenuButtonId" @bind-Open="blockEditorMenuOpen">
+                            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => blockEditor1?.Clear()) />
+                            <FluentMenuItem Label="AI suggest" OnClick=@BlockEditor_OnClickAISuggest />
+                        </FluentMenu>
+
+                        <EditorJsBlazored.BlockEditor1 @bind-ContentJson=@context.Content
+                                                       @ref=blockEditor1
+                                                       OnImageFileRequest="OnImageFileRequest"
+                                                       OnAttachmentFileRequest="OnImageFileRequest" />
+                    }
+                    else
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <FluentLabel Color="@Color.Warning">
+                                    content editor <strong>'@ContentEditorKey'</strong> not implement
+                                </FluentLabel>
+                            </div>
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+        }
+
+        @if (context.FeatureActivated(Features.Excerpt))
+        {
+            <div class="my-2">
+                <FormItem2 For="@(() => context.Excerpt)">
+                    <FluentTextArea Rows="4" @bind-Value=@context.Excerpt Class="w-50" />
+                </FormItem2>
+            </div>
+        }
+
+        <div class="spacer-1"></div>
+
+        @* <h5>MetaValues = @context.MetaValues.Count</h5> *@
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@context.PostType.MetaFields">
+                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
+            </CascadingValue>
+        </CascadingValue>
+
+    </ChildContent>
+    <SectionSidePublish>
+        @if (context.FeatureActivated(Features.ModifyCreatedDate))
+        {
+            <FormItem2 For="@(() => context.CreatedAt)">
+                <FluentDatePicker Value=@context.CreatedAt.Date ValueChanged=@(v => context.CreatedAt = v ?? DateTimeOffset.Now) />
+            </FormItem2>
+            @if (context.ModifiedAt != null)
+            {
+                <h6 class="card-subtitle mt-2 mb-2 text-muted">Изменено: @context.ModifiedAt?.ToString("g")</h6>
+            }
+        }
+        else
+        {
+            @if (!f.IsAddNew)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создана: @context.CreatedAt.ToString("g")</h6>
+            }
+            else
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создание</h6>
+            }
+
+            @if (context.ModifiedAt != null)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Изменено: @context.ModifiedAt?.ToString("g")</h6>
+            }
+        }
+
+        @if (context.FeatureActivated(Features.Status))
+        {
+            <div class="mt-3">
+
+                <FormItem2 For="@(() => context.Status)">
+                    <FluentSelect @bind-Value="@context.Status"
+                                  TOption="PostStatusEditModel"
+                                  OptionValue=@(s=>s.Slug)
+                                  OptionText=@(s=>s.Title ?? s.Slug)
+                                  Items=@context.PostType.PostStatusList
+                                  Style="width: 250px;" />
+                </FormItem2>
+            </div>
+        }
+
+        @if (context.FeatureActivated(Features.Language))
+        {
+            <div class="mt-3">
+                <FormItem2 For="@(() => context.LangCode)">
+                    <FluentTextField @bind-Value=@context.LangCode />
+                </FormItem2>
+            </div>
+        }
+        <div class="mt-3">
+            <FormItem2 For="@(() => context.PostType.EnabledFeatures)">
+                <div class="hstack gap-1">
+                    @foreach (var feature in context.PostType.EnabledFeatures)
+                    {
+                        <FluentBadge>@(L[feature])</FluentBadge>
+                    }
+                </div>
+            </FormItem2>
+        </div>
+    </SectionSidePublish>
+
+    <SectionExtraSidebar>
+
+        @if (context.FeatureActivated(Features.Tags) || context.FeatureActivated(Features.Category))
+        {
+            <section class="editpost-taxonomy mb-3">
+                <div class="card">
+                    <div class="card-body vstack gap-3">
+                        @if (context.FeatureActivated(Features.Category))
+                        {
+                            <div class="position-relative">
+                                <a href="@ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName)"
+                                   class="position-absolute" style="top:0; right:0;">@AppRes.Edit</a>
+                                <FormItem2 For="@(() => context.CategoryIds)" Label="@AppRes.PostCategories">
+                                    <SelectPostCategoriesDropDown PostType="@PostTypeName" @bind-Values="context.CategoryIds" />
+                                </FormItem2>
+                            </div>
+                        }
+                        @if (context.FeatureActivated(Features.Tags))
+                        {
+                            <FormItem2 For="@(() => context.Tags)">
+                                <InputTags2 @bind-Value=context.Tags />
+                            </FormItem2>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                @if (f.Model.Type == "page")
+                {
+                    <a target="_blank" href="@Q.ClientUrlJoin(f.Model.Slug)">Open new Tab</a>
+                }
+                else
+                {
+                    <a target="_blank" href=@Q.ClientUrlJoin($"{f?.Model?.Type}/{ID}")>Open new Tab</a>
+                }
+            </div>
+        </div>
+    </SectionExtraSidebar>
+</StandardEditContainer>

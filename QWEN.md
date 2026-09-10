@@ -1,0 +1,126 @@
+# Mars Project Context
+
+Full overview: @ai/ProjectDescription.md
+
+## Quick Summary
+
+Mars is an open-source visual programming platform (inspired by Node-RED and WordPress) built on .NET 10 / Blazor. It combines:
+- **Visual programming** — 55+ node types for flow-based workflows
+- **Content management** — flexible PostTypes with 15 MetaField types
+- **Multi-database** — PostgreSQL, MsSQL, MySQL
+- **Plugin system** — .NET assemblies loaded at runtime
+- **Docker, Scheduler, AI/Semantic Kernel, OpenTelemetry**
+
+## Key Directories
+
+- `src/Mars.WebApp` — composition root (main application)
+- `src/Server` — core `Mars.Server` and data `Mars.Data*`
+- `src/Mars.Modules` — platform modules (flat on disk, virtual folders in `Mars.slnx`)
+- `src/Mars.Nodes` — visual programming engine
+- `src/Admin` — admin panel libraries; `src/Mars.Admin` — admin WASM app
+- `src/Plugin` — plugin system
+- `docs/` — documentation site
+- `ai/` — AI agent context files
+
+## Mars.Cloud — облачные сервисы (отдельный репо)
+
+Каталог плагинов, кабинет подписок (CloudPanel), Keycloak и облачная инфраструктура живут
+в отдельном репо `C:\Users\D\Documents\VisualStudio\2026\Mars.Cloud` (план — там в
+`ai/CloudInfraPlan.md`). С этим репо связаны: фазы 4–5 плана каталога
+(`ai/PluginServer/PluginCatalogPlan.md`), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
+и будущая документация каталога в `docs/dev_docs/`.
+
+## Структура решения и правила агентам
+
+Карта решения, конвенция суффиксов (`.Contracts`/`.Abstractions`/`.Host`/`.Front`), правила
+направленности и добавления модулей — в `ai/ProjectStructureGuide.md`.
+
+Правила:
+- Определи, какой модуль владеет задачей, и работай в его пределах (модуль + его тесты); не сканируй весь проект без необходимости.
+- Старых имён (`Mars.Host*`, `Mars.Shared`, `AppFront.*`, `AppAdmin`) в репо больше нет — они только в дореструктуризационных доках.
+- Новые проекты модулей — плоско в `src/Mars.Modules/<ИмяПроекта>/`; группировка только виртуальными папками `Mars.slnx`.
+- Проверка точечная: `dotnet build Mars.slnx` + тесты затронутых областей.
+
+## Build & Test
+
+```
+dotnet build Mars.slnx                          # full solution build
+pwsh -NoProfile -File test-all.ps1              # full suite, projects in parallel (units + Docker integrations; excludes E2E/DockerImage)
+pwsh -NoProfile -File test-all.ps1 -IncludeE2E  # also E2E (Playwright) and DockerImage tests
+pwsh -NoProfile -File test-all.ps1 -List        # list projects that would run (no build/run)
+```
+
+Tests are **xUnit v3 + Microsoft Testing Platform**: each test project builds as an MTP
+executable (`OutputType=Exe`) and is run directly. The `dotnet test` MTP driver path is
+blocked by an SDK 10.0.400 incompatibility (exit code 5, "Zero tests ran") — do not use it.
+Single project: build, then run its exe from the bin directory:
+
+```
+dotnet build tests/Mars.Server.Tests
+tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe
+```
+
+`test-all.ps1` runs exes with cwd = their `bin\Debug\net10.0`, so fixtures write into the
+bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<timestamp>\`.
+
+## Conventions
+
+- **Solution**: `Mars.slnx` — everything builds from here
+- **Modules**: `src/Mars.Modules/<ModuleName>/` — each module is a self-contained project
+- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration)
+
+## Mars CLI — thin client to a running instance
+
+`Mars.exe` (Mars.WebApp) can control an already running instance: if a server is running
+for the current directory, commands execute directly inside that live process over a unix
+domain socket (no second startup); otherwise they run in-process.
+
+- `Mars.exe status` — is the instance alive (pid, version, uptime); exit 1 if not.
+- The command set is not fixed — discover it via `-h` and the sources
+  (`src/Mars.Modules/Mars.CommandLine`, `src/Mars.WebApp/CommandLine`, CommandCli classes in modules).
+- Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
+- Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
+- In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
+
+## Release: тег (NuGet-публикация)
+
+- Версия — `<MarsAppVersion>` в `Directory.Build.props`; тег = `v<версия>`.
+- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI, 54 пакета).
+- Если версия занята — bump в props, коммит `bump version <версия>`, push, затем скрипт.
+- Агентский запуск: `pwsh -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
+
+## PS1-скрипты: UTF-8 без BOM, запуск через pwsh
+
+- `.ps1` в репо — UTF-8 **без BOM**; при правке BOM не добавлять.
+- Запуск и синтакс-проверку ps1 делать только через `pwsh` (PowerShell 7). Windows PowerShell 5.1 (`powershell.exe`) без BOM читает файл как ANSI и ложно падает на кириллице/эмодзи — для ps1 его не использовать.
+
+## codebase-memory MCP (граф кода)
+
+Граф кода доступен через MCP `codebase-memory`; имя проекта индекса выводится из пути клонирования
+(зависит от места открытия репо). Переиндексация после больших внешних изменений — `index_repository`
+(~3–4 минуты).
+
+**Когда использовать:**
+- Структурный анализ вместо grep: `trace_path` (точный список вызывающих/вызываемых со счётчиками),
+  `search_graph`/`search_code` (поиск с дедупликацией по функциям), `get_architecture` со скоупом `path`
+  (обзор + хотспоты), `query_graph` для пофайловых агрегаций (карта потребителей пакета).
+- Вопросы «кто использует тип/метод» и радиус влияния изменений.
+
+**Когда НЕ использовать (фронт — слабое место):**
+- razor-разметка (`.razor`) не индексируется — только `.razor.cs`; фронтовые зависимости
+  (`Mars.Admin`, `Mars.Admin.Framework`) проверять grep'ом.
+- Generic-инстанциации и типы свойств record часто не дают USAGE-рёбер: «0 внешних» из графа —
+  только гипотеза о мёртвом коде, подтверждать grep'ом.
+- Атрибуты: попадают в граф как DECORATES, а не USAGE.
+
+**Известные баги (проверено 2026-08-28):**
+- `NOT x.file_path STARTS WITH '...'` молча возвращает 0 строк (любая форма). Обход: два запроса
+  (все пользователи / внутренние) и вычитание.
+- `split()` не поддерживается (ошибка `unsupported function`); доступны только функции из текста ошибки
+  (count/sum/avg/min/max/collect, toLower/toUpper/toString/…, labels/type/id/keys/properties).
+- Обход рёбер и мульти-типовые паттерны `[:CALLS|CALL_REFERENCE|USAGE]` работают (после обновления сервера 2026-08-28).
+- Сырые результаты MCP пользователю не показывать — только сжатый итог.
+
+## Language
+
+Respond in Russian unless asked otherwise.

@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
@@ -31,7 +35,7 @@
         <!-- //Для hotreload -->
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Mars.Shared\Mars.Shared.csproj" />
+      <ProjectReference Include="..\..\src\Mars.Contracts\Mars.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

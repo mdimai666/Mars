@@ -1,31 +1,29 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.Feedbacks;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.Feedbacks;
 
-/// <seealso cref="Mars.Controllers.FeedbackController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.FeedbackController"/>
 public class CreateFeedbackTests : ApplicationTests
 {
     const string _apiUrl = "/api/Feedback";
 
     public CreateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_RequestAnonim_ShouldSuccess()
+    public async Task CreateFeedback_RequestAnonim_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackRepository.Create);
@@ -48,7 +46,7 @@ public class CreateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_ValidRequest_ShouldSuccess()
+    public async Task CreateFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackRepository.Create);
@@ -99,7 +97,7 @@ public class CreateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_EmptyEmail_ShouldSuccess()
+    public async Task CreateFeedback_EmptyEmail_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Create);

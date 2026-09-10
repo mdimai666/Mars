@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class GetMediaTests : BaseWebApiClientTests
 
     public GetMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _getTest = new(
             this,
@@ -25,31 +24,31 @@ public class GetMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetFile_Request_Unauthorized()
+    public async Task GetFile_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetFile_ValidRequest_ShouldSuccess()
+    public async Task GetFile_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public void GetFile_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetFile_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
 
     [IntegrationFact]
-    public async void ListFile_Request_Unauthorized()
+    public async Task ListFile_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListFile_ValidRequest_ShouldSuccess()
+    public async Task ListFile_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

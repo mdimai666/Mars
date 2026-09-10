@@ -1,0 +1,240 @@
+using System.Net.Http.Headers;
+using Flurl.Http;
+using Mars.Cms.Abstractions.Services;
+using Mars.Data.Contexts;
+using Mars.Data.Repositories.Mappings;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Integration.Tests.Controllers.Schedulers;
+using Mars.Integration.Tests.Interfaces;
+using Mars.Integration.Tests.Nodes;
+using Mars.Integration.Tests.TestControllers;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
+using Mars.Server.Startup;
+using Mars.Test.Common.Constants;
+using Mars.Test.Common.FixtureCustomizes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace Mars.Integration.Tests.Common;
+
+public class ApplicationFixture : IAsyncLifetime
+{
+    protected string? SkipTest => TestConstants.SkipTest;
+
+    public virtual IDatabaseFixture DbFixture { get; } = new DatabaseFixture();
+
+    /// <summary>Ссылки на сид-сущности БД текущей фикстуры (заполняются в Seed, per-fixture).</summary>
+    public TestEntityRefs Catalog { get; private set; } = TestEntityRefs.CreateDefault();
+
+    private HttpClient _authClient = default!;
+    private HttpClient _nonAuthClient = default!;
+
+    private WebApplicationFactory<Program> ApplicationFactory = default!;
+
+    public IServiceProvider ServiceProvider => ApplicationFactory.Services;
+
+    public IConfigurationRoot Configuration = default!;
+
+    private static TokenGenerator _tokenGenerator = new("http://localhost");
+
+    private static string? s_bearerToken;
+    public static string BearerToken => s_bearerToken ??= $"{JwtBearerDefaults.AuthenticationScheme} {_tokenGenerator.GenerateTokenWithClaims()}";
+
+    public async ValueTask InitializeAsync()
+    {
+        if (SkipTest is not null)
+        {
+            return;
+        }
+
+        await SetupAppFactory();
+        AddHttpClients();
+        await Task.Delay(1000);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (SkipTest is not null)
+        {
+            return;
+        }
+
+        if (ApplicationFactory is not null)
+        {
+            await ApplicationFactory.DisposeAsync();
+        }
+
+        await DbFixture.DisposeAsync();
+    }
+
+    public HttpClient GetClientEx(bool isAnonymous = false) => isAnonymous ? _nonAuthClient : _authClient;
+    public IFlurlClient GetClient(bool isAnonymous = false) => new FlurlClient(GetClientEx(isAnonymous));
+
+    //public MarsDbContext MarsDbContext() => ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<MarsDbContext>();
+    public MarsDbContext MarsDbContext() => ServiceProvider.GetRequiredService<MarsDbContext>();
+
+    private async Task SetupAppFactory()
+    {
+        await DbFixture.InitializeAsync();
+
+        ResetStaticFields();
+
+        ApplicationFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(
+            builder =>
+            {
+                builder.UseEnvironment("Test");
+                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+                var configurationBuilder = new ConfigurationBuilder()
+                                    .AddInMemoryCollection([
+                                        new ("ConnectionStrings:DefaultConnection", DbFixture.ConnectionString ),
+                                        // в appsettings.json каталог включён, а тесты витрины исходят из выключенного
+                                        new ("PluginCatalog:Enabled", "false")
+                                    ]);
+                ModifyConfigurationBuilder(configurationBuilder);
+                Configuration = configurationBuilder.Build();
+
+                ModifyConfiguration(Configuration);
+                builder.UseConfiguration(Configuration);
+
+                builder.ConfigureTestServices(
+                    services =>
+                    {
+                        services.AddLogging();
+
+                        //add test controllers
+                        services.AddControllers().AddApplicationPart(typeof(TestApi1Controller).Assembly);
+
+                        //services.AddScoped<IMarsDbContext>(sp => DbFixture.DbContext);
+
+                        services.Replace(ServiceDescriptor.Singleton<IFileStorage, InMemoryFileStorage>());
+                        services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
+                        services.Replace(ServiceDescriptor.Singleton<IKeyMaterialService, TestKeyMaterialService>(sp => _tokenGenerator.KeyMaterialService));
+
+                        services.AddSingleton(NSubstitute.Substitute.For<ITestDummyTriggerService>());
+                        services.AddSingleton<IPluginManagerWrapperForTests, PluginManagerWrapperForTests>();
+
+                        ModifyConfigureTestServices(services);
+                    });
+
+                //builder.Configure(app => если использовать то все проподает и 404
+                //{
+                //});
+            });
+
+        var app = ApplicationFactory;
+
+        var nodesLocator = app.Services.GetRequiredService<INodesLocator>();
+        nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
+
+        var nodeImplementFactory = app.Services.GetRequiredService<INodeImplementFactory>();
+        nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+    }
+
+    protected virtual void ModifyConfigurationBuilder(IConfigurationBuilder builder) { }
+    protected virtual void ModifyConfiguration(IConfigurationRoot configuration) { }
+    protected virtual void ModifyConfigureTestServices(IServiceCollection services) { }
+
+    private void AddHttpClients()
+    {
+        var clientOptions = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+        _nonAuthClient = ApplicationFactory.CreateClient(clientOptions);
+        _authClient = ApplicationFactory.CreateClient(clientOptions);
+
+        var tokenString = _tokenGenerator.GenerateTokenWithClaims();
+        _authClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenString);
+    }
+
+    public IFlurlClient GetClientForUser(Guid userId)
+    {
+        var user = DbFixture.DbContext.Users.AsNoTracking()
+                                            .Include(s => s.Roles)
+                                            .Include(s => s.UserType)
+                                            .Include(s => s.MetaValues!)
+                                                .ThenInclude(s => s.MetaField)
+                                            .First(s => s.Id == userId);
+
+        var clientOptions = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+        var tokenString = _tokenGenerator.GenerateTokenWithClaims(user.ToDetail(), user.SecurityStamp!);
+        var client = new FlurlClient(ApplicationFactory.CreateClient(clientOptions));
+        client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenString);
+        return client;
+    }
+
+    private void ResetStaticFields()
+    {
+    }
+
+    private void ResetClients()
+    {
+        _nonAuthClient?.Dispose();
+        _authClient?.Dispose();
+        AddHttpClients();
+    }
+
+    public void ResetMocks()
+    {
+        var ef = MarsDbContext();
+        // Контекст резолвится из корневого провайдера и захватывается одним инстансом на весь прогон,
+        // а IsPooled для pooled-контекста всегда False. Без безусловной очистки ChangeTracker копит
+        // сущности между тестами, и после Respawn-сброса и повторного сида они становятся протухшими.
+        ef.ChangeTracker.Clear();
+        ResetClients();
+        //ApiClientMock = Substitute.For<IApiClient>();
+
+    }
+
+    public async Task Seed()
+    {
+        using var scope = ServiceProvider.CreateScope();
+        var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
+        ef.ChangeTracker.Clear();
+        var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
+        MarsDbStartup.SeedData(ApplicationFactory.Services, Configuration, logger, true);
+
+        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+        var user = UserConstants.TestUser;
+        await userRepo.Create(new CreateUserQuery
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Roles = ["Admin"],
+            Password = UserConstants.TestUserPassword,
+            UserName = user.UserName,
+            Id = user.Id,
+            AvatarUrl = user.AvatarUrl,
+
+            Type = user.Type,
+            MetaValues = [],
+        }, default);
+
+        var postTypes = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        var userTypes = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        var postCategoryTypes = await ef.PostCategoryTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        ef.ChangeTracker.Clear();
+
+        if (postTypes.Count == 0 || userTypes.Count == 0 || postCategoryTypes.Count == 0)
+        {
+            throw new InvalidOperationException("PostTypes or UserTypes or PostCategoryTypes is empty after seeding data");
+        }
+
+        Catalog = new TestEntityRefs(postTypes, userTypes, postCategoryTypes);
+
+        ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
+        ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCache();
+        ServiceProvider.GetRequiredService<IUserMetaLocator>().InvalidateCache();
+    }
+
+}

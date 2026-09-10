@@ -93,7 +93,7 @@ NodeFormsLocator.RegisterAssembly(typeof(MyFirstNodeForm).Assembly);
 
 ```
 // MyFirstNodeForm.razor
-@using AppFront.Shared.Components
+@using Mars.Admin.Framework.Components
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Attributes
 @using Mars.Nodes.FormEditor

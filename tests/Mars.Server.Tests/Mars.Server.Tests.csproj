@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="Files\ExampleFiles\file1.txt" />
+        <None Remove="Files\ExampleFiles\file2.txt" />
+        <None Remove="Files\ExampleFiles\SubPath\file3.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Files\ExampleFiles\file1.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Files\ExampleFiles\file2.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Files\ExampleFiles\SubPath\file3.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Testing.Platform" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.v3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Storage\Mars.Storage.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.Options.Host\Mars.Options.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
+        <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+</Project>

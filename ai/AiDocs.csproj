@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Technical project: makes the ai/ folder (docs, plans, prompts) visible and editable in Solution Explorer.
+    .slnx cannot include whole folders via wildcards yet (dotnet/sdk#53534), so files are surfaced through the
+    SDK default item globs (None); new files appear automatically. The project is excluded from the build in Mars.slnx.
+  -->
+
+</Project>

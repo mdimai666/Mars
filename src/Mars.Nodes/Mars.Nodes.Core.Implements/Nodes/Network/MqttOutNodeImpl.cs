@@ -1,7 +1,7 @@
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 

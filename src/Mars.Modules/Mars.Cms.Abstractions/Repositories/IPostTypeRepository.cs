@@ -1,0 +1,45 @@
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.Common;
+using Mars.Core.Exceptions;
+
+namespace Mars.Cms.Abstractions.Repositories;
+
+public interface IPostTypeRepository
+{
+    Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken);
+
+    Task<PostTypeSummary?> GetByName(string name, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// for best perfomance use <see cref="IMetaModelTypesLocator.GetPostTypeByName"/>
+    /// </summary>
+    Task<PostTypeDetail?> GetDetail(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// for best perfomance use <see cref="IMetaModelTypesLocator.GetPostTypeByName"/>
+    /// </summary>
+    Task<PostTypeDetail?> GetDetailByName(string name, CancellationToken cancellationToken);
+
+    Task<Guid> Create(CreatePostTypeQuery query, CancellationToken cancellationToken);
+    /// <summary>
+    /// Update
+    /// </summary>
+    /// <exception cref="NotFoundException"/>
+    Task Update(UpdatePostTypeQuery query, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Delete
+    /// </summary>
+    /// <exception cref="NotFoundException"/>
+    Task Delete(Guid id, CancellationToken cancellationToken);
+    Task<int> DeleteMany(DeleteManyPostTypeQuery query, CancellationToken cancellationToken);
+
+    Task<IReadOnlyCollection<PostTypeSummary>> ListAll(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeSummary>> ListAllActive(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeDetail>> ListAllDetail(CancellationToken cancellationToken);
+    Task<ListDataResult<PostTypeSummary>> List(ListPostTypeQuery query, CancellationToken cancellationToken);
+    Task<PagingResult<PostTypeSummary>> ListTable(ListPostTypeQuery query, CancellationToken cancellationToken);
+    Task<bool> TypeNameExist(string name, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeSummary>> ListAllIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
+    Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken);
+}

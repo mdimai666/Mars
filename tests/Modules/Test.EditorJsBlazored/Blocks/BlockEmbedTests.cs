@@ -1,4 +1,4 @@
-﻿using EditorJsBlazored.Blocks;
+using EditorJsBlazored.Blocks;
 
 namespace Test.EditorJsBlazored.Blocks;
 

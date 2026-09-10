@@ -6,7 +6,7 @@ namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 [EditorActionCommand("OpenImportWindow")]
 public class OpenImportWindowAction(INodeEditorApi _editor,
                                     IDialogService _dialogService,
-                                    AppFront.Shared.Interfaces.IMessageService _messageService) : IEditorAction
+                                    Mars.Admin.Framework.Interfaces.IMessageService _messageService) : IEditorAction
 {
     public bool CanExecute() => true;
     public void Execute() => _ = ExecuteAsync();

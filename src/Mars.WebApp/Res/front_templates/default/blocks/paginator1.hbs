@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+    {{#with paginator}}
+    <nav class="d-flex align-items-center justify-content-center w-100" aria-label="Pagination">
+        <span class="me-3">Всего {{Total}} записей</span>
+
+        <div class="me-3">
+            {{#if prev}}
+            <div class="page-item ">
+                <a class="btn btn-light rounded-2 1page-link px-2 py-1 xcenter" style="height: 37px;"
+                    href="{{@parent.url}}{{@parent.url2}}?{{prev}}&{{{@parent.query}}}">
+                    <i class="bi bi-arrow-left" style="font-size:1.4em;"></i>
+                    {{!-- <span class="ms-3">Назад</span> --}}
+                </a>
+            </div>
+            {{/if}}
+        </div>
+
+        <ul class="pagination pagination-sm justify-content-start" style="margin:20px 0">
+            {{!-- {{#if prev}}
+            <li class="page-item ">
+                <a class="page-link" href="{{@parent.url}}{{@parent.url2}}?{{prev}}&{{{@parent.query}}}">&lt;</a>
+            </li>
+            {{/if}} --}}
+            {{#each items}}
+            <li class="page-item {{#eqstr @key @parent.page}}active{{/eqstr}}">
+                <a class="page-link px-3  py-2 border-0 rounded-1"
+                    href="{{../../url}}{{../../url2}}?{{.}}&{{{../../query}}}">{{@key}}</a>
+            </li>
+            {{/each}}
+            {{!-- {{#if next}}
+            <li class="page-item">
+                <a class="page-link" href="{{@parent.url}}{{@parent.url2}}?{{next}}&{{{@parent.query}}}">&gt;</a>
+            </li>
+            {{/if}} --}}
+        </ul>
+
+        <div class="ms-3">
+            {{#if next}}
+            <div class="page-item">
+                <a class="btn btn-light rounded-2 1page-link px-2 py-1 xcenter" style="height: 37px;"
+                    href="{{@parent.url}}{{@parent.url2}}?{{next}}&{{{@parent.query}}}">
+                    {{!-- <span class="me-3">Вперед</span> --}}
+                    <i class="bi bi-arrow-right" style="font-size:1.4em;"></i>
+                </a>
+            </div>
+            {{/if}}
+        </div>
+    </nav>
+    {{!-- <pre>{{.}}</pre> --}}
+    {{/with}}
+
+</div>

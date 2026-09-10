@@ -1,11 +1,12 @@
-@using Mars.Datasource.Core
-@using Mars.Datasource.Core.Dto
+@using Mars.Datasource
+@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Dto
 @using Mars.Datasource.Front.Services
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inject IDatasourceServiceClient datasourceService;
-@inject AppFront.Shared.Interfaces.IMessageService messageService
+@inject Mars.Admin.Framework.Interfaces.IMessageService messageService
 
 <div class="vstack gap-3">
     <div class="hstack">

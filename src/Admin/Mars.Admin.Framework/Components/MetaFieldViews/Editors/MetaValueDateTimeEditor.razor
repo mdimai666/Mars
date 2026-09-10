@@ -1,0 +1,36 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Редактор значения «Дата и время»: пикер даты + время на одной DateTime-колонке *@
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <div class="d-flex gap-2 align-items-center">
+        <FluentDatePicker Value="@DatePart" ValueChanged="OnDateChanged" />
+        <input type="time" value="@TimeValue" @onchange="OnTimeChanged" class="form-control" style="max-width:140px;" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    DateTime? DatePart => Value.DateTime?.Date;
+    string TimeValue => Value.DateTime?.ToString("HH:mm") ?? "";
+
+    async Task OnDateChanged(DateTime? date)
+    {
+        var time = Value.DateTime?.TimeOfDay ?? TimeSpan.Zero;
+        Value.DateTime = date?.Date.Add(time);
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    async Task OnTimeChanged(ChangeEventArgs e)
+    {
+        if (TimeSpan.TryParse(e.Value?.ToString(), out var time))
+        {
+            var date = Value.DateTime?.Date ?? DateTime.Today;
+            Value.DateTime = date.Add(time);
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+}

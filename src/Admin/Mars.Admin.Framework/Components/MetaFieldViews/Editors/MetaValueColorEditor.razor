@@ -1,0 +1,31 @@
+@* Редактор значения «Цвет»: палитра + текстовое значение (#rrggbb) *@
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <div class="d-flex gap-2 align-items-center">
+        <input type="color" value="@ColorValue" @onchange="OnColorChanged" style="width:48px; height:32px; padding:2px;" />
+        <input type="text" class="form-control" style="max-width:160px;" value="@Value.StringShort"
+               @onchange="OnTextChanged" placeholder="#000000" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    string ColorValue => string.IsNullOrWhiteSpace(Value.StringShort) || !Value.StringShort.StartsWith('#')
+        ? "#000000"
+        : Value.StringShort;
+
+    async Task OnColorChanged(ChangeEventArgs e)
+    {
+        Value.StringShort = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    async Task OnTextChanged(ChangeEventArgs e)
+    {
+        Value.StringShort = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

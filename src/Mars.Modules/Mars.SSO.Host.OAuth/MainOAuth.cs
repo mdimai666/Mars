@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Options.Models;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.Controllers;
 using Mars.SSO.Host.OAuth.Data;
 using Mars.SSO.Host.OAuth.interfaces;
@@ -13,7 +13,7 @@ namespace Mars.SSO.Host.OAuth;
 
 public static class MainOAuth
 {
-    public static IServiceCollection AddMarsOAuthHost(this IServiceCollection services)
+    public static IServiceCollection AddMarsOAuth(this IServiceCollection services)
     {
         services.AddDbContext<SsoAuthDbContext>(opt => opt.UseInMemoryDatabase("oauth"));
 
@@ -28,7 +28,7 @@ public static class MainOAuth
         return services;
     }
 
-    public static IServiceProvider UseMarsOAuthHost(this IServiceProvider serviceProvider)
+    public static IServiceProvider UseMarsOAuth(this IServiceProvider serviceProvider)
     {
         var optionService = serviceProvider.GetRequiredService<IOptionService>();
 

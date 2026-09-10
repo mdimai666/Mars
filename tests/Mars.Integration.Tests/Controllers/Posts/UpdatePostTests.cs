@@ -1,36 +1,34 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Posts;
 
-/// <seealso cref="Mars.Controllers.PostController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostController"/>
 public sealed class UpdatePostTests : ApplicationTests
 {
     const string _apiUrl = "/api/Post";
 
     public UpdatePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task UpdatePost_ValidRequest_ShouldSuccess()
+    public async Task UpdatePost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Update);
@@ -44,7 +42,7 @@ public sealed class UpdatePostTests : ApplicationTests
         postType.MetaFields = metaFields;
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();

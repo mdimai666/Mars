@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+    <ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
+    <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
+    <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,4 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
@@ -12,7 +12,6 @@ public class DeleteMediaTests : BaseWebApiClientTests
 
     public DeleteMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.Media.Delete(req), (client, req) => client.Media.DeleteMany(req));
     }
@@ -24,7 +23,7 @@ public class DeleteMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteMedia_ValidRequest_ShouldSuccess()
+    public async Task DeleteMedia_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +35,7 @@ public class DeleteMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyMedia_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyMedia_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

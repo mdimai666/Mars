@@ -1,15 +1,15 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Plugin.Abstractions;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Plugins;
+using Mars.Plugin.Controllers;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +23,6 @@ public class GetPluginTests : ApplicationTests
 
     public GetPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _pluginService = appFixture.ServiceProvider.GetRequiredService<IPluginService>();
     }
 
@@ -43,7 +42,7 @@ public class GetPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPlugin_Request_ShouldSuccess()
+    public async Task ListPlugin_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PluginController.ListTable);
@@ -51,17 +50,25 @@ public class GetPluginTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         _fixture.AddTestPlugin(AppFixture.ServiceProvider);
+        var pluginManager = AppFixture.ServiceProvider.GetRequiredService<PluginManager>();
+        var packageId = pluginManager.Plugins.Last().Info.PackageId;
+        try
+        {
+            var request = new ListPluginQueryRequest();
 
-        var request = new ListPluginQueryRequest();
+            //Act
+            var result = await client.Request(_apiUrl, "list/page")
+                .AppendQueryParam(request)
+                .GetJsonAsync<PagingResult<PluginInfoResponse>>();
 
-        //Act
-        var result = await client.Request(_apiUrl, "list/page")
-            .AppendQueryParam(request)
-            .GetJsonAsync<PagingResult<PluginInfoResponse>>();
-
-        //Assert
-        result.Should().NotBeNull();
-        result.Items.Count().Should().Be(1);
+            //Assert: список = загруженные ∪ реестр, точное число в общем окружении не гарантировано
+            result.Should().NotBeNull();
+            result.Items.Should().Contain(i => i.PackageId == packageId);
+        }
+        finally
+        {
+            pluginManager.RemovePlugin(packageId);
+        }
     }
 }
 
@@ -72,7 +79,7 @@ public static class PluginTestsExtensions
         var pluginInfo = _fixture.Create<PluginInfo>();
         var pluginSettings = _fixture.Create<PluginSettings>();
 
-        var pluginData = new PluginData(false, false, pluginSettings, null!, pluginInfo);
+        var pluginData = new LoadedPlugin(false, false, pluginSettings, null!, pluginInfo);
 
         var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
         pluginManager.AddPlugin(pluginData);

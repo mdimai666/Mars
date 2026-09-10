@@ -1,0 +1,433 @@
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.WebApiClient.Interfaces
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<d-meta-field class="FormMetaField">
+
+    <CascadingValue Value="this">
+
+        <FluentAccordion>
+            @if (Model is not null)
+            {
+                @foreach (var f in Model.OrderBy(s => s.Order))
+                {
+                    var field = f;
+
+                    <FluentAccordionItem @key=@($"accortion-item-{field.Id}")>
+                        <HeadingTemplate>
+                            <div class="hstack">
+                                <div class="flex-fill fz18px">
+                                    @(MetaFieldEditModel.TypeIcons[field.Type])
+
+                                    <span class="@(field.Disabled ? "text-secondary text-decoration-line-through" : "") @(field.Hidden ? "fst-italic" : "")">
+                                        @(string.IsNullOrEmpty(field.Title) ? "<nameless>" : field.Title)
+                                    </span>
+                                    @*<span class="text-primary fz14px">{@field.Id}</span>*@
+                                    <span class="text-primary fz14px">(@field.Type.ToString())</span>
+                                    @if (field.Hidden)
+                                    {
+                                        <i class="text-secondary ms-2">hidden</i>
+
+                                    }
+                                </div>
+                                <div class="hstack gap-3">
+                                    <span class="text-secondary fz12px">
+                                        @field.Key
+                                    </span>
+                                    @if (IsContentFeatureField(field))
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral"
+                                                     title="Поле контента (фича «Контент»). Чтобы удалить его — снимите галочку фичи.">
+                                            фича
+                                        </FluentBadge>
+                                    }
+                                    else if (IsFeatureField(field))
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral"
+                                                     title="Поле — картинка поста (фича «Картинка поста»). Чтобы удалить его — снимите галочку фичи или выберите другое поле картинки типа и сохраните.">
+                                            фича
+                                        </FluentBadge>
+                                    }
+                                    <FluentButton Appearance="Appearance.Stealth" OnClick="() => OnClone(field)">
+                                        <span class="text-secondary">дублировать</span>
+                                    </FluentButton>
+                                    @if (!IsProtectedFeatureField(field))
+                                    {
+                                        <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
+                                            <span class="text-danger">удалить</span>
+                                        </DFluentDeleteButton>
+                                    }
+                                </div>
+
+                            </div>
+
+                        </HeadingTemplate>
+                        <ChildContent>
+                            <div class="1card rounded-0 mb-1">
+                                <div class="card-body1p-2">
+                                    @*<CascadingValue Value=@field>
+                                    <FormRowMetaFieldTemplate @bind-Field=@field />
+                                    </CascadingValue>*@
+
+                                                    <div class="FormMetaField_Row vstack gap-3">
+                                        <div class="row row-cols-3 g-4">
+                                            <div class="col">
+                                                <FormItem2 For="() => field.Title">
+                                                    <FluentTextField Value=@field.Title
+                                                                     ValueChanged="@((v)=>OnChangeFieldTitle(v,field))"
+                                                                     Style="min-width:200px"
+                                                                     Appearance="FluentInputAppearance.Filled" Required />
+                                                </FormItem2>
+                                            </div>
+                                            <div class="col">
+                                                <FormItem2 For="() => field.Key">
+                                                    <FluentTextField Value=@field.Key
+                                                                     ValueChanged="@((v) => OnChangeFieldKey(v, field))"
+                                                                     Disabled="IsContentFeatureField(field)"
+                                                                     Required />
+                                                </FormItem2>
+                                            </div>
+                                        </div>
+                                        <div class="row row-cols-2 g-4">
+                                            <div class="col">
+                                                <FormItem2 For="() => field.Description">
+                                                    <FluentTextArea Rows="2" @bind-Value=@field.Description Class="w-100" />
+                                                </FormItem2>
+                                            </div>
+                                            <div class="col">
+                                                <FormItem2 For="() => field.Tags">
+                                                    <InputTags2 @bind-Value=field.Tags />
+                                                </FormItem2>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-4">
+                                            <FluentSwitch Value="@(!field.IsNullable)"
+                                                          ValueChanged="@(v => field.IsNullable = !v)"
+                                                          Label="Обязательное" />
+                                            @if (field.IsTypeRelation)
+                                            {
+                                                <FluentSwitch Value="@field.IsMultiple"
+                                                              ValueChanged="@(v => OnToggleIsMultiple(v, field))"
+                                                              Label="Несколько значений" />
+                                            }
+                                        </div>
+
+                                        <div class="d-flex gap-3">
+                                            <div>
+                                                <FormItem2 For="() => field.Type">
+
+                                                    <GroupedSelectDropDown TOption="MetaFieldTypePresets.PickerItem"
+                                                                           Items="@TypePickerGroups"
+                                                                           OptionText="@(i => i.Label)"
+                                                                           OptionValue="@(i => i.OptionKey)"
+                                                                           Value="@GetTypePickerValue(field)"
+                                                                           Disabled="IsProtectedFeatureField(field)"
+                                                                           ValueChanged="@(v => OnChangeFieldTypePicker(v, field))"
+                                                                           ButtonStyle="min-width:250px;" />
+                                                </FormItem2>
+                                            </div>
+                                            <div>
+                                                @if (_editorLocator.EditorsFor(field.Type).Count > 0)
+                                                {
+                                                    <div class="vstack">
+                                                        <label>Редактор значения</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.Editor"
+                                                                      ValueChanged="@(v => field.Editor = v)">
+                                                            <FluentOption TOption="string" Value="">— обычный для типа —</FluentOption>
+                                                            @foreach (var editor in _editorLocator.EditorsFor(field.Type))
+                                                            {
+                                                                <FluentOption TOption="string" Value="@editor.Key">@editor.Title</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                }
+                                            </div>
+                                            @if (field.Editor == MetaFieldEditorCatalog.Code)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Язык кода</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.CodeLang"
+                                                                      ValueChanged="@(v => field.CodeLang = v)">
+                                                            <FluentOption TOption="string" Value="">— по умолчанию (@MetaFieldEditorCatalog.DefaultCodeLang) —</FluentOption>
+                                                            @foreach (var lang in CodeEditor2.Language.Array)
+                                                            {
+                                                                <FluentOption TOption="string" Value="@lang">@lang</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div>
+                                                @if (field.Type == MetaFieldType.Relation)
+                                                {
+                                                    <FormItem2 For="() => field.ModelName">
+
+                                                        <FluentSelect TOption="string"
+                                                                      Width="250px"
+                                                                      @bind-Value="@field.ModelName">
+
+                                                            @foreach (var relModel in MetaRelationModels)
+                                                            {
+                                                                <FluentOption Value="@relModel.Key">@relModel.Title</FluentOption>
+
+                                                                @foreach (var subModel in relModel.SubTypes)
+                                                                {
+                                                                    <FluentOption Value="@subModel.Key"> <span class="ms-3">-</span> @subModel.Title</FluentOption>
+                                                                }
+                                                            }
+
+                                                        </FluentSelect>
+                                                    </FormItem2>
+                                                }
+                                            </div>
+                                            @if (field.Type == MetaFieldType.Relation && field.IsMultiple)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Вид поля</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.Kind"
+                                                                      ValueChanged="@(v => field.Kind = v)">
+                                                            <FluentOption TOption="string" Value="">Обычный</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.List">Список объектов</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (field.Type == MetaFieldType.Relation && field.IsListKind)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Удаление из списка</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.RemoveMode"
+                                                                      ValueChanged="@(v => field.RemoveMode = v)">
+                                                            <FluentOption TOption="string" Value="">— по типу цели —</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.Unlink">Отвязать</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.DeleteConfirm">Удалить объект (с подтверждением)</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Вид списка</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.ViewMode"
+                                                                      ValueChanged="@(v => field.ViewMode = v)">
+                                                            <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-end pb-2">
+                                                    <FluentSwitch @bind-Value=field.DropZoneEnabled Label="Дроп-зона загрузки" />
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                        @if (field.IsTypeQuery)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Определение вычислимого поля</FluentLabel>
+                                                <div class="d-flex gap-3">
+                                                    <div>
+                                                        <FluentLabel>Целевой тип</FluentLabel>
+                                                        <FluentSelect TOption="string"
+                                                                      Width="250px"
+                                                                      @bind-Value="@field.QueryTarget">
+                                                            @foreach (var relModel in MetaRelationModels)
+                                                            {
+                                                                <FluentOption Value="@relModel.Key">@relModel.Title</FluentOption>
+
+                                                                @foreach (var subModel in relModel.SubTypes)
+                                                                {
+                                                                    <FluentOption Value="@subModel.Key"> <span class="ms-3">-</span> @subModel.Title</FluentOption>
+                                                                }
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                    <div>
+                                                        <FluentTextField @bind-Value=@field.QueryBackReferenceKey
+                                                                         Label="Relation-поле цели (обратная ссылка)"
+                                                                         Style="min-width:250px" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (field.Type is MetaFieldType.File or MetaFieldType.Image)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Папка загрузки</FluentLabel>
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <span class="text-secondary">
+                                                        @(string.IsNullOrEmpty(field.UploadFolder) ? "— папка года (по умолчанию) —" : field.UploadFolder)
+                                                    </span>
+                                                    <FluentButton Size="small" OnClick="@(() => OpenFolderPickerAsync(field))">Выбрать…</FluentButton>
+                                                    @if (!string.IsNullOrEmpty(field.UploadFolder))
+                                                    {
+                                                        <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="@(() => { field.UploadFolder = ""; })">Сбросить</FluentButton>
+                                                    }
+                                                </div>
+                                                <div class="d-flex gap-4 align-items-center">
+                                                    @if (field.IsMultiple)
+                                                    {
+                                                        <div class="vstack">
+                                                            <label>Вид списка</label>
+                                                            <FluentSelect TOption="string" Width="180px"
+                                                                          Value="@field.ViewMode"
+                                                                          ValueChanged="@(v => field.ViewMode = v)">
+                                                                <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                                                                <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
+                                                            </FluentSelect>
+                                                        </div>
+                                                    }
+                                                    <FluentSwitch @bind-Value=field.DropZoneEnabled Label="Дроп-зона загрузки" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (field.IsTypeHasMinMax)
+                                        {
+                                            <div class="vstack">
+                                                <FluentLabel>Ограничитель</FluentLabel>
+                                                <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentLabel>
+
+                                                <div class="mt-2 hstack gap-3">
+                                                    <label>min</label>
+                                                    <FluentNumberField @bind-Value="@field.MinValue" Style="width:100px;" />
+                                                    <span class="" style="text-align:center;">-</span>
+                                                    <label>max</label>
+                                                    <FluentNumberField @bind-Value="@field.MaxValue" Style="width:100px;" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (AvailableValidators(field).Count > 0)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Валидация</FluentLabel>
+                                                @foreach (var v in field.Validators)
+                                                {
+                                                    <div class="hstack gap-2 align-items-center">
+                                                        <FluentSelect TOption="string" Width="220px" @bind-Value="v.Type">
+                                                            @foreach (var catalogItem in AvailableValidators(field))
+                                                            {
+                                                                <FluentOption Value="@catalogItem.Key">@catalogItem.Title</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                        @if (v.Type == MetaFieldValidatorCatalog.Regex)
+                                                        {
+                                                            <FluentTextField @bind-Value="v.Pattern" Label="Шаблон" Style="min-width:200px;" />
+                                                            <FluentTextField @bind-Value="v.Message" Label="Сообщение" Style="min-width:200px;" />
+                                                        }
+                                                        else if (v.Type == MetaFieldValidatorCatalog.Length)
+                                                        {
+                                                            <FluentNumberField @bind-Value="v.Min" Label="Мин" Style="width:100px;" />
+                                                            <FluentNumberField @bind-Value="v.Max" Label="Макс" Style="width:100px;" />
+                                                        }
+                                                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => field.Validators.Remove(v))">
+                                                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                                        </FluentButton>
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <FluentButton OnClick="@(() => AddValidatorRule(field))">
+                                                        Добавить правило
+                                                    </FluentButton>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (field.Type == MetaFieldType.String || field.Type == MetaFieldType.DateTime)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Генератор значения</FluentLabel>
+                                                <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Автозаполнение при создании объекта</FluentLabel>
+
+                                                <div class="hstack gap-2 align-items-center">
+                                                    <FluentSelect TOption="string" Width="220px" @bind-Value="field.GeneratorType">
+                                                        <FluentOption Value="">— нет —</FluentOption>
+                                                        @foreach (var g in MetaFieldGeneratorCatalog.All)
+                                                        {
+                                                            @if ((g.Key == MetaFieldGeneratorCatalog.Sequence && field.Type == MetaFieldType.String)
+                                                              || (g.Key == MetaFieldGeneratorCatalog.Now && field.Type == MetaFieldType.DateTime))
+                                                            {
+                                                                <FluentOption Value="@g.Key">@g.Title</FluentOption>
+                                                            }
+                                                        }
+                                                    </FluentSelect>
+
+                                                    @if (field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
+                                                    {
+                                                        <FluentTextField @bind-Value="field.GeneratorPrefix" Label="Префикс" Style="width:120px;" />
+                                                        <FluentNumberField @bind-Value="field.GeneratorPaddingWidth" Label="Разрядов числа" Style="width:110px;" />
+                                                        <div class="vstack">
+                                                            <label>Счётчик</label>
+                                                            <FluentSelect TOption="string" Width="180px" @bind-Value="field.GeneratorMode">
+                                                                <FluentOption Value="@MetaFieldGeneratorCatalog.ModeContinue">продолжается</FluentOption>
+                                                                <FluentOption Value="@MetaFieldGeneratorCatalog.ModeDaily">сброс каждый день</FluentOption>
+                                                            </FluentSelect>
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                @if (field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
+                                                {
+                                                    <div class="vstack gap-2 ms-3">
+                                                        <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Префикс из категории (словарь категория → префикс)</FluentLabel>
+                                                        @foreach (var row in field.GeneratorCategoryPrefixes)
+                                                        {
+                                                            <div class="hstack gap-2 align-items-center">
+                                                                <FluentTextField @bind-Value="row.CategorySlug" Label="Slug категории" Style="min-width:180px;" />
+                                                                <FluentTextField @bind-Value="row.Prefix" Label="Префикс" Style="width:120px;" />
+                                                                <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => field.GeneratorCategoryPrefixes.Remove(row))">
+                                                                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                                                </FluentButton>
+                                                            </div>
+                                                        }
+                                                        <div>
+                                                            <FluentButton OnClick="@(() => field.GeneratorCategoryPrefixes.Add(new MetaFieldEditModel.MetaFieldGeneratorCategoryRow()))">
+                                                                Добавить категорию
+                                                            </FluentButton>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+
+                                        @if (field.IsTypeSelectable)
+                                        {
+                                            <label>Варианты</label>
+                                            <div class="card ms-3">
+                                                <div class="card-body p-2">
+                                                    <EditMetaFieldVariants @bind-Model=field />
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="hstack gap-3">
+                                            <FluentSwitch @bind-Value=field.Hidden Label="@AppRes.Hidden" />
+                                            <FluentSwitch @bind-Value=field.Disabled Label="@AppRes.Disabled" />
+
+                                            <FluentNumberField @bind-Value=field.Order Label="@AppRes.SortingOrder" Style="width:100px" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </FluentAccordionItem>
+                }
+            }
+        </FluentAccordion>
+
+    </CascadingValue>
+</d-meta-field>
+
+@*<JsonDump Model="Model" />*@

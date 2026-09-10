@@ -1,12 +1,11 @@
 using System.Collections.Concurrent;
-using Mars.Host.Shared.Dto.Common;
+using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings.NodeTaskJobs;
-using Mars.Nodes.Host.Services;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Dto.NodeTasks;
-using Mars.Nodes.Host.Shared.Services;
-using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

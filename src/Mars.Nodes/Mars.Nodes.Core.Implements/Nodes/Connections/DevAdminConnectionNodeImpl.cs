@@ -1,8 +1,8 @@
 using Mars.Core.Models;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Dto;
 using Mars.Nodes.Core.Nodes.Connections;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Dto;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Connections;

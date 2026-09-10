@@ -1,9 +1,8 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -19,11 +18,10 @@ public class DeletePostTests : ApplicationTests
 
     public DeletePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task DeletePost_ValidRequest_ShouldSuccess()
+    public async Task DeletePost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Delete);
@@ -76,7 +74,7 @@ public class DeletePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPost_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.DeleteMany);

@@ -1,4 +1,4 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
@@ -12,7 +12,6 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
 
     public DeleteNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.NavMenu.Delete(req), (client, req) => client.NavMenu.DeleteMany(req));
     }
@@ -24,7 +23,7 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteNavMenu_ValidRequest_ShouldSuccess()
+    public async Task DeleteNavMenu_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +35,7 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyNavMenu_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyNavMenu_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

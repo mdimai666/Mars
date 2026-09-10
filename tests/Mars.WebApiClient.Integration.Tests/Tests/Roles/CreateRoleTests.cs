@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Roles;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -13,7 +13,6 @@ public class CreateRoleTests : BaseWebApiClientTests
 
     public CreateRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.Role.Create(req));
     }
@@ -25,7 +24,7 @@ public class CreateRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateRole_ValidRequest_ShouldSuccess()
+    public async Task CreateRole_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

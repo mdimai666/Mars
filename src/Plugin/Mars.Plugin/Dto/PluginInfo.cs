@@ -1,4 +1,5 @@
 using System.Reflection;
+using Mars.Plugin.Contracts.Plugins;
 
 namespace Mars.Plugin.Dto;
 
@@ -20,6 +21,12 @@ public class PluginInfo
     public string? RepositoryUrl { get; set; }
     public string? PackageIcon { get; set; }
 
+    /// <summary>Откуда плагин: конфигурация инстанса (Locked) или установлен из zip/nuget.</summary>
+    public PluginSource Source { get; set; } = PluginSource.Unknown;
+    public bool Locked => Source == PluginSource.Config;
+    public bool Enabled { get; set; } = true;
+    public DateTimeOffset InstalledAt { get; set; } = DateTimeOffset.MinValue;
+
     public PluginInfo()
     {
 
@@ -27,18 +34,6 @@ public class PluginInfo
 
     public PluginInfo(Assembly assembly)
     {
-        //[System.Runtime.CompilerServices.CompilationRelaxationsAttribute((Int32)8)]
-        //[System.Runtime.CompilerServices.RuntimeCompatibilityAttribute(WrapNonExceptionThrows = True)]
-        //[System.Diagnostics.DebuggableAttribute((System.Diagnostics.DebuggableAttribute + DebuggingModes)263)]
-        //[Mars.Plugin.Abstractions.WebApplicationPluginAttribute(typeof(HelloPlugin1.HelloPlugin))]
-        //[System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v6.0", FrameworkDisplayName = "")]
-        //[System.Reflection.AssemblyCompanyAttribute("HelloPlugin1")]
-        //[System.Reflection.AssemblyConfigurationAttribute("Debug")]
-        //[System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-        //[System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-        //[System.Reflection.AssemblyProductAttribute("HelloPlugin1")]
-        //[System.Reflection.AssemblyTitleAttribute("HelloPlugin1")]
-
         AssemblyFullName = assembly.FullName!;
         AssemblyPath = assembly.Location;
 
@@ -46,7 +41,6 @@ public class PluginInfo
 
         var _assembly = assembly.GetName();
 
-        //this.Version = assembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0";
         Version = _assembly.Version.ToString() ?? "0";
         Title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? _assembly.Name!;
         Description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description ?? "";

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Mars.Core.Attributes;
-using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 

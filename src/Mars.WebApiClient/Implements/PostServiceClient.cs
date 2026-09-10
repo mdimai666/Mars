@@ -1,6 +1,6 @@
 using Flurl.Http;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
@@ -47,22 +47,26 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
 
     public Task<ListDataResult<PostListItemResponse>> List(ListPostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(TablePostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/list/page")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<PagingResult<PostListItemResponse>>();
 
     public Task<ListDataResult<PostListItemResponse>> List(string postType, ListPostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(string postType, TablePostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/page")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<PagingResult<PostListItemResponse>>();
 
     public Task<PostEditViewModel> GetEditModel(Guid id)
@@ -74,4 +78,8 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
         => _client.Request($"{_basePath}{_controllerName}/edit/blank", type)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostEditViewModel>();
+
+    public Task<PostDetailResponse> Single(string type)
+        => _client.Request($"{_basePath}{_controllerName}/single", type)
+                    .GetJsonAsync<PostDetailResponse>();
 }

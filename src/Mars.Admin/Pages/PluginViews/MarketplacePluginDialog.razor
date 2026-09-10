@@ -1,0 +1,262 @@
+@using Mars.Plugin.Contracts.Catalog
+@using Mars.Plugin.Contracts.Plugins
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+@inject Mars.Admin.Framework.Interfaces.IMessageService _messageService
+@implements IDialogContentComponent<CatalogPluginDto>
+
+<FluentDialogHeader>
+    <div class="hstack gap-3">
+        @if (Content.IconUrl is not null)
+        {
+            <img src="@Content.IconUrl" alt="icon" style="width:48px;height:48px;object-fit:contain;" />
+        }
+        else
+        {
+            <i class="bi bi-plugin text-secondary" style="font-size:36px;"></i>
+        }
+        <div class="vstack">
+            <div class="hstack gap-2">
+                <FluentLabel Typo="Typography.Header">@Content.DisplayName</FluentLabel>
+                @if (Content.IsRecommended)
+                {
+                    <FluentBadge Appearance="Appearance.Accent">Рекомендован</FluentBadge>
+                }
+            </div>
+            <span class="text-secondary">@Content.AuthorName</span>
+        </div>
+    </div>
+</FluentDialogHeader>
+
+@if (_busy)
+{
+    <SharedLoader1 />
+}
+else
+{
+    <div class="vstack gap-3 p-3" style="width: 680px; max-height: 70vh; overflow:auto;">
+        <div class="hstack gap-3 flex-wrap">
+            <span class="text-secondary" title="Последняя версия">
+                <i class="bi bi-tag"></i> @Content.LatestVersion
+            </span>
+            <span class="text-secondary" title="Загрузки">
+                <i class="bi bi-download"></i> @Content.TotalDownloads.ToString("N0")
+            </span>
+            <span class="hstack gap-1" title="Рейтинг">
+                <FluentRating Max="5" Value="@((int)Math.Round(Content.AvgRating))" ReadOnly="true"
+                              Style="zoom:0.5" IconColor="@Color.Accent" />
+                <span class="text-secondary">@Content.AvgRating.ToString("0.#") (@Content.ReviewsCount)</span>
+            </span>
+            <span class="text-secondary" title="Совместимость с версиями Марса">
+                <i class="bi bi-puzzle"></i> @(CompatibilityText(Content))
+            </span>
+        </div>
+
+        @if (Content.Tags.Count > 0)
+        {
+            <div class="d-flex gap-1 flex-wrap">
+                @foreach (var tag in Content.Tags)
+                {
+                    <FluentBadge Appearance="Appearance.Neutral">@tag</FluentBadge>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Content.Description))
+        {
+            <div style="white-space: pre-wrap;">@Content.Description</div>
+        }
+
+        <div class="hstack gap-3">
+            @if (!string.IsNullOrEmpty(Content.RepositoryUrl))
+            {
+                <a href="@Content.RepositoryUrl" target="_blank"><i class="bi bi-github"></i> Репозиторий</a>
+            }
+            @if (!string.IsNullOrEmpty(Content.HomepageUrl))
+            {
+                <a href="@Content.HomepageUrl" target="_blank">Сайт</a>
+            }
+            @if (!string.IsNullOrEmpty(Content.LicenseUrl))
+            {
+                <a href="@Content.LicenseUrl" target="_blank">Лицензия</a>
+            }
+        </div>
+
+        <hr />
+
+        <h6 class="mb-0">Отзывы (@_reviewsTotal)</h6>
+        @if (_reviews.Count == 0)
+        {
+            <div class="text-secondary">Отзывов пока нет.</div>
+        }
+        else
+        {
+            @foreach (var review in _reviews)
+            {
+                <div class="vstack border-bottom pb-2 mb-2">
+                    <div class="hstack gap-2">
+                        <FluentRating Max="5" Value="@review.Rating" ReadOnly="true"
+                                      Style="zoom:0.4" IconColor="@Color.Accent" />
+                        <b>@review.UserName</b>
+                        <span class="text-secondary">@review.CreatedAt.LocalDateTime.ToString("d")</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(review.Text))
+                    {
+                        <div>@review.Text</div>
+                    }
+                </div>
+            }
+            @if (_reviews.Count < _reviewsTotal)
+            {
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="LoadMoreReviewsAsync">Показать ещё</FluentButton>
+            }
+        }
+
+        @if (_installSuccess)
+        {
+            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss="false">
+                Плагин установлен. Изменения применятся после рестарта сервера.
+            </FluentMessageBar>
+        }
+        @if (_errorMessage is not null)
+        {
+            <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss="false">
+                @_errorMessage
+            </FluentMessageBar>
+        }
+    </div>
+}
+
+<FluentDialogFooter>
+    @if (_installed && !_hasUpdate)
+    {
+        <FluentBadge Appearance="Appearance.Neutral">Установлен</FluentBadge>
+        <FluentSpacer />
+    }
+    else if (!_busy)
+    {
+        <FluentButton Appearance="Appearance.Accent" Disabled="_installing" OnClick="InstallAsync">
+            @(_installing ? "Установка…" : (_installed ? "Обновить" : "Установить"))
+        </FluentButton>
+    }
+    <FluentButton OnClick="CloseAsync">@AppRes.Close</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    private const int ReviewsPageSize = 20;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public CatalogPluginDto Content { get; set; } = default!;
+
+    bool _busy = true;
+    bool _installed;
+    bool _hasUpdate;
+    bool _installing;
+    bool _installSuccess;
+    string? _errorMessage;
+    List<CatalogReviewDto> _reviews = [];
+    int _reviewsTotal;
+    int _reviewsPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.WhenAll(LoadInstalledStateAsync(), LoadReviewsAsync());
+        _busy = false;
+    }
+
+    async Task LoadInstalledStateAsync()
+    {
+        try
+        {
+            var list = await client.Plugin.List(new ListPluginQueryRequest { Take = 1000 });
+            var installed = list.Items.FirstOrDefault(p => string.Equals(p.PackageId, Content.PackageId, StringComparison.OrdinalIgnoreCase));
+            _installed = installed is not null;
+            _hasUpdate = installed is not null && IsNewer(installed.Version, Content.LatestVersion);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+
+    async Task LoadReviewsAsync()
+    {
+        try
+        {
+            var response = await client.Plugin.MarketplaceReviews(Content.PackageId, _reviewsPage, ReviewsPageSize);
+            _reviews.AddRange(response.Items);
+            _reviewsTotal = response.Total;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+
+    Task LoadMoreReviewsAsync()
+    {
+        _reviewsPage++;
+        return LoadReviewsAsync();
+    }
+
+    async Task InstallAsync()
+    {
+        _installing = true;
+        _errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await client.Plugin.InstallFromNuget(Content.PackageId);
+            _installSuccess = true;
+            _ = _messageService.Success(result.Message);
+            await LoadInstalledStateAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _installing = false;
+            StateHasChanged();
+        }
+    }
+
+    Task CloseAsync() => Dialog.CloseAsync();
+
+    static string CompatibilityText(CatalogPluginDto plugin)
+        => (plugin.MarsVersionMin, plugin.MarsVersionMax) switch
+        {
+            (null, null) => "совместимость не указана",
+            (var min, null) => $"Марс {min}+",
+            (null, var max) => $"Марс до {max}",
+            (var min, var max) => $"Марс {min}–{max}",
+        };
+
+    static bool IsNewer(string? installed, string? latest)
+    {
+        if (string.IsNullOrEmpty(installed) || string.IsNullOrEmpty(latest)) return false;
+        if (Version.TryParse(Strip(installed), out var current) && Version.TryParse(Strip(latest), out var available))
+            return available > current;
+        return !string.Equals(installed, latest, StringComparison.OrdinalIgnoreCase);
+    }
+
+    static string Strip(string version) => version.Split('+')[0].Split('-')[0];
+
+    public static async Task ShowAsync(IDialogService dialogService, CatalogPluginDto plugin)
+    {
+        var dialog = await dialogService.ShowDialogAsync<MarketplacePluginDialog>(plugin, new DialogParameters()
+        {
+            PreventDismissOnOverlayClick = false,
+            PreventScroll = true,
+            Modal = true,
+            TrapFocus = false,
+        });
+
+        _ = await dialog.Result;
+    }
+}

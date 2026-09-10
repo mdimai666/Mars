@@ -1,10 +1,9 @@
-using System.Text.Json;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Converters;
+using Mars.Nodes.Core.Locators;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.FormEditor;
 using Mars.Nodes.FormEditor.EditForms;
-using Mars.Nodes.Front.Shared.Services;
+using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.EditorParts;
@@ -20,17 +19,14 @@ public static class MainNodeWorkspace
 {
     public static IServiceCollection AddNodeWorkspace(this IServiceCollection services)
     {
-        var nodesLocator = new NodesLocator();
-        services.AddSingleton<INodesLocator>(nodesLocator);
-        var jsonSerializerOptions = nodesLocator.CreateJsonSerializerOptions();
-        services.AddKeyedSingleton<JsonSerializerOptions>(typeof(NodeJsonConverter), jsonSerializerOptions);
+        if (!OperatingSystem.IsBrowser()) return services;
+
+        services.AddNodesLocator();
 
         services.AddSingleton<INodeFormsLocator, NodeFormsLocator>();
         services.AddSingleton<EditorActionLocator>();
 
         services.AddScoped<INodeServiceClient, NodeServiceClient>();
-
-        if (!OperatingSystem.IsBrowser()) return services;
 
         if (!services.Any(d => d.ServiceType == typeof(HotKeys))) services.AddHotKeys2();
 
@@ -45,10 +41,10 @@ public static class MainNodeWorkspace
 
         nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
 
+        if (!OperatingSystem.IsBrowser()) return services;
+
         var nodeFormsLocator = services.GetRequiredService<INodeFormsLocator>();
         nodeFormsLocator.RegisterAssembly(typeof(InjectNodeForm).Assembly);
-
-        if (!OperatingSystem.IsBrowser()) return services;
 
         var editorActionLocator = services.GetRequiredService<EditorActionLocator>();
         editorActionLocator.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);

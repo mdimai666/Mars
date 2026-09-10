@@ -1,6 +1,6 @@
+using Mars.Cms.Contracts.Posts;
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
 
 namespace Mars.WebApiClient.Interfaces;
 
@@ -27,4 +27,5 @@ public interface IPostServiceClient
 
     Task<PostEditViewModel> GetEditModel(Guid id);
     Task<PostEditViewModel> GetPostBlank(string type);
+    Task<PostDetailResponse> Single(string type);
 }

@@ -1,0 +1,13 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Редактор значения «Email» *@
+
+<FluentTextField @bind-Value=@Value.StringShort
+                 TextFieldType="@TextFieldType.Email"
+                 Placeholder="user@example.com"
+                 Label="@Value.MetaField.Title" />
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+}

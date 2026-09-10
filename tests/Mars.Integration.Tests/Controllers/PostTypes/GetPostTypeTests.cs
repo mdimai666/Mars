@@ -1,12 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -19,11 +18,10 @@ public sealed class GetPostTypeTests : ApplicationTests
 
     public GetPostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task GetPostType_ValidRequest_ShouldSuccess()
+    public async Task GetPostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Get);

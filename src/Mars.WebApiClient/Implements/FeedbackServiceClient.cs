@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Feedbacks;
-using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Contracts.Common;
+using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
 

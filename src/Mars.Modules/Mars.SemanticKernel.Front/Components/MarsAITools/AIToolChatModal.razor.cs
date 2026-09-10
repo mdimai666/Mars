@@ -1,7 +1,6 @@
-using AppFront.Shared.Services;
-using Mars.Core.Exceptions;
+using Mars.Admin.Framework.Services;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -13,7 +12,7 @@ namespace Mars.SemanticKernel.Front.Components.MarsAITools;
 public partial class AIToolChatModal : IAIToolModal
 {
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
     FluentDialog _dialog = default!;

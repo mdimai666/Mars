@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,7 +59,7 @@ app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/dev"), first =>
         //    await context.Response.WriteAsJsonAsync("dd");
         //});
 
-        //endpoints.MapFallbackToFile("AppAdmin/{*path:nonfile}", "AppAdmin/index.html");
+        //endpoints.MapFallbackToFile("Mars.Admin/{*path:nonfile}", "Mars.Admin/index.html");
         //endpoints.MapFallbackToPage("/_AdminHost");
         endpoints.MapFallbackToFile("/dev/index.html");
 

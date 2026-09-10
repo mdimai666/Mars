@@ -1,5 +1,3 @@
-using Mars.Nodes.Core.Nodes.Functions;
-
 namespace Mars.Nodes.Core.Contracts.Nodes;
 
 public record InlineFunctionNodeSchemaResponse

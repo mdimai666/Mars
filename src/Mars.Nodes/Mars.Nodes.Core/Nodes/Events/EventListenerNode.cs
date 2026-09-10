@@ -14,7 +14,7 @@ public class EventListenerNode : Node
     public EventListenerNode()
     {
         Color = "#e6e0f8";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/activity.svg";
     }
 }

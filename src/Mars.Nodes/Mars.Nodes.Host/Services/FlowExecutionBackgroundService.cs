@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 

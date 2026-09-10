@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

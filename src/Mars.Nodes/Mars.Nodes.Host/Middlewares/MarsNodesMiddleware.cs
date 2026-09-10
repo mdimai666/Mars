@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using Mars.Host.Shared.Interfaces;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,7 +41,7 @@ internal class MarsNodesMiddleware
 
         if (_runtime.HttpRegisterdCatchers.Count > 0)
         {
-            var foundRoute = _runtime.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+            var foundRoute = _runtime.HttpCatchRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
 
             if (foundRoute is not null)
             {
@@ -72,7 +72,7 @@ internal class MarsNodesMiddleware
                 {
                     // Возвращаем в пул после использования!
                     if (routeValues is not null)
-                        CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+                        HttpCatchRouteMatcher.RouteValuePools.Return(routeValues);
                 }
                 return;
             }

@@ -1,5 +1,5 @@
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Services;
+using Mars.Identity.Abstractions.Services;
+using Mars.Server.Abstractions.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 

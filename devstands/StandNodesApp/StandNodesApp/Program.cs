@@ -1,9 +1,9 @@
 using Flurl.Http;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
+using Mars.Nodes.Abstractions.Hubs;
 using Mars.Nodes.Host;
 using Mars.Nodes.Workspace;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.FluentUI.AspNetCore.Components;
 using StandNodesApp;

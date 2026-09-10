@@ -1,0 +1,132 @@
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Common;
+using Mars.Core.Exceptions;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Identity.Abstractions.Mappings.UserTypes;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Contracts.UserTypes;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Server.Abstractions.Validators;
+
+namespace Mars.Identity.Host.Services;
+
+internal class UserTypeService : IUserTypeService
+{
+    private readonly IUserTypeRepository _userTypeRepository;
+    private readonly IEventManager _eventManager;
+    private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IUserMetaLocator _userMetaLocator;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IValidatorFactory _validatorFactory;
+
+    public UserTypeService(
+        IUserTypeRepository userTypeRepository,
+        IEventManager eventManager,
+        IMetaModelTypesLocator metaModelTypesLocator,
+        IUserMetaLocator userMetaLocator,
+        IServiceProvider serviceProvider,
+        IValidatorFactory validatorFactory)
+    {
+        _userTypeRepository = userTypeRepository;
+        _eventManager = eventManager;
+        _metaModelTypesLocator = metaModelTypesLocator;
+        _userMetaLocator = userMetaLocator;
+        _serviceProvider = serviceProvider;
+        _validatorFactory = validatorFactory;
+    }
+
+    public Task<UserTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
+        => _userTypeRepository.Get(id, cancellationToken);
+
+    public Task<UserTypeDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
+        => _userTypeRepository.GetDetail(id, cancellationToken);
+
+    public Task<ListDataResult<UserTypeSummary>> List(ListUserTypeQuery query, CancellationToken cancellationToken)
+        => _userTypeRepository.List(query, cancellationToken);
+
+    public Task<PagingResult<UserTypeSummary>> ListTable(ListUserTypeQuery query, CancellationToken cancellationToken)
+        => _userTypeRepository.ListTable(query, cancellationToken);
+
+    public async Task<UserTypeDetail> Create(CreateUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        var id = await _userTypeRepository.Create(query, cancellationToken);
+        var created = await GetDetail(id, cancellationToken);
+
+        _userMetaLocator.InvalidateCache();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
+        _eventManager.TriggerEvent(payload);
+
+        return created;
+    }
+
+    public async Task<UserTypeEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken)
+    {
+        var userType = await _userTypeRepository.GetDetail(id, cancellationToken) ?? throw new NotFoundException();
+
+        return new UserTypeEditViewModel
+        {
+            UserType = userType.ToResponse(),
+            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure(_serviceProvider).ToResponse()
+        };
+    }
+
+    public async Task<UserTypeDetail> Update(UpdateUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        await _userTypeRepository.Update(query, cancellationToken);
+        var updated = await GetDetail(query.Id, cancellationToken);
+
+        _userMetaLocator.InvalidateCache();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeUpdate(updated.TypeName), updated.ToSummary());
+        _eventManager.TriggerEvent(payload);
+
+        return updated;
+    }
+
+    public async Task<UserTypeSummary> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeleteUserTypeQueryValidator>(id, cancellationToken);
+
+        var userType = await Get(id, cancellationToken) ?? throw new NotFoundException();
+
+        await _userTypeRepository.Delete(id, cancellationToken);
+
+        _userMetaLocator.InvalidateCache();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
+        _eventManager.TriggerEvent(payload);
+
+        return userType;
+    }
+
+    public async Task<IReadOnlyCollection<UserTypeSummary>> DeleteMany(DeleteManyUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        var userTypes = await _userTypeRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
+
+        await _userTypeRepository.DeleteMany(query, cancellationToken);
+
+        _userMetaLocator.InvalidateCache();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        foreach (var userType in userTypes)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
+            _eventManager.TriggerEvent(payload);
+        }
+        return userTypes;
+    }
+
+}

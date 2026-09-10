@@ -1,12 +1,11 @@
 using AutoFixture;
 using Bogus;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Core.Utils;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Users;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Utils;
+using Mars.Identity.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Test.Common.FixtureCustomizes;
@@ -48,7 +47,7 @@ public static class UserFixtureCustomizeExtension
         userType.MetaFields = [.. metaFields];
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<UserMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();

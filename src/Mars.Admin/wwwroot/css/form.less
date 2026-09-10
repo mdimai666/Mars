@@ -1,0 +1,71 @@
+@import (reference) "_variables.less";
+
+.top-navbar {
+    background: var(--mars-bg-surface);
+}
+
+body.dark {
+    .top-navbar {
+        background: var(--mars-bg-subtle);
+        color: white;
+
+        a {
+            color: white;
+        }
+    }
+}
+
+.EditOptionForm {
+    .form-item {
+        small {
+            font-size: 80%;
+            line-height: 1.2em;
+            display: inline-block;
+            color: grey;
+        }
+    }
+}
+
+.d-fluent-input-description {
+    margin-left: .5rem !important;
+    color: var(--neutral-base-color);
+}
+
+:root {
+    --fluent-input-label-basis: 30%;
+    --form-item__width: unset;
+}
+
+d-formitem2 {
+    width: var(--form-item__width);
+}
+
+form.compact d-formitem2, d-formitem2.compact, .form-group.compact d-formitem2, .form-group.compact .d-fields-container {
+
+    .form-item__content {
+        display: flex;
+        flex: 1 1 auto;
+        gap: 1em;
+
+        .fluent-input-label {
+            /*flex-basis: 80%;*/
+            /*flex-basis: var(--fluent-input-label-basis);*/
+            display: flex;
+            justify-content: end;
+            text-align: end;
+            flex: 0 0 var(--fluent-input-label-basis);
+        }
+
+        .AutoInputLabel__Content {
+            flex: 1 1 auto;
+
+            .d-fluent-input-description {
+            }
+        }
+    }
+
+    .form-item__ValidationMessage {
+        display: block;
+        margin-left: calc(var(--fluent-input-label-basis) + 1em);
+    }
+}

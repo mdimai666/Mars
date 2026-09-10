@@ -1,7 +1,7 @@
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.WebApiClient.Interfaces;
 

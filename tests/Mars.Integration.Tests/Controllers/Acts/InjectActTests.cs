@@ -1,42 +1,40 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.XActions;
+using Mars.Server.Managers;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Acts;
 
-/// <seealso cref="Mars.Controllers.ActController"/>
+/// <seealso cref="XActions.Host.Controllers.ActController"/>
 public class InjectActTests : ApplicationTests
 {
     const string _apiUrl = "/api/Act";
 
     public InjectActTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
 #if DEBUG
     [IntegrationFact]
-    public async Task Inject_Request_ShouldSuccess()
+    public async Task Inject_Request_Succeeds()
     {
         //Arrange
         _ = nameof(ActController.Inject);
         _ = nameof(XActionManager.Inject);
         _ = nameof(DummyAct);
         var client = AppFixture.GetClient();
-        var act = DummyAct.XAction; 
-        string[] args = [];
+        var call = new XActionCommandCall { Id = DummyAct.CommandId };
 
         //Act
-        var result = await client.Request(_apiUrl, "Inject", act.Id).PostJsonAsync(args).CatchUserActionError().ReceiveJson<XActResult>();
+        var result = await client.Request(_apiUrl, "Inject").PostJsonAsync(call).CatchUserActionError().ReceiveJson<XActResult>();
 
         //Assert
         result.Should().NotBeNull();
@@ -52,11 +50,10 @@ public class InjectActTests : ApplicationTests
         _ = nameof(ActController.Inject);
         _ = nameof(XActionManager.Inject);
         var client = AppFixture.GetClient();
-        var actId = "XAction_invalidId";
-        string[] args = [];
+        var call = new XActionCommandCall { Id = "XAction_invalidId" };
 
         //Act
-        var result = await client.Request(_apiUrl, "Inject", actId).AllowAnyHttpStatus().PostJsonAsync(args);
+        var result = await client.Request(_apiUrl, "Inject").AllowAnyHttpStatus().PostJsonAsync(call);
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status404NotFound);

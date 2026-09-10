@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes.Common;
@@ -22,7 +22,7 @@ public class GetNodesTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task LoadNodes_ResponseJsonDeserializer_ShouldSuccess()
+    public async Task LoadNodes_ResponseJsonDeserializer_Succeeds()
     {
         //Arrange
         _ = nameof(NodeController.Load);

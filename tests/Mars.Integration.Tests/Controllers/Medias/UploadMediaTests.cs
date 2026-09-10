@@ -1,39 +1,44 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Contracts.Files;
+using Mars.Media.Contracts.Options;
+using Mars.Media.Host.Controllers;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Medias;
 
-/// <seealso cref="Mars.Controllers.MediaController"/>
+/// <seealso cref="Mars.Media.Host.Controllers.MediaController"/>
 public sealed class UploadMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media/Upload";
     private readonly IOptionService _optionService;
-    private readonly FileHostingInfo _fileHostingInfo;
+    private readonly IFileStorage _fileStorage;
+    private readonly IImageProcessor _imageProcessor;
     private readonly MediaOption _mediaOption;
     private readonly string _exampleFilesPath;
     private readonly string _image_CreationOfSpace1jpg;
 
     public UploadMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        _fileHostingInfo = _optionService.FileHostingInfo();
+        _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
+        _imageProcessor = AppFixture.ServiceProvider.GetRequiredService<IImageProcessor>();
         _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
-        _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
+        _exampleFilesPath = SolutionPathHelper.Resolve("tests", "Mars.Integration.Tests", "Controllers", "Medias", "ExampleFiles");
         _image_CreationOfSpace1jpg = "creation of space1.jpg";
 
     }
@@ -53,7 +58,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_TextFileUploadRequest_ShouldSuccess()
+    public async Task Upload_TextFileUploadRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -79,21 +84,18 @@ public sealed class UploadMediaTests : ApplicationTests
         dbFile.FileName.Should().Be(fileName);
         dbFile.FileExt.Should().Be("txt");
 
-        var fullPath = _fileHostingInfo.FileAbsolutePath(dbFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeTrue();
-        var writtedFileContent = File.ReadAllText(fullPath);
-        writtedFileContent.Should().Be(fileContent);
+        _fileStorage.FileExists(dbFile.FilePhysicalPath).Should().BeTrue();
+        _fileStorage.ReadAllText(dbFile.FilePhysicalPath).Should().Be(fileContent);
 
     }
 
     [IntegrationFact]
-    public async Task Upload_ImageUploadMustCreateThumbnails_ShouldSuccess()
+    public async Task Upload_ImageUploadMustCreateThumbnails_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
         var client = AppFixture.GetClient();
         var image1FilePath = Path.Join(_exampleFilesPath, _image_CreationOfSpace1jpg);
-        var fs = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
 
         //Act
         var result = await client.Request(_apiUrl)
@@ -115,25 +117,30 @@ public sealed class UploadMediaTests : ApplicationTests
         dbFile.FileExt.Should().Be("jpg");
 
         // 2. записан файл auto resized
-        var fullPath = _fileHostingInfo.FileAbsolutePath(dbFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeTrue();
-        var writtedFileLength = (ulong)(new FileInfo(fullPath).Length);
-        writtedFileLength.Should().Be(dbFile.FileSize);
+        _fileStorage.FileExists(dbFile.FilePhysicalPath).Should().BeTrue();
+        ((ulong)_fileStorage.GetFileInfo(dbFile.FilePhysicalPath)!.Length).Should().Be(dbFile.FileSize);
 
         // 3. созданы миниатюрные эскизы
         dbFile.Meta.Should().NotBeNull();
         dbFile.Meta.ImageInfo.Width.Should().NotBe(0);
         dbFile.Meta.ImageInfo.Height.Should().NotBe(0);
+
+        // в мете — реальные габариты записанного файла, а не запрошенные настройки ресайза
+        using (var storedImage = _fileStorage.OpenRead(dbFile.FilePhysicalPath))
+        {
+            var actualSize = _imageProcessor.ImageSize(storedImage);
+            dbFile.Meta.ImageInfo.Width.Should().Be(actualSize.Width);
+            dbFile.Meta.ImageInfo.Height.Should().Be(actualSize.Height);
+        }
+
         dbFile.Meta.Thumbnails!.Count().Should().Be(_mediaOption.ImagePreviewSizeConfigs.Length);
         foreach (var d in dbFile.Meta.Thumbnails)
         {
             var size = d.Key;
             var mini = d.Value;
             var cfg = _mediaOption.ImagePreviewSizeConfigs.First(s => s.Name == size);
-            var fullpath = _fileHostingInfo.FileAbsolutePath(mini.FilePath);
 
-            File.Exists(fullpath).Should().BeTrue();
-            fs.FileExists(mini.FilePath).Should().BeTrue();
+            _fileStorage.FileExists(mini.FilePath).Should().BeTrue();
             mini.Width.Should().BeLessThanOrEqualTo(cfg.Width);
             mini.Height.Should().BeLessThanOrEqualTo(cfg.Height);
         }
@@ -165,7 +172,7 @@ public sealed class UploadMediaTests : ApplicationTests
     ulong _fileTooLargeSize = 15 * 1024 * 1024;
 
     [IntegrationFact]
-    public async Task Upload_FileTooLarge_ShouldValidateError()
+    public async Task Upload_FileTooLarge_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -189,7 +196,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_FileTooLargeCheckAspNetConfiguration_ShouldSuccess()
+    public async Task Upload_FileTooLargeCheckAspNetConfiguration_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -208,12 +215,11 @@ public sealed class UploadMediaTests : ApplicationTests
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status200OK);
         var file = await result.GetJsonAsync<FileDetailResponse>();
-        var fs = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
-        fs.Delete(file.FilePhysicalPath);//TODO: Костыль пока не починим InMemoryFileStorage.
+        _fileStorage.DeleteFile(file.FilePhysicalPath);
     }
 
     [IntegrationFact]
-    public async Task Upload_FileNotAllowedExtensions_ShouldValidateError()
+    public async Task Upload_FileNotAllowedExtensions_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);

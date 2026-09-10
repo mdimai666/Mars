@@ -1,9 +1,9 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Plugins;
 
@@ -11,11 +11,10 @@ public class GetPluginTests : BaseWebApiClientTests
 {
     public GetPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async void ListPlugin_Request_Unauthorized()
+    public async Task ListPlugin_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);
@@ -28,7 +27,7 @@ public class GetPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListPlugin_ValidRequest_ShouldSuccess()
+    public async Task ListPlugin_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

@@ -1,0 +1,11 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Редактор значения «Дата» (явный аналог дефолтного редактора DateTime) *@
+
+<FluentDatePicker @bind-Value=@Value.DateTime
+                  Label="@Value.MetaField.Title" />
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+}

@@ -1,0 +1,70 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Core.Interfaces;
+
+namespace Mars.Cms.Contracts.PostCategories;
+
+public record PostCategorySummaryResponse : IHasId
+{
+    [Display(Name = "ИД")]
+    public required Guid Id { get; init; }
+
+    [Display(Name = "Название")]
+    public required string Title { get; init; }
+
+    [StringLength(100)]
+    [Display(Name = "Slug")]
+    public required string Slug { get; init; }
+
+    /// <summary>
+    /// /news/tech/ai
+    /// </summary>
+    public required string SlugPath { get; init; }
+    public required Guid[] PathIds { get; init; }
+    public required int LevelsCount { get; init; }
+}
+
+public record PostCategoryDetailResponse : PostCategorySummaryResponse, IBasicEntityResponse
+{
+    [Display(Name = "Дата создания")]
+    public required DateTimeOffset CreatedAt { get; init; }
+
+    [StringLength(100)]
+    [Display(Name = "Тип")]
+    public required string TypeName { get; init; }
+
+    [StringLength(100)]
+    public required string PostType { get; init; }
+    public required IReadOnlyCollection<string> Tags { get; init; }
+
+    public required bool Disabled { get; init; }
+
+    public required IReadOnlyDictionary<string, MetaValueResponse> MetaValues { get; init; }
+
+}
+
+public record PostCategoryListItemResponse : IBasicEntityResponse
+{
+    public required Guid Id { get; init; }
+    public required DateTimeOffset CreatedAt { get; init; }
+    public required string Title { get; init; }
+    //public required string Type { get; init; }
+    public required string Slug { get; init; }
+    public required IReadOnlyCollection<string> Tags { get; init; }
+
+    //[StringLength(100)]
+    //public required string PostType { get; init; }
+
+    ///// <summary>
+    ///// /{rootId}/{parentId}/{id}/
+    ///// </summary>
+    //public required string Path { get; init; }
+
+    /// <summary>
+    /// /news/tech/ai
+    /// </summary>
+    public required string SlugPath { get; init; }
+    public required Guid[] PathIds { get; init; }
+    public required int LevelsCount { get; init; }
+}

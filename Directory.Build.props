@@ -1,5 +1,10 @@
 <Project>
     <PropertyGroup>
+        <!-- App version: single source of truth for all projects (pack, scripts, CI). -->
+        <MarsAppVersion>0.8.3-alpha.14</MarsAppVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <RepositoryType>Git</RepositoryType>
         <!--The Implicit usings feature automatically adds common global using directives for the type of project you are building. For more information, see this implicit usings article https://aka.ms/csharp-implicit-usings.-->
@@ -22,12 +27,39 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
-        <DebugType>none</DebugType>
-        <DebugSymbols>false</DebugSymbols>
         <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
+        <!-- Обычная Release-сборка/publish без PDB (лёгкий вывод). Символы для NuGet включаются
+             явной паковкой с символами: CI передаёт -p:PackWithSymbols=true. -->
+        <DebugType Condition=" '$(PackWithSymbols)' == 'true' ">portable</DebugType>
+        <DebugSymbols Condition=" '$(PackWithSymbols)' == 'true' ">true</DebugSymbols>
+        <DebugType Condition=" '$(PackWithSymbols)' != 'true' ">none</DebugType>
+        <DebugSymbols Condition=" '$(PackWithSymbols)' != 'true' ">false</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
+
+    <!-- Common NuGet packaging metadata: default for all packable projects. Override per project (Version/Product/Description/PackageTags) when needed. PackageIcon и файл иконки — в Directory.Build.targets: их условие зависит от PackageId, которого здесь ещё нет. -->
+    <PropertyGroup>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year) mdimai666</Copyright>
+        <Product>Mars</Product>
+        <PackageTags>Mars</PackageTags>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Символьный пакет только когда реально есть PDB: Debug, либо Release с -p:PackWithSymbols=true
+             (иначе пустой snupkg роняет pack ошибкой NU5017). -->
+        <IncludeSymbols Condition=" '$(DebugType)' != 'none' ">true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    </ItemGroup>
 </Project>

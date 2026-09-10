@@ -1,10 +1,9 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -21,11 +20,10 @@ public class DeleteUserTests : ApplicationTests
 
     public DeleteUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task DeleteUser_ValidRequest_ShouldSuccess()
+    public async Task DeleteUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.Delete);
@@ -78,7 +76,7 @@ public class DeleteUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUser_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.DeleteMany);
@@ -101,7 +99,7 @@ public class DeleteUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUser_TryDeleteSingleAdmin_ShouldValidationErrorOfDisallowDeleteSingleAdmin()
+    public async Task DeleteUser_TryDeleteSingleAdmin_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserController.Delete);

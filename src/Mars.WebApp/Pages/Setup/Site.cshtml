@@ -1,0 +1,96 @@
+@page "/setup/site"
+@using Mars.Pages.Setup
+@model Mars.Pages.Setup.SiteModel
+@{
+    ViewData["Title"] = "Настройки сайта";
+    ViewData["CurrentStep"] = 3;
+}
+
+<h3 class="mb-1">Настройки сайта</h3>
+<p class="text-muted mb-4">Основные параметры вашего сайта</p>
+
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Адрес сайта (URL)</label>
+        <input asp-for="SiteUrl" class="form-control" placeholder="https://example.com" />
+        <div class="form-text">Адрес по которому будет доступен сайт. Используется для генерации ссылок.</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Имя сайта</label>
+        <input asp-for="SiteName" class="form-control" placeholder="Мой сайт" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Описание</label>
+        <textarea asp-for="SiteDescription" class="form-control" rows="2" placeholder="Краткое описание сайта"></textarea>
+    </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3">Технические настройки</h5>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Уровень логирования</label>
+        <select asp-for="LoggingLevel" class="form-select">
+            <option value="Trace">Trace</option>
+            <option value="Debug">Debug</option>
+            <option value="Information">Information</option>
+            <option value="Warning">Warning</option>
+            <option value="Error">Error</option>
+            <option value="Critical">Critical</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Шаблон сайта (фронт)</label>
+        @foreach (var template in Model.AvailableTemplates)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="FrontChoice" value="@template" id="front-@template" />
+                <label class="form-check-label" for="front-@template">
+                    @SiteModel.TemplateTitle(template) <span class="text-muted">(@template)</span>
+                </label>
+            </div>
+        }
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="FrontChoice" value="existing" id="front-existing" />
+            <label class="form-check-label" for="front-existing">Существующая папка с шаблонами</label>
+        </div>
+        <div class="form-text">Стартовый шаблон будет скопирован в data/fronts и его можно править в редакторе фронтов.</div>
+    </div>
+
+    <div class="mb-3" id="frontPathGroup">
+        <label class="form-label fw-semibold">Путь к папке с шаблонами</label>
+        <input asp-for="FrontPath" class="form-control" placeholder="C:\sites\my-front" />
+        <span asp-validation-for="FrontPath" class="text-danger small"></span>
+        <div class="form-text">Папка с *.hbs файлами фронта (_root.hbs, pages/...).</div>
+    </div>
+
+    <div class="mb-3" id="frontEngineGroup">
+        <label class="form-label fw-semibold">Движок рендера</label>
+        <select asp-for="FrontEngineId" class="form-select">
+            <option value="handlebars">Handlebars</option>
+        </select>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="/setup/database" class="btn btn-mars-outline">
+            <i class="bi bi-arrow-left me-1"></i> Назад
+        </a>
+        <button type="submit" class="btn btn-mars ms-auto">
+            Далее <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    function toggleExistingFront() {
+        var existing = document.getElementById('front-existing').checked;
+        document.getElementById('frontPathGroup').style.display = existing ? 'block' : 'none';
+        document.getElementById('frontEngineGroup').style.display = existing ? 'block' : 'none';
+    }
+    document.querySelectorAll('input[name="FrontChoice"]').forEach(function (radio) {
+        radio.addEventListener('change', toggleExistingFront);
+    });
+    toggleExistingFront();
+</script>
+}

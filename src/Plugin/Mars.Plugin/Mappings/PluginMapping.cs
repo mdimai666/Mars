@@ -1,11 +1,12 @@
-using Mars.Host.Shared.Dto.Plugins;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.Plugin.Dto;
 
 namespace Mars.Plugin.Mappings;
 
 internal static class PluginMapping
 {
-    public static PluginInfoDto ToInfoDto(this PluginInfo entity)
+    public static PluginInfoDto ToInfoDto(this PluginInfo entity, bool pendingDelete = false)
         => new()
         {
             PackageId = entity.PackageId,
@@ -13,14 +14,14 @@ internal static class PluginMapping
             Version = entity.Version,
             Description = entity.Description,
             AssemblyName = entity.AssemblyFullName,
-            Enabled = true,
-            InstalledAt = DateTimeOffset.MinValue,
+            Enabled = entity.Enabled,
+            InstalledAt = entity.InstalledAt,
             FrontManifest = entity.ManifestFile,
             PackageTags = entity.PackageTags,
             RepositoryUrl = entity.RepositoryUrl,
             PackageIconUrl = string.IsNullOrEmpty(entity.PackageIcon) ? null : $"/_plugin/{entity.KeyName}/{entity.PackageIcon}",
+            Source = entity.Source,
+            Locked = entity.Locked,
+            PendingDelete = pendingDelete,
         };
-
-    public static IReadOnlyCollection<PluginInfoDto> ToInfoDto(this IEnumerable<PluginInfo> entities)
-        => entities.Select(ToInfoDto).ToArray();
 }

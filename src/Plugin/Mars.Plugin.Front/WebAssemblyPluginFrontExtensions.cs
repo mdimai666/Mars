@@ -2,8 +2,8 @@ using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.Loader;
 using Mars.Core.Extensions;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.Plugin.Front.Abstractions;
-using Mars.Shared.Contracts.Plugins;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -87,11 +87,12 @@ public static class WebAssemblyPluginFrontExtensions
 
                             var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
                             Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
-                            var assembly = Assembly.Load(dllBytes);
+
+                            // одна загрузка: повторная тем же байтом создаёт дубль сборки в контексте
+                            using Stream stream = new MemoryStream(dllBytes);
+                            var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 
                             loadAssemblies.Add(assembly);
-                            using Stream stream = new MemoryStream(dllBytes);
-                            AssemblyLoadContext.Default.LoadFromStream(stream);
 
                         }
                         catch (Exception ex)

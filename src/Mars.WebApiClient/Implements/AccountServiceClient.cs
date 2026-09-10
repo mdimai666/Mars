@@ -2,7 +2,7 @@ using System.Net;
 using Flurl.Http;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.Auth;
+using Mars.Identity.Contracts.Auth;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
@@ -14,11 +14,11 @@ internal class AccountServiceClient : BasicServiceClient, IAccountServiceClient
         _controllerName = "Account";
     }
 
-    public Task<AuthResultResponse> Login(AuthCreditionalsRequest authCreditionals)
+    public Task<AuthResultResponse> Login(AuthCredentialsRequest authCredentials)
         => _client.Request($"{_basePath}{_controllerName}", "Login")
                     .AllowAnyHttpStatus()
                     .WithOAuthBearerToken("")
-                    .PostJsonAsync(authCreditionals)
+                    .PostJsonAsync(authCredentials)
                     .ReceiveJson<AuthResultResponse>();
 
     public async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData)

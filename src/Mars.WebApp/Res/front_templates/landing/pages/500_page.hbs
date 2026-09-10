@@ -1,0 +1,15 @@
+@page "/500"
+
+<section class="status-page">
+    <h1>500</h1>
+
+    {{#unless _dev}}
+    <p>Внутренняя ошибка. Попробуйте позже.</p>
+    {{else}}
+    {{#with ex}}
+    <p class="error-msg">{{Message}}</p>
+    {{/with}}
+    {{/unless}}
+
+    <a class="btn btn-primary" href="/">На главную</a>
+</section>

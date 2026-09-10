@@ -89,7 +89,7 @@ https://your-keycloak-domain/auth/admin/
 
 ## ⚙️ 6. Настроить Mars
 
-[OpenID Connect](/dev/Settings/Option/Mars+Options+Models+OpenIDClientOption)
+[OpenID Connect](/dev/Settings/Option/Mars+SSO+Contracts+Options+OpenIDClientOption)
 
 | Поле | Значение |
 | -- |

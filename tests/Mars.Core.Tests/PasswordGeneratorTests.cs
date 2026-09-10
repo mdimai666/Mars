@@ -1,0 +1,20 @@
+using Mars.Core.Utils;
+
+namespace Mars.Core.Tests;
+
+public class PasswordGeneratorTests
+{
+
+    [Theory]
+    [InlineData(10, 0)]
+    [InlineData(16, 6)]
+    [InlineData(5, 5)]
+    [InlineData(6, 2)]
+    public void Generate_VariousLengths_ReturnsRequestedLength(int length, int numberOfNonAlphanumericCharacters)
+    {
+        var result = Password.Generate(length, numberOfNonAlphanumericCharacters);
+
+        Assert.Equal(length, result.Length);
+    }
+
+}

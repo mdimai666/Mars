@@ -4,15 +4,36 @@
         <name>Mars</name>
     </assembly>
     <members>
-        <member name="M:Mars.Controllers.FileReaderExtensions.Tail(System.IO.TextReader,System.Int32)">
-            <summary>Returns the end of a text reader.</summary>
-            <param name="reader">The reader to read from.</param>
-            <param name="lineCount">The number of lines to return.</param>
-            <returns>The last lneCount lines from the reader.</returns>
-        </member>
-        <member name="T:Mars.Services.ImageProcessor">
+        <member name="P:Mars.Setup.SetupService.FrontChoice">
             <summary>
-            Singletone.
+            Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="F:Mars.SiteEngine.Contracts.Options.FrontsOption.ExistingFrontChoice"/>.
+            </summary>
+        </member>
+        <member name="M:Mars.Setup.SetupService.GetAvailableFrontTemplates">
+            <summary>
+            Доступные стартовые шаблоны фронтов (папки в Res/front_templates, кроме служебного admin).
+            </summary>
+        </member>
+        <member name="P:Mars.Setup.SetupWizardHost.WizardConfigPath">
+            <summary>
+            Куда визард пишет итоговый конфиг (относительно рабочей директории):
+            в Docker — на примонтированный том ./config, иначе — appsettings.Local.json рядом с приложением.
+            </summary>
+        </member>
+        <member name="M:Mars.Setup.SetupWizardHost.ShouldRunWizard">
+            <summary>
+            Визард запускается, когда приложение не сконфигурировано.
+            В Docker учитываются только явные источники: env-переменные, примонтированный
+            appsettings.Production.json и конфиг визарда на томе ./config — девелоперские
+            дефолты из appsettings.json внутри образа конфигурацией не считаются.
+            Отключается через MARS_SETUP_WIZARD=0.
+            </summary>
+        </member>
+        <member name="M:Mars.UseStartup.ConfigureAppConfigurationExtensiions.AddWizardConfigSource(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Docker: подключает конфиг, записанный setup-визардом (./config/appsettings.Production.json на томе).
+            Вставляется перед env-источниками: приоритет выше дефолтов appsettings.json из образа,
+            но env-переменные и явно примонтированный appsettings.Production.json перекрывают его.
             </summary>
         </member>
         <member name="T:Program">

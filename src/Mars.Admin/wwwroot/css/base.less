@@ -1,0 +1,174 @@
+@import (reference) "_variables.less";
+
+html, body {
+    min-height: 100vh;
+    height: unset !important;
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+    overflow-x: clip;
+
+    &.dark {
+        background: linear-gradient(180deg, rgb(155 174 187 / 25%) -4.16%, rgba(0, 7, 68, 0.25) 93.77%), var(--mars-bg-subtle);
+        color: var(--mars-text-inverse);
+    }
+}
+
+body {
+    font-family: var(--body-font);
+    font-size: var(--type-ramp-base-font-size);
+    line-height: var(--type-ramp-base-line-height);
+    font-weight: var(--font-weight);
+    color: var(--neutral-foreground-rest);
+    background: var(--neutral-fill-layer-rest);
+}
+
+:root {
+    /* ═══ Mars Design Tokens ═══ */
+
+    /* Brand */
+    --mars-color-primary: var(--accent-fill-rest, #2f71fc);
+    --mars-color-accent: @color-accent;
+    --mars-color-success: #388554;
+    --mars-color-warning: #f8c11d;
+    --mars-color-danger: #cf3e48;
+    --mars-color-info: #51c9ef;
+
+    /* Text */
+    --mars-text-primary: var(--neutral-foreground-rest, #1a1a1a);
+    --mars-text-secondary: #939393;
+    --mars-text-disabled: #cdcdcd;
+    --mars-text-inverse: #ffffff;
+    --mars-text-link: rgb(1, 125, 207);
+
+    /* Background */
+    --mars-bg-page: var(--neutral-fill-layer-rest, #ffffff);
+    --mars-bg-surface: #ffffff;
+    --mars-bg-surface-hover: #f5f5f5;
+    --mars-bg-surface-active: #e6edf9;
+    --mars-bg-subtle: #ededf3;
+    --mars-bg-overlay: rgba(0, 0, 0, 0.5);
+
+    /* Border */
+    --mars-border-default: #cdcdcd;
+    --mars-border-subtle: #e6edf9;
+    --mars-border-focus: var(--mars-color-primary);
+    --mars-border-error: var(--mars-color-danger);
+
+    /* Radius */
+    --mars-radius-sm: calc(var(--control-corner-radius, 4) * 1px);
+    --mars-radius-md: 8px;
+    --mars-radius-lg: 15px;
+    --mars-radius-full: 9999px;
+
+    /* Shadow */
+    --mars-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --mars-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --mars-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+    /* Z-index */
+    --mars-z-dropdown: 1000;
+    --mars-z-sticky: 1020;
+    --mars-z-overlay: 1040;
+    --mars-z-modal: 1050;
+    --mars-z-toast: 1070;
+
+    /* Motion */
+    --mars-duration-fast: 100ms;
+    --mars-duration-normal: 200ms;
+    --mars-duration-slow: 400ms;
+    --mars-easing-default: ease-out;
+
+    /* ═══ Bootstrap bridge ═══ */
+    --bs-light: #ffffff;
+    --bs-dark: #0a1725;
+    --bs-primary: var(--mars-color-primary);
+    --bs-success: var(--mars-color-success);
+    --bs-info: var(--mars-color-info);
+    --bs-danger: var(--mars-color-danger);
+    --bs-warning: var(--mars-color-warning);
+    --bs-light-rgb: 255,255,255;
+    --bs-dark-rgb: 10, 23, 37;
+    --bs-primary-rgb: 55, 114, 184;
+    --bs-success-rgb: 56, 133, 84;
+    --bs-info-rgb: 81, 201, 239;
+    --bs-danger-rgb: 207, 62, 72;
+    --bs-warning-rgb: 248, 193, 29;
+}
+
+/* ═══ Dark mode: system preference ═══ */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-mode) {
+        --mars-text-primary: #f0f0f0;
+        --mars-text-secondary: #a0a0a0;
+        --mars-text-link: #6cb8f0;
+        --mars-bg-page: #1e1e1e;
+        --mars-bg-surface: #2d2d2d;
+        --mars-bg-surface-hover: #3a3a3a;
+        --mars-bg-surface-active: #333084;
+        --mars-bg-subtle: #3e3e42;
+        --mars-border-default: #555;
+        --mars-border-subtle: #444;
+        --mars-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+        --mars-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+        --mars-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ═══ Dark mode: manual override ═══ */
+body.dark {
+    --mars-text-primary: #f0f0f0;
+    --mars-text-secondary: #a0a0a0;
+    --mars-text-link: #6cb8f0;
+    --mars-bg-page: #1e1e1e;
+    --mars-bg-surface: #2d2d2d;
+    --mars-bg-surface-hover: #3a3a3a;
+    --mars-bg-surface-active: #333084;
+    --mars-bg-subtle: #3e3e42;
+    --mars-border-default: #555;
+    --mars-border-subtle: #444;
+    --mars-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --mars-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --mars-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
+a {
+    color: var(--mars-text-link);
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+button, button:focus, button:active, .btn {
+    outline: none;
+}
+
+textarea:focus, input:focus {
+    outline: none;
+}
+
+.color-accent {
+    color: var(--mars-color-accent);
+}
+
+.bg-white2 {
+    background-color: white !important;
+}
+
+.bg-black2 {
+    background-color: black !important;
+}
+
+body.dark {
+    .bg-white2 {
+        background-color: black !important;
+    }
+
+    .bg-black2 {
+        background-color: white !important;
+    }
+}
+
+.bg-orange {
+    background-color: var(--mars-color-danger) !important;
+}

@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Constants;
+using Mars.Server.Abstractions.Constants;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;

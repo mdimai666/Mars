@@ -1,10 +1,9 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -20,11 +19,10 @@ public class DeletePostCategoryTypeTests : ApplicationTests
 
     public DeletePostCategoryTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
-    public async Task DeletePostCategoryType_ValidRequest_ShouldSuccess()
+    public async Task DeletePostCategoryType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Delete);
@@ -78,7 +76,7 @@ public class DeletePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostCategoryType_TryDeleteDefaultPostCategoryType_ShouldValidationError()
+    public async Task DeletePostCategoryType_TryDeleteDefaultPostCategoryType_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Delete);
@@ -100,7 +98,7 @@ public class DeletePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPostCategoryType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPostCategoryType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.DeleteMany);

@@ -1,0 +1,48 @@
+@using Mars.Cms.Contracts.PostTypes
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="vstack gap-3">
+
+    <div class="vstack gap-2" style="max-height: 420px; overflow: auto;">
+        @for (var i = 0; i < _rows.Count; i++)
+        {
+            var index = i;
+            var row = _rows[i];
+            <div class="d-flex gap-2 align-items-center">
+                <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                              Disabled="@(index == 0)"
+                              OnClick="@(() => MoveAsync(row, -1))">
+                    <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                              Disabled="@(index == _rows.Count - 1)"
+                              OnClick="@(() => MoveAsync(row, 1))">
+                    <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
+                </FluentButton>
+                <FluentCheckbox Value="row.Visible" ValueChanged="@(v => ToggleAsync(row, v))" />
+                <div class="flex-fill">@row.Title</div>
+                @if (!row.IsBase)
+                {
+                    <FluentBadge Appearance="Appearance.Neutral">meta</FluentBadge>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="hstack gap-3">
+        <FluentSelect TOption="string" Label="Сортировка по умолчанию" Width="240px"
+                      @bind-Value="_sortKey" @bind-Value:after="EmitAsync">
+            <FluentOption Value="">—</FluentOption>
+            @foreach (var row in _rows.Where(r => r.IsBase))
+            {
+                <FluentOption Value="@row.Key">@row.Title</FluentOption>
+            }
+        </FluentSelect>
+        <FluentCheckbox Label="По убыванию" @bind-Value="_sortDescending" @bind-Value:after="EmitAsync" />
+    </div>
+
+    <div>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="ResetAsync">Сбросить к стандартным</FluentButton>
+    </div>
+
+</div>

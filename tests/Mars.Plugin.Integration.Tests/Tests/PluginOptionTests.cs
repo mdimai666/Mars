@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
-using Mars.Integration.Tests.Attributes;
 using FluentAssertions;
+using Mars.Integration.Tests.Attributes;
+using Mars.Options.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using PluginExample;
 using PluginExample.Options;
@@ -17,11 +17,14 @@ public class PluginOptionTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public void RegisterOption_CheckPluginOptionExist_ShouldSuccess()
+    public void RegisterOption_CheckPluginOptionExist_Succeeds()
     {
         //Arrange
         _ = nameof(PluginExampleOption1);
         _ = nameof(PluginExamplePlugin.ConfigureWebApplication);
+        // Плагин пишет опцию при ConfigureWebApplication (старт хоста), а per-test Reset затирает
+        // таблицу опций — восстанавливаем то же значение, чтобы тест не зависел от порядка исполнения.
+        _optionService.SaveOption(new PluginExampleOption1 { Value = "200" });
 
         //Act
         var result = _optionService.GetOption<PluginExampleOption1>();
@@ -31,7 +34,7 @@ public class PluginOptionTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public void SetConstOption_HasInInitialSiteData_ShouldSuccess()
+    public void SetConstOption_HasInInitialSiteData_Succeeds()
     {
         //Arrange
         _ = nameof(PluginConstOption2);

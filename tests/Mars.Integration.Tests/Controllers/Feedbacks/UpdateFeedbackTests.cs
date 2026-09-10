@@ -1,28 +1,26 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Feedbacks;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.Feedbacks;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Feedbacks;
 
-/// <seealso cref="Mars.Controllers.FeedbackController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.FeedbackController"/>
 public class UpdateFeedbackTests : ApplicationTests
 {
     const string _apiUrl = "/api/Feedback";
 
     public UpdateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]
@@ -43,7 +41,7 @@ public class UpdateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateFeedback_ValidRequest_ShouldSuccess()
+    public async Task UpdateFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Update);

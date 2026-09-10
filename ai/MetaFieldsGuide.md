@@ -140,8 +140,9 @@
   `mars.content.regenerateGeneratedMetaValues`.
 - **Редакторы значений**: каталог ключей `FormEditorCatalog` (`Mars.Forms.Contracts`,
   общий для всех провайдеров; выбор поля — `Options.editor`, пусто = редактор типа) +
-  **общий реестр формы** `IFormEditorLocator` (`FormEditorLocator.Register` — точка
-  расширения; админка регистрирует WYSIWYG/код/блочный, цвет/URL/Email, время/дату-время).
+  **общий реестр формы** `IFormEditorLocator` (экземпляр-синглтон, регистрации редакторов
+  приходят через DI — `services.AddFormEditor(key, component, multiple, title, types)`;
+  админка регистрирует WYSIWYG/код/блочный, цвет/URL/Email, время/дату-время).
   Своих редакторов у метаполей нет: значение поля рендерит общий `FormFieldRow`, а строки
   метаполя отдаёт стор `MetaValueStore` — единственное место перевода EAV-строк в
   канонические значения формы и обратно (строка/число/дата, ключ варианта `Select` —

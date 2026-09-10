@@ -63,29 +63,6 @@ public static class FormEditorCatalog
     /// <summary>Только чтение: значение строкой</summary>
     public const string TextDisplay = "core.display.text";
 
-    /// <summary>Названия встроенных редакторов для UI выбора (иначе название даёт регистрация)</summary>
-    public static readonly IReadOnlyList<(string Key, string Title)> All =
-    [
-        (Text, "Текст"),
-        (Multiline, "Многострочный текст"),
-        (Number, "Число"),
-        (Bool, "Да/Нет"),
-        (Date, "Дата"),
-        (Time, "Время"),
-        (DateTime, "Дата и время"),
-        (Select, "Выбор из списка"),
-        (Choices, "Выбор нескольких из списка"),
-        (List, "Список значений"),
-        (Color, "Цвет"),
-        (Url, "URL-адрес"),
-        (Email, "Email"),
-        (Tags, "Теги"),
-        (Wysiwyg, "WYSIWYG (Quill)"),
-        (Code, "Код (Monaco)"),
-        (BlockEditor, "Блочный (Editor.js)"),
-        (TextDisplay, "Текст только для чтения"),
-    ];
-
     /// <summary>Ключ параметра «редактор значения» в параметрах поля</summary>
     public static string EditorOption() => "editor";
 

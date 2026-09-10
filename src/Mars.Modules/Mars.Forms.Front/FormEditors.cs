@@ -5,8 +5,8 @@ namespace Mars.Forms.Front;
 
 /// <summary>
 /// Реестр редакторов значений формы: ключ редактора → компонент + совместимые типы полей.
-/// Паттерн тот же, что у редакторов мета-полей: встроенные примитивы здесь, тяжёлые и доменные
-/// (WYSIWYG, пикеры связей, медиа) регистрируются потребителями через <see cref="Register"/>.
+/// Встроенные примитивы вшиты, тяжёлые и доменные (WYSIWYG, код, блочный, пикеры связей и медиа)
+/// приходят регистрациями DI — <c>AddFormEditor</c> в админке, модулях и плагинах.
 /// Компонент редактора принимает один параметр — <see cref="FormFieldBinding"/>.
 /// </summary>
 public interface IFormEditorLocator
@@ -21,28 +21,17 @@ public interface IFormEditorLocator
     IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple);
 }
 
-public class FormEditorLocator : IFormEditorLocator
+/// <summary>
+/// Регистрация редактора значения: ключ → компонент + совместимые типы полей.
+/// Название делает редактор предлагаемым в UI выбора; безымянные регистрации (обёртки
+/// провайдеров, встроенные дефолты) доступны только явным ключом дескриптора.
+/// Один и тот же ключ, зарегистрированный дважды, перекрывается последним.
+/// </summary>
+public sealed record FormEditorRegistration(string Key, Type Component, bool Multiple, string? Title,
+                                             IReadOnlyCollection<FormFieldType> FieldTypes);
+
+public sealed class FormEditorLocator : IFormEditorLocator
 {
-    static readonly Dictionary<string, (Type Component, FormFieldType[] FieldTypes, bool Multiple)> Registry = new(StringComparer.Ordinal)
-    {
-        [FormEditorCatalog.Text] = (typeof(FormStringEditor), [FormFieldType.String], false),
-        [FormEditorCatalog.Multiline] = (typeof(FormTextEditor), [FormFieldType.String, FormFieldType.Text], false),
-        [FormEditorCatalog.Number] = (typeof(FormNumberEditor),
-            [FormFieldType.Int, FormFieldType.Long, FormFieldType.Float, FormFieldType.Decimal], false),
-        [FormEditorCatalog.Bool] = (typeof(FormBoolEditor), [FormFieldType.Bool], false),
-        [FormEditorCatalog.Date] = (typeof(FormDateEditor), [FormFieldType.DateTime], false),
-        [FormEditorCatalog.Select] = (typeof(FormSelectEditor), [FormFieldType.Select, FormFieldType.SelectMany], false),
-        [FormEditorCatalog.Choices] = (typeof(FormChoicesEditor), [FormFieldType.SelectMany], false),
-        [FormEditorCatalog.List] = (typeof(FormListEditor),
-            [FormFieldType.String, FormFieldType.Int, FormFieldType.Long, FormFieldType.Float,
-             FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select], true),
-    };
-
-    static readonly object RegistrationLock = new();
-
-    /// <summary>Названия зарегистрированных редакторов для UI выбора (ключи вне <see cref="FormEditorCatalog"/>)</summary>
-    static readonly Dictionary<string, string> Titles = new(StringComparer.Ordinal);
-
     /// <summary>Встроенный редактор типа, когда явный ключ редактора не задан</summary>
     static readonly Dictionary<FormFieldType, string> DefaultKeys = new()
     {
@@ -57,37 +46,41 @@ public class FormEditorLocator : IFormEditorLocator
         [FormFieldType.Select] = FormEditorCatalog.Select,
     };
 
-    /// <summary>
-    /// Регистрация редактора (админка, модули, плагины) — до рендеринга.
-    /// Тяжёлые и доменные редакторы не тянут статических ссылок из общей библиотеки:
-    /// ключ в манифесте провайдера есть всегда, компонент появляется там, где его зарегистрировали.
-    /// </summary>
-    public static void Register(string editorKey, Type component, bool multiple, params FormFieldType[] fieldTypes)
-        => Register(editorKey, component, multiple, null, fieldTypes);
+    /// <summary>Встроенные редакторы общего слоя; регистрация потребителя с тем же ключом их перекрывает</summary>
+    static readonly IReadOnlyList<FormEditorRegistration> BuiltIn =
+    [
+        new(FormEditorCatalog.Text, typeof(FormStringEditor), false, null, [FormFieldType.String]),
+        new(FormEditorCatalog.Multiline, typeof(FormTextEditor), false, null, [FormFieldType.String, FormFieldType.Text]),
+        new(FormEditorCatalog.Number, typeof(FormNumberEditor), false, null,
+            [FormFieldType.Int, FormFieldType.Long, FormFieldType.Float, FormFieldType.Decimal]),
+        new(FormEditorCatalog.Bool, typeof(FormBoolEditor), false, null, [FormFieldType.Bool]),
+        new(FormEditorCatalog.Date, typeof(FormDateEditor), false, null, [FormFieldType.DateTime]),
+        new(FormEditorCatalog.Select, typeof(FormSelectEditor), false, null,
+            [FormFieldType.Select, FormFieldType.SelectMany]),
+        new(FormEditorCatalog.Choices, typeof(FormChoicesEditor), false, null, [FormFieldType.SelectMany]),
+        new(FormEditorCatalog.List, typeof(FormListEditor), true, null,
+            [FormFieldType.String, FormFieldType.Int, FormFieldType.Long, FormFieldType.Float,
+             FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select]),
+    ];
 
-    /// <summary>То же с названием для UI выбора редактора (иначе название — из <see cref="FormEditorCatalog"/>, иначе ключ).
-    /// Название делает редактор предлагаемым в UI выбора: безымянные регистрации доступны только явным ключом дескриптора</summary>
-    public static void Register(string editorKey, Type component, bool multiple, string? title, params FormFieldType[] fieldTypes)
+    readonly Dictionary<string, FormEditorRegistration> _registry;
+
+    public FormEditorLocator(IEnumerable<FormEditorRegistration>? registrations = null)
     {
-        lock (RegistrationLock)
-        {
-            Registry[editorKey] = (component, fieldTypes, multiple);
+        _registry = new Dictionary<string, FormEditorRegistration>(StringComparer.Ordinal);
 
-            if (string.IsNullOrEmpty(title)) Titles.Remove(editorKey);
-            else Titles[editorKey] = title;
-        }
+        // встроенные, затем регистрации потребителей: их ключ перекрывает встроенный
+        foreach (var builtIn in BuiltIn) _registry[builtIn.Key] = builtIn;
+        foreach (var registration in registrations ?? []) _registry[registration.Key] = registration;
     }
 
     public Type? GetEditorComponent(string? editorKey, FormFieldType fieldType, bool multiple)
-    {
-        if (string.IsNullOrEmpty(editorKey)) return null;
-
-        lock (RegistrationLock)
-        {
-            if (!Registry.TryGetValue(editorKey, out var entry)) return null;
-            return entry.Multiple == multiple && entry.FieldTypes.Contains(fieldType) ? entry.Component : null;
-        }
-    }
+        => !string.IsNullOrEmpty(editorKey)
+           && _registry.TryGetValue(editorKey, out var entry)
+           && entry.Multiple == multiple
+           && entry.FieldTypes.Contains(fieldType)
+            ? entry.Component
+            : null;
 
     public Type? GetDefaultEditor(FormFieldType fieldType, bool multiple)
     {
@@ -107,19 +100,10 @@ public class FormEditorLocator : IFormEditorLocator
     }
 
     public IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple)
-    {
-        lock (RegistrationLock)
-        {
-            // предлагаются редакторы с названием: безымянные (встроенные дефолты, обёртки провайдеров)
-            // приезжают в дескрипторе, но выбирать их вручную нечего
-            return Registry.Where(kv => Titles.ContainsKey(kv.Key) && kv.Value.Multiple == multiple && kv.Value.FieldTypes.Contains(fieldType))
-                           .Select(kv => (kv.Key, Title(kv.Key)))
-                           .ToList();
-        }
-    }
-
-    static string Title(string key)
-        => Titles.TryGetValue(key, out var title)
-            ? title
-            : FormEditorCatalog.All.FirstOrDefault(entry => entry.Key == key).Title ?? key;
+        => _registry.Values
+                    .Where(entry => !string.IsNullOrEmpty(entry.Title)
+                                    && entry.Multiple == multiple
+                                    && entry.FieldTypes.Contains(fieldType))
+                    .Select(entry => (entry.Key, entry.Title!))
+                    .ToList();
 }

@@ -14,48 +14,52 @@ public interface IFormFieldTypeSettingsLocator
     IReadOnlyCollection<Type> PanelsFor(string scope, FormFieldType fieldType);
 }
 
-public class FormFieldTypeSettingsLocator : IFormFieldTypeSettingsLocator
+/// <summary>
+/// Регистрация панели доменных настроек поля. Без типов — панель показывается на всех полях скоупа
+/// (сама решает, что рисовать). Один и тот же компонент в скоупе регистрируется один раз.
+/// </summary>
+public sealed record FormFieldTypeSettingsRegistration(string Scope, Type Component,
+                                                       IReadOnlyCollection<FormFieldType> FieldTypes);
+
+public sealed class FormFieldTypeSettingsLocator : IFormFieldTypeSettingsLocator
 {
     /// <summary>Ключ типа для панелей, которые показываются на всех полях скоупа</summary>
     public const string AnyType = "*";
 
-    static readonly Dictionary<(string Scope, string Type), List<Type>> Registry = new();
+    readonly Dictionary<(string Scope, string Type), List<Type>> _registry;
 
-    static readonly object RegistrationLock = new();
-
-    /// <summary>
-    /// Регистрация панели (модуль, плагин, админка) — до рендеринга.
-    /// Без типов — панель показывается на всех полях скоупа (сама решает, что рисовать).
-    /// </summary>
-    public static void Register(string scope, Type component, params FormFieldType[] fieldTypes)
+    public FormFieldTypeSettingsLocator(IEnumerable<FormFieldTypeSettingsRegistration>? registrations = null)
     {
-        lock (RegistrationLock)
+        _registry = [];
+
+        foreach (var registration in registrations ?? [])
         {
-            if (fieldTypes.Length == 0) Add(scope, AnyType, component);
-            else
-                foreach (var fieldType in fieldTypes)
-                    Add(scope, fieldType.ToString(), component);
+            if (registration.FieldTypes.Count == 0)
+            {
+                Add(registration.Scope, AnyType, registration.Component);
+                continue;
+            }
+
+            foreach (var fieldType in registration.FieldTypes)
+                Add(registration.Scope, fieldType.ToString(), registration.Component);
         }
-    }
-
-    static void Add(string scope, string typeKey, Type component)
-    {
-        if (!Registry.TryGetValue((scope, typeKey), out var panels))
-            Registry[(scope, typeKey)] = panels = [];
-
-        if (!panels.Contains(component)) panels.Add(component);
     }
 
     public IReadOnlyCollection<Type> PanelsFor(string scope, FormFieldType fieldType)
     {
-        lock (RegistrationLock)
-        {
-            var panels = new List<Type>();
+        var panels = new List<Type>();
 
-            if (Registry.TryGetValue((scope, AnyType), out var any)) panels.AddRange(any);
-            if (Registry.TryGetValue((scope, fieldType.ToString()), out var typed)) panels.AddRange(typed);
+        if (_registry.TryGetValue((scope, AnyType), out var any)) panels.AddRange(any);
+        if (_registry.TryGetValue((scope, fieldType.ToString()), out var typed)) panels.AddRange(typed);
 
-            return panels.Distinct().ToList();
-        }
+        return panels.Distinct().ToList();
+    }
+
+    void Add(string scope, string typeKey, Type component)
+    {
+        if (!_registry.TryGetValue((scope, typeKey), out var panels))
+            _registry[(scope, typeKey)] = panels = [];
+
+        if (!panels.Contains(component)) panels.Add(component);
     }
 }

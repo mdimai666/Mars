@@ -86,8 +86,8 @@ public static class SystemFieldsCatalog
 
     /// <summary>
     /// Выбранный редактор слота: параметры слота в типе → редактор слота по умолчанию (пусто —
-    /// встроенный редактор типа). Ключи редакторов и их состав — у реестра фронта
-    /// (<c>FormEditorLocator</c>), слот лишь объявляет свой по умолчанию.
+    /// встроенный редактор типа). Ключи редакторов и их состав — у реестра фронта (регистрация
+    /// редакторов через DI: <c>AddFormEditor</c>), слот лишь объявляет свой по умолчанию.
     /// </summary>
     public static string EditorKey(string key, IReadOnlyCollection<FormFieldSettings>? systemFields)
         => systemFields?.FirstOrDefault(settings => settings.Key == key)?.Editor ?? Find(key)?.Editor ?? "";

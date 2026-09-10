@@ -289,13 +289,20 @@ Mars.Forms.Abstractions
   Следствие: любой текстовый слот типа поста выбирает любой из них — например, для `title`
   доступен редактор «Цвет», а коллизия `core.input.date` (см. FormEnginePlan, этап C) снята:
   редактор даты один.
+- Регистрация редакторов и панелей настроек — через DI (`AddFormEditor`,
+  `AddFormFieldSettingsPanel`), а сами реестры (`FormEditorLocator`,
+  `FormFieldTypeSettingsLocator`) — экземпляры-синглтоны с состоянием, собранным в конструкторе:
+  статических реестров в слое форм не осталось, чтение потокобезопасно, тесты изолированы
+  (каждый собирает свой реестр, а не мутирует общий).
 
 Проверка: сборка 0 ошибок; `Mars.Forms.Tests` 82/82; `Mars.Server.Tests` 471/471;
 `Mars.Admin.Framework.Tests` 34/34 (новый `MetaValueStoreTests`: соответствие типов, индексы,
 ключи вариантов, сохранение `Id` строк); интеграционные `Controllers.PostTypes` 19/19 и
-`Nodes` 14/14; E2E `CreatePostTests`, `EditUserPageTests` и новый `EditPostMetaFieldsTests`
+`Nodes` 14/14; E2E `CreatePostTests`, `EditUserPageTests`, новый `EditPostMetaFieldsTests`
 (тип поста дополняется метаполями через API, значения правятся общими редакторами, сохраняются
-в EAV) — зелёные.
+в EAV) и новый `EditPostSystemFieldEditorTests` (системный слот `title` с редактором «Цвет»:
+рендер и сохранение) — зелёные. Позже в R8 добавились тесты локаторов
+(`FormEditorLocatorTests` — `Mars.Forms.Tests` 87/87, `FormFieldTypeSettingsLocatorTests`).
 
 ## E2E-проверка формы (рецепт)
 

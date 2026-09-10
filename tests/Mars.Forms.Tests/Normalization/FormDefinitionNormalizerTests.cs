@@ -4,6 +4,11 @@ using Mars.Forms.Contracts;
 
 namespace Mars.Forms.Tests.Normalization;
 
+/// <summary>
+/// Раскладка плоская: сохранённый порядок и настройки выигрывают, неизвестные ключи
+/// отбрасываются, недостающие поля провайдера дописываются в конец, дескрипторы всегда свежие.
+/// Порядок сравнивается по зонам: зоны рендерятся раздельно.
+/// </summary>
 public class FormDefinitionNormalizerTests
 {
     readonly FormDefinitionNormalizer _normalizer = new();
@@ -29,8 +34,9 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        // зоны рендерятся раздельно, поэтому сохранённый порядок держится внутри зоны
-        result.Select(i => (i.Key, i.Zone)).Should().Equal(("slug", "main"), ("title", "main"), ("status", "side"));
+        result.Select(i => i.Key).Should().Equal("status", "slug", "title");
+        KeysOf(result, "main").Should().Equal("slug", "title");
+        KeysOf(result, "side").Should().Equal("status");
     }
 
     [Fact]
@@ -49,6 +55,14 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
+    public void SavedItemWithoutZone_FallsBackToDefaultZone()
+    {
+        var result = _normalizer.Normalize([new FormItem { Key = "status" }], Defaults());
+
+        result.Single(i => i.Key == "status").Zone.Should().Be("side");
+    }
+
+    [Fact]
     public void FieldMovedToAnotherZone_StaysThere_AndIsNotDuplicated()
     {
         var saved = new List<FormItem> { new() { Key = "status", Zone = "main" } };
@@ -59,97 +73,65 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
-    public void UnknownZone_KeepsItem_AndGoesAfterKnownZones()
+    public void SectionMarker_IsKeptOnce_WithItsTitleAndNoField()
     {
-        var saved = new List<FormItem> { new() { Key = "title", Zone = "extra" } };
+        var saved = new List<FormItem>
+        {
+            new() { Key = "group-1", Zone = "main", SectionTitle = "Основное" },
+            new() { Key = "title", Zone = "main" },
+            new() { Key = "group-1", Zone = "main", SectionTitle = "Дубль" },
+        };
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => (i.Key, i.Zone)).Should().Equal(("slug", "main"), ("status", "side"), ("title", "extra"));
+        result.Select(i => i.Key).Should().Equal("group-1", "title", "slug", "status");
+
+        var marker = result.First();
+        marker.IsSectionHeader.Should().BeTrue();
+        marker.SectionTitle.Should().Be("Основное");
+        marker.Field.Should().BeNull();
     }
 
     [Fact]
-    public void Section_IsPreserved_WithFilteredChildren()
+    public void SectionMarkerWithoutZone_GetsFirstZone()
+    {
+        var result = _normalizer.Normalize([new FormItem { Key = "group-1", SectionTitle = "Основное" }], Defaults());
+
+        result.First().Zone.Should().Be("main");
+    }
+
+    [Fact]
+    public void LayoutSettings_KeepVisibleWidthAndTitle()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Zone = "main", Visible = false, Width = FormItemWidths.Third, Title = "Заголовок" },
+        };
+
+        var item = _normalizer.Normalize(saved, Defaults()).First();
+
+        item.Visible.Should().BeFalse();
+        item.Width.Should().Be(FormItemWidths.Third);
+        item.Title.Should().Be("Заголовок");
+    }
+
+    [Fact]
+    public void Descriptor_IsAlwaysTakenFromDefaults_NotFromSavedLayout()
     {
         var saved = new List<FormItem>
         {
             new()
             {
-                Key = "group-1",
-                Kind = FormItemKinds.Section,
+                Key = "title",
                 Zone = "main",
-                Title = "Основное",
-                Collapsed = true,
-                Items = [new FormItem { Key = "title" }, new FormItem { Key = "ghost" }],
+                Field = new FormFieldDescriptor { Key = "title", Title = "Устаревший", Type = FormFieldType.Text },
             },
         };
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        var section = result.First();
-        section.IsSection.Should().BeTrue();
-        section.Title.Should().Be("Основное");
-        section.Collapsed.Should().BeTrue();
-        section.Items.Select(i => i.Key).Should().Equal("title");
-        section.Field.Should().BeNull();
-        result.Select(i => i.Key).Should().Equal("group-1", "slug", "status");
-    }
-
-    [Fact]
-    public void NestedSection_OverDepthLimit_HoistsChildren()
-    {
-        var saved = new List<FormItem>
-        {
-            new()
-            {
-                Key = "outer",
-                Kind = FormItemKinds.Section,
-                Zone = "main",
-                Items =
-                [
-                    new FormItem
-                    {
-                        Key = "inner",
-                        Kind = FormItemKinds.Section,
-                        Items = [new FormItem { Key = "title" }],
-                    },
-                ],
-            },
-        };
-
-        var result = _normalizer.Normalize(saved, Defaults());
-
-        var outer = result.First();
-        outer.Items.Select(i => i.Key).Should().Equal("title");
-        outer.Items.Should().OnlyContain(i => !i.IsSection);
-    }
-
-    [Fact]
-    public void SectionWithoutKey_IsFlattened()
-    {
-        var saved = new List<FormItem>
-        {
-            new() { Key = "", Kind = FormItemKinds.Section, Zone = "main", Items = [new FormItem { Key = "title" }] },
-        };
-
-        var result = _normalizer.Normalize(saved, Defaults());
-
-        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
-    }
-
-    [Fact]
-    public void DuplicateSection_KeptOnce()
-    {
-        var saved = new List<FormItem>
-        {
-            new() { Key = "g", Kind = FormItemKinds.Section, Zone = "main", Items = [new FormItem { Key = "title" }] },
-            new() { Key = "g", Kind = FormItemKinds.Section, Zone = "main", Items = [new FormItem { Key = "slug" }] },
-        };
-
-        var result = _normalizer.Normalize(saved, Defaults());
-
-        result.Count(i => i.IsSection).Should().Be(1);
-        result.Select(i => i.Key).Should().Equal("g", "slug", "status");
+        result.First().Field!.Title.Should().Be("title");
+        result.First().Field!.Type.Should().Be(FormFieldType.String);
     }
 
     [Fact]
@@ -175,28 +157,9 @@ public class FormDefinitionNormalizerTests
 
         var item = _normalizer.Normalize(saved, defaults).Single();
 
-        item.Visible.Should().BeFalse("представление берётся из раскладки");
+        item.Visible.Should().BeFalse("настройки представления берутся из раскладки");
         item.Field!.Editor.Should().Be("core.input.url");
         item.Field.Rules.Select(r => r.Type).Should().Equal(FormRuleCatalog.Unique);
-    }
-
-    [Fact]
-    public void Descriptor_IsAlwaysTakenFromDefaults_NotFromSavedLayout()
-    {
-        var saved = new List<FormItem>
-        {
-            new()
-            {
-                Key = "title",
-                Zone = "main",
-                Field = new FormFieldDescriptor { Key = "title", Title = "Устаревший", Type = FormFieldType.Text },
-            },
-        };
-
-        var result = _normalizer.Normalize(saved, Defaults());
-
-        result.First().Field!.Title.Should().Be("title");
-        result.First().Field!.Type.Should().Be(FormFieldType.String);
     }
 
     [Fact]
@@ -204,14 +167,8 @@ public class FormDefinitionNormalizerTests
     {
         var saved = new List<FormItem>
         {
-            new()
-            {
-                Key = "group-1",
-                Kind = FormItemKinds.Section,
-                Zone = "main",
-                Title = "Основное",
-                Items = [new FormItem { Key = "slug", Width = FormItemWidths.Half, Visible = false }],
-            },
+            new() { Key = "group-1", Zone = "main", SectionTitle = "Основное" },
+            new() { Key = "slug", Zone = "main", Width = FormItemWidths.Half, Visible = false },
             new() { Key = "ghost", Zone = "side" },
         };
 
@@ -221,31 +178,8 @@ public class FormDefinitionNormalizerTests
         twice.Should().BeEquivalentTo(once);
     }
 
-    [Fact]
-    public void LayoutSettings_KeepVisibleAndWidth()
-    {
-        var saved = new List<FormItem> { new() { Key = "title", Zone = "main", Visible = false, Width = FormItemWidths.Third } };
-
-        var item = _normalizer.Normalize(saved, Defaults()).First();
-
-        item.Visible.Should().BeFalse();
-        item.Width.Should().Be(FormItemWidths.Third);
-    }
-
-    [Fact]
-    public void SectionWithoutZone_GetsFirstZone()
-    {
-        var saved = new List<FormItem>
-        {
-            new() { Key = "group-1", Kind = FormItemKinds.Section, Items = [new FormItem { Key = "slug" }] },
-        };
-
-        var section = _normalizer.Normalize(saved, Defaults()).First();
-
-        section.IsSection.Should().BeTrue();
-        section.Zone.Should().Be("main", "иначе рендерер зоны секцию не увидит");
-        section.Items.Single().Zone.Should().BeNull("зона хранится только у корневых элементов");
-    }
+    static IEnumerable<string> KeysOf(IEnumerable<FormItem> items, string zone)
+        => items.Where(i => i.Zone == zone && i.Field is not null).Select(i => i.Key);
 
     static IReadOnlyCollection<FormItem> Defaults() =>
     [

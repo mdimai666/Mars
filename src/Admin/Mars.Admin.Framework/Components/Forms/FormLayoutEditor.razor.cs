@@ -6,26 +6,25 @@ using Microsoft.Extensions.Localization;
 namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
-/// Дизайнер раскладки формы: дерево, которое отдаёт провайдер (<see cref="FormDefinition"/>),
-/// правится по зонам — порядок, зона, видимость, ширина, секции и переопределение заголовка.
-/// Параметры самих полей (правила, редактор) здесь не редактируются — они живут в настройках
-/// владельца формы (<see cref="FormFieldSettings"/>) и правятся на странице типа.
-/// Наружу уходит только раскладка (<see cref="FormLayoutSettings"/>): дескрипторы не хранятся,
-/// их каждый раз отдаёт провайдер. Доступные зоны — из манифеста провайдера.
+/// Дизайнер раскладки формы: плоский список по зонам — порядок, зона, видимость, ширина
+/// и маркеры секций (поля идут за маркером до следующего — как Tab в ACF).
+/// Параметры самих полей (правила, редактор) здесь не редактируются: они живут в настройках
+/// владельца формы и правятся на странице типа. Наружу уходит только раскладка
+/// (<see cref="FormLayoutSettings"/>): дескрипторы не хранятся, их каждый раз отдаёт провайдер.
 /// </summary>
 public partial class FormLayoutEditor
 {
     [Inject] IStringLocalizer<AppRes> L { get; set; } = default!;
 
-    /// <summary>Нормализованное дерево провайдера: уже с применённой сохранённой раскладкой</summary>
+    /// <summary>Действующее определение провайдера: уже с применённой сохранённой раскладкой</summary>
     [Parameter] public FormDefinition? Definition { get; set; }
 
     /// <summary>Раскладка после каждого изменения; null — сброс к раскладке провайдера</summary>
     [Parameter] public EventCallback<FormLayoutSettings?> ValueChanged { get; set; }
 
     /// <summary>
-    /// Просьба сбросить раскладку: хост подменяет <see cref="Definition"/> на дерево по умолчанию
-    /// (дизайнер не знает порядка провайдера — дерево собирает сервер).
+    /// Просьба сбросить раскладку: хост подменяет <see cref="Definition"/> на раскладку по умолчанию
+    /// (дизайнер не знает порядка провайдера — определение собирает сервер).
     /// </summary>
     [Parameter] public EventCallback OnResetRequested { get; set; }
 
@@ -55,9 +54,6 @@ public partial class FormLayoutEditor
         Rebuild();
     }
 
-    //=====================================
-    // дерево
-
     void Rebuild()
     {
         _rows.Clear();
@@ -77,34 +73,35 @@ public partial class FormLayoutEditor
 
         var fallbackZone = _zones.FirstOrDefault()?.Key ?? "";
         foreach (var item in definition.Items)
-            _rows.Add(Row(item, null, fallbackZone));
+        {
+            _rows.Add(new LayoutRow
+            {
+                Key = item.Key,
+                Field = item.Field,
+                Zone = string.IsNullOrEmpty(item.Zone) ? fallbackZone : item.Zone,
+                Title = item.Title,
+                SectionTitle = item.SectionTitle,
+                Visible = item.Visible,
+                Width = item.Width,
+            });
+        }
 
         if (_zones.All(z => z.Key != NewSectionZone))
             NewSectionZone = fallbackZone;
     }
 
-    static LayoutRow Row(FormItem item, LayoutRow? parent, string fallbackZone)
+    /// <summary>Строки зоны в порядке отображения; Depth = 1 у полей, идущих за маркером секции</summary>
+    public IEnumerable<(LayoutRow Row, int Depth)> EntriesOf(string zone)
     {
-        var row = new LayoutRow
+        var depth = 0;
+
+        foreach (var row in _rows.Where(r => r.Zone == zone))
         {
-            Key = item.Key,
-            Kind = item.Kind,
-            Field = item.Field,
-            Zone = item.Zone ?? parent?.Zone ?? fallbackZone,
-            Title = item.Title,
-            Visible = item.Visible,
-            Width = item.Width,
-            Collapsed = item.Collapsed,
-            Parent = parent,
-        };
+            yield return (row, depth);
 
-        foreach (var child in item.Items)
-            row.Children.Add(Row(child, row, row.Zone));
-
-        return row;
+            if (row.IsSection) depth = 1;
+        }
     }
-
-    public IEnumerable<LayoutRow> RowsOf(string zone) => _rows.Where(row => row.Zone == zone);
 
     public string ZoneTitle(string key) => _zones.FirstOrDefault(zone => zone.Key == key)?.Title ?? key;
 
@@ -117,64 +114,45 @@ public partial class FormLayoutEditor
         return string.IsNullOrEmpty(field.TitleKey) ? field.Title : L[field.TitleKey];
     }
 
-    List<LayoutRow> ListOf(LayoutRow row) => row.Parent?.Children ?? _rows;
-
     //=====================================
     // изменения
 
-    public Task EmitAsync() => ValueChanged.InvokeAsync(new FormLayoutSettings { Items = _rows.Select(ToItem).ToList() });
+    public Task EmitAsync()
+        => ValueChanged.InvokeAsync(new FormLayoutSettings { Items = _rows.Select(ToItem).ToList() });
 
     static FormItem ToItem(LayoutRow row) => new()
     {
-        Kind = row.Kind,
         Key = row.Key,
-        // зона хранится только у корневых элементов: дети секции живут в её зоне
-        Zone = row.Parent is null ? row.Zone : null,
+        Zone = row.Zone,
         Title = string.IsNullOrWhiteSpace(row.Title) ? null : row.Title,
+        SectionTitle = row.SectionTitle,
         Visible = row.Visible,
         Width = row.Width,
-        Collapsed = row.Collapsed,
-        Items = row.Children.Select(ToItem).ToList(),
     };
 
+    /// <summary>Сосед по зоне: раскладка плоская, порядок строк и есть порядок отображения</summary>
     public bool CanMove(LayoutRow row, int delta)
     {
-        var list = ListOf(row);
-        var index = list.IndexOf(row);
-        if (index < 0) return false;
+        var zone = _rows.Where(r => r.Zone == row.Zone).ToList();
+        var index = zone.IndexOf(row);
+        var target = index + delta;
 
-        // корневые строки идут одним списком с атрибутом зоны: сосед — следующая строка той же зоны
-        return row.Parent is null
-            ? delta < 0
-                ? list.Take(index).Any(other => other.Zone == row.Zone)
-                : list.Skip(index + 1).Any(other => other.Zone == row.Zone)
-            : index + delta >= 0 && index + delta < list.Count;
+        return index >= 0 && target >= 0 && target < zone.Count;
     }
 
     public async Task MoveAsync(LayoutRow row, int delta)
     {
-        var list = ListOf(row);
-        var index = list.IndexOf(row);
-        if (index < 0) return;
-
-        if (row.Parent is null)
-        {
-            for (var i = index + delta; i >= 0 && i < list.Count; i += delta)
-            {
-                if (list[i].Zone != row.Zone) continue;
-
-                (list[index], list[i]) = (list[i], list[index]);
-                await EmitAsync();
-                return;
-            }
-
-            return;
-        }
-
+        var zone = _rows.Where(r => r.Zone == row.Zone).ToList();
+        var index = zone.IndexOf(row);
         var target = index + delta;
-        if (target < 0 || target >= list.Count) return;
+        if (index < 0 || target < 0 || target >= zone.Count) return;
 
-        (list[index], list[target]) = (list[target], list[index]);
+        var other = zone[target];
+        var left = _rows.IndexOf(row);
+        var right = _rows.IndexOf(other);
+
+        (_rows[left], _rows[right]) = (_rows[right], _rows[left]);
+
         await EmitAsync();
     }
 
@@ -183,10 +161,6 @@ public partial class FormLayoutEditor
         if (string.IsNullOrEmpty(zone) || row.Zone == zone) return;
 
         row.Zone = zone;
-        // дети секции живут в её зоне: у них зона в раскладке не хранится, но строки дизайнера её знают
-        foreach (var child in row.Children)
-            child.Zone = zone;
-
         await EmitAsync();
     }
 
@@ -196,6 +170,13 @@ public partial class FormLayoutEditor
         await EmitAsync();
     }
 
+    public async Task SetSectionTitleAsync(LayoutRow row, string title)
+    {
+        row.SectionTitle = title;
+        await EmitAsync();
+    }
+
+    /// <summary>Добавляет маркер секции в конец выбранной зоны</summary>
     public async Task AddSectionAsync()
     {
         var zone = _zones.Any(z => z.Key == NewSectionZone) ? NewSectionZone : _zones.FirstOrDefault()?.Key;
@@ -204,60 +185,17 @@ public partial class FormLayoutEditor
         _rows.Add(new LayoutRow
         {
             Key = NewSectionKey(),
-            Kind = FormItemKinds.Section,
             Zone = zone,
-            Title = "Секция",
+            SectionTitle = "Секция",
         });
 
         await EmitAsync();
     }
 
-    /// <summary>Удаляет секцию, оставляя её поля в зоне на месте секции</summary>
+    /// <summary>Убирает маркер секции: её поля остаются на своих местах</summary>
     public async Task RemoveSectionAsync(LayoutRow section)
     {
-        var index = _rows.IndexOf(section);
-        if (index < 0) return;
-
-        var children = section.Children.ToList();
-        foreach (var child in children)
-        {
-            child.Parent = null;
-            child.Zone = section.Zone;
-        }
-
-        section.Children.Clear();
-        _rows.RemoveAt(index);
-        _rows.InsertRange(index, children);
-
-        await EmitAsync();
-    }
-
-    /// <summary>Поля зоны, которые можно забрать в секцию</summary>
-    public IEnumerable<LayoutRow> SectionFieldCandidates(LayoutRow section)
-        => _rows.Where(row => row.Parent is null && !row.IsSection && row.Zone == section.Zone);
-
-    public async Task MoveIntoSectionAsync(LayoutRow section, string fieldKey)
-    {
-        var row = _rows.FirstOrDefault(other => other.Key == fieldKey && other.Parent is null && !other.IsSection);
-        if (row is null) return;
-
-        _rows.Remove(row);
-        row.Parent = section;
-        section.Children.Add(row);
-
-        await EmitAsync();
-    }
-
-    public async Task MoveOutOfSectionAsync(LayoutRow row)
-    {
-        if (row.Parent is not { } section) return;
-
-        section.Children.Remove(row);
-        row.Parent = null;
-        row.Zone = section.Zone;
-
-        var index = _rows.IndexOf(section);
-        _rows.Insert(index < 0 ? _rows.Count : index + 1, row);
+        if (!_rows.Remove(section)) return;
 
         await EmitAsync();
     }
@@ -270,7 +208,7 @@ public partial class FormLayoutEditor
 
     string NewSectionKey()
     {
-        var taken = _rows.Select(row => row.Key).Concat(_rows.SelectMany(row => row.Children.Select(child => child.Key))).ToHashSet();
+        var taken = _rows.Select(row => row.Key).ToHashSet();
 
         string key;
         do
@@ -287,26 +225,21 @@ public partial class FormLayoutEditor
     {
         public required string Key { get; init; }
 
-        public string Kind { get; init; } = FormItemKinds.Field;
-
-        /// <summary>Дескриптор поля провайдера (у секции отсутствует); в раскладку не сохраняется</summary>
+        /// <summary>Дескриптор поля провайдера (у маркера секции отсутствует); в раскладку не сохраняется</summary>
         public FormFieldDescriptor? Field { get; init; }
-
-        public LayoutRow? Parent { get; set; }
 
         public string Zone { get; set; } = "";
 
-        /// <summary>Секция — заголовок; поле — переопределение заголовка (пусто = заголовок провайдера)</summary>
+        /// <summary>Маркер секции: заголовок группы; поля идут за ним до следующего маркера</summary>
+        public string? SectionTitle { get; set; }
+
+        /// <summary>Переопределение заголовка поля (пусто = заголовок провайдера)</summary>
         public string? Title { get; set; }
 
         public bool Visible { get; set; } = true;
 
         public string? Width { get; set; }
 
-        public bool Collapsed { get; set; }
-
-        public List<LayoutRow> Children { get; set; } = [];
-
-        public bool IsSection => Kind == FormItemKinds.Section;
+        public bool IsSection => SectionTitle is not null;
     }
 }

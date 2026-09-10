@@ -23,17 +23,17 @@ else
         <CascadingValue Value="this" IsFixed="true">
             @foreach (var zone in Zones)
             {
-                var rows = RowsOf(zone.Key).ToList();
+                var entries = EntriesOf(zone.Key).ToList();
                 <div class="card">
                     <div class="card-header">@zone.Title</div>
                     <div class="card-body vstack gap-2">
-                        @if (rows.Count == 0)
+                        @if (entries.Count == 0)
                         {
                             <div class="text-secondary">В зоне нет полей</div>
                         }
-                        @foreach (var row in rows)
+                        @foreach (var (row, depth) in entries)
                         {
-                            <FormLayoutRow Row="row" Depth="0" />
+                            <FormLayoutRow Row="row" Depth="depth" />
                         }
                     </div>
                 </div>

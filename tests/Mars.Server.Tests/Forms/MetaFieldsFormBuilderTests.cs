@@ -22,7 +22,6 @@ public class MetaFieldsFormBuilderTests
         form.OwnerModel.Should().Be("user.default");
         form.Items.Select(i => i.Key).Should().Equal("nickname", "bio");
         form.Items.Should().OnlyContain(i => i.Zone == SystemFieldsCatalog.Zones.Main);
-        form.Items.Should().OnlyContain(i => i.Kind == FormItemKinds.Field);
     }
 
     [Fact]

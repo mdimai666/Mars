@@ -73,7 +73,6 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
                           .Select(item => item with
                           {
                               Zone = null,
-                              Items = [],
                               Field = item.Field! with { Required = false, Min = null, Max = null },
                           })
                           .ToList(),

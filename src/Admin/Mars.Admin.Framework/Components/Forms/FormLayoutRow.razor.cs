@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Components;
 namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
-/// Строка дизайнера раскладки формы: один элемент дерева (поле или секция) и его дети.
-/// Все изменения уходят в <see cref="FormLayoutEditor"/>, который собирает раскладку.
+/// Строка дизайнера раскладки: лист-поле или маркер секции. Все изменения уходят
+/// в <see cref="FormLayoutEditor"/>, который собирает раскладку.
 /// </summary>
 public partial class FormLayoutRow
 {
@@ -12,7 +12,7 @@ public partial class FormLayoutRow
 
     [Parameter, EditorRequired] public FormLayoutEditor.LayoutRow Row { get; set; } = default!;
 
-    /// <summary>Глубина от корня зоны: дети секции рисуются с отступом</summary>
+    /// <summary>Отступ: 1 у полей, идущих за маркером секции</summary>
     [Parameter] public int Depth { get; set; }
 
     string RowStyle => Depth > 0 ? $"margin-left:{Depth * 20}px" : "";
@@ -23,15 +23,12 @@ public partial class FormLayoutRow
         return Editor.EmitAsync();
     }
 
-    Task ToggleCollapsedAsync(bool collapsed)
-    {
-        Row.Collapsed = collapsed;
-        return Editor.EmitAsync();
-    }
-
     Task SetTitleAsync(string title)
     {
         Row.Title = title;
         return Editor.EmitAsync();
     }
+
+    Task SetSectionTitleAsync(string title)
+        => Editor.SetSectionTitleAsync(Row, title);
 }

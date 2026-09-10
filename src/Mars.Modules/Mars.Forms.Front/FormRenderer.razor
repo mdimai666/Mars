@@ -1,8 +1,32 @@
 @namespace Mars.Forms.Front
 
-@* Точка входа рендера: одна зона = один экземпляр (зоны объявляет провайдер) *@
+@* Точка входа рендера: одна зона = один экземпляр. Секции — маркеры плоского списка:
+   поля идут за маркером до следующего (как Tab в ACF), вложенности у раскладки нет. *@
 <CascadingValue Value="@_context">
-    <FormItems Items="@RootItems" />
+    <div class="row">
+        @foreach (var entry in Entries)
+        {
+            if (entry.IsHeader)
+            {
+                <div class="col-12">
+                    <h6 class="mt-3 mb-1">@entry.Item.SectionTitle</h6>
+                </div>
+            }
+            else
+            {
+                <div class="@WidthClass(entry.Item)">
+                    @if (FieldTemplate is not null)
+                    {
+                        @FieldTemplate(entry.Item)
+                    }
+                    else
+                    {
+                        <FormFieldRow Item="@entry.Item" />
+                    }
+                </div>
+            }
+        }
+    </div>
 </CascadingValue>
 
 @code {
@@ -37,6 +61,17 @@
             Commits = Commits ?? new FormCommitHooks(),
         };
 
-    IReadOnlyCollection<FormItem> RootItems
-        => Definition?.Items.Where(i => (i.Zone ?? "") == Zone).ToList() ?? [];
+    /// <summary>Зона в порядке раскладки: маркеры секций и листы-поля; поля без дескриптора не рендерятся</summary>
+    IEnumerable<(FormItem Item, bool IsHeader)> Entries
+        => (Definition?.Items ?? [])
+            .Where(item => (item.Zone ?? "") == Zone)
+            .Where(item => item.IsSectionHeader || (item.Visible && item.Field is not null))
+            .Select(item => (item, item.IsSectionHeader));
+
+    static string WidthClass(FormItem item) => item.Width switch
+    {
+        FormItemWidths.Half => "col-12 col-md-6",
+        FormItemWidths.Third => "col-12 col-md-4",
+        _ => "col-12",
+    };
 }

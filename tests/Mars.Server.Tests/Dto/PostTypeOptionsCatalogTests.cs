@@ -58,7 +58,7 @@ public class PostTypeOptionsCatalogTests
         var parsed = options.GetFormLayout();
 
         parsed.Should().NotBeNull();
-        parsed!.Items.Should().HaveCount(2);
+        parsed!.Items.Should().HaveCount(3);
 
         var tags = parsed.Items.First();
         tags.Key.Should().Be(SystemFieldsCatalog.Tags);
@@ -67,11 +67,11 @@ public class PostTypeOptionsCatalogTests
         tags.Width.Should().Be(FormItemWidths.Half);
         tags.Field.Should().BeNull("дескрипторы не хранятся — их отдаёт провайдер");
 
-        var section = parsed.Items.Last();
-        section.IsSection.Should().BeTrue();
-        section.Title.Should().Be("Дополнительно");
-        section.Collapsed.Should().BeTrue();
-        section.Items.Single().Key.Should().Be(SystemFieldsCatalog.Slug);
+        var marker = parsed.Items.ElementAt(1);
+        marker.IsSectionHeader.Should().BeTrue();
+        marker.SectionTitle.Should().Be("Дополнительно");
+
+        parsed.Items.Last().Key.Should().Be(SystemFieldsCatalog.Slug);
     }
 
     //=====================================
@@ -159,11 +159,14 @@ public class PostTypeOptionsCatalogTests
             new FormItem
             {
                 Key = "extra-section",
-                Kind = FormItemKinds.Section,
                 Zone = SystemFieldsCatalog.Zones.Extra,
-                Title = "Дополнительно",
-                Collapsed = true,
-                Items = [new FormItem { Key = SystemFieldsCatalog.Slug }],
+                SectionTitle = "Дополнительно",
+            },
+            new FormItem
+            {
+                Key = SystemFieldsCatalog.Slug,
+                Zone = SystemFieldsCatalog.Zones.Extra,
+                Width = FormItemWidths.Third,
             },
         ],
     };

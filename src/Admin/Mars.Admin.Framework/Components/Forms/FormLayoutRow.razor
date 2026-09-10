@@ -14,33 +14,25 @@
             <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
         </FluentButton>
 
-        <FluentCheckbox Value="Row.Visible" ValueChanged="ToggleVisibleAsync" Title="Показывать поле в форме" />
-
         @if (Row.IsSection)
         {
             <FluentBadge Appearance="Appearance.Accent">секция</FluentBadge>
-            <FluentTextField Value="@Row.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок секции" Style="width:220px" />
-            <FluentCheckbox Label="Свёрнута" Value="Row.Collapsed" ValueChanged="ToggleCollapsedAsync" />
+            <FluentTextField Value="@Row.SectionTitle" ValueChanged="SetSectionTitleAsync" Placeholder="Заголовок секции" Style="width:220px" />
+            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.RemoveSectionAsync(Row))">Удалить секцию</FluentButton>
         }
         else
         {
+            <FluentCheckbox Value="Row.Visible" ValueChanged="ToggleVisibleAsync" Title="Показывать поле в форме" />
             <span>@Editor.DisplayTitle(Row)</span>
             <FluentTextField Value="@Row.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок по умолчанию" Style="width:200px" />
         }
 
-        @if (Row.Parent is null)
-        {
-            <FluentSelect TOption="string" Value="Row.Zone" ValueChanged="@(zone => Editor.SetZoneAsync(Row, zone))" Style="width:150px">
-                @foreach (var zone in Editor.Zones)
-                {
-                    <FluentOption Value="@zone.Key">@zone.Title</FluentOption>
-                }
-            </FluentSelect>
-        }
-        else
-        {
-            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.MoveOutOfSectionAsync(Row))">из секции</FluentButton>
-        }
+        <FluentSelect TOption="string" Value="Row.Zone" ValueChanged="@(zone => Editor.SetZoneAsync(Row, zone))" Style="width:150px">
+            @foreach (var zone in Editor.Zones)
+            {
+                <FluentOption Value="@zone.Key">@zone.Title</FluentOption>
+            }
+        </FluentSelect>
 
         <FluentSelect TOption="string" Value="@(Row.Width ?? "")" ValueChanged="@(width => Editor.SetWidthAsync(Row, width))" Style="width:160px">
             @foreach (var (key, title) in FormLayoutEditor.Widths)
@@ -49,23 +41,6 @@
             }
         </FluentSelect>
 
-        @if (Row.IsSection)
-        {
-            <FluentSelect TOption="string" Value="" ValueChanged="@(key => Editor.MoveIntoSectionAsync(Row, key))" Style="width:190px">
-                <FluentOption Value="">+ поле в секцию</FluentOption>
-                @foreach (var candidate in Editor.SectionFieldCandidates(Row))
-                {
-                    <FluentOption Value="@candidate.Key">@Editor.DisplayTitle(candidate)</FluentOption>
-                }
-            </FluentSelect>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.RemoveSectionAsync(Row))">Удалить секцию</FluentButton>
-        }
-
     </div>
-
-    @foreach (var child in Row.Children)
-    {
-        <FormLayoutRow Row="child" Depth="Depth + 1" />
-    }
 
 </div>

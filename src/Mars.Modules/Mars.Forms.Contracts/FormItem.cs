@@ -1,20 +1,19 @@
 namespace Mars.Forms.Contracts;
 
 /// <summary>
-/// Элемент дерева формы — контейнер. Два встроенных вида: <see cref="FormItemKinds.Field"/>
-/// (лист, ссылка на поле) и <see cref="FormItemKinds.Section"/> (чистый layout: значения нет).
+/// Элемент раскладки формы. Список плоский и упорядоченный: лист-поле ссылается на поле по ключу,
+/// а элемент с <see cref="SectionTitle"/> открывает группу — поля идут за ним до следующего
+/// маркера (как <c>Tab</c> в ACF). Вложенности у раскладки нет.
 /// </summary>
 public record FormItem
 {
-    public string Kind { get; init; } = FormItemKinds.Field;
-
-    /// <summary>Для field — ключ поля (системного или метаполя); для section — стабильный ид</summary>
+    /// <summary>Ключ поля; у маркера секции — стабильный идентификатор</summary>
     public required string Key { get; init; }
 
-    /// <summary>Зона размещения (у корневых элементов): набор зон объявляет провайдер</summary>
+    /// <summary>Зона размещения: набор зон объявляет провайдер</summary>
     public string? Zone { get; init; }
 
-    /// <summary>Заголовок секции; для field — переопределение заголовка поля</summary>
+    /// <summary>Переопределение заголовка поля (у маркера секции — <see cref="SectionTitle"/>)</summary>
     public string? Title { get; init; }
 
     public bool Visible { get; init; } = true;
@@ -22,11 +21,8 @@ public record FormItem
     /// <summary>Ширина из <see cref="FormItemWidths"/> (null — на всю ширину зоны)</summary>
     public string? Width { get; init; }
 
-    /// <summary>Секция свёрнута</summary>
-    public bool Collapsed { get; init; }
-
-    /// <summary>Дети секции</summary>
-    public IReadOnlyCollection<FormItem> Items { get; init; } = [];
+    /// <summary>Заголовок секции: элемент — маркер начала группы, поля и значения у него отсутствуют</summary>
+    public string? SectionTitle { get; init; }
 
     /// <summary>
     /// Дескриптор поля. Заполняет провайдер при отдаче определения;
@@ -34,17 +30,7 @@ public record FormItem
     /// </summary>
     public FormFieldDescriptor? Field { get; init; }
 
-    public bool IsSection => Kind == FormItemKinds.Section;
-}
-
-/// <summary>Встроенные виды контейнеров формы</summary>
-public static class FormItemKinds
-{
-    /// <summary>Лист: ссылка на поле по ключу</summary>
-    public const string Field = "field";
-
-    /// <summary>Узел-группа: заголовок и дети, значения не имеет</summary>
-    public const string Section = "section";
+    public bool IsSectionHeader => SectionTitle is not null;
 }
 
 /// <summary>Ширина элемента в зоне</summary>

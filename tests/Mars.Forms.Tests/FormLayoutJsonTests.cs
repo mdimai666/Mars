@@ -13,42 +13,24 @@ public class FormLayoutJsonTests
         {
             Items =
             [
-                new FormItem
-                {
-                    Key = "section-1",
-                    Kind = FormItemKinds.Section,
-                    Zone = "main",
-                    Title = "Основное",
-                    Collapsed = true,
-                    Items =
-                    [
-                        new FormItem { Key = "title", Zone = null, Width = FormItemWidths.Half },
-                    ],
-                },
-                new FormItem
-                {
-                    Key = "slug",
-                    Zone = "main",
-                    Visible = false,
-                },
+                new FormItem { Key = "section-1", Zone = "main", SectionTitle = "Основное" },
+                new FormItem { Key = "title", Zone = "main", Width = FormItemWidths.Half },
+                new FormItem { Key = "slug", Zone = "main", Visible = false },
             ],
         };
 
-        var node = settings.ToJsonNode();
-        var parsed = FormLayoutJson.Parse(node);
+        var parsed = FormLayoutJson.Parse(settings.ToJsonNode());
 
         parsed.Should().NotBeNull();
-        var section = parsed!.Items.First();
-        section.Kind.Should().Be(FormItemKinds.Section);
-        section.Key.Should().Be("section-1");
-        section.Zone.Should().Be("main");
-        section.Title.Should().Be("Основное");
-        section.Collapsed.Should().BeTrue();
-        section.Items.Single().Key.Should().Be("title");
-        section.Items.Single().Width.Should().Be(FormItemWidths.Half);
+        parsed!.Items.Select(i => i.Key).Should().Equal("section-1", "title", "slug");
 
-        var slug = parsed.Items.Last();
-        slug.Visible.Should().BeFalse();
+        var marker = parsed.Items.First();
+        marker.IsSectionHeader.Should().BeTrue();
+        marker.SectionTitle.Should().Be("Основное");
+        marker.Field.Should().BeNull();
+
+        parsed.Items.ElementAt(1).Width.Should().Be(FormItemWidths.Half);
+        parsed.Items.Last().Visible.Should().BeFalse();
     }
 
     [Fact]
@@ -67,33 +49,6 @@ public class FormLayoutJsonTests
     }
 
     [Fact]
-    public void ToLayout_StripsDescriptors_TheyAreNeverStored()
-    {
-        var items = new List<FormItem>
-        {
-            new()
-            {
-                Key = "section-1",
-                Kind = FormItemKinds.Section,
-                Items =
-                [
-                    new FormItem
-                    {
-                        Key = "title",
-                        Field = new FormFieldDescriptor { Key = "title", Title = "Заголовок", Type = FormFieldType.String },
-                    },
-                ],
-            },
-        };
-
-        var layout = items.ToLayout();
-
-        layout.Items.Should().OnlyContain(i => i.Field == null);
-        layout.Items.Single().Items.Single().Field.Should().BeNull();
-        layout.Items.Single().Items.Single().Key.Should().Be("title");
-    }
-
-    [Fact]
     public void Parse_NullOrBrokenJson_ReturnsNull()
     {
         FormLayoutJson.Parse(null).Should().BeNull();
@@ -102,28 +57,49 @@ public class FormLayoutJsonTests
     }
 
     [Fact]
-    public void Parse_StoredLayout_SurvivesRoundTrip()
+    public void Parse_LegacySectionTree_BecomesFlatMarkers()
     {
-        var settings = new FormLayoutSettings
+        var node = JsonNode.Parse("""
         {
-            Items =
-            [
-                new FormItem
-                {
-                    Key = "title",
-                    Zone = "main",
-                    Width = FormItemWidths.Half,
-                    Visible = false,
-                },
-            ],
+          "items": [
+            { "key": "title", "zone": "main" },
+            { "key": "g1", "zone": "main", "title": "Основное", "collapsed": true,
+              "items": [
+                { "key": "slug", "width": "half" },
+                { "key": "g2", "title": "Вложенная", "items": [ { "key": "status" } ] }
+              ] }
+          ]
+        }
+        """);
+
+        var parsed = FormLayoutJson.Parse(node);
+
+        parsed!.Items.Select(i => i.Key).Should().Equal("title", "g1", "slug", "g2", "status");
+        parsed.Items.ElementAt(1).IsSectionHeader.Should().BeTrue();
+        parsed.Items.ElementAt(1).SectionTitle.Should().Be("Основное");
+        parsed.Items.ElementAt(2).Zone.Should().Be("main", "дети секции наследуют её зону");
+        parsed.Items.ElementAt(2).Width.Should().Be(FormItemWidths.Half);
+        parsed.Items.ElementAt(3).SectionTitle.Should().Be("Вложенная");
+    }
+
+    [Fact]
+    public void ToLayout_StripsDescriptors_TheyAreNeverStored()
+    {
+        var items = new List<FormItem>
+        {
+            new() { Key = "section-1", Zone = "main", SectionTitle = "Основное" },
+            new()
+            {
+                Key = "title",
+                Zone = "main",
+                Field = new FormFieldDescriptor { Key = "title", Title = "Заголовок", Type = FormFieldType.String },
+            },
         };
 
-        var item = FormLayoutJson.Parse(settings.ToJsonNode())!.Items.Single();
+        var layout = items.ToLayout();
 
-        item.Key.Should().Be("title");
-        item.Zone.Should().Be("main");
-        item.Width.Should().Be(FormItemWidths.Half);
-        item.Visible.Should().BeFalse();
+        layout.Items.Should().OnlyContain(i => i.Field == null);
+        layout.Items.Select(i => i.Key).Should().Equal("section-1", "title");
     }
 
     [Fact]

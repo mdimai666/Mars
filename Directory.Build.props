@@ -40,7 +40,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 
-    <!-- Common NuGet packaging metadata: default for all packable projects. Override per project (Version/Product/Description/PackageTags) when needed. -->
+    <!-- Common NuGet packaging metadata: default for all packable projects. Override per project (Version/Product/Description/PackageTags) when needed. PackageIcon и файл иконки — в Directory.Build.targets: их условие зависит от PackageId, которого здесь ещё нет. -->
     <PropertyGroup>
         <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
@@ -48,7 +48,6 @@
         <Copyright>Copyright © $([System.DateTime]::Now.Year) mdimai666</Copyright>
         <Product>Mars</Product>
         <PackageTags>Mars</PackageTags>
-        <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -61,7 +60,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 </Project>

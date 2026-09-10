@@ -1,48 +1,31 @@
 @using Mars.Admin.Framework.Components.MediaViews
 @using Mars.Admin.Framework.Components.MetaFieldViews
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Contracts
 @using Mars.Forms.Front
 
 @* Файл/изображение метаполя: мульти-загрузка (список файлов) или одиночный выбор медиа.
-   Папка загрузки, дроп-зона и фильтр типов — из настройки поля. *@
+   Папка загрузки, дроп-зона и фильтр типов — из параметров поля. *@
 
-@if (Meta is null)
+@if (Binding.Field.Multiple)
 {
-    <div class="text-secondary fz12px">нет определения поля @Binding.Field.Key</div>
-}
-else if (Meta.IsMultiple)
-{
-    <MetaValueFileMulti Meta="@Meta" />
-}
-else if (Row is not null)
-{
-    <FSelectMedia @bind-Value="ModelId"
-                  UploadFolder="@Meta.UploadFolder"
-                  DropZoneEnabled="@Meta.DropZoneEnabled"
-                  Accept="@(Meta.Type == MetaFieldType.Image ? "image/*" : "*")" />
+    <MetaValueFileMulti Binding="@Binding" />
 }
 else
 {
-    <div class="text-secondary fz12px">нет значения для поля @Binding.Field.Key</div>
+    <FSelectMedia @bind-Value="ModelId"
+                  UploadFolder="@Binding.Field.Options.GetUploadFolder()"
+                  DropZoneEnabled="@Binding.Field.Options.IsDropZoneEnabled()"
+                  Accept="@(Binding.Field.Type == FormFieldType.Image ? "image/*" : "*")" />
 }
 
 @code {
-    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
-
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
 
-    MetaFieldEditModel? Meta => MetaContext?.Fields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
-
-    /// <summary>Строка значения поля: значение формы у медиа — Guid, сам носитель — строка владельца</summary>
-    MetaValueEditModel? Row
-        => MetaContext?.Values.FirstOrDefault(value => value.MetaField.Key == Binding.Field.Key && value.Index == 0);
-
+    /// <summary>Значение поля — идентификатор файла; «не выбрано» пишется как null</summary>
     Guid ModelId
     {
-        get => Row?.ModelId ?? Guid.Empty;
-        set
-        {
-            if (Row is not null) Row.ModelId = value;
-        }
+        get => Binding.Value is Guid id ? id : Guid.Empty;
+        set => Binding.Value = value == Guid.Empty ? null : value;
     }
 }

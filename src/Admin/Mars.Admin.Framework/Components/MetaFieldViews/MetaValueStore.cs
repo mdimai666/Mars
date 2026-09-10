@@ -10,8 +10,8 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// Значения формы владельца в EAV-строках мета-значений (посты, пользователи, категории):
 /// наружу — канонические CLR-значения общего слоя (<see cref="FormValueCodec"/>) — строка, число,
 /// дата, ключ варианта, Guid связи; внутрь — те же строки, что уходят в API (порядок = индекс).
-/// Строки остаются носителем значения (<see cref="NativeValue"/>), поэтому доменные редакторы
-/// (связи, файлы, списки объектов) правят их напрямую.
+/// Строки остаются носителем значения, поэтому идентичность строк (Id при правке, индекс порядка)
+/// и снятие заглушек «не выбрано» — здесь же: редакторы полей про носитель не знают.
 /// </summary>
 public sealed class MetaValueStore(List<MetaValueEditModel> rows,
                                    IReadOnlyCollection<MetaFieldEditModel> fields) : IFormValueStore
@@ -21,10 +21,15 @@ public sealed class MetaValueStore(List<MetaValueEditModel> rows,
     public event Action? Changed;
 
     public object? GetValue(FormFieldDescriptor field)
-        => IsList(field) ? GetList(field) : Read(field, Row(field));
+    {
+        PurgeBlank(field);
+        return IsList(field) ? GetList(field) : Read(field, Row(field));
+    }
 
     public IReadOnlyList<object?> GetList(FormFieldDescriptor field)
     {
+        PurgeBlank(field);
+
         // множественный выбор хранится одним значением поля: список ключей вариантов в строке
         if (field.Type == FormFieldType.SelectMany)
             return Keys(field, Row(field)?.VariantsIds ?? []).Cast<object?>().ToList();
@@ -40,6 +45,13 @@ public sealed class MetaValueStore(List<MetaValueEditModel> rows,
             return;
         }
 
+        // не выбрано в необязательной связи — строки для такого значения нет
+        if (IsBlank(field, value))
+        {
+            if (RemoveRows(field) > 0) Changed?.Invoke();
+            return;
+        }
+
         Write(field, value, RowForWrite(field));
         Changed?.Invoke();
     }
@@ -47,6 +59,10 @@ public sealed class MetaValueStore(List<MetaValueEditModel> rows,
     public void SetList(FormFieldDescriptor field, IEnumerable<object?> values)
     {
         var items = values.ToList();
+
+        // пустые значения необязательной связи строками не храним
+        if (IsReference(field) && !field.Required)
+            items = items.Where(value => value is Guid id && id != Guid.Empty).ToList();
 
         if (field.Type == FormFieldType.SelectMany)
         {
@@ -64,9 +80,28 @@ public sealed class MetaValueStore(List<MetaValueEditModel> rows,
         Changed?.Invoke();
     }
 
-    public object? NativeValue(FormFieldDescriptor field) => rows;
-
     //=====================================
+
+    /// <summary>Поле ссылается на объект (связь, медиа): значение — идентификатор в колонке строки</summary>
+    static bool IsReference(FormFieldDescriptor field)
+        => field.Type is FormFieldType.Relation or FormFieldType.File or FormFieldType.Image;
+
+    /// <summary>Значение необязательной связи пустое — «не выбрано»</summary>
+    static bool IsBlank(FormFieldDescriptor field, object? value)
+        => IsReference(field) && !field.Required && (value is not Guid id || id == Guid.Empty);
+
+    /// <summary>Строки-заглушки необязательной связи («не выбрано») могли прийти с сервера — снимаем их</summary>
+    void PurgeBlank(FormFieldDescriptor field)
+    {
+        if (field.Required || !IsReference(field)) return;
+        RemoveRows(field, blankOnly: true);
+    }
+
+    /// <summary>Убрать строки поля из владельца; <paramref name="blankOnly"/> — только заглушки «не выбрано»</summary>
+    int RemoveRows(FormFieldDescriptor field, bool blankOnly = false)
+        => blankOnly
+            ? rows.RemoveAll(row => row.MetaField.Key == field.Key && row.ModelId == Guid.Empty)
+            : rows.RemoveAll(row => row.MetaField.Key == field.Key);
 
     object? Read(FormFieldDescriptor field, MetaValueEditModel? row) => field.Type switch
     {

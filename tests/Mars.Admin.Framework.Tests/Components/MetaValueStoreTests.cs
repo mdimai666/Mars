@@ -149,19 +149,59 @@ public class MetaValueStoreTests
     }
 
     [Fact]
-    public void NativeValue_ReturnsOwnerRows()
+    public void GetValue_BlankNullableRelationRow_IsNotAValue()
     {
-        var meta = Field("state", MetaFieldType.Relation);
+        var meta = Field("photo", MetaFieldType.Relation);
         var rows = new List<MetaValueEditModel> { Row(meta) };
         var store = new MetaValueStore(rows, [meta]);
 
-        store.NativeValue(Descriptor("state", FormFieldType.Relation)).Should().BeSameAs(rows);
+        store.GetValue(Descriptor("photo", FormFieldType.Relation)).Should().Be(Guid.Empty);
+        rows.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SetValue_ClearingNullableRelation_RemovesRow()
+    {
+        var meta = Field("photo", MetaFieldType.Relation);
+        var rows = new List<MetaValueEditModel> { Row(meta, r => r.ModelId = Guid.NewGuid()) };
+        var store = new MetaValueStore(rows, [meta]);
+
+        store.SetValue(Descriptor("photo", FormFieldType.Relation), null);
+
+        rows.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SetValue_RequiredRelation_KeepsEmptyRowForValidation()
+    {
+        var meta = Field("photo", MetaFieldType.Relation);
+        var rows = new List<MetaValueEditModel>();
+        var store = new MetaValueStore(rows, [meta]);
+
+        store.SetValue(Descriptor("photo", FormFieldType.Relation, required: true), null);
+
+        rows.Should().ContainSingle();
+        rows[0].ModelId.Should().Be(Guid.Empty);
+    }
+
+    [Fact]
+    public void SetList_BlankIdsOfNullableRelation_AreNotStored()
+    {
+        var meta = Field("photos", MetaFieldType.Relation, multiple: true);
+        var rows = new List<MetaValueEditModel>();
+        var store = new MetaValueStore(rows, [meta]);
+        var id = Guid.NewGuid();
+
+        store.SetList(Descriptor("photos", FormFieldType.Relation, multiple: true), [id, Guid.Empty, null]);
+
+        rows.Should().ContainSingle();
+        rows[0].ModelId.Should().Be(id);
     }
 
     //=====================================
 
-    static FormFieldDescriptor Descriptor(string key, FormFieldType type, bool multiple = false)
-        => new() { Key = key, Title = key, Type = type, Multiple = multiple };
+    static FormFieldDescriptor Descriptor(string key, FormFieldType type, bool multiple = false, bool required = false)
+        => new() { Key = key, Title = key, Type = type, Multiple = multiple, Required = required };
 
     static MetaFieldEditModel Field(string key, MetaFieldType type, bool multiple = false,
                                     params (Guid Id, string Key)[] variants)

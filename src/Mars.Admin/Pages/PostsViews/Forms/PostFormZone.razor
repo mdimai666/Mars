@@ -1,14 +1,12 @@
 @using Mars.Forms.Front
 
-@* Зона формы поста: каскадирует мета-контекст (значения + определения полей) и контекст формы
-   (модель, хуки записи, редактор контента), затем рендерит свою часть дерева. *@
+@* Зона формы поста: каскадирует контекст формы (модель, хуки записи, живые редакторы),
+   затем рендерит свою часть дерева. *@
 
-<CascadingValue Value="@Context.Meta">
-    <CascadingValue Value="@Context">
-        <FormRenderer Definition="@Context.Definition" Values="@Context.Values" Commits="@Context.Commits"
-                      LiveEditors="@Context.LiveEditors"
-                      Zone="@Zone" TitleResolver="@TitleResolver" />
-    </CascadingValue>
+<CascadingValue Value="@Context">
+    <FormRenderer Definition="@Context.Definition" Values="@Context.Values" Commits="@Context.Commits"
+                  LiveEditors="@Context.LiveEditors"
+                  Zone="@Zone" TitleResolver="@TitleResolver" />
 </CascadingValue>
 
 @code {

@@ -3,32 +3,25 @@
 @using Mars.Forms.Front
 
 @* Связь метаполя: список объектов (дочерние записи), несколько связей или одна —
-   выбирается по настройке поля (вид поля и кратность). *@
+   выбирается по параметрам поля (вид поля и кратность). Всё, что нужно, — в дескрипторе. *@
 
-@if (Meta is not null)
+@if (string.IsNullOrEmpty(Binding.Field.ModelName))
 {
-    @if (Meta.IsListKind)
-    {
-        <MetaValueChildrenList Meta="@Meta" />
-    }
-    else if (Meta.IsMultiple)
-    {
-        <MetaValueRelationMulti Meta="@Meta" />
-    }
-    else
-    {
-        <MetaValueRelationSingle Meta="@Meta" />
-    }
+    <div class="text-secondary fz12px">нет цели связи у поля @Binding.Field.Key</div>
+}
+else if (Binding.Field.Options.IsListKind())
+{
+    <MetaValueChildrenList Binding="@Binding" />
+}
+else if (Binding.Field.Multiple)
+{
+    <MetaValueRelationMulti Binding="@Binding" />
 }
 else
 {
-    <div class="text-secondary fz12px">нет определения поля @Binding.Field.Key</div>
+    <MetaValueRelationSingle Binding="@Binding" />
 }
 
 @code {
-    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
-
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
-
-    MetaFieldEditModel? Meta => MetaContext?.Fields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
 }

@@ -304,6 +304,37 @@ Mars.Forms.Abstractions
 рендер и сохранение) — зелёные. Позже в R8 добавились тесты локаторов
 (`FormEditorLocatorTests` — `Mars.Forms.Tests` 90/90, `FormFieldTypeSettingsLocatorTests`).
 
+## R9 — метаполя полностью в FormEngine — выполнено 2026-09-11
+
+Последним «вторым миром» был каскад `MetaValueContext`: редакторы связи и медиа брали из него
+определения полей (`MetaFieldEditModel`) и правили EAV-строки (`MetaValueEditModel`) в обход
+привязки. Теперь редактор значения один для всех полей: настройки — из дескриптора, значения —
+через `FormFieldBinding`, про строки и определения не знает никто, кроме стора.
+
+- Удалён `MetaValueContext` вместе с каскадами в `PostFormZone` и `MetaValuesForm` и свойством
+  `PostFormContext.Meta`.
+- Настройки полей связи/медиа читаются из дескриптора: `ModelName`, `Multiple`, `Type`
+  (Image/File) и `Options.kind|removeMode|uploadFolder|dropZone|viewMode`;
+  `MetaValueListHelper.ResolveRemoveMode` принимает `FormFieldDescriptor`.
+- Значения — через привязку: `Binding.Value` (одиночная связь/файл) и
+  `Binding.Values.SetList` (список идентификаторов, порядок = порядок значений). Компоненты
+  `MetaValueRelationSingle`/`RelationMulti`/`FileMulti`/`ChildrenList` больше не создают и не
+  правят строки `MetaValueEditModel`, а `MetaValueFileEditor` рисует пикер и без готовой строки.
+- Заглушки «не выбрано» у необязательных связей — забота стора: `MetaValueStore` не пишет пустое
+  значение (`SetValue`/`SetList` для nullable relation/file/image) и снимает уже существующие
+  строки при чтении, поэтому отдельного шага «purge» в редакторах нет.
+- `IFormValueStore.NativeValue` (шов под прямой доступ к строкам) удалён — после перевода
+  редакторов на привязку у него не осталось потребителей: убран из интерфейса и всех трёх
+  реализаций (`PostFormValueStore`, `MetaValueStore`, `FormValuesModel`).
+- `MetaValuesForm` стал тонкой обёрткой над `FormRenderer` (дерево + стор + хуки записи).
+
+Проверка: сборка `Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 90/90; `Mars.Admin.Framework.Tests`
+37/37 (четыре новых теста стора: заглушка nullable-связи — не значение, очистка убирает строку,
+обязательная связь строку сохраняет ради валидации, пустые элементы списка не хранятся);
+`Mars.Server.Tests` 473/473. E2E: `CreatePostTests`, `EditPostMetaFieldsTests`, `EditUserPageTests`,
+`EditPostSystemFieldEditorTests` и новый `EditPostRelationFieldTests` (поле-связь: рендер
+редактора из дескриптора, выбор цели пикером, запись `ModelId` в EAV) — зелёные.
+
 ## E2E-проверка формы (рецепт)
 
 Сьют `Mars.E2E.Tests` выключен по умолчанию: тесты помечены `[E2EFact]`, включение — переменная
@@ -315,6 +346,11 @@ Mars.Forms.Abstractions
    fingerprint имён ассетов, устаревший манифест указывал бы на прежний `.wasm`).
 3. `tests\Mars.E2E.Tests\bin\Debug\net10.0\Mars.E2E.Tests.exe -filter "/Mars.E2E.Tests/Mars.E2E.Tests.Tests/CreatePostTests/*"`
    (нужны Docker и системный Edge; окно браузера открывается видимым — так устроен сьют).
+
+Набор формы (прогонять каждый фильтром отдельно): `CreatePostTests` (title, slug, контент, теги),
+`EditPostMetaFieldsTests` (метаполя-примитивы в EAV), `EditPostRelationFieldTests` (поле-связь:
+пикер и `ModelId`), `EditPostSystemFieldEditorTests` (редактор системного слота), `EditUserPageTests`
+(форма пользователя с метаполями).
 
 На прогоне 2026-09-10 зелёные `CreatePostTests` и `EditUserPageTests`. Он же нашёл два дефекта
 рефакторинга, которых не видит юнит-слой: `PostContentEditor` остался на удалённом каскаде

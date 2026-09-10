@@ -20,9 +20,6 @@ public sealed class FormValuesModel(FormValues values) : IFormValueStore
 
     public JsonNode? Node(string key) => Values.Value(key);
 
-    /// <summary>У мешка нет носителя значения: редакторы работают с CLR-значением</summary>
-    public object? NativeValue(FormFieldDescriptor field) => null;
-
     public object? GetValue(FormFieldDescriptor field)
     {
         if (IsList(field)) return GetList(field);

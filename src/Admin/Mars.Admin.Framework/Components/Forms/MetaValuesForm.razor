@@ -3,12 +3,10 @@
 @using Mars.Forms.Front
 
 @* Форма значений метаполей владельца (пользователь, категория поста): отдаёт рендереру
-   общего слоя дерево провайдера и один мета-контекст (значения + определения полей).
-   Значения живут в EAV-строках владельца, стор отдаёт их каноническими значениями формы. *@
+   общего слоя дерево провайдера. Значения живут в EAV-строках владельца, стор отдаёт их
+   каноническими значениями формы. *@
 
 <div class="MetaValuesForm">
-    <CascadingValue Value="@Context">
-        <FormRenderer Definition="Definition" Values="Store" Zone="@SystemFieldsCatalog.Zones.Main"
-                      Client="Client" Commits="Commits" LiveEditors="LiveEditors" />
-    </CascadingValue>
+    <FormRenderer Definition="Definition" Values="Store" Zone="@SystemFieldsCatalog.Zones.Main"
+                  Client="Client" Commits="Commits" LiveEditors="LiveEditors" />
 </div>

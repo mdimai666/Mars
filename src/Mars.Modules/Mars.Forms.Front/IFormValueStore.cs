@@ -24,11 +24,4 @@ public interface IFormValueStore
     void SetValue(FormFieldDescriptor field, object? value);
 
     void SetList(FormFieldDescriptor field, IEnumerable<object?> values);
-
-    /// <summary>
-    /// Нативный носитель значения в хранилище источника (например строки мета-значений с их Id
-    /// и признаком удаления) — для доменных редакторов, которым мало CLR-значения.
-    /// null, когда у хранилища нет носителя (JSON-мешок).
-    /// </summary>
-    object? NativeValue(FormFieldDescriptor field);
 }

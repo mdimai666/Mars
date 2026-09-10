@@ -134,9 +134,6 @@ public sealed class PostFormValueStore : IFormValueStore
         Changed?.Invoke();
     }
 
-    /// <summary>Носитель значения — строки метазначений владельца: доменные редакторы правят их напрямую</summary>
-    public object? NativeValue(FormFieldDescriptor field) => IsMeta(field) ? _meta.NativeValue(field) : null;
-
     string AuthorName()
     {
         var author = _post.Author;

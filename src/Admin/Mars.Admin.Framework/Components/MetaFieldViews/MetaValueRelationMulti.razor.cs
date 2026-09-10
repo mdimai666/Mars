@@ -2,6 +2,7 @@ using Flurl.Http;
 using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Extensions;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -11,6 +12,7 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// <summary>
 /// Мульти-значения Relation-поля: строки выбранных постов с порядком (драг),
 /// добавление через пикер с мультивыбором, удаление по режиму поля.
+/// Значения — список идентификаторов из привязки поля (порядок списка = порядок значений).
 /// </summary>
 public partial class MetaValueRelationMulti
 {
@@ -18,39 +20,28 @@ public partial class MetaValueRelationMulti
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
-    [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
 
-    List<MetaValueEditModel> MetaValues => MetaContext.Values;
+    /// <summary>Цель пикера (ключ реестра моделей связей) из дескриптора поля</summary>
+    string ModelName => Binding.Field.ModelName ?? "";
 
-    List<MetaValueEditModel> _rows = [];
+    List<Guid> _rows = [];
     readonly string _sortableId = "relation-multi-" + Guid.NewGuid().ToString("N");
     IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse> _titles = new Dictionary<Guid, MetaValueRelationModelSummaryResponse>();
     Guid[] _loadedIds = [];
 
-    List<MetaValueEditModel> FieldRows()
-        => MetaValues.Where(v => v.MetaField.Key == Meta.Key)
-                     .Where(v => v.ModelId != Guid.Empty)
-                     .OrderBy(v => v.Index)
-                     .ToList();
+    List<Guid> SelectedIds()
+        => Binding.List.OfType<Guid>().Where(id => id != Guid.Empty).ToList();
 
     protected override void OnParametersSet()
     {
-        PurgeBlankRows();
-        _rows = FieldRows();
+        _rows = SelectedIds();
         _ = LoadTitlesAsync();
-    }
-
-    /// <summary>Пустая строка необязательного поля (не выбрано) не сохраняется — вместо неё ничего</summary>
-    void PurgeBlankRows()
-    {
-        if (Meta.IsNullable)
-            MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key && v.ModelId == Guid.Empty);
     }
 
     async Task LoadTitlesAsync()
     {
-        var ids = _rows.Where(r => r.ModelId != Guid.Empty).Select(r => r.ModelId).Distinct().ToArray();
+        var ids = _rows.Distinct().ToArray();
         if (ids.SequenceEqual(_loadedIds)) return;
         _loadedIds = ids;
 
@@ -62,7 +53,7 @@ public partial class MetaValueRelationMulti
 
         try
         {
-            _titles = await client.PostType.GetMetaValueRelationModels(Meta.ModelName, ids);
+            _titles = await client.PostType.GetMetaValueRelationModels(ModelName, ids);
             StateHasChanged();
         }
         catch (FlurlHttpException ex)
@@ -71,22 +62,22 @@ public partial class MetaValueRelationMulti
         }
     }
 
-    string TitleOf(MetaValueEditModel row)
-        => row.ModelId == Guid.Empty
+    string TitleOf(Guid id)
+        => id == Guid.Empty
             ? "—"
-            : _titles.TryGetValue(row.ModelId, out var title) ? title.Title : "…";
+            : _titles.TryGetValue(id, out var title) ? title.Title : "…";
 
-    string? DescriptionOf(MetaValueEditModel row)
-        => _titles.TryGetValue(row.ModelId, out var title) ? title.Description : null;
+    string? DescriptionOf(Guid id)
+        => _titles.TryGetValue(id, out var title) ? title.Description : null;
 
-    string? ImageUrlOf(MetaValueEditModel row)
-        => _titles.TryGetValue(row.ModelId, out var summary) ? summary.ImageUrl : null;
+    string? ImageUrlOf(Guid id)
+        => _titles.TryGetValue(id, out var summary) ? summary.ImageUrl : null;
 
     async Task AddAsync()
     {
         DialogParameters parameters = new()
         {
-            Title = Meta.ModelName,
+            Title = ModelName,
             SecondaryAction = null,
             Width = "500px",
             Modal = true,
@@ -95,10 +86,10 @@ public partial class MetaValueRelationMulti
 
         var data = new MetaValueRelationSelectDialogData
         {
-            ModelName = Meta.ModelName,
+            ModelName = ModelName,
             ValueId = Guid.Empty,
             MultiSelect = true,
-            SelectedIds = _rows.Select(r => r.ModelId).ToArray(),
+            SelectedIds = _rows.ToArray(),
         };
 
         IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
@@ -108,24 +99,17 @@ public partial class MetaValueRelationMulti
 
         foreach (var id in ids)
         {
-            if (_rows.Any(r => r.ModelId == id)) continue;
-            _rows.Add(new MetaValueEditModel
-            {
-                Id = Guid.NewGuid(),
-                MetaField = Meta,
-                ModelId = id,
-            });
+            if (_rows.Contains(id)) continue;
+            _rows.Add(id);
         }
 
-        SyncRows();
+        SyncValues();
         await LoadTitlesAsync();
     }
 
-    async Task RemoveAsync(MetaValueEditModel row)
+    async Task RemoveAsync(Guid id)
     {
-        var mode = MetaValueListHelper.ResolveRemoveMode(Meta);
-
-        if (mode == MetaFieldKindCatalog.RemoveModes.DeleteConfirm)
+        if (MetaValueListHelper.ResolveRemoveMode(Binding.Field) == MetaFieldKindCatalog.RemoveModes.DeleteConfirm)
         {
             var ok = await _dialogService.MarsDeleteConfirmation(
                 "Удалить объект из системы вместе со всеми его данными?");
@@ -133,7 +117,7 @@ public partial class MetaValueRelationMulti
 
             try
             {
-                await client.Post.Delete(row.ModelId);
+                await client.Post.Delete(id);
             }
             catch (FlurlHttpException ex)
             {
@@ -142,8 +126,8 @@ public partial class MetaValueRelationMulti
             }
         }
 
-        _rows.Remove(row);
-        SyncRows();
+        _rows.Remove(id);
+        SyncValues();
     }
 
     void OnSort(FluentSortableListEventArgs args)
@@ -153,15 +137,9 @@ public partial class MetaValueRelationMulti
         var item = _rows[args.OldIndex];
         _rows.RemoveAt(args.OldIndex);
         _rows.Insert(args.NewIndex, item);
-        SyncRows();
+        SyncValues();
     }
 
-    /// <summary>Переиндексация строк и запись обратно в значения формы поста</summary>
-    void SyncRows()
-    {
-        for (var i = 0; i < _rows.Count; i++) _rows[i].Index = i;
-
-        MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key);
-        MetaValues.AddRange(_rows);
-    }
+    /// <summary>Записать порядок значений в привязку поля</summary>
+    void SyncValues() => Binding.Values.SetList(Binding.Field, _rows.Cast<object?>().ToList());
 }

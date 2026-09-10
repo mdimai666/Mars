@@ -6,38 +6,33 @@ using Microsoft.AspNetCore.Components;
 namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
-/// Хост формы значений метаполей владельца: держит реестр тяжёлых редакторов (WYSIWYG, код,
-/// блочный редактор пишут значение по <see cref="PullAsync"/> перед сохранением, а не на ввод)
-/// и отдаёт рендереру общего слоя дерево провайдера вместе с каскадами EAV-строк.
+/// Хост формы значений метаполей владельца без типизированной модели: отдаёт рендереру общего слоя
+/// дерево провайдера и один мета-контекст. Редакторы с отложенной записью (WYSIWYG, код, блочный)
+/// регистрируются в <see cref="Commits"/>, страница забирает их значения перед сохранением.
 /// </summary>
-public partial class MetaValuesForm : IHeavyMetaValueEditors
+public partial class MetaValuesForm
 {
     [Parameter, EditorRequired] public FormDefinition Definition { get; set; } = default!;
 
-    /// <summary>Значения владельца (EAV-строки) — редакторы метаполей берут их из каскада</summary>
+    /// <summary>Значения владельца (EAV-строки) — они же значения формы</summary>
     [Parameter, EditorRequired] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
 
-    /// <summary>Определения полей владельца — доменные редакторы берут настройку поля из каскада</summary>
+    /// <summary>Определения полей владельца — доменные редакторы берут настройку поля отсюда</summary>
     [Parameter, EditorRequired] public List<MetaFieldEditModel> MetaFields { get; set; } = default!;
 
     /// <summary>true — рендер для конечного пользователя (скрытые поля не показываются)</summary>
     [Parameter] public bool Client { get; set; }
 
-    readonly HeavyMetaValueEditorRegistry _editors = new();
+    /// <summary>Хуки отложенной записи — одни на все зоны формы</summary>
+    public FormCommitHooks Commits { get; } = new();
 
-    FormValuesModel? _store;
+    MetaValueContext? _context;
+    MetaValueListStore? _store;
 
-    /// <summary>Мешок формы пустой: значения метаполей живут в строках владельца</summary>
-    IFormValueStore Store
-        => _store ??= new FormValuesModel(new FormValues { OwnerModel = Definition?.OwnerModel ?? "" });
+    MetaValueContext Context => _context ??= new MetaValueContext { Values = MetaValues, Fields = MetaFields };
 
-    /// <summary>Реестр тяжёлых редакторов — уходит каскадом в редакторы значений</summary>
-    public IHeavyMetaValueEditors Editors => _editors;
+    IFormValueStore Store => _store ??= new MetaValueListStore(MetaValues);
 
-    public void RegisterHeavyEditor(IHeavyMetaValueEditor editor) => _editors.RegisterHeavyEditor(editor);
-
-    public void UnregisterHeavyEditor(IHeavyMetaValueEditor editor) => _editors.UnregisterHeavyEditor(editor);
-
-    /// <summary>Забрать значения из всех тяжёлых редакторов в модель — вызывать перед сохранением формы</summary>
-    public Task PullAsync() => _editors.PullAsync();
+    /// <summary>Забрать значения всех тяжёлых редакторов в модель — вызывать перед сохранением формы</summary>
+    public Task CommitAllAsync() => Commits.CommitAllAsync();
 }

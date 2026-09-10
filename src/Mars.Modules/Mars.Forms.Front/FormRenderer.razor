@@ -1,6 +1,6 @@
 @namespace Mars.Forms.Front
 
-@* Точка входа рендера: одна зона = один экземпляр (зоны объявляет провайдер в манифесте) *@
+@* Точка входа рендера: одна зона = один экземпляр (зоны объявляет провайдер) *@
 <CascadingValue Value="@_context">
     <FormItems Items="@RootItems" />
 </CascadingValue>
@@ -10,7 +10,7 @@
 
     [Parameter] public IFormValueStore Values { get; set; } = default!;
 
-    /// <summary>Ключ зоны из манифеста провайдера (пусто — единственная зона)</summary>
+    /// <summary>Ключ зоны из определения провайдера (пусто — единственная зона)</summary>
     [Parameter] public string Zone { get; set; } = "";
 
     [Parameter] public bool Client { get; set; }
@@ -20,6 +20,9 @@
 
     /// <summary>Свой рендер листа-поля (иначе встроенный <see cref="FormFieldRow"/>)</summary>
     [Parameter] public RenderFragment<FormItem>? FieldTemplate { get; set; }
+
+    /// <summary>Общие хуки отложенной записи на форму (одни на все зоны страницы)</summary>
+    [Parameter] public FormCommitHooks? Commits { get; set; }
 
     FormRenderContext _context = default!;
 
@@ -31,6 +34,7 @@
             Client = Client,
             TitleResolver = TitleResolver,
             FieldTemplate = FieldTemplate,
+            Commits = Commits ?? new FormCommitHooks(),
         };
 
     IReadOnlyCollection<FormItem> RootItems

@@ -103,18 +103,26 @@ Mars.Forms.Abstractions
 Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 82/82;
 `Mars.Server.Tests` 476/476.
 
-### R2 — значения в модели
+### R2 — значения в модели — выполнено 2026-09-10
 
-- `PostFormValueStore : IFormValueStore` поверх `PostEditModel` (системные слоты —
-  типизированные свойства, метаполя — строки `MetaValues`).
-- `PostFormZone` теряет все пять `CascadingValue` и сводится к `<FormRenderer/>`.
-- Контент регистрируется обычным ключом редактора, `PostContentEditorHolder` удаляется.
-- Вместо `IHeavyMetaValueEditors` с pull-протоколом — один `CommitAsync` у биндинга,
-  который собирает рендерер.
-- `FormValues`/`FormValueCodec` остаются серверным правилам и будущим динамическим формам.
+- Форма поста больше не держит параллельный мешок значений: `PostFormValueStore` читает и пишет
+  свойства `PostEditModel` напрямую (системные слоты — типизированные свойства, метаполя —
+  строки `MetaValues`). Удалены `PostEditModel.BuildFormValues`/`FillFormValues`/`ApplyFormValues`
+  и неиспользуемый `MetaValuesByIndex`.
+- Каскадов в зоне формы поста: пять → два. Один типизированный `PostFormContext` (модель,
+  значения, хуки записи, holder контента) и один `MetaValueContext` (значения + определения полей) —
+  последний общий с формами пользователей и категорий.
+- Реестр тяжёлых редакторов (`IHeavyMetaValueEditors` + `HeavyMetaValueEditorRegistry`) удалён:
+  редакторы с отложенной записью регистрируют `CommitAsync` в `FormCommitHooks` рендерера
+  (`FormRenderContext.Commits`), а страница забирает значения одним `CommitAllAsync()` перед
+  сохранением. `MetaValuesForm.PullAsync` переименован в `CommitAllAsync`.
+- Мета-редакторы (relation, file, children, примитивы) больше не читают значения и определения
+  из каскадов: строки идут из стора (`Binding.Value`, `NativeValue`), определения — из
+  `MetaValueContext`. Доменные редакторы (теги, категории, автор, контент) берут модель
+  из `PostFormContext`.
 
-Проверка: `Mars.Server.Tests` (Forms), E2E `CreatePostTests` (здесь ловился цикл тегов),
-`HandlebarsAppFrontTests` (регрессия рендера фронта).
+Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 82/82; `Mars.Server.Tests` 476/476.
+Автотестами не покрыт рендер формы поста (UI) — проверяется визуально в запущенном приложении.
 
 ### R3 — плоский конфиг и рендерер
 

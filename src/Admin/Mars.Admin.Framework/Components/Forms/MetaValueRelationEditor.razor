@@ -26,9 +26,9 @@ else
 }
 
 @code {
-    [CascadingParameter] public List<MetaFieldEditModel> MetaFields { get; set; } = default!;
+    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
 
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
 
-    MetaFieldEditModel? Meta => MetaFields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
+    MetaFieldEditModel? Meta => MetaContext?.Fields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
 }

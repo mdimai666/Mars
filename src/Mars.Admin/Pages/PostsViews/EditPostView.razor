@@ -34,17 +34,15 @@
     <ChildContent>
         @if (context.Form is not null)
         {
-            <PostFormZone Post="@context" Definition="@context.Form" Values="@FormValuesOf(context)"
-                          Zone="@SystemFieldsCatalog.Zones.Main" HeavyEditors="@_heavyEditors"
-                          ContentHolder="@_contentHolder" TitleResolver="@ResolveTitle" />
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Main"
+                          TitleResolver="@ResolveTitle" />
         }
     </ChildContent>
     <SectionSidePublish>
         @if (context.Form is not null)
         {
-            <PostFormZone Post="@context" Definition="@context.Form" Values="@FormValuesOf(context)"
-                          Zone="@SystemFieldsCatalog.Zones.Publish" HeavyEditors="@_heavyEditors"
-                          ContentHolder="@_contentHolder" TitleResolver="@ResolveTitle" />
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Publish"
+                          TitleResolver="@ResolveTitle" />
         }
         <div class="mt-3">
             <FormItem2 For="@(() => context.PostType.EnabledFeatures)">
@@ -60,9 +58,8 @@
     <SectionExtraSidebar>
         @if (context.Form is not null)
         {
-            <PostFormZone Post="@context" Definition="@context.Form" Values="@FormValuesOf(context)"
-                          Zone="@SystemFieldsCatalog.Zones.Extra" HeavyEditors="@_heavyEditors"
-                          ContentHolder="@_contentHolder" TitleResolver="@ResolveTitle" />
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Extra"
+                          TitleResolver="@ResolveTitle" />
         }
 
         <div class="card">

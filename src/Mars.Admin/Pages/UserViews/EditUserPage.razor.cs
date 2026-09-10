@@ -21,7 +21,7 @@ public partial class EditUserPage
     bool isCreateNew => ID == Guid.Empty;
 
     Task OnBeforeSave(UserEditModel model)
-        => metaValueForm is null ? Task.CompletedTask : metaValueForm.PullAsync();
+        => metaValueForm is null ? Task.CompletedTask : metaValueForm.CommitAllAsync();
 
     void AfterSave(UserEditModel model)
     {

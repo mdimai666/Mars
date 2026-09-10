@@ -27,16 +27,18 @@ else
 }
 
 @code {
-    [CascadingParameter] public List<MetaFieldEditModel> MetaFields { get; set; } = default!;
-
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
 
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
 
-    MetaFieldEditModel? Meta => MetaFields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
+    MetaFieldEditModel? Meta => MetaContext?.Fields?.FirstOrDefault(meta => meta.Key == Binding.Field.Key);
 
-    MetaValueEditModel? Row
-        => MetaValues?.FirstOrDefault(value => value.MetaField.Key == Binding.Field.Key && value.Index == 0);
+    MetaValueEditModel? Row => Binding.Value as MetaValueEditModel ?? FirstRow;
+
+    /// <summary>У множественного поля значение — список строк, для одиночного выбора берём первую</summary>
+    MetaValueEditModel? FirstRow
+        => (Binding.Values.NativeValue(Binding.Field) as List<MetaValueEditModel>)
+            ?.FirstOrDefault(v => v.MetaField.Key == Binding.Field.Key && v.Index == 0);
 
     Guid ModelId
     {

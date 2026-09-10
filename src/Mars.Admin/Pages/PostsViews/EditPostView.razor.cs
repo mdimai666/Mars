@@ -39,43 +39,32 @@ public partial class EditPostView : IAiChatPageHandler
     //==========================================
     // Форма: дерево контейнеров (Mars.Forms)
 
-    /// <summary>Реестр тяжёлых редакторов мета-значений — один на все зоны формы</summary>
-    readonly IHeavyMetaValueEditors _heavyEditors = new HeavyMetaValueEditorRegistry();
+    /// <summary>Хуки отложенной записи (WYSIWYG, код, блочный редактор) — одни на все зоны формы</summary>
+    readonly FormCommitHooks _commits = new();
 
     /// <summary>Доступ к редактору контента, который рендерится внутри дерева</summary>
     readonly PostContentEditorHolder _contentHolder = new();
 
-    FormValuesModel? _formValues;
-    PostEditModel? _formValuesOwner;
+    PostFormContext? _formContext;
+    PostEditModel? _formContextOwner;
 
     /// <summary>
-    /// Мешок значений системных слотов: пересоздаётся вместе с моделью, каждое изменение сразу
-    /// уходит в типизированную модель и возвращается обратно (авто-подстановка slug, внешние правки).
+    /// Контекст формы: значения читаются и пишутся напрямую в модель, поэтому «применять» их
+    /// перед сохранением не нужно — только забрать значение у редакторов с отложенной записью.
     /// </summary>
-    FormValuesModel FormValuesOf(PostEditModel model)
+    PostFormContext FormContextOf(PostEditModel model)
     {
-        if (_formValues is not null && ReferenceEquals(_formValuesOwner, model)) return _formValues;
+        if (_formContext is not null && ReferenceEquals(_formContextOwner, model)) return _formContext;
 
-        var values = new FormValuesModel(model.BuildFormValues(model.Form?.OwnerModel ?? $"post.{model.Type}"));
-        values.Changed += () =>
-        {
-            model.ApplyFormValues(values.Values);
-            model.FillFormValues(values.Values);
-            StateHasChanged();
-        };
-
-        _formValues = values;
-        _formValuesOwner = model;
         _contentHolder.RequestSave = () => f.OnSubmit();
 
-        return values;
-    }
+        var values = new PostFormValueStore(model);
+        values.Changed += StateHasChanged;
 
-    /// <summary>Обновить мешок после внешнего изменения модели (инструменты ИИ-агента)</summary>
-    void RefreshFormValues(PostEditModel model)
-    {
-        if (_formValues is not null && ReferenceEquals(_formValuesOwner, model))
-            model.FillFormValues(_formValues.Values);
+        _formContext = new PostFormContext(model, values, _contentHolder, _commits);
+        _formContextOwner = model;
+
+        return _formContext;
     }
 
     /// <summary>Заголовки системных слотов — ключи ресурса <see cref="AppRes"/></summary>
@@ -121,7 +110,7 @@ public partial class EditPostView : IAiChatPageHandler
 
     async Task BeforeSave(PostEditModel post)
     {
-        await _heavyEditors.PullAsync();
+        await _commits.CommitAllAsync();
 
         if (_contentHolder.Current is { } content)
             post.Content = await content.GetContentAsync();
@@ -172,7 +161,7 @@ public partial class EditPostView : IAiChatPageHandler
 
     public async Task<string> GetFields()
     {
-        await _heavyEditors.PullAsync();
+        await _commits.CommitAllAsync();
 
         var model = f?.Model ?? throw new InvalidOperationException("Модель поста ещё не загружена.");
         var content = _contentHolder.Current is { } editor ? await editor.GetContentAsync() : model.Content;
@@ -229,7 +218,6 @@ public partial class EditPostView : IAiChatPageHandler
         }
 
         model.AutoFillSlug();
-        RefreshFormValues(model);
         StateHasChanged();
         return $"Поле '{field}' изменено в форме (не сохранено).";
     }

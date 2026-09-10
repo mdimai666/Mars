@@ -1,6 +1,7 @@
 @* Редактор значения «Код (Monaco)». Тяжёлый: значение забирается в модель
    при сохранении формы (IHeavyMetaValueEditor); Ctrl+S — промежуточный коммит. *@
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
 @implements IHeavyMetaValueEditor
 
 <div class="vstack">
@@ -16,7 +17,7 @@
     [Parameter] public MetaValueEditModel Value { get; set; } = default!;
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    [CascadingParameter] IHeavyMetaValueEditors heavyEditors { get; set; } = default!;
+    [CascadingParameter] FormRenderContext Context { get; set; } = default!;
 
     MarsCodeEditor2.CodeEditor2? _editor;
 
@@ -26,7 +27,7 @@
         ? MetaFieldEditorCatalog.DefaultCodeLang
         : Value.MetaField.CodeLang;
 
-    protected override void OnInitialized() => heavyEditors?.RegisterHeavyEditor(this);
+    protected override void OnInitialized() => Context?.Commits.Register(CommitAsync);
 
     public async Task<string?> GetValueAsync()
         => _editor is null ? TextValue : await _editor.GetValue();
@@ -50,5 +51,5 @@
         await ValueChanged.InvokeAsync(Value);
     }
 
-    public void Dispose() => heavyEditors?.UnregisterHeavyEditor(this);
+    public void Dispose() => Context?.Commits.Unregister(CommitAsync);
 }

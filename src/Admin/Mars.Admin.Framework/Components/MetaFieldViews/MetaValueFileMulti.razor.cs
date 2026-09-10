@@ -1,3 +1,4 @@
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Media.Contracts.Files;
@@ -16,7 +17,9 @@ public partial class MetaValueFileMulti
     [Inject] IAppMediaService _mediaService { get; set; } = default!;
 
     [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
+
+    List<MetaValueEditModel> MetaValues => MetaContext.Values;
 
     List<MetaValueEditModel> _rows = [];
     readonly string _sortableId = "file-multi-" + Guid.NewGuid().ToString("N");

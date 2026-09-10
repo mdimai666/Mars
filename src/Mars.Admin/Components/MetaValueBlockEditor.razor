@@ -5,6 +5,7 @@
    тяжёлых редакторов — для единообразия и ИИ-моста. *@
 @using Mars.Admin.Framework.Components.MetaFieldViews
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
 @using EditorJsBlazored
 @using EditorJsBlazored.Blocks
 @using EditorJsBlazored.Core
@@ -23,7 +24,7 @@
     [Parameter] public MetaValueEditModel Value { get; set; } = default!;
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    [CascadingParameter] IHeavyMetaValueEditors heavyEditors { get; set; } = default!;
+    [CascadingParameter] FormRenderContext Context { get; set; } = default!;
 
     [Inject] IAppMediaService mediaService { get; set; } = default!;
 
@@ -31,7 +32,7 @@
 
     string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
 
-    protected override void OnInitialized() => heavyEditors?.RegisterHeavyEditor(this);
+    protected override void OnInitialized() => Context?.Commits.Register(CommitAsync);
 
     async Task OnContentJsonChanged(string json)
     {
@@ -66,5 +67,5 @@
         };
     }
 
-    public void Dispose() => heavyEditors?.UnregisterHeavyEditor(this);
+    public void Dispose() => Context?.Commits.Unregister(CommitAsync);
 }

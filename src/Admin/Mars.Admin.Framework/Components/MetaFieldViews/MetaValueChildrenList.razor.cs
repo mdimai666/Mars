@@ -1,4 +1,5 @@
 using Flurl.Http;
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Services;
 using Mars.Cms.Contracts.MetaFields;
@@ -25,7 +26,9 @@ public partial class MetaValueChildrenList
     [Inject] IServiceProvider _services { get; set; } = default!;
 
     [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [CascadingParameter] public MetaValueContext MetaContext { get; set; } = default!;
+
+    List<MetaValueEditModel> MetaValues => MetaContext.Values;
 
     IChildPostEditor? _editor;
     bool _busy;

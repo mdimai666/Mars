@@ -23,7 +23,7 @@ public partial class EditPostCategoryView
 
     async Task OnBeforeSave(PostCategoryEditModel model)
     {
-        if (metaValueForm is not null) await metaValueForm.PullAsync();
+        if (metaValueForm is not null) await metaValueForm.CommitAllAsync();
         await BeforeSave.InvokeAsync(model);
     }
 

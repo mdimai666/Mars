@@ -1,4 +1,4 @@
-@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Admin.Pages.PostsViews.Forms
 @using Mars.Cms.Contracts.MetaFields
 @using Mars.Forms.Contracts
 @using Mars.Forms.Front
@@ -10,7 +10,7 @@
 
 @if (IsContent)
 {
-    <PostContentEditor Holder="@Holder" />
+    <PostContentEditor Holder="@Context.ContentHolder" />
 }
 else
 {
@@ -18,7 +18,7 @@ else
 }
 
 @code {
-    [CascadingParameter] public PostContentEditorHolder Holder { get; set; } = default!;
+    [CascadingParameter] public PostFormContext Context { get; set; } = default!;
 
     [Parameter, EditorRequired] public FormItem Item { get; set; } = default!;
 

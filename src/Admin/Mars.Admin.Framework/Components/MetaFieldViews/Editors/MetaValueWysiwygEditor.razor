@@ -1,6 +1,7 @@
 @* Редактор значения «WYSIWYG (Quill)». Тяжёлый: значение забирается в модель
    при сохранении формы (IHeavyMetaValueEditor), а не пушится при вводе. *@
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
 @implements IHeavyMetaValueEditor
 
 <div class="vstack">
@@ -12,13 +13,13 @@
     [Parameter] public MetaValueEditModel Value { get; set; } = default!;
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    [CascadingParameter] IHeavyMetaValueEditors heavyEditors { get; set; } = default!;
+    [CascadingParameter] FormRenderContext Context { get; set; } = default!;
 
     WysiwygEditor? _editor;
 
     string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
 
-    protected override void OnInitialized() => heavyEditors?.RegisterHeavyEditor(this);
+    protected override void OnInitialized() => Context?.Commits.Register(CommitAsync);
 
     public async Task<string?> GetValueAsync()
         => _editor is null ? TextValue : await _editor.GetHTML();
@@ -37,5 +38,5 @@
         await ValueChanged.InvokeAsync(Value);
     }
 
-    public void Dispose() => heavyEditors?.UnregisterHeavyEditor(this);
+    public void Dispose() => Context?.Commits.Unregister(CommitAsync);
 }

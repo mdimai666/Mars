@@ -1,4 +1,5 @@
 @using Mars.Admin.Pages.PostCategoryViews
+@using Mars.Admin.Pages.PostsViews
 @using Mars.Contracts.Resources
 @using Mars.Forms.Front
 
@@ -10,10 +11,12 @@
 </div>
 
 @code {
-    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+    [CascadingParameter] public PostFormContext Context { get; set; } = default!;
 
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
     [Parameter] public int Index { get; set; } = -1;
+
+    PostEditModel Post => Context.Post;
 
     Guid[] Ids => Binding.Value is IReadOnlyList<object?> list ? list.OfType<Guid>().ToArray() : [];
 

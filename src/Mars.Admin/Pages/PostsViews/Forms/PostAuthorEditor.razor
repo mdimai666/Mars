@@ -1,16 +1,24 @@
+@using Mars.Admin.Pages.PostsViews.Forms
 @using Mars.Forms.Front
 
-@* Автор поста: только чтение — пикера пользователя пока нет (см. план, риски фазы 1) *@
+@* Автор поста: только чтение — пикера пользователя пока нет *@
 
 <div class="text-secondary">@(Author)</div>
 
 @code {
-    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+    [CascadingParameter] public PostFormContext Context { get; set; } = default!;
 
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;
     [Parameter] public int Index { get; set; } = -1;
 
-    string Author => string.IsNullOrWhiteSpace(Post.Author?.DisplayName)
-        ? Post.Author?.UserName ?? "—"
-        : Post.Author!.DisplayName!;
+    string Author
+    {
+        get
+        {
+            var author = Context.Post.Author;
+            return string.IsNullOrWhiteSpace(author?.DisplayName)
+                ? author?.UserName ?? "—"
+                : author!.DisplayName!;
+        }
+    }
 }

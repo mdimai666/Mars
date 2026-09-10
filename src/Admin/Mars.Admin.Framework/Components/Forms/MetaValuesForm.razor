@@ -2,17 +2,13 @@
 @using Mars.Forms.Contracts
 @using Mars.Forms.Front
 
-@* Форма значений метаполей владельца (пользователь, категория поста): раздаёт каскады
-   зарегистрированным редакторам значений и рендерит дерево общего слоя Mars.Forms.
-   Значения живут в EAV-строках владельца, поэтому мешок формы пустой — редакторы метаполей
-   берут строки из каскада MetaValues. *@
+@* Форма значений метаполей владельца (пользователь, категория поста): отдаёт рендереру
+   общего слоя дерево провайдера и один мета-контекст (значения + определения полей).
+   Значения живут в EAV-строках владельца, поэтому стор — просто обёртка над этим списком. *@
 
 <div class="MetaValuesForm">
-    <CascadingValue Value="Editors">
-        <CascadingValue Value="MetaFields">
-            <CascadingValue Value="MetaValues">
-                <FormRenderer Definition="Definition" Values="Store" Zone="@SystemFieldsCatalog.Zones.Main" Client="Client" />
-            </CascadingValue>
-        </CascadingValue>
+    <CascadingValue Value="@Context">
+        <FormRenderer Definition="Definition" Values="Store" Zone="@SystemFieldsCatalog.Zones.Main"
+                      Client="Client" Commits="Commits" />
     </CascadingValue>
 </div>

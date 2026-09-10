@@ -249,9 +249,10 @@ Mars.Forms.Abstractions
 
 ## E2E-проверка формы (рецепт)
 
-Сьют `Mars.E2E.Tests` выключен по умолчанию (`BaseE2ETests.SkipE2ETests = "Skip"`). Порядок:
+Сьют `Mars.E2E.Tests` выключен по умолчанию: тесты помечены `[E2EFact]`, включение — переменная
+окружения `MARS_E2E_TESTS=1` (как `MARS_DOCKER_TESTS` у контейнерных тестов). Порядок:
 
-1. `SkipE2ETests` → `null` (после прогона вернуть `"Skip"`).
+1. Задать окружение: в cmd — `set MARS_E2E_TESTS=1`, в pwsh — `$env:MARS_E2E_TESTS='1'` (в `pwsh -File test-all.ps1 -IncludeE2E` это делает сам скрипт).
 2. **`dotnet build Mars.slnx`** — обязательно: WASM-админка не входит в сборку самого
    E2E-проекта, и без пересборки решения браузер получает старый бандл (в `_framework`
    fingerprint имён ассетов, устаревший манифест указывал бы на прежний `.wasm`).

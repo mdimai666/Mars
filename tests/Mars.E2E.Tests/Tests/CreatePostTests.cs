@@ -15,7 +15,7 @@ public class CreatePostTests : BaseE2ETests
     {
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task CreatePost_WithRequiredFields_Persists()
     {
         // Arrange

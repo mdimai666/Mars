@@ -842,8 +842,8 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - **Рендер админ-форм проверяется E2E** (`tests/Mars.E2E.Tests`, Playwright +
   системный Edge, Postgres-контейнер): `CreatePostTests` (форма поста: заголовок,
   slug, контент Editor.js, теги, сохранение через API) и `EditUserPageTests`
-  (форма пользователя). Сьют отключён константой `BaseE2ETests.SkipE2ETests = "Skip"`
-  — для прогона временно поставить `null`, собрать и запустить exe с фильтром:
+  (форма пользователя). Сьют отключён по умолчанию (тесты помечены `[E2EFact]`, включает
+  переменная окружения `MARS_E2E_TESTS=1`) — собрать решение и запустить exe с фильтром:
   `Mars.E2E.Tests.exe -filter "/Mars.E2E.Tests/Mars.E2E.Tests.Tests/CreatePostTests/*"`.
   Юнит-тесты рендер не ловят: подмену редактора в реестре и цикл рендера
   (`ValueChanged` из сеттера параметра) поймал именно E2E — после правок

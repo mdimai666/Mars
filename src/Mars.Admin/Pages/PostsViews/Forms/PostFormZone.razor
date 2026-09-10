@@ -26,7 +26,7 @@
 
     [Parameter, EditorRequired] public FormDefinition Definition { get; set; } = default!;
 
-    [Parameter, EditorRequired] public FormValuesModel Values { get; set; } = default!;
+    [Parameter, EditorRequired] public IFormValueStore Values { get; set; } = default!;
 
     /// <summary>Ключ зоны из <c>SystemFieldsCatalog.Zones</c></summary>
     [Parameter, EditorRequired] public string Zone { get; set; } = default!;

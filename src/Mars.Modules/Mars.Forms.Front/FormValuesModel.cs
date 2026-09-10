@@ -8,7 +8,7 @@ namespace Mars.Forms.Front;
 /// <see cref="FormValueCodec"/>. Куда значение уйдёт на сервере, решает провайдер —
 /// модель знает только ключ поля и его тип.
 /// </summary>
-public sealed class FormValuesModel(FormValues values)
+public sealed class FormValuesModel(FormValues values) : IFormValueStore
 {
     public FormValues Values { get; } = values;
 
@@ -19,6 +19,9 @@ public sealed class FormValuesModel(FormValues values)
     public event Action? Changed;
 
     public JsonNode? Node(string key) => Values.Value(key);
+
+    /// <summary>У мешка нет носителя значения: редакторы работают с CLR-значением</summary>
+    public object? NativeValue(FormFieldDescriptor field) => null;
 
     public object? GetValue(FormFieldDescriptor field)
     {

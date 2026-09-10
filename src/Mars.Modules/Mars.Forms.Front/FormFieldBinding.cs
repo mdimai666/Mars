@@ -13,7 +13,7 @@ public sealed class FormFieldBinding
 
     public required FormFieldDescriptor Field { get; init; }
 
-    public required FormValuesModel Values { get; init; }
+    public required IFormValueStore Values { get; init; }
 
     /// <summary>Резолвер переводимых заголовков (из контекста рендера)</summary>
     public Func<string, string>? TitleResolver { get; init; }

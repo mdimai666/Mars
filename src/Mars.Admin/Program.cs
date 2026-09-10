@@ -76,10 +76,14 @@ ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionAc
 MetaFieldEditors.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor),
     MetaFieldType.String, MetaFieldType.Text);
 
-// доменные редакторы системных слотов формы поста (общий слой Mars.Forms)
+// доменный редактор системного слота формы поста (общий слой Mars.Forms): пикер категорий
+// привязан к типу поста, поэтому остаётся редактором провайдера
 FormEditorLocator.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, FormFieldType.Relation);
-FormEditorLocator.Register(PostFormEditors.Tags, typeof(PostTagsEditor), true, FormFieldType.String);
-FormEditorLocator.Register(PostFormEditors.Author, typeof(PostAuthorEditor), false, FormFieldType.Relation);
+
+// общие редакторы слотов: теги и отображение значения строкой годятся любому провайдеру
+FormEditorLocator.Register(FormEditorCatalog.Tags, typeof(FormTagsEditor), true, FormFieldType.String);
+FormEditorLocator.Register(FormEditorCatalog.TextDisplay, typeof(FormTextDisplayEditor), false,
+    FormFieldType.String, FormFieldType.Relation);
 
 // доменные панели настроек метаполей в общем редакторе определений (скоуп meta, все типы)
 FormFieldTypeSettingsLocator.Register(MetaFieldSettingsPanel.Scope, typeof(MetaFieldSettingsPanel));

@@ -21,6 +21,12 @@ public static class FormEditorCatalog
     /// <summary>Редактор множественных значений простых типов (строки, числа, даты, варианты)</summary>
     public const string List = "core.input.list";
 
+    /// <summary>Множество строк (теги, метки)</summary>
+    public const string Tags = "core.input.tags";
+
+    /// <summary>Только чтение: значение строкой</summary>
+    public const string TextDisplay = "core.display.text";
+
     public static readonly IReadOnlyList<(string Key, string Title)> All =
     [
         (Text, "Текст"),
@@ -31,5 +37,7 @@ public static class FormEditorCatalog
         (Select, "Выбор из списка"),
         (Choices, "Выбор нескольких из списка"),
         (List, "Список значений"),
+        (Tags, "Теги"),
+        (TextDisplay, "Текст только для чтения"),
     ];
 }

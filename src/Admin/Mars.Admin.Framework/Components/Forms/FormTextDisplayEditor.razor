@@ -1,0 +1,12 @@
+@using Mars.Forms.Front
+
+@* Только чтение: значение строкой (например автор — стор отдаёт отображаемое имя) *@
+
+<div class="text-secondary">@Text</div>
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+    [Parameter] public int Index { get; set; } = -1;
+
+    string Text => Binding.Value?.ToString() is { Length: > 0 } text ? text : "—";
+}

@@ -158,12 +158,19 @@ Mars.Forms.Abstractions
 Проверка: сборка 0 ошибок; `Mars.Forms.Tests` 82/82 (добавлены `FormRuleEvaluatorTests`);
 `Mars.Server.Tests` 476/476.
 
-### R5 — общие редакторы вместо постовых
+### R5 — общие редакторы вместо постовых — выполнено 2026-09-10
 
-- `PostTagsEditor` → `core.input.tags` (`string[]`), `PostAuthorEditor` → `core.display.author`
-  в `Mars.Admin.Framework`, без чтения `PostEditModel`.
-- Пикер категорий остаётся доменным редактором провайдера, но настройки берёт из дескриптора
-  (`ModelName`), а не из каскада; постовая папка `Forms/` от них очищается.
+- `PostTagsEditor` → `FormTagsEditor` в `Mars.Admin.Framework` под ключом `core.input.tags`:
+  значение — `string[]` из стора, привязки к посту нет.
+- `PostAuthorEditor` → `FormTextDisplayEditor` под ключом `core.display.text` (только чтение):
+  стор поста отдаёт для слота автора отображаемое имя, а не Guid. Пикер пользователя появится
+  отдельным редактором-связью.
+- `PostFormEditors` сократился до постовых ключей (`title`, `status`, `categories`); пикер
+  категорий остаётся редактором провайдера — он привязан к типу поста. Постовая папка `Forms/`
+  больше не держит редакторов значений.
+
+Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 82/82;
+`Mars.Server.Tests` 476/476. Отображение автора и теги — визуально в приложении.
 
 ### R6 — строгий кодек
 

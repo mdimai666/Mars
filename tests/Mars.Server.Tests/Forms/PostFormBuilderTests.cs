@@ -144,7 +144,7 @@ public class PostFormBuilderTests
         var tags = form.Items.First(i => i.Key == SystemFieldsCatalog.Tags);
         tags.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
         tags.Field!.Rules.Should().BeEmpty();
-        tags.Field.Editor.Should().Be(PostFormEditors.Tags, "редактор слота — из каталога и параметров типа");
+        tags.Field.Editor.Should().Be(FormEditorCatalog.Tags, "редактор слота — из общего каталога и параметров типа");
 
         form.Items.First(i => i.Key == "subtitle").Visible.Should().BeFalse();
     }

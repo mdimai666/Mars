@@ -67,12 +67,12 @@ public static class SystemFieldsCatalog
         new(Lang, nameof(AppRes.Language), FormFieldType.String, Zones.Publish,
             Feature: PostTypeConstants.Features.Language),
         new(Author, nameof(AppRes.Author), FormFieldType.Relation, Zones.Publish,
-            ReadOnly: true, Editor: PostFormEditors.Author, ModelName: "user"),
+            ReadOnly: true, Editor: FormEditorCatalog.TextDisplay, ModelName: "user"),
         new(Categories, nameof(AppRes.Categories), FormFieldType.Relation, Zones.Extra,
             Feature: PostTypeConstants.Features.Category, Multiple: true,
             Editor: PostFormEditors.Categories, ModelName: "postcategory"),
         new(Tags, nameof(AppRes.Tags), FormFieldType.String, Zones.Extra,
-            Feature: PostTypeConstants.Features.Tags, Multiple: true, Editor: PostFormEditors.Tags),
+            Feature: PostTypeConstants.Features.Tags, Multiple: true, Editor: FormEditorCatalog.Tags),
     ];
 
     public static SystemFieldSlot? Find(string? key)
@@ -96,6 +96,8 @@ public static class SystemFieldsCatalog
 /// <summary>
 /// Ключи доменных редакторов формы поста: компоненты регистрирует админка
 /// (<c>FormEditorLocator.Register</c>), сервер только объявляет ключ в дескрипторе.
+/// Всё, что не привязано к посту (теги, отображение значения), живёт в общем каталоге
+/// <see cref="FormEditorCatalog"/>.
 /// </summary>
 public static class PostFormEditors
 {
@@ -108,11 +110,5 @@ public static class PostFormEditors
     /// <summary>Мультивыбор категорий типа</summary>
     public const string Categories = "post.picker.categories";
 
-    /// <summary>Ввод тегов</summary>
-    public const string Tags = "post.input.tags";
-
-    /// <summary>Автор: только чтение (пикера пользователя пока нет)</summary>
-    public const string Author = "post.display.author";
-
-    public static readonly IReadOnlyList<string> All = [Title, Status, Categories, Tags, Author];
+    public static readonly IReadOnlyList<string> All = [Title, Status, Categories];
 }

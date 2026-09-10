@@ -30,7 +30,8 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
             SystemFieldsCatalog.Lang => post.LangCode,
             SystemFieldsCatalog.CreatedAt => post.CreatedAt,
             SystemFieldsCatalog.ModifiedAt => post.ModifiedAt,
-            SystemFieldsCatalog.Author => post.UserId == Guid.Empty ? null : post.UserId,
+            // автор только для чтения: показываем подпись, пикера пользователя нет
+            SystemFieldsCatalog.Author => AuthorName(),
             _ => null,
         };
     }
@@ -118,6 +119,14 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
 
     /// <summary>Носитель значения — строки владельца: доменные редакторы правят их напрямую</summary>
     public object? NativeValue(FormFieldDescriptor field) => post.MetaValues;
+
+    string AuthorName()
+    {
+        var author = post.Author;
+        return string.IsNullOrWhiteSpace(author?.DisplayName)
+            ? author?.UserName ?? "—"
+            : author!.DisplayName!;
+    }
 
     static bool IsList(FormFieldDescriptor field)
         => field.Multiple || field.Type == FormFieldType.SelectMany;

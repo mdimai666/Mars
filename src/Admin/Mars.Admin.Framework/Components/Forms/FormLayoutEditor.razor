@@ -14,8 +14,12 @@ else
     <FluentDragContainer TItem="FormItem" OnDropEnd="OnDropEnd" Class="vstack gap-3">
 
         <div class="hstack gap-2 align-items-center justify-content-end">
-            <FormLayoutIconButton Icon="@(new Icons.Regular.Size16.ArrowUndo())"
-                                  Title="Сбросить к стандартной раскладке" OnClick="ResetAsync" />
+            <FluentButton Appearance="Appearance.Stealth"
+                          Title="Сбросить к стандартной раскладке"
+                          IconStart="@(new Icons.Regular.Size16.ArrowUndo())"
+                          OnClick="ResetAsync">
+              Сбросить
+            </FluentButton>
         </div>
 
         @if (_draft.UnplacedFields.Count > 0)
@@ -44,7 +48,7 @@ else
                 <div class="card">
                     <div class="card-header hstack gap-2 align-items-center">
                         <strong>@zone.Title</strong>
-                        <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => AddContainerAsync(zone.Key))">
+                        <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => AddContainerAsync(zone.Key))" IconStart="@(new Icons.Regular.Size16.Add())">
                             Контейнер
                         </FluentButton>
                     </div>

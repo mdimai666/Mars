@@ -12,7 +12,7 @@
             @if (Node.Item.Kind == FormItemKind.Row)
             {
                 <div class="d-flex gap-2 align-items-stretch">
-                    <div class="vstack gap-1 align-items-center justify-content-center">
+                    <div class="vstack gap-1 align-items-start justify-content-start flex-grow-0 flex-shrink-0" style="width: 50px;">
                         <span class="text-secondary text-nowrap">строка</span>
                         <FormLayoutIconButton Icon="@(new Icons.Regular.Size16.Delete())" Title="Удалить строку"
                                               OnClick="RemoveAsync" />
@@ -24,20 +24,20 @@
                                 <FormLayoutCell Node="@child" />
                             }
                         </div>
-                        <div class="hstack gap-2 flex-wrap">
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="AddColumnAsync">Колонка</FluentButton>
-                        </div>
                         <FluentDropZone TItem="FormItem" Data="@InsideTarget()" Draggable="false" Droppable="true"
                                         StopPropagation="true" Style="@FormLayoutEditor.DropAreaStyle">
                             <span class="text-secondary">в конец строки</span>
                         </FluentDropZone>
+                        <div class="hstack gap-2 flex-wrap my-2">
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="AddColumnAsync" IconStart="@(new Icons.Regular.Size16.Add())">Колонка</FluentButton>
+                        </div>
                     </div>
                 </div>
             }
             else if (Node.Item.Kind == FormItemKind.Column)
             {
-                <div class="hstack gap-1 align-items-center justify-content-between">
-                    <FluentSelect TOption="string" Value="@Width" ValueChanged="SetWidthAsync" Style="width:50px">
+                <div class="hstack gap-1 align-items-center justify-content-end">
+                    <FluentSelect TOption="string" Value="@Width" ValueChanged="SetWidthAsync" Style="width:80px;min-width:50px;">
                         @foreach (var (key, title) in FormLayoutEditor.Widths)
                         {
                             <FluentOption Value="@key">@title</FluentOption>
@@ -52,15 +52,15 @@
                         <FormLayoutCell Node="@child" />
                     }
                 </div>
-                <div class="hstack gap-2 flex-wrap">
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddRowAsync">Строка</FluentButton>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddHeadingAsync">Заголовок</FluentButton>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddDividerAsync">Разделитель</FluentButton>
-                </div>
                 <FluentDropZone TItem="FormItem" Data="@InsideTarget()" Draggable="false" Droppable="true"
                                 StopPropagation="true" Style="@FormLayoutEditor.DropAreaStyle">
                     <span class="text-secondary">в конец колонки</span>
                 </FluentDropZone>
+                <div class="hstack gap-2 flex-wrap">
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddRowAsync">+ Строка</FluentButton>
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddHeadingAsync">+ Заголовок</FluentButton>
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddDividerAsync">+ Разделитель</FluentButton>
+                </div>
             }
             else if (Node.Item.Kind == FormItemKind.Container)
             {

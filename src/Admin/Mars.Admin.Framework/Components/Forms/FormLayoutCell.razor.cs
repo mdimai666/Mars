@@ -1,11 +1,13 @@
 using Mars.Forms.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
+using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
 namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
-/// Узел сетки в дизайнере: ячейка узла с содержимым по его типу. Все изменения уходят
-/// в <see cref="FormLayoutEditor"/>, который собирает раскладку через черновик.
+/// Узел сетки в дизайнере: прямоугольник ряда, ячейки или элемента со своим содержимым.
+/// Все изменения уходят в <see cref="FormLayoutEditor"/>, который собирает раскладку через черновик.
 /// </summary>
 public partial class FormLayoutCell
 {
@@ -15,26 +17,29 @@ public partial class FormLayoutCell
 
     FormLayoutDraft Draft => Editor.Draft;
 
-    /// <summary>Поле прямо в ряду (или в корне зоны) — неявная ячейка со своей шириной</summary>
+    /// <summary>Элемент прямо в ряду (вне колонки) — неявная ячейка, ширина у неё, а не у элемента</summary>
     bool IsLooseCell => Node.Item.Kind == FormItemKind.Field && ParentKind is not FormItemKind.Column;
 
     FormItemKind? ParentKind => Draft.Find(Node.Item.Parent ?? "")?.Kind;
 
-    /// <summary>Дизайнер показывает пропорции ячейки как на форме; контейнеры обведены рамкой</summary>
-    string CellStyle
+    /// <summary>Рамка по типу узла: у ряда и у ячейки цвета разные, элемент — прямоугольник с названием</summary>
+    string CellStyle => Node.Item.Kind switch
     {
-        get
-        {
-            var parts = new List<string>();
-            if (Node.Item.Kind == FormItemKind.Column || IsLooseCell) parts.Add(FormLayoutEditor.FlexStyle(Node.Item));
-            if (Node.Item.Kind is FormItemKind.Column or FormItemKind.Row)
-                parts.Add("border:1px solid var(--neutral-stroke-rest); border-radius:4px");
-
-            return string.Join("; ", parts);
-        }
-    }
+        FormItemKind.Row => FormLayoutEditor.RowStyle,
+        FormItemKind.Column => $"{FormLayoutEditor.ColumnStyle}; {FormLayoutEditor.FlexStyle(Node.Item)}",
+        FormItemKind.Container => "",
+        _ => IsLooseCell
+            ? $"{FormLayoutEditor.ElementStyle}; {FormLayoutEditor.FlexStyle(Node.Item)}"
+            : FormLayoutEditor.ElementStyle,
+    };
 
     string Width => Node.Item.Width ?? FormItemWidths.Full;
+
+    Icon VisibilityIcon => Node.Item.Visible
+        ? new Icons.Regular.Size16.Eye()
+        : new Icons.Regular.Size16.EyeOff();
+
+    string VisibilityTitle => Node.Item.Visible ? "Скрыть поле в форме" : "Показать поле в форме";
 
     /// <summary>Цель броска на сам узел: вставить перед ним у его родителя</summary>
     FormLayoutEditor.LayoutDropTarget Target()
@@ -72,8 +77,8 @@ public partial class FormLayoutCell
         if (Draft.SetTitle(Node.Item.Key, title)) await Editor.EmitAsync();
     }
 
-    async Task SetVisibleAsync(bool visible)
+    async Task ToggleVisibleAsync()
     {
-        if (Draft.SetVisible(Node.Item.Key, visible)) await Editor.EmitAsync();
+        if (Draft.SetVisible(Node.Item.Key, !Node.Item.Visible)) await Editor.EmitAsync();
     }
 }

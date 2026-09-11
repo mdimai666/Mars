@@ -1,0 +1,7 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Компактная кнопка-иконка дизайнера: без текста, действие подписано в title *@
+<FluentButton Appearance="Appearance.Stealth" Style="min-width:24px; width:24px; padding:2px" Title="@Title"
+              Disabled="@Disabled" OnClick="@OnClick">
+    <FluentIcon Value="@Icon" />
+</FluentButton>

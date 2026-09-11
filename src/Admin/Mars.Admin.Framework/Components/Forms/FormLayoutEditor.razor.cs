@@ -35,18 +35,30 @@ public partial class FormLayoutEditor
     FormLayoutDraft? _draft;
     FormDefinition? _source;
 
-    /// <summary>Варианты ширины колонки (пустой ключ — на всю ширину)</summary>
+    /// <summary>Варианты ширины колонки в долях из 12 — в дизайнере показывается число</summary>
     public static readonly IReadOnlyList<(string Key, string Title)> Widths =
     [
-        (FormItemWidths.Full, "Во всю ширину"),
-        (FormItemWidths.Half, "Половина"),
-        (FormItemWidths.Third, "Треть"),
-        (FormItemWidths.Quarter, "Четверть"),
+        (FormItemWidths.Full, "12"),
+        (FormItemWidths.Half, "6"),
+        (FormItemWidths.Third, "4"),
+        (FormItemWidths.Quarter, "3"),
     ];
 
     /// <summary>Зона приёма: пунктирная рамка и минимальная высота, чтобы пустое место было видно</summary>
     public static string DropAreaStyle
-        => "border:1px dashed var(--neutral-stroke-accessible); border-radius:4px; padding:6px; min-height:44px";
+        => "border:1px dashed var(--neutral-stroke-rest); border-radius:4px; padding:6px; min-height:44px";
+
+    /// <summary>Ряд — сплошная акцентная рамка: отличается от рамки ячейки внутри него</summary>
+    public static string RowStyle
+        => "border:2px solid var(--accent-fill-rest); border-radius:6px; padding:4px; min-width:120px";
+
+    /// <summary>Ячейка (колонка) — пунктирная нейтральная рамка другого цвета, чем у ряда</summary>
+    public static string ColumnStyle
+        => "border:2px dashed var(--neutral-stroke-rest); border-radius:6px; padding:4px; min-height:56px";
+
+    /// <summary>Листовой элемент — прямоугольник с названием</summary>
+    public static string ElementStyle
+        => "background:var(--neutral-layer-2); border:1px solid var(--neutral-stroke-rest); border-radius:4px; padding:2px 4px";
 
     protected override void OnParametersSet()
     {

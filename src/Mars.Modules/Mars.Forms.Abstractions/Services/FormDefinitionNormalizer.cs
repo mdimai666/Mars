@@ -7,7 +7,7 @@ namespace Mars.Forms.Abstractions.Services;
 /// видимость, ширину и тексты; поле с исчезнувшим ключом провайдера отбрасывается; узел с
 /// отсутствующим или недопустимым родителем переезжает в корень зоны, а если и там недопустим —
 /// отбрасывается (его дети переезжают в корень следом). Элементы живут только в колонках:
-/// свободные (легаси-плоская раскладка) оборачиваются в ряд с колонками, ширина переезжает
+/// свободные (легаси-плоская раскладка) оборачиваются в один ряд зоны, ширина переезжает
 /// на колонку. Порядок узлов в списке не важен: родитель находится по ключу, циклы разрываются.
 /// Недостающие поля провайдера дописываются в конец. Дескрипторы всегда свежие. Идемпотентен.
 /// </summary>
@@ -131,76 +131,76 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
     }
 
     /// <summary>
-    /// Оборачивает свободные элементы в колонки: в зоне и контейнере — рядом с колонками,
-    /// а в ряду — прямо колонками. Ширина элемента переезжает на колонку, идущие подряд элементы
-    /// складываются в один ряд, пока сумма их долей ≤ 12 — так их разложил бы бутстрап.
+    /// Оборачивает свободные элементы в колонки: в зоне и контейнере — одним рядом, а в ряду —
+    /// прямо колонками. Раскладка по умолчанию выходит «одна строка и одна колонка на зону»:
+    /// соседи без своей ширины живут в общей колонке, а элемент с шириной получает свою, поэтому
+    /// легаси-плоская раскладка, где ширину задавал элемент, сохраняет свой вид.
     /// </summary>
     static List<FormItem> WrapElements(List<FormItem> items)
     {
         var kinds = items.ToDictionary(item => item.Key, item => item.Kind, StringComparer.Ordinal);
-        var children = new Dictionary<string, List<FormItem>>(StringComparer.Ordinal);
+        var children = new Dictionary<(string Parent, string Zone), List<FormItem>>();
         foreach (var item in items)
         {
-            var parent = item.Parent ?? "";
-            if (!children.TryGetValue(parent, out var list)) children[parent] = list = [];
+            // зона в ключе: корневые узлы разных зон неродственны, хотя родителя у них и нет
+            var key = (item.Parent ?? "", item.Zone ?? "");
+            if (!children.TryGetValue(key, out var list)) children[key] = list = [];
             list.Add(item);
         }
 
         var insert = new Dictionary<string, List<FormItem>>(StringComparer.Ordinal); // первый элемент прогона → новые узлы
         var reparent = new Dictionary<string, string>(StringComparer.Ordinal);       // элемент → его новая колонка
 
-        foreach (var (parentKey, group) in children)
+        foreach (var ((parentKey, zone), group) in children)
         {
             var parent = parentKey.Length == 0 ? null : parentKey;
             var parentKind = parent is null ? (FormItemKind?)null : kinds[parent];
             if (parentKind == FormItemKind.Column) continue;      // элемент в колонке уже на месте
 
-            var run = new List<FormItem>();
-            var span = 0;
+            var inRow = parentKind == FormItemKind.Row;
+            var columns = new List<FormItem>();
+            FormItem? row = null;                                 // ряд, который получат новые колонки
+            FormItem? shared = null;                              // открытая общая колонка соседей без ширины
+            FormItem? anchor = null;                              // первый свободный элемент группы
 
             foreach (var child in group)
             {
-                if (!FormLayoutRules.IsElement(child.Kind)) { Flush(); continue; }
+                if (!FormLayoutRules.IsElement(child.Kind)) { shared = null; continue; }
 
-                var width = FormItemWidths.Span(child.Width);
-                if (run.Count > 0 && span + width > 12) Flush();
+                anchor ??= child;
 
-                run.Add(child);
-                span += width;
-            }
+                if (child.Width is null && shared is not null)    // сосед без ширины встаёт в общую колонку
+                {
+                    reparent[child.Key] = shared.Key;
+                    continue;
+                }
 
-            Flush();
-
-            void Flush()
-            {
-                if (run.Count == 0) return;
-
-                // в ряду элемент становится его колонкой, в зоне и контейнере — колонкой нового ряда
-                var row = parentKind == FormItemKind.Row
-                    ? null
-                    : new FormItem
+                if (!inRow)
+                    row ??= new FormItem
                     {
                         Key = FormItem.NewKey(FormItemKind.Row),
                         Kind = FormItemKind.Row,
                         Parent = parent,
-                        Zone = run[0].Zone,
+                        Zone = zone,
                     };
 
-                var columns = run.Select(element => new FormItem
+                var column = new FormItem
                 {
                     Key = FormItem.NewKey(FormItemKind.Column),
                     Kind = FormItemKind.Column,
                     Parent = row?.Key ?? parent,
-                    Zone = element.Zone,
-                    Width = element.Width,
-                }).ToList();
+                    Zone = zone,
+                    Width = child.Width,
+                };
 
-                for (var i = 0; i < run.Count; i++) reparent[run[i].Key] = columns[i].Key;
-
-                insert[run[0].Key] = row is null ? columns : [row, .. columns];
-                run = [];
-                span = 0;
+                columns.Add(column);
+                reparent[child.Key] = column.Key;
+                shared = child.Width is null ? column : null;      // своя ширина общую колонку не продолжает
             }
+
+            if (anchor is null) continue;
+
+            insert[anchor.Key] = row is null ? columns : [row, .. columns];
         }
 
         if (insert.Count == 0) return items;

@@ -14,15 +14,38 @@ public class FormDefinitionNormalizerTests
     readonly FormDefinitionNormalizer _normalizer = new();
 
     [Fact]
-    public void NoSavedLayout_ReturnsDefaultsInOrder_EachInItsOwnColumn()
+    public void NoSavedLayout_GivesEachZoneOneRowWithAllFieldsInOneColumn()
     {
         var result = _normalizer.Normalize(null, Defaults());
 
         Keys(result).Should().Equal("title", "slug", "status");
         FieldsInZone(result, "main").Should().Equal("title", "slug");
         FieldsInZone(result, "side").Should().Equal("status");
-        Nodes(result, FormItemKind.Row).Should().HaveCount(3, "каждое поле получает свой ряд");
+        Nodes(result, FormItemKind.Row).Should().HaveCount(2, "раскладка по умолчанию — одна строка на зону");
+        Nodes(result, FormItemKind.Column).Should().HaveCount(2, "и одна колонка: все поля зоны живут в ней");
+        ParentKey(result, "slug").Should().Be(ParentKey(result, "title"));
+        ParentKey(result, "status").Should().NotBe(ParentKey(result, "title"));
+        Column(result, "title").Width.Should().BeNull("колонка по умолчанию — во всю ширину");
+        Links(result);
+    }
+
+    [Fact]
+    public void WidthlessNeighbour_JoinsSharedColumn_ElementWithWidthGetsItsOwn()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Zone = "main" },
+            new() { Key = "slug", Zone = "main", Width = FormItemWidths.Half },
+            new() { Key = "status", Zone = "main" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        Nodes(result, FormItemKind.Row).Should().HaveCount(1, "свободные элементы зоны живут в одном ряду");
         Nodes(result, FormItemKind.Column).Should().HaveCount(3);
+        ParentKey(result, "slug").Should().NotBe(ParentKey(result, "title"), "своя ширина — своя колонка");
+        ParentKey(result, "status").Should().NotBe(ParentKey(result, "slug"));
+        Column(result, "slug").Width.Should().Be(FormItemWidths.Half, "ширина переезжает на колонку");
         Links(result);
     }
 

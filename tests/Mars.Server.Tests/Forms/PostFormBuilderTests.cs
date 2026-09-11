@@ -35,6 +35,8 @@ public class PostFormBuilderTests
         form.OwnerModel.Should().Be("post.article");
         form.Items.Where(i => i.Field is not null).Should()
             .OnlyContain(i => i.Parent!.StartsWith("column-"), "элементы живут только в колонках");
+        form.Items.Where(i => i.Kind == FormItemKind.Row).Should()
+            .HaveCount(3, "раскладка по умолчанию — одна строка на зону");
     }
 
     [Fact]

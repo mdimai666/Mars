@@ -1,32 +1,30 @@
 @namespace Mars.Forms.Front
+@using Mars.Forms.Contracts
 
-@* Точка входа рендера: одна зона = один экземпляр. Секции — маркеры плоского списка:
-   поля идут за маркером до следующего (как Tab в ACF), вложенности у раскладки нет. *@
+@* Точка входа рендера: одна зона = один экземпляр. Дерево раскладки строит общий проектор
+   FormLayoutTree (плоский список → узлы). Контейнеры зоны становятся табами, если их больше
+   одного; корневые узлы без контейнера рисуются рядом, как легаси-раскладка. *@
 <CascadingValue Value="@_context">
-    <div class="row">
-        @foreach (var entry in Entries)
-        {
-            if (entry.IsHeader)
+    @if (_containers.Count >= 2)
+    {
+        <FluentTabs>
+            @foreach (var container in _containers)
             {
-                <div class="col-12">
-                    <h6 class="mt-3 mb-1">@entry.Item.Title</h6>
-                </div>
+                <FluentTab Label="@TabTitle(container.Item)">
+                    @Row(container.Children)
+                </FluentTab>
             }
-            else
-            {
-                <div class="@WidthClass(entry.Item)">
-                    @if (FieldTemplate is not null)
-                    {
-                        @FieldTemplate(entry.Item)
-                    }
-                    else
-                    {
-                        <FormFieldRow Item="@entry.Item" />
-                    }
-                </div>
-            }
-        }
-    </div>
+        </FluentTabs>
+    }
+    else if (_containers.Count == 1)
+    {
+        @Row(_containers[0].Children)
+    }
+
+    @if (_loose.Count > 0)
+    {
+        @Row(_loose)
+    }
 </CascadingValue>
 
 @code {
@@ -52,9 +50,12 @@
     [Parameter] public FormLiveEditors? LiveEditors { get; set; }
 
     FormRenderContext _context = default!;
+    IReadOnlyList<FormLayoutNode> _containers = [];
+    IReadOnlyList<FormLayoutNode> _loose = [];
 
     protected override void OnParametersSet()
-        => _context = new FormRenderContext
+    {
+        _context = new FormRenderContext
         {
             Definition = Definition,
             Values = Values,
@@ -65,18 +66,19 @@
             LiveEditors = LiveEditors ?? new FormLiveEditors(),
         };
 
-    /// <summary>Зона в порядке раскладки: заголовки-маркеры и листы-поля; поля без дескриптора не рендерятся</summary>
-    IEnumerable<(FormItem Item, bool IsHeader)> Entries
-        => (Definition?.Items ?? [])
-            .Where(item => (item.Zone ?? "") == Zone)
-            .Where(item => item.Kind == FormItemKind.Heading || (item.Visible && item.Field is not null))
-            .Select(item => (item, item.Kind == FormItemKind.Heading));
+        var roots = FormLayoutTree.Build(Definition?.Items ?? [], Zone);
 
-    static string WidthClass(FormItem item) => item.Width switch
-    {
-        FormItemWidths.Half => "col-12 col-md-6",
-        FormItemWidths.Third => "col-12 col-md-4",
-        FormItemWidths.Quarter => "col-12 col-md-3",
-        _ => "col-12",
-    };
+        _containers = roots.Where(node => node.Item.Kind == FormItemKind.Container).ToList();
+        _loose = roots.Where(node => node.Item.Kind != FormItemKind.Container).ToList();
+    }
+
+    /// <summary>Ряд узлов зоны: корневые узлы и содержимое контейнера — ячейки одной строки</summary>
+    RenderFragment Row(IReadOnlyList<FormLayoutNode> nodes) => @<div class="row">
+        @foreach (var node in nodes)
+        {
+            <FormLayoutNodeView Node="@node" />
+        }
+    </div>;
+
+    static string TabTitle(FormItem item) => string.IsNullOrWhiteSpace(item.Title) ? item.Key : item.Title;
 }

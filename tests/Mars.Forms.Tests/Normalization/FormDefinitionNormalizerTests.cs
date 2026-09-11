@@ -164,13 +164,86 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
+    public void Structure_IsKept_WithParentsAndInheritedZone()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "tab-1", Zone = "main", Kind = FormItemKind.Container, Title = "Основное" },
+            new() { Key = "row-1", Parent = "tab-1", Kind = FormItemKind.Row },
+            new() { Key = "col-1", Parent = "row-1", Kind = FormItemKind.Column, Width = FormItemWidths.Half },
+            new() { Key = "col-2", Parent = "row-1", Kind = FormItemKind.Column, Width = FormItemWidths.Half },
+            new() { Key = "title", Parent = "col-1" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        result.Select(i => i.Key).Should().Equal("tab-1", "row-1", "col-1", "col-2", "title", "slug", "status");
+        result.Select(i => i.Kind).Should().Equal(
+            FormItemKind.Container, FormItemKind.Row, FormItemKind.Column, FormItemKind.Column,
+            FormItemKind.Field, FormItemKind.Field, FormItemKind.Field);
+        result.Select(i => i.Parent).Should().Equal(null, "tab-1", "row-1", "row-1", "col-1", null, null);
+        result.Select(i => i.Zone).Should().Equal(
+            "main", "main", "main", "main", "main", "main", "side");
+        result.Single(i => i.Key == "title").Field.Should().NotBeNull("дескриптор берётся у провайдера");
+
+        var tree = FormLayoutTree.Build(result, "main");
+        tree.Select(n => n.Item.Key).Should().Equal("tab-1", "slug");
+        tree[0].Children.Single().Children.Select(c => c.Item.Key).Should().Equal("col-1", "col-2");
+        tree[0].Children.Single().Children[1].Children.Should().BeEmpty("колонка может быть пустой");
+    }
+
+    [Fact]
+    public void ChildWithDisallowedParent_GoesToZoneRoot()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Zone = "main" },
+            new() { Key = "slug", Parent = "title" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        var slug = result.Single(i => i.Key == "slug");
+        slug.Parent.Should().BeNull("поле не может держать детей");
+        slug.Zone.Should().Be("main");
+    }
+
+    [Fact]
+    public void ChildWithMissingParent_GoesToZoneRoot()
+    {
+        var result = _normalizer.Normalize([new FormItem { Key = "status", Parent = "ghost", Zone = "side" }],
+                                           Defaults());
+
+        result.Single(i => i.Key == "status").Parent.Should().BeNull();
+    }
+
+    [Fact]
+    public void StructureNodeWithFieldKey_IsDropped_FieldSurvives()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Zone = "main", Kind = FormItemKind.Container, Title = "Лишний таб" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
+        result.First().Kind.Should().Be(FormItemKind.Field);
+        result.First().Field.Should().NotBeNull();
+    }
+
+    [Fact]
     public void Normalize_IsIdempotent()
     {
         var saved = new List<FormItem>
         {
+            new() { Key = "tab-1", Zone = "main", Kind = FormItemKind.Container, Title = "Основное" },
+            new() { Key = "row-1", Parent = "tab-1", Kind = FormItemKind.Row },
+            new() { Key = "col-1", Parent = "row-1", Kind = FormItemKind.Column, Width = FormItemWidths.Half },
             new() { Key = "group-1", Zone = "main", Kind = FormItemKind.Heading, Title = "Основное" },
-            new() { Key = "slug", Zone = "main", Width = FormItemWidths.Half, Visible = false },
+            new() { Key = "slug", Parent = "col-1", Width = FormItemWidths.Half, Visible = false },
             new() { Key = "ghost", Zone = "side" },
+            new() { Key = "orphan-col", Kind = FormItemKind.Column },
         };
 
         var once = _normalizer.Normalize(saved, Defaults());

@@ -68,8 +68,8 @@ public class PostTypeOptionsCatalogTests
         tags.Field.Should().BeNull("дескрипторы не хранятся — их отдаёт провайдер");
 
         var marker = parsed.Items.ElementAt(1);
-        marker.IsSectionHeader.Should().BeTrue();
-        marker.SectionTitle.Should().Be("Дополнительно");
+        marker.Kind.Should().Be(FormItemKind.Heading);
+        marker.Title.Should().Be("Дополнительно");
 
         parsed.Items.Last().Key.Should().Be(SystemFieldsCatalog.Slug);
     }
@@ -160,7 +160,8 @@ public class PostTypeOptionsCatalogTests
             {
                 Key = "extra-section",
                 Zone = SystemFieldsCatalog.Zones.Extra,
-                SectionTitle = "Дополнительно",
+                Kind = FormItemKind.Heading,
+                Title = "Дополнительно",
             },
             new FormItem
             {

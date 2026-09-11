@@ -44,6 +44,7 @@ public partial class FormLayoutEditor
         (FormItemWidths.Full, "Во всю ширину"),
         (FormItemWidths.Half, "Половина"),
         (FormItemWidths.Third, "Треть"),
+        (FormItemWidths.Quarter, "Четверть"),
     ];
 
     protected override void OnParametersSet()
@@ -80,7 +81,7 @@ public partial class FormLayoutEditor
                 Field = item.Field,
                 Zone = string.IsNullOrEmpty(item.Zone) ? fallbackZone : item.Zone,
                 Title = item.Title,
-                SectionTitle = item.SectionTitle,
+                SectionTitle = item.Kind == FormItemKind.Heading ? item.Title : null,
                 Visible = item.Visible,
                 Width = item.Width,
             });
@@ -120,15 +121,22 @@ public partial class FormLayoutEditor
     public Task EmitAsync()
         => ValueChanged.InvokeAsync(new FormLayoutSettings { Items = _rows.Select(ToItem).ToList() });
 
-    static FormItem ToItem(LayoutRow row) => new()
-    {
-        Key = row.Key,
-        Zone = row.Zone,
-        Title = string.IsNullOrWhiteSpace(row.Title) ? null : row.Title,
-        SectionTitle = row.SectionTitle,
-        Visible = row.Visible,
-        Width = row.Width,
-    };
+    static FormItem ToItem(LayoutRow row) => row.IsSection
+        ? new FormItem
+        {
+            Key = row.Key,
+            Kind = FormItemKind.Heading,
+            Zone = row.Zone,
+            Title = row.SectionTitle,
+        }
+        : new FormItem
+        {
+            Key = row.Key,
+            Zone = row.Zone,
+            Title = string.IsNullOrWhiteSpace(row.Title) ? null : row.Title,
+            Visible = row.Visible,
+            Width = row.Width,
+        };
 
     /// <summary>Сосед по зоне: раскладка плоская, порядок строк и есть порядок отображения</summary>
     public bool CanMove(LayoutRow row, int delta)
@@ -213,7 +221,7 @@ public partial class FormLayoutEditor
         string key;
         do
         {
-            key = "section-" + Guid.NewGuid().ToString("N")[..8];
+            key = FormItem.NewKey(FormItemKind.Heading);
         }
         while (taken.Contains(key));
 
@@ -230,7 +238,7 @@ public partial class FormLayoutEditor
 
         public string Zone { get; set; } = "";
 
-        /// <summary>Маркер секции: заголовок группы; поля идут за ним до следующего маркера</summary>
+        /// <summary>Заголовок строки-заголовка: неполевой узел <see cref="FormItemKind.Heading"/></summary>
         public string? SectionTitle { get; set; }
 
         /// <summary>Переопределение заголовка поля (пусто = заголовок провайдера)</summary>

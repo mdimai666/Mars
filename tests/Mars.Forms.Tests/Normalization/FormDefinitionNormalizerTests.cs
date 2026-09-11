@@ -77,9 +77,9 @@ public class FormDefinitionNormalizerTests
     {
         var saved = new List<FormItem>
         {
-            new() { Key = "group-1", Zone = "main", SectionTitle = "Основное" },
+            new() { Key = "group-1", Zone = "main", Kind = FormItemKind.Heading, Title = "Основное" },
             new() { Key = "title", Zone = "main" },
-            new() { Key = "group-1", Zone = "main", SectionTitle = "Дубль" },
+            new() { Key = "group-1", Zone = "main", Kind = FormItemKind.Heading, Title = "Дубль" },
         };
 
         var result = _normalizer.Normalize(saved, Defaults());
@@ -87,15 +87,16 @@ public class FormDefinitionNormalizerTests
         result.Select(i => i.Key).Should().Equal("group-1", "title", "slug", "status");
 
         var marker = result.First();
-        marker.IsSectionHeader.Should().BeTrue();
-        marker.SectionTitle.Should().Be("Основное");
+        marker.Kind.Should().Be(FormItemKind.Heading);
+        marker.Title.Should().Be("Основное");
         marker.Field.Should().BeNull();
     }
 
     [Fact]
     public void SectionMarkerWithoutZone_GetsFirstZone()
     {
-        var result = _normalizer.Normalize([new FormItem { Key = "group-1", SectionTitle = "Основное" }], Defaults());
+        var result = _normalizer.Normalize(
+            [new FormItem { Key = "group-1", Kind = FormItemKind.Heading, Title = "Основное" }], Defaults());
 
         result.First().Zone.Should().Be("main");
     }
@@ -167,7 +168,7 @@ public class FormDefinitionNormalizerTests
     {
         var saved = new List<FormItem>
         {
-            new() { Key = "group-1", Zone = "main", SectionTitle = "Основное" },
+            new() { Key = "group-1", Zone = "main", Kind = FormItemKind.Heading, Title = "Основное" },
             new() { Key = "slug", Zone = "main", Width = FormItemWidths.Half, Visible = false },
             new() { Key = "ghost", Zone = "side" },
         };

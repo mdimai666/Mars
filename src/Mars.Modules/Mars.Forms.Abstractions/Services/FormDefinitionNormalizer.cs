@@ -32,7 +32,7 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
         // 1. сохранённая раскладка: её порядок, её зоны, её настройки
         foreach (var item in saved ?? [])
         {
-            if (item.IsSectionHeader)
+            if (item.Kind == FormItemKind.Heading)
             {
                 if (!usedMarkers.Add(item.Key)) continue;
                 result.Add(item with { Zone = ZoneOr(item, firstZone), Field = null });
@@ -45,6 +45,7 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
             result.Add(new FormItem
             {
                 Key = def.Key,
+                Parent = item.Parent,
                 Zone = ZoneOr(item, defaultZones.GetValueOrDefault(def.Key, firstZone)),
                 Title = item.Title,
                 Visible = item.Visible,

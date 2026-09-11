@@ -1,23 +1,27 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Mars.Forms.Contracts;
 
 /// <summary>
 /// Сериализация раскладки формы в json (camelCase) и обратно — по образцу
-/// <c>PostTypeGridSettingsJson</c>. Хранится только раскладка: порядок, зоны, видимость,
-/// ширина и маркеры секций; дескрипторы не хранятся.
+/// <c>PostTypeGridSettingsJson</c>. Хранится только раскладка: узлы, их родители, порядок, зоны,
+/// видимость, ширина и тексты; дескрипторы не хранятся.
 /// </summary>
 public static class FormLayoutJson
 {
     static readonly JsonSerializerOptions Options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
 
     /// <summary>
-    /// Разбирает хранимый json. Дерево секций старого формата (вложенное свойство <c>items</c>)
-    /// разворачивается в плоский список с маркерами. Отсутствует/битый json — null.
+    /// Разбирает хранимый json. Узел дерева старого формата (вложенное свойство <c>items</c>)
+    /// становится заголовком, а его дети — соседями (так раскладка выглядела до R3).
+    /// Отсутствует/битый json — null.
     /// </summary>
     public static FormLayoutSettings? Parse(JsonNode? node)
     {
@@ -48,14 +52,15 @@ public static class FormLayoutJson
         {
             var itemZone = string.IsNullOrEmpty(item.Zone) ? zone : item.Zone;
 
-            // легаси-формат: узел с детьми был секцией — теперь это её маркер
+            // легаси-формат: узел с детьми был секцией — теперь это её заголовок
             if (item.Items is { Count: > 0 })
             {
                 target.Add(new FormItem
                 {
-                    Key = string.IsNullOrEmpty(item.Key) ? NewSectionKey() : item.Key,
+                    Key = string.IsNullOrEmpty(item.Key) ? FormItem.NewKey(FormItemKind.Heading) : item.Key,
+                    Kind = FormItemKind.Heading,
                     Zone = itemZone,
-                    SectionTitle = string.IsNullOrWhiteSpace(item.Title) ? "Секция" : item.Title,
+                    Title = string.IsNullOrWhiteSpace(item.Title) ? "Секция" : item.Title,
                 });
 
                 Append(target, item.Items, itemZone);
@@ -64,19 +69,24 @@ public static class FormLayoutJson
 
             if (string.IsNullOrEmpty(item.Key)) continue;
 
+            // легаси-формат: маркер секции в плоском списке — тоже заголовок
+            var section = !string.IsNullOrWhiteSpace(item.SectionTitle);
+
             target.Add(new FormItem
             {
                 Key = item.Key,
+                Parent = item.Parent,
                 Zone = itemZone,
-                Title = item.Title,
+                Kind = section ? FormItemKind.Heading : ParseKind(item.Kind),
+                Title = section ? item.SectionTitle : item.Title,
                 Visible = item.Visible,
                 Width = item.Width,
-                SectionTitle = item.SectionTitle,
             });
         }
     }
 
-    static string NewSectionKey() => "section-" + Guid.NewGuid().ToString("N")[..8];
+    static FormItemKind ParseKind(string? kind)
+        => Enum.TryParse<FormItemKind>(kind, ignoreCase: true, out var parsed) ? parsed : FormItemKind.Field;
 
     /// <summary>Форма хранения раскладки (<c>items</c> у элемента читается только для старого дерева)</summary>
     sealed class StoredLayout
@@ -87,7 +97,9 @@ public static class FormLayoutJson
     sealed class StoredItem
     {
         public string? Key { get; set; }
+        public string? Parent { get; set; }
         public string? Zone { get; set; }
+        public string? Kind { get; set; }
         public string? Title { get; set; }
         public string? SectionTitle { get; set; }
         public bool Visible { get; set; } = true;

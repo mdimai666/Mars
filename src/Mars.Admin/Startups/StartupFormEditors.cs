@@ -39,9 +39,10 @@ internal static class StartupFormEditors
         editors.Register(FormEditorCatalog.DateTime, typeof(FormDateTimeEditor), false, "Дата и время",
             FormFieldType.DateTime);
 
-        // доменные редакторы системных слотов формы поста (общий слой Mars.Forms): пикер категорий
-        // привязан к типу поста, заголовок — крупное поле на всю ширину
-        editors.Register(PostFormEditors.Title, typeof(PostTitleEditor), false, null, FormFieldType.String);
+        // доменные редакторы системных слотов формы поста (общий слой Mars.Forms): заголовок —
+        // крупное поле на всю ширину, пикер категорий привязан к типу поста
+        editors.Register(PostFormEditors.Title, typeof(PostTitleEditor), false, "Крупное поле",
+            FormFieldType.String);
         editors.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, null, FormFieldType.Relation);
 
         // общие редакторы слотов: теги и отображение значения строкой годятся любому провайдеру

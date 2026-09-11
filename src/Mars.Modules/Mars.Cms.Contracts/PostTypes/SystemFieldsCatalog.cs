@@ -66,7 +66,7 @@ public static class SystemFieldsCatalog
         new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish),
         new(ModifiedAt, nameof(AppRes.DateModified), FormFieldType.DateTime, Zones.Publish, ReadOnly: true),
         new(Status, nameof(AppRes.Status), FormFieldType.Select, Zones.Publish,
-            Feature: PostTypeConstants.Features.Status, Editor: PostFormEditors.Status),
+            Feature: PostTypeConstants.Features.Status),
         new(Lang, nameof(AppRes.Language), FormFieldType.String, Zones.Publish,
             Feature: PostTypeConstants.Features.Language),
         new(Author, nameof(AppRes.Author), FormFieldType.Relation, Zones.Publish,
@@ -119,14 +119,9 @@ public static class SystemFieldsCatalog
 /// </summary>
 public static class PostFormEditors
 {
-    /// <summary>Заголовок с авто-подстановкой slug</summary>
+    /// <summary>Заголовок поста — крупное поле на всю ширину</summary>
     public const string Title = "post.input.title";
-
-    /// <summary>Статус из списка статусов типа</summary>
-    public const string Status = "post.select.status";
 
     /// <summary>Мультивыбор категорий типа</summary>
     public const string Categories = "post.picker.categories";
-
-    public static readonly IReadOnlyList<string> All = [Title, Status, Categories];
 }

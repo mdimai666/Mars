@@ -6,9 +6,10 @@ namespace Mars.Forms.Abstractions.Services;
 /// Приводит раскладку владельца к действующей: сохранённые узлы сохраняют порядок, тип, зону,
 /// видимость, ширину и тексты; поле с исчезнувшим ключом провайдера отбрасывается; узел с
 /// отсутствующим или недопустимым родителем переезжает в корень зоны, а если и там недопустим —
-/// отбрасывается (его дети переезжают в корень следом). Порядок узлов в списке не важен:
-/// родитель находится по ключу, циклы разрываются. Недостающие поля провайдера дописываются
-/// в конец списка. Дескрипторы всегда свежие. Идемпотентен.
+/// отбрасывается (его дети переезжают в корень следом). Элементы живут только в колонках:
+/// свободные (легаси-плоская раскладка) оборачиваются в ряд с колонками, ширина переезжает
+/// на колонку. Порядок узлов в списке не важен: родитель находится по ключу, циклы разрываются.
+/// Недостающие поля провайдера дописываются в конец. Дескрипторы всегда свежие. Идемпотентен.
 /// </summary>
 internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
 {
@@ -43,15 +44,20 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
             result.Add(resolved);
         }
 
-        // 2. узлы без допустимого места убираем; их дети осиротеют и переедут в корень зоны
+        // 2. узлы без допустимого места убираем; их дети осиротеют и переедут в корень зоны.
+        //    Элемент не отбрасываем никогда — он переезжает в корень и будет обёрнут в колонку.
         foreach (var key in result.Select(node => node.Key).ToList())
         {
-            var (placed, _) = Placement(accepted[key], accepted);
-            if (placed) continue;
-            if (FormLayoutRules.CanContain(null, accepted[key].Kind)) continue;
+            var node = accepted[key];
+            if (FormLayoutRules.IsElement(node.Kind)) continue;
+
+            var (placed, _) = Placement(node, accepted);
+            var asRoot = node.Parent is null || !placed;
+
+            if (asRoot ? FormLayoutRules.CanContain(null, node.Kind) : placed) continue;
 
             accepted.Remove(key);
-            result.RemoveAll(node => node.Key == key);
+            result.RemoveAll(item => item.Key == key);
         }
 
         // 3. места узлов: зона наследуется от корня цепочки, разорванная цепочка — корень зоны
@@ -68,7 +74,7 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
             };
         }
 
-        // 4. недостающие поля провайдера — в конец своей зоны
+        // 4. недостающие поля провайдера — в конец, как и свободные элементы: обернёт шаг 5
         foreach (var item in defaults)
         {
             if (item.Field is null) continue;
@@ -77,7 +83,8 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
             result.Add(item with { Zone = ZoneOr(item, defaultZones.GetValueOrDefault(item.Key, firstZone)) });
         }
 
-        return result;
+        // 5. элементы — только в колонках
+        return WrapElements(result);
 
         FormItem? Resolve(FormItem item)
         {
@@ -121,6 +128,92 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
             current = parent;
 
         return (current.Parent is null, current.Zone);
+    }
+
+    /// <summary>
+    /// Оборачивает свободные элементы в колонки: в зоне и контейнере — рядом с колонками,
+    /// а в ряду — прямо колонками. Ширина элемента переезжает на колонку, идущие подряд элементы
+    /// складываются в один ряд, пока сумма их долей ≤ 12 — так их разложил бы бутстрап.
+    /// </summary>
+    static List<FormItem> WrapElements(List<FormItem> items)
+    {
+        var kinds = items.ToDictionary(item => item.Key, item => item.Kind, StringComparer.Ordinal);
+        var children = new Dictionary<string, List<FormItem>>(StringComparer.Ordinal);
+        foreach (var item in items)
+        {
+            var parent = item.Parent ?? "";
+            if (!children.TryGetValue(parent, out var list)) children[parent] = list = [];
+            list.Add(item);
+        }
+
+        var insert = new Dictionary<string, List<FormItem>>(StringComparer.Ordinal); // первый элемент прогона → новые узлы
+        var reparent = new Dictionary<string, string>(StringComparer.Ordinal);       // элемент → его новая колонка
+
+        foreach (var (parentKey, group) in children)
+        {
+            var parent = parentKey.Length == 0 ? null : parentKey;
+            var parentKind = parent is null ? (FormItemKind?)null : kinds[parent];
+            if (parentKind == FormItemKind.Column) continue;      // элемент в колонке уже на месте
+
+            var run = new List<FormItem>();
+            var span = 0;
+
+            foreach (var child in group)
+            {
+                if (!FormLayoutRules.IsElement(child.Kind)) { Flush(); continue; }
+
+                var width = FormItemWidths.Span(child.Width);
+                if (run.Count > 0 && span + width > 12) Flush();
+
+                run.Add(child);
+                span += width;
+            }
+
+            Flush();
+
+            void Flush()
+            {
+                if (run.Count == 0) return;
+
+                // в ряду элемент становится его колонкой, в зоне и контейнере — колонкой нового ряда
+                var row = parentKind == FormItemKind.Row
+                    ? null
+                    : new FormItem
+                    {
+                        Key = FormItem.NewKey(FormItemKind.Row),
+                        Kind = FormItemKind.Row,
+                        Parent = parent,
+                        Zone = run[0].Zone,
+                    };
+
+                var columns = run.Select(element => new FormItem
+                {
+                    Key = FormItem.NewKey(FormItemKind.Column),
+                    Kind = FormItemKind.Column,
+                    Parent = row?.Key ?? parent,
+                    Zone = element.Zone,
+                    Width = element.Width,
+                }).ToList();
+
+                for (var i = 0; i < run.Count; i++) reparent[run[i].Key] = columns[i].Key;
+
+                insert[run[0].Key] = row is null ? columns : [row, .. columns];
+                run = [];
+                span = 0;
+            }
+        }
+
+        if (insert.Count == 0) return items;
+
+        var result = new List<FormItem>(items.Count);
+        foreach (var item in items)
+        {
+            if (insert.TryGetValue(item.Key, out var added)) result.AddRange(added);
+
+            result.Add(reparent.TryGetValue(item.Key, out var column) ? item with { Parent = column } : item);
+        }
+
+        return result;
     }
 
     static string ZoneOr(FormItem item, string fallback)

@@ -8,27 +8,24 @@ public static class FormLayoutRules
 {
     /// <summary>
     /// Допустим ли узел ребёнком узла такого типа: <paramref name="parent"/> = null — корень зоны.
-    /// Поле, заголовок и разделитель — листовые узлы, контейнерами быть не могут.
+    /// Элемент (поле, заголовок, разделитель) живёт только в колонке: в ряду и в зоне ему места нет.
     /// </summary>
     public static bool CanContain(FormItemKind? parent, FormItemKind child) => parent switch
     {
-        null => child is FormItemKind.Container or FormItemKind.Row or FormItemKind.Field
-                     or FormItemKind.Heading or FormItemKind.Divider,
+        null => child is FormItemKind.Container or FormItemKind.Row,
 
-        FormItemKind.Container => child is FormItemKind.Row or FormItemKind.Field
-                                       or FormItemKind.Heading or FormItemKind.Divider,
-
-        FormItemKind.Row => child is FormItemKind.Column or FormItemKind.Field
-                                 or FormItemKind.Heading or FormItemKind.Divider,
-
-        FormItemKind.Column => child is FormItemKind.Row or FormItemKind.Field
-                                    or FormItemKind.Heading or FormItemKind.Divider,
+        FormItemKind.Container => child == FormItemKind.Row,
+        FormItemKind.Row => child == FormItemKind.Column,
+        FormItemKind.Column => IsElement(child) || child == FormItemKind.Row,
 
         _ => false,
     };
 
+    /// <summary>Листовой элемент раскладки: поле, заголовок или разделитель — только внутри колонки</summary>
+    public static bool IsElement(FormItemKind kind)
+        => kind is FormItemKind.Field or FormItemKind.Heading or FormItemKind.Divider;
+
     /// <summary>Известен ли такой тип узла раскладки</summary>
     public static bool IsKnown(FormItemKind kind)
-        => kind is FormItemKind.Field or FormItemKind.Container or FormItemKind.Row
-                 or FormItemKind.Column or FormItemKind.Heading or FormItemKind.Divider;
+        => IsElement(kind) || kind is FormItemKind.Container or FormItemKind.Row or FormItemKind.Column;
 }

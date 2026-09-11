@@ -96,13 +96,12 @@ public partial class FormLayoutEditor
         => string.IsNullOrWhiteSpace(container.Title) ? "Контейнер" : container.Title;
 
     /// <summary>Доля ширины ячейки в ряду — дизайнер показывает пропорции как на форме</summary>
-    public static string FlexStyle(FormItem item) => item.Width switch
+    public static string FlexStyle(string? width)
     {
-        FormItemWidths.Half => "flex:0 0 50%; max-width:50%",
-        FormItemWidths.Third => "flex:0 0 33%; max-width:33%",
-        FormItemWidths.Quarter => "flex:0 0 25%; max-width:25%",
-        _ => "",
-    };
+        var percent = FormItemWidths.Span(width) * 100d / 12;
+
+        return $"flex:0 0 {percent:0.####}%; max-width:{percent:0.####}%";
+    }
 
     //=====================================
     // изменения

@@ -5,22 +5,25 @@ using Mars.Forms.Contracts;
 namespace Mars.Forms.Tests.Normalization;
 
 /// <summary>
-/// Раскладка плоская: сохранённый порядок и настройки выигрывают, неизвестные ключи
-/// отбрасываются, недостающие поля провайдера дописываются в конец, дескрипторы всегда свежие.
-/// Порядок сравнивается по зонам: зоны рендерятся раздельно.
+/// Раскладка приводится к действующей: сохранённый порядок и настройки выигрывают, неизвестные
+/// ключи отбрасываются, недостающие поля провайдера дописываются, а элементы живут только
+/// в колонках — свободные (легаси-плоская раскладка) оборачиваются в ряд с колонками.
 /// </summary>
 public class FormDefinitionNormalizerTests
 {
     readonly FormDefinitionNormalizer _normalizer = new();
 
     [Fact]
-    public void NoSavedLayout_ReturnsDefaultsInOrder()
+    public void NoSavedLayout_ReturnsDefaultsInOrder_EachInItsOwnColumn()
     {
         var result = _normalizer.Normalize(null, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
-        result.Select(i => i.Zone).Should().Equal("main", "main", "side");
-        result.Should().OnlyContain(i => i.Field != null);
+        Keys(result).Should().Equal("title", "slug", "status");
+        FieldsInZone(result, "main").Should().Equal("title", "slug");
+        FieldsInZone(result, "side").Should().Equal("status");
+        Nodes(result, FormItemKind.Row).Should().HaveCount(3, "каждое поле получает свой ряд");
+        Nodes(result, FormItemKind.Column).Should().HaveCount(3);
+        Links(result);
     }
 
     [Fact]
@@ -34,9 +37,10 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("status", "slug", "title");
-        KeysOf(result, "main").Should().Equal("slug", "title");
-        KeysOf(result, "side").Should().Equal("status");
+        Keys(result).Should().Equal("status", "slug", "title");
+        FieldsInZone(result, "main").Should().Equal("slug", "title");
+        FieldsInZone(result, "side").Should().Equal("status");
+        Links(result);
     }
 
     [Fact]
@@ -51,7 +55,8 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
+        Keys(result).Should().Equal("title", "slug", "status");
+        Links(result);
     }
 
     [Fact]
@@ -59,7 +64,7 @@ public class FormDefinitionNormalizerTests
     {
         var result = _normalizer.Normalize([new FormItem { Key = "status" }], Defaults());
 
-        result.Single(i => i.Key == "status").Zone.Should().Be("side");
+        Field(result, "status").Zone.Should().Be("side");
     }
 
     [Fact]
@@ -69,11 +74,13 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => (i.Key, i.Zone)).Should().Equal(("status", "main"), ("title", "main"), ("slug", "main"));
+        FieldsInZone(result, "main").Should().Equal("status", "title", "slug");
+        FieldsInZone(result, "side").Should().BeEmpty();
+        Links(result);
     }
 
     [Fact]
-    public void SectionMarker_IsKeptOnce_WithItsTitleAndNoField()
+    public void HeadingMarker_IsKeptOnce_WithItsTitleAndNoField()
     {
         var saved = new List<FormItem>
         {
@@ -84,36 +91,39 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("group-1", "title", "slug", "status");
+        Keys(result).Should().Equal("group-1", "title", "slug", "status");
 
-        var marker = result.First();
-        marker.Kind.Should().Be(FormItemKind.Heading);
-        marker.Title.Should().Be("Основное");
-        marker.Field.Should().BeNull();
+        var heading = Node(result, "group-1");
+        heading.Kind.Should().Be(FormItemKind.Heading);
+        heading.Title.Should().Be("Основное");
+        heading.Field.Should().BeNull();
+        heading.Zone.Should().Be("main");
+        ParentKey(result, "group-1").Should().StartWith("column-", "заголовок тоже элемент в колонке");
+        Links(result);
     }
 
     [Fact]
-    public void SectionMarkerWithoutZone_GetsFirstZone()
+    public void HeadingWithoutZone_GetsFirstZone()
     {
         var result = _normalizer.Normalize(
             [new FormItem { Key = "group-1", Kind = FormItemKind.Heading, Title = "Основное" }], Defaults());
 
-        result.First().Zone.Should().Be("main");
+        Node(result, "group-1").Zone.Should().Be("main");
     }
 
     [Fact]
-    public void LayoutSettings_KeepVisibleWidthAndTitle()
+    public void LayoutSettings_KeepVisibleAndTitle_WidthMovesToColumn()
     {
         var saved = new List<FormItem>
         {
             new() { Key = "title", Zone = "main", Visible = false, Width = FormItemWidths.Third, Title = "Заголовок" },
         };
 
-        var item = _normalizer.Normalize(saved, Defaults()).First();
+        var result = _normalizer.Normalize(saved, Defaults());
 
-        item.Visible.Should().BeFalse();
-        item.Width.Should().Be(FormItemWidths.Third);
-        item.Title.Should().Be("Заголовок");
+        Field(result, "title").Visible.Should().BeFalse();
+        Field(result, "title").Title.Should().Be("Заголовок");
+        Column(result, "title").Width.Should().Be(FormItemWidths.Third, "ширина переезжает на колонку");
     }
 
     [Fact]
@@ -131,8 +141,8 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.First().Field!.Title.Should().Be("title");
-        result.First().Field!.Type.Should().Be(FormFieldType.String);
+        Field(result, "title").Field!.Title.Should().Be("title");
+        Field(result, "title").Field!.Type.Should().Be(FormFieldType.String);
     }
 
     [Fact]
@@ -156,11 +166,35 @@ public class FormDefinitionNormalizerTests
             },
         };
 
-        var item = _normalizer.Normalize(saved, defaults).Single();
+        var slug = Field(_normalizer.Normalize(saved, defaults), "slug");
 
-        item.Visible.Should().BeFalse("настройки представления берутся из раскладки");
-        item.Field!.Editor.Should().Be("core.input.url");
-        item.Field.Rules.Select(r => r.Type).Should().Equal(FormRuleCatalog.Unique);
+        slug.Visible.Should().BeFalse("настройки представления берутся из раскладки");
+        slug.Field!.Editor.Should().Be("core.input.url");
+        slug.Field.Rules.Select(rule => rule.Type).Should().Equal(FormRuleCatalog.Unique);
+    }
+
+    [Fact]
+    public void LooseElements_AreWrappedIntoRowsAndColumns()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Zone = "main", Width = FormItemWidths.Half },
+            new() { Key = "slug", Zone = "main", Width = FormItemWidths.Half },
+            new() { Key = "status", Zone = "side" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        // половина + половина встают в один ряд, целое — в свой
+        Nodes(result, FormItemKind.Row).Should().HaveCount(2);
+        Nodes(result, FormItemKind.Column).Should().HaveCount(3);
+
+        Row(result, "slug").Key.Should().Be(Row(result, "title").Key, "половинки делят ряд");
+        ParentKey(result, "slug").Should().NotBe(ParentKey(result, "title"), "но колонка у каждого своя");
+        Column(result, "title").Width.Should().Be(FormItemWidths.Half);
+        Column(result, "status").Width.Should().BeNull("ширина по умолчанию — во всю ширину");
+        Row(result, "status").Parent.Should().BeNull("ряд одиночного элемента стоит в корне зоны");
+        Links(result);
     }
 
     [Fact]
@@ -177,23 +211,22 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("tab-1", "row-1", "col-1", "col-2", "title", "slug", "status");
-        result.Select(i => i.Kind).Should().Equal(
-            FormItemKind.Container, FormItemKind.Row, FormItemKind.Column, FormItemKind.Column,
-            FormItemKind.Field, FormItemKind.Field, FormItemKind.Field);
-        result.Select(i => i.Parent).Should().Equal(null, "tab-1", "row-1", "row-1", "col-1", null, null);
-        result.Select(i => i.Zone).Should().Equal(
-            "main", "main", "main", "main", "main", "main", "side");
-        result.Single(i => i.Key == "title").Field.Should().NotBeNull("дескриптор берётся у провайдера");
+        ParentKey(result, "row-1").Should().Be("tab-1");
+        ParentKey(result, "col-2").Should().Be("row-1");
+        ParentKey(result, "title").Should().Be("col-1");
+        result.Should().OnlyContain(item => item.Parent != "col-2", "пустая колонка остаётся пустой");
+        Node(result, "title").Zone.Should().Be("main", "зона наследуется от контейнера");
+        Node(result, "slug").Zone.Should().Be("main");
+        Node(result, "status").Zone.Should().Be("side");
+        Links(result);
 
-        var tree = FormLayoutTree.Build(result, "main");
-        tree.Select(n => n.Item.Key).Should().Equal("tab-1", "slug");
-        tree[0].Children.Single().Children.Select(c => c.Item.Key).Should().Equal("col-1", "col-2");
-        tree[0].Children.Single().Children[1].Children.Should().BeEmpty("колонка может быть пустой");
+        // дописанные поля тоже встают в колонку
+        ParentKey(result, "slug").Should().StartWith("column-");
+        ParentKey(result, "status").Should().StartWith("column-");
     }
 
     [Fact]
-    public void ChildWithDisallowedParent_GoesToZoneRoot()
+    public void ChildWithDisallowedParent_IsWrappedIntoColumn()
     {
         var saved = new List<FormItem>
         {
@@ -203,22 +236,24 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        var slug = result.Single(i => i.Key == "slug");
-        slug.Parent.Should().BeNull("поле не может держать детей");
-        slug.Zone.Should().Be("main");
+        Node(result, "slug").Zone.Should().Be("main");
+        ParentKey(result, "slug").Should().StartWith("column-", "поле не может держать детей");
+        Links(result);
     }
 
     [Fact]
-    public void ChildWithMissingParent_GoesToZoneRoot()
+    public void ChildWithMissingParent_IsWrappedIntoColumn()
     {
         var result = _normalizer.Normalize([new FormItem { Key = "status", Parent = "ghost", Zone = "side" }],
                                            Defaults());
 
-        result.Single(i => i.Key == "status").Parent.Should().BeNull();
+        Node(result, "status").Zone.Should().Be("side");
+        ParentKey(result, "status").Should().StartWith("column-");
+        Links(result);
     }
 
     [Fact]
-    public void ColumnWithBrokenParent_IsDropped_ItsFieldGoesToZoneRoot()
+    public void ColumnWithBrokenParent_IsDropped_ItsFieldIsWrapped()
     {
         var saved = new List<FormItem>
         {
@@ -228,8 +263,9 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
-        result.First().Parent.Should().BeNull();
+        Keys(result).Should().StartWith(["title", "slug", "status"]);
+        ParentKey(result, "title").Should().StartWith("column-");
+        Links(result);
     }
 
     [Fact]
@@ -243,7 +279,8 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Where(i => i.Key.StartsWith("row-")).Should().OnlyContain(i => i.Parent == null);
+        result.Where(item => item.Key.StartsWith("row-")).Should().OnlyContain(item => item.Parent == null);
+        Links(result);
     }
 
     [Fact]
@@ -251,13 +288,16 @@ public class FormDefinitionNormalizerTests
     {
         var saved = new List<FormItem>
         {
-            new() { Key = "title", Parent = "row-1" },
+            new() { Key = "title", Parent = "col-1" },
+            new() { Key = "col-1", Kind = FormItemKind.Column, Parent = "row-1" },
             new() { Key = "row-1", Zone = "main", Kind = FormItemKind.Row },
         };
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Single(i => i.Key == "title").Parent.Should().Be("row-1", "порядок узлов в списке не важен");
+        ParentKey(result, "title").Should().Be("col-1", "порядок узлов в списке не важен");
+        ParentKey(result, "col-1").Should().Be("row-1");
+        Links(result);
     }
 
     [Fact]
@@ -270,9 +310,10 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
-        result.First().Kind.Should().Be(FormItemKind.Field);
-        result.First().Field.Should().NotBeNull();
+        Keys(result).Should().Equal("title", "slug", "status");
+        Field(result, "title").Field.Should().NotBeNull();
+        Nodes(result, FormItemKind.Container).Should().BeEmpty();
+        Links(result);
     }
 
     [Fact]
@@ -294,19 +335,58 @@ public class FormDefinitionNormalizerTests
         var twice = _normalizer.Normalize(once, Defaults());
 
         twice.Should().BeEquivalentTo(once);
+        Links(once);
     }
 
-    static IEnumerable<string> KeysOf(IEnumerable<FormItem> items, string zone)
-        => items.Where(i => i.Zone == zone && i.Field is not null).Select(i => i.Key);
+    //=====================================
+    // помощники: тесты смотрят на раскладку как на дерево
+
+    /// <summary>Каждый узел лежит там, где ему можно лежать по матрице правил</summary>
+    static void Links(IReadOnlyCollection<FormItem> items)
+    {
+        var byKey = items.ToDictionary(item => item.Key, StringComparer.Ordinal);
+
+        foreach (var item in items.Where(item => item.Parent is not null))
+        {
+            byKey.Should().ContainKey(item.Parent!, $"{item.Key} ссылается на родителя");
+            FormLayoutRules.CanContain(byKey[item.Parent!].Kind, item.Kind).Should()
+                             .BeTrue($"{item.Key} ({item.Kind}) не может лежать в {item.Parent}");
+        }
+    }
+
+    static IReadOnlyCollection<FormItem> Nodes(IEnumerable<FormItem> items, FormItemKind kind)
+        => items.Where(item => item.Kind == kind).ToList();
+
+    /// <summary>Ключи неструктурных узлов: элементы раскладки в порядке отображения</summary>
+    static IEnumerable<string> Keys(IEnumerable<FormItem> items)
+        => items.Where(item => FormLayoutRules.IsElement(item.Kind)).Select(item => item.Key);
+
+    static IEnumerable<string> FieldsInZone(IEnumerable<FormItem> items, string zone)
+        => items.Where(item => item.Field is not null && item.Zone == zone).Select(item => item.Key);
+
+    static FormItem Node(IEnumerable<FormItem> items, string? key)
+        => items.Single(item => item.Key == key);
+
+    static FormItem Field(IEnumerable<FormItem> items, string key) => Node(items, key);
+
+    static string? ParentKey(IEnumerable<FormItem> items, string key) => Node(items, key).Parent;
+
+    static FormItem Parent(IEnumerable<FormItem> items, string key) => Node(items, ParentKey(items, key));
+
+    /// <summary>Колонка элемента — его родитель</summary>
+    static FormItem Column(IEnumerable<FormItem> items, string key) => Parent(items, key);
+
+    /// <summary>Ряд элемента — родитель его колонки</summary>
+    static FormItem Row(IEnumerable<FormItem> items, string key) => Parent(items, Column(items, key).Key);
 
     static IReadOnlyCollection<FormItem> Defaults() =>
     [
-        Field("title", "main"),
-        Field("slug", "main"),
-        Field("status", "side"),
+        FieldItem("title", "main"),
+        FieldItem("slug", "main"),
+        FieldItem("status", "side"),
     ];
 
-    static FormItem Field(string key, string zone) => new()
+    static FormItem FieldItem(string key, string zone) => new()
     {
         Key = key,
         Zone = zone,

@@ -26,10 +26,6 @@ public partial class FormLayoutRoot
 
     Task AddRowAsync() => AddAsync(FormItemKind.Row);
 
-    Task AddHeadingAsync() => AddAsync(FormItemKind.Heading);
-
-    Task AddDividerAsync() => AddAsync(FormItemKind.Divider);
-
     async Task AddAsync(FormItemKind kind)
     {
         if (Draft.Add(kind, Parent?.Key, Parent is null ? Zone : null) is not null) await Editor.EmitAsync();

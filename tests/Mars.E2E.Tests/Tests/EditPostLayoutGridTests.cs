@@ -35,6 +35,10 @@ public class EditPostLayoutGridTests : BaseE2ETests
         var row = Key("row");
         var left = Key("col");
         var right = Key("col");
+        var slugRow = Key("row");
+        var slugColumn = Key("col");
+        var headRow = Key("row");
+        var headColumn = Key("col");
         var heading = Key("heading");
         var divider = Key("divider");
 
@@ -45,9 +49,13 @@ public class EditPostLayoutGridTests : BaseE2ETests
             new FormItem { Key = left, Kind = FormItemKind.Column, Parent = row, Width = FormItemWidths.Half },
             new FormItem { Key = "title", Parent = left },
             new FormItem { Key = right, Kind = FormItemKind.Column, Parent = row, Width = FormItemWidths.Half },
-            new FormItem { Key = "slug", Parent = tab },
-            new FormItem { Key = heading, Kind = FormItemKind.Heading, Parent = tab, Title = "Заголовок раскладки" },
-            new FormItem { Key = divider, Kind = FormItemKind.Divider, Parent = tab },
+            new FormItem { Key = slugRow, Kind = FormItemKind.Row, Parent = tab },
+            new FormItem { Key = slugColumn, Kind = FormItemKind.Column, Parent = slugRow, Width = FormItemWidths.Full },
+            new FormItem { Key = "slug", Parent = slugColumn },
+            new FormItem { Key = headRow, Kind = FormItemKind.Row, Parent = tab },
+            new FormItem { Key = headColumn, Kind = FormItemKind.Column, Parent = headRow },
+            new FormItem { Key = heading, Kind = FormItemKind.Heading, Parent = headColumn, Title = "Заголовок раскладки" },
+            new FormItem { Key = divider, Kind = FormItemKind.Divider, Parent = headColumn },
             new FormItem { Key = secondTab, Kind = FormItemKind.Container, Zone = SystemFieldsCatalog.Zones.Main, Title = "Дополнительно" },
         ]);
 

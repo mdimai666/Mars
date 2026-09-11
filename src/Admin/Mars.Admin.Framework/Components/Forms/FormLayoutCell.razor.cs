@@ -17,20 +17,19 @@ public partial class FormLayoutCell
 
     FormLayoutDraft Draft => Editor.Draft;
 
-    /// <summary>Элемент прямо в ряду (вне колонки) — неявная ячейка, ширина у неё, а не у элемента</summary>
-    bool IsLooseCell => Node.Item.Kind == FormItemKind.Field && ParentKind is not FormItemKind.Column;
+    /// <summary>Ячейка сетки: у колонки — её доля из 12, у ряда и элемента — во всю ширину</summary>
+    string CellStyle => Node.Item.Kind == FormItemKind.Column ? FormLayoutEditor.FlexStyle(Node.Item.Width) : "";
 
-    FormItemKind? ParentKind => Draft.Find(Node.Item.Parent ?? "")?.Kind;
+    /// <summary>Классы видимой части: ряд и колонка — блок во всю ячейку, элемент — компактная строка</summary>
+    string BoxClass => Node.Item.Kind == FormItemKind.Column ? "h-100" : "";
 
-    /// <summary>Рамка по типу узла: у ряда и у ячейки цвета разные, элемент — прямоугольник с названием</summary>
-    string CellStyle => Node.Item.Kind switch
+    /// <summary>Рамка по типу узла: у ряда и у колонки цвета разные, элемент — прямоугольник с названием</summary>
+    string BoxStyle => Node.Item.Kind switch
     {
         FormItemKind.Row => FormLayoutEditor.RowStyle,
-        FormItemKind.Column => $"{FormLayoutEditor.ColumnStyle}; {FormLayoutEditor.FlexStyle(Node.Item)}",
+        FormItemKind.Column => $"{FormLayoutEditor.ColumnStyle}; margin:2px",
         FormItemKind.Container => "",
-        _ => IsLooseCell
-            ? $"{FormLayoutEditor.ElementStyle}; {FormLayoutEditor.FlexStyle(Node.Item)}"
-            : FormLayoutEditor.ElementStyle,
+        _ => FormLayoutEditor.ElementStyle,
     };
 
     string Width => Node.Item.Width ?? FormItemWidths.Full;

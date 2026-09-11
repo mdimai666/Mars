@@ -50,16 +50,31 @@ public class FormLayoutDraftTests
     public void PlaceField_PutsRemovedFieldBack_IntoItsOwnZone()
     {
         var draft = Draft();
+        var column = draft.AddColumn(draft.AddRow(null)!.Key, FormItemWidths.Full)!;
         draft.UnplacedFields.Should().BeEmpty("все поля провайдера уже стоят в раскладке");
 
         draft.Remove("title").Should().BeTrue();
         draft.UnplacedFields.Select(f => f.Key).Should().Equal("title");
 
-        draft.PlaceField("title", null).Should().NotBeNull();
+        draft.PlaceField("title", column.Key).Should().NotBeNull();
 
         draft.UnplacedFields.Should().BeEmpty();
         draft.Find("title")!.Zone.Should().Be("main", "поле возвращается в свою зону по умолчанию");
         draft.Find("title")!.Field.Should().NotBeNull("дескриптор берётся из определения провайдера");
+    }
+
+    [Fact]
+    public void PlaceField_OutsideColumn_IsRejected()
+    {
+        var draft = Draft();
+        var tab = draft.AddContainer("main", "Основное")!;
+
+        draft.PlaceField("title", null).Should().BeNull("в корне зоны элементу места нет");
+        draft.PlaceField("title", tab.Key).Should().BeNull("в контейнере живут только ряды");
+        draft.Find("title")!.Parent.Should().BeNull("неудачная попытка ничего не двигает");
+
+        var column = draft.AddColumn(draft.AddRow(tab.Key)!.Key, FormItemWidths.Half)!;
+        draft.PlaceField("title", column.Key).Should().NotBeNull();
     }
 
     [Fact]
@@ -143,11 +158,13 @@ public class FormLayoutDraftTests
         title.Zone.Should().Be("main");
 
         var tab = draft.AddContainer("side", "Публикация")!;
+        var sideColumn = draft.AddColumn(draft.AddRow(tab.Key)!.Key, FormItemWidths.Half)!;
 
-        draft.Move(title.Key, tab.Key).Should().BeTrue();
+        draft.Move(title.Key, tab.Key).Should().BeFalse("элемент не может лежать прямо в контейнере");
+        draft.Move(title.Key, sideColumn.Key).Should().BeTrue();
 
         draft.Find(title.Key)!.Zone.Should().Be("side", "зона переезжает вместе с узлом");
-        draft.Find(title.Key)!.Parent.Should().Be(tab.Key);
+        draft.Find(title.Key)!.Parent.Should().Be(sideColumn.Key);
         draft.Find(column.Key)!.Parent.Should().Be(row.Key);
     }
 

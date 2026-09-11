@@ -17,7 +17,7 @@ public class PostFormBuilderTests
 
         var form = PostFormBuilder.Build(postType, Normalizer);
 
-        form.Items.Select(i => (i.Key, i.Zone)).Should().Equal(
+        form.Fields().Select(i => (i.Key, i.Zone)).Should().Equal(
             (SystemFieldsCatalog.Title, "main"),
             (SystemFieldsCatalog.Slug, "main"),
             (SystemFieldsCatalog.Content, "main"),
@@ -31,7 +31,10 @@ public class PostFormBuilderTests
             (SystemFieldsCatalog.Author, "publish"),
             (SystemFieldsCatalog.Categories, "extra"),
             (SystemFieldsCatalog.Tags, "extra"));
+
         form.OwnerModel.Should().Be("post.article");
+        form.Items.Where(i => i.Field is not null).Should()
+            .OnlyContain(i => i.Parent!.StartsWith("column-"), "элементы живут только в колонках");
     }
 
     [Fact]
@@ -39,7 +42,7 @@ public class PostFormBuilderTests
     {
         var postType = Type([PostTypeConstants.Features.Content], Meta("subtitle", 1));
 
-        var keys = PostFormBuilder.Build(postType, Normalizer).Items.Select(i => i.Key);
+        var keys = PostFormBuilder.Build(postType, Normalizer).Fields().Select(i => i.Key);
 
         keys.Should().Equal(SystemFieldsCatalog.Title, SystemFieldsCatalog.Slug,
             SystemFieldsCatalog.Content, "subtitle",
@@ -160,14 +163,14 @@ public class PostFormBuilderTests
 
         var form = PostFormBuilder.Build(postType, Normalizer);
 
-        form.Items.Select(i => i.Key).Should().StartWith(SystemFieldsCatalog.Tags, "subtitle");
+        form.Fields().Select(i => i.Key).Should().StartWith(SystemFieldsCatalog.Tags, "subtitle");
 
-        var tags = form.Items.First(i => i.Key == SystemFieldsCatalog.Tags);
+        var tags = form.Fields().First(i => i.Key == SystemFieldsCatalog.Tags);
         tags.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
         tags.Field!.Rules.Should().BeEmpty();
         tags.Field.Editor.Should().Be(FormEditorCatalog.Tags, "редактор слота — из общего каталога и параметров типа");
 
-        form.Items.First(i => i.Key == "subtitle").Visible.Should().BeFalse();
+        form.Fields().First(i => i.Key == "subtitle").Visible.Should().BeFalse();
     }
 
     [Fact]

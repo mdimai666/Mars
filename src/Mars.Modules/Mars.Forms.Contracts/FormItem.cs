@@ -70,4 +70,13 @@ public static class FormItemWidths
     public const string Half = "half";
     public const string Third = "third";
     public const string Quarter = "quarter";
+
+    /// <summary>Сколько долей из 12 занимает ширина (null и неизвестное — все 12)</summary>
+    public static int Span(string? width) => width switch
+    {
+        Half => 6,
+        Third => 4,
+        Quarter => 3,
+        _ => 12,
+    };
 }

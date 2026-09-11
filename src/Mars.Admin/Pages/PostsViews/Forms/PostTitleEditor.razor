@@ -1,12 +1,16 @@
-@namespace Mars.Forms.Front.Editors
+@using Mars.Forms.Front
+@using Microsoft.FluentUI.AspNetCore.Components
 
-@* Встроенный редактор короткой строки *@
+@* Редактор системного слота «заголовок»: крупное поле на всю ширину *@
 
 <FluentTextField Value="@(Binding.ValueAt(Index) as string)"
                  ValueChanged="@(v => Binding.SetValueAt(Index, v))"
                  Name="@Binding.Field.Key"
                  Disabled="@Binding.ReadOnly"
-                 Required="@Binding.Field.Required" />
+                 Required="@Binding.Field.Required"
+                 Appearance="FluentInputAppearance.Filled"
+                 Class="w-100"
+                 Style="zoom:1.4" />
 
 @code {
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;

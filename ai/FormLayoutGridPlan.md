@@ -205,8 +205,9 @@ Divider    <hr>
   внутренней рамкой), колонка — вертикальный список элементов и вложенных рядов; в корне зоны
   и в контейнере кнопка только «Ряд», в ряду — «Колонка», в колонке — «Ряд/Заголовок/Разделитель».
 
-Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 104/104;
-`Mars.Admin.Framework.Tests` 49/49; `Mars.Server.Tests` 473/473; интеграционные
+Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 105/105 (включая оборачивание
+свободных элементов и раскладку половина+половина в один ряд); `Mars.Admin.Framework.Tests` 50/50;
+`Mars.Server.Tests` 473/473; интеграционные
 `Controllers.PostTypes` 19/19; E2E (`MARS_E2E_TESTS=1`) — `CreatePostTests`,
 `EditPostMetaFieldsTests`, `EditPostRelationFieldTests`, `EditPostSystemFieldEditorTests`,
 `EditUserPageTests` и новый `EditPostLayoutGridTests` (два контейнера-таба, ряд из двух колонок

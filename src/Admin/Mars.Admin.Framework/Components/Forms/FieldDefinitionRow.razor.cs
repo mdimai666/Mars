@@ -11,9 +11,9 @@ namespace Mars.Admin.Framework.Components.Forms;
 /// <summary>
 /// Строка общего редактора определений — сворачиваемая карточка поля. Состав редактируемого задаёт
 /// <see cref="FormDefinitionCapabilities"/>, доменные настройки типа рисуют панели из реестра
-/// <see cref="IFormFieldTypeSettingsLocator"/> (у системных слотов панелей нет — только правила и редактор).
-/// Общие параметры правят определение (<see cref="OnChanged"/>), панели — модель источника
-/// (<see cref="OnSourceChanged"/>), поэтому источник остаётся единственным хранилищем.
+/// <see cref="IFormFieldTypeSettingsLocator"/>. Общие параметры правят определение
+/// (<see cref="OnChanged"/>), панели — модель источника (<see cref="OnSourceChanged"/>),
+/// поэтому источник остаётся единственным хранилищем.
 /// </summary>
 public partial class FieldDefinitionRow
 {

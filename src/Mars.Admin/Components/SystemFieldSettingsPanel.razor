@@ -5,8 +5,17 @@
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@* Доменные настройки системного слота в общем редакторе определений: язык редактора кода.
-   Всё остальное (редактор, правила) — общие параметры определения, правит сам редактор. *@
+@* Доменные настройки системного слота в общем редакторе определений: строки статусов типа
+   и язык редактора кода. Всё остальное (редактор, правила) — общие параметры определения,
+   правит сам редактор. *@
+
+@if (Model is not null && Definition.Key == SystemFieldsCatalog.Status)
+{
+    <div class="vstack">
+        <label>Статусы</label>
+        <PostStatusesEditor Statuses="Model.PostStatusList" OnChanged="OnStatusesChangedAsync" />
+    </div>
+}
 
 @if (Model is not null && Definition.Editor == FormEditorCatalog.Code)
 {
@@ -36,6 +45,8 @@
     PostTypeEditModel? Model => Definition.Source as PostTypeEditModel;
 
     string CodeLang => SystemFieldsCatalog.CodeLang(Definition.Key, Model?.SystemFields);
+
+    Task OnStatusesChangedAsync() => OnSourceChanged.InvokeAsync(Definition);
 
     async Task SetCodeLangAsync(string value)
     {

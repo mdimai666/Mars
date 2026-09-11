@@ -23,9 +23,12 @@ public partial class EditPostTypePage
     string url = "";
     string import_json = "";
     bool visibleImportModal;
-    bool statusesCollapsed = true;
+    bool systemFieldsCollapsed;
+    bool metaFieldsCollapsed;
 
-    void ToggleStatuses() => statusesCollapsed = !statusesCollapsed;
+    void ToggleSystemFields() => systemFieldsCollapsed = !systemFieldsCollapsed;
+
+    void ToggleMetaFields() => metaFieldsCollapsed = !metaFieldsCollapsed;
 
     protected override void OnInitialized()
     {

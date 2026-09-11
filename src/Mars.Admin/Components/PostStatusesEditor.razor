@@ -1,0 +1,74 @@
+@using Mars.Admin.Pages.PostTypeViews
+@using Mars.Cms.Contracts.PostTypes
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Строки статусов типа: название, slug, цвет и порядок (схема канбан-доски). *@
+
+<div class="vstack small">
+    <div class="st-item row mb-3">
+        <div class="col-lg-3">@AppRes.Name</div>
+        <div class="col-lg-3">@AppRes.Slug</div>
+        <div class="col-lg-2">Цвет</div>
+        <div class="col-lg-2">Порядок</div>
+        <div class="col-lg-2 d-flex gap-2">
+            <FluentButton OnClick="AddAsync">Добавить</FluentButton>
+            <FluentMenuButton ButtonAppearance="Appearance.Neutral" Text="@AppRes.Actions">
+                <FluentMenuItem OnClick="AddDefaultsAsync">Добавить стандартные</FluentMenuItem>
+            </FluentMenuButton>
+        </div>
+    </div>
+
+    @foreach (var item in Statuses)
+    {
+        var status = item;
+        <div class="st-item row mb-3">
+            <div class="col-lg-3">
+                <FluentTextField @bind-Value="status.Title" />
+            </div>
+            <div class="col-lg-3">
+                <FluentTextField @bind-Value="status.Slug" />
+            </div>
+            <div class="col-lg-2">
+                <FluentTextField @bind-Value="status.Color" />
+            </div>
+            <div class="col-lg-2">
+                <FluentNumberField @bind-Value="status.Order" />
+            </div>
+            <div class="col-lg-2">
+                <DFluentDeleteButton OnConfirm="@(e => RemoveAsync(status))" />
+            </div>
+        </div>
+    }
+
+    @if (Statuses.Count == 0)
+    {
+        <div class="text-secondary">
+            <SharedContentNoRecords />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public List<PostStatusEditModel> Statuses { get; set; } = default!;
+
+    /// <summary>Правка списка: строка редактора перечитывает источник</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    async Task AddAsync()
+    {
+        Statuses.Add(new() { Order = Statuses.Count });
+        await OnChanged.InvokeAsync();
+    }
+
+    async Task AddDefaultsAsync()
+    {
+        Statuses.AddRange(PostStatusEditModel.DefaultStatuses());
+        await OnChanged.InvokeAsync();
+    }
+
+    async Task RemoveAsync(PostStatusEditModel status)
+    {
+        Statuses.Remove(status);
+        await OnChanged.InvokeAsync();
+    }
+}

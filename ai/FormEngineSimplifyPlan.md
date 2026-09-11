@@ -82,6 +82,9 @@ Mars.Forms.Abstractions
 `FormFieldSettings` — R1 (нужна миграция чтения), `IFormFieldTypeSettingsLocator` — R1,
 `FormValues`+кодек — R6.
 
+Итог по `IFormFieldTypeSettingsLocator`: сохранён осознанно — см. «Решение: панели настроек —
+не редакторы значений» в конце.
+
 ### R1 — один тип поля — выполнено 2026-09-10
 
 - Убраны `FormFieldDescriptor.SettingsOnForm` и легаси `FormItem.Rules|Editor`: раскладка
@@ -334,6 +337,68 @@ Mars.Forms.Abstractions
 `Mars.Server.Tests` 473/473. E2E: `CreatePostTests`, `EditPostMetaFieldsTests`, `EditUserPageTests`,
 `EditPostSystemFieldEditorTests` и новый `EditPostRelationFieldTests` (поле-связь: рендер
 редактора из дескриптора, выбор цели пикером, запись `ModelId` в EAV) — зелёные.
+
+## Решение: панели настроек — не редакторы значений (зафиксировано 2026-09-12)
+
+Вопрос, который план не фиксировал: почему доменные настройки поля
+(`SystemFieldSettingsPanel`, `MetaFieldSettingsPanel`) — панели реестра
+`IFormFieldTypeSettingsLocator`, а не «зарегистрированные редакторы» в `IFormEditorLocator`.
+Незафиксированность дала расхождение: п.3 «Зачем» считал реестр панелей лишним, R0 отдал
+`IFormFieldTypeSettingsLocator` в R1, целевая модель его не содержит — при этом он выжил и
+работает (R7, R8), а в R1 про него не было ни слова. Ниже — решение и его техническая причина.
+
+**Панель и редактор правят разные объекты.**
+
+| | Редактор значения | Панель настроек |
+|---|---|---|
+| Что правит | значение поля в форме | настройку поля, точнее — доменную модель владельца |
+| Контракт | один параметр `FormFieldBinding` (`Item` + `FormFieldDescriptor` + `IFormValueStore`) | `FormFieldDefinition` + `OnSourceChanged` |
+| Ось регистрации | ключ редактора: `Register(editorKey, component, multiple, title, params FormFieldType[])` | скоуп + тип поля: `Register(scope, component, params FormFieldType[])` |
+| Выбор | админ выбирает ключ (`FormFieldDefinition.Editor`, `EditorsFor`) | выбора нет: рисуются все панели типа (`PanelsFor`) |
+| Слой | общий: `Mars.Forms.Front` → только `Mars.Forms.Contracts` | компонент админки/фреймворка, знает домен |
+| Обратный вызов | значение уходит в стор, рендер приходит сам | `OnSourceChanged` + явный `StateHasChanged()` |
+
+**Почему это нельзя сделать редактором** (не «не захотели», а не проходит):
+
+1. **Доменная модель недоступна общему слою.** Панель берёт модель владельца из
+   `FormFieldDefinition.Source` (`MetaFieldDefinitions.Fill` — `Source = field`;
+   `PostTypeEditModel.BuildSystemFieldDefinitions` — `Source = this`) и пишет прямо в неё
+   (`SetAsync(field => field.ModelName = value)`, `SetSystemFieldCodeLang`). Редактор значения
+   получает `FormFieldDescriptor` — `record` с `init`-свойствами, то есть read-only снимок для
+   отрисовки, — и живёт в слое, который не знает `MetaFieldEditModel`/`PostTypeEditModel`;
+   протащить их в контракт общего слоя нельзя.
+2. **Источник — единственное хранилище, определение — проекция.** Кодек
+   `MetaFieldDefinitions.Apply`/`Fill` умеет переводить только общий поднабор параметров
+   (Title/Key/Required/Editor/ModelName/Rules…); доменные вещи (цель связи с подтипами, `Kind`,
+   `RemoveMode`, `ViewMode`, `DropZone`, генератор с префиксами по категориям, варианты,
+   статусы, `codeLang`) в нём не описаны. Их правка обязана идти мимо определения — прямо в
+   модель, а наружу вернуть «перечитай»: отсюда `OnSourceChanged` вместо `OnChanged` и явный
+   `StateHasChanged()` в `FieldDefinitionRow.OnPanelChangedAsync` (параметры панели меняются
+   по ссылке, без перерисовки строка осталась бы со старыми значениями).
+3. **Один визуальный вид — разные хранилища, поэтому нужен скоуп.** «Язык кода» читается из
+   `MetaFieldEditModel.CodeLang` для метаполя и из `post_types.Options["systemFields"]` для
+   системного слота (`SystemFieldsCatalog.CodeLang` / `SetSystemFieldCodeLang`). С единственным
+   ключом редактора компонент не смог бы выбрать хранилище; скоупы `meta` и `post.systemfields`
+   различают как раз одинаковые панели.
+4. **У панели есть контекст страницы, у редактора — нет.** Панель метаполя получает каскадом
+   `MetaRelationModels` (цели связей) и инжектит `IDialogService` (выбор папки загрузки).
+   Редактор значения рендерится в любой форме (пост, пользователь, категория) и должен
+   обходиться только дескриптором.
+5. **Ось «выбор» не подходит.** Редакторов одного типа у поля может быть несколько, и админ
+   выбирает ключ; доменные настройки типа безусловны (у Relation всегда цель связи, у File
+   всегда папка загрузки), выбирать нечего — отсюда регистрация по типу поля и «рисуются все».
+
+**Граница зафиксирована в коде:** общие параметры (заголовок, ключ, описание, обязательность,
+кратность, редактор, правила, min/max, порядок, теги) правит строка `FieldDefinitionRow`;
+панель правит только то, чего нет в общем наборе, и общих параметров не дублирует.
+
+**Итог по реестру.** Из шести реестров п.3 «Зачем» удалены `IFormContainerLocator` и
+`IHeavyMetaValueEditors`; `IFormFieldTypeSettingsLocator` сохранён осознанно: это не дубль
+`IFormEditorLocator`, а вторая ось того же механизма (скоуп + тип поля вместо ключа редактора).
+Механика у обоих одна и намеренно одинаковая — синглтон из DI, `Register` в любой момент,
+словарь собирается при запросе и подменяется атомарно («аналогично локатору редакторов»),
+поэтому регистрация панели из плагина после старта тоже видна. Пункт R0 про
+`IFormFieldTypeSettingsLocator` закрыт решением «оставить», а не удалением.
 
 ## E2E-проверка формы (рецепт)
 

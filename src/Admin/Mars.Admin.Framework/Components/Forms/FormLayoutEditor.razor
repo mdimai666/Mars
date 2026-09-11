@@ -13,6 +13,11 @@ else
 {
     <FluentDragContainer TItem="FormItem" OnDropEnd="OnDropEnd" Class="vstack gap-3">
 
+        <div class="hstack gap-2 align-items-center justify-content-end">
+            <FormLayoutIconButton Icon="@(new Icons.Regular.Size16.ArrowUndo())"
+                                  Title="Сбросить к стандартной раскладке" OnClick="ResetAsync" />
+        </div>
+
         @if (_draft.UnplacedFields.Count > 0)
         {
             <div class="card">
@@ -77,10 +82,6 @@ else
                 </div>
             }
         </CascadingValue>
-
-        <div>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="ResetAsync">Сбросить к стандартной</FluentButton>
-        </div>
 
     </FluentDragContainer>
 }

@@ -1,16 +1,17 @@
 using Mars.Contracts.Resources;
 using Mars.Forms.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
 namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
-/// Дизайнер раскладки формы: плоский список по зонам — порядок, зона, видимость, ширина
-/// и маркеры секций (поля идут за маркером до следующего — как Tab в ACF).
-/// Параметры самих полей (правила, редактор) здесь не редактируются: они живут в настройках
-/// владельца формы и правятся на странице типа. Наружу уходит только раскладка
-/// (<see cref="FormLayoutSettings"/>): дескрипторы не хранятся, их каждый раз отдаёт провайдер.
+/// Дизайнер раскладки формы: зоны, контейнеры-табы и сетка ряды/колонки, собранная
+/// перетаскиванием. Все операции ведёт <see cref="FormLayoutDraft"/>, а наружу уходит только
+/// раскладка (<see cref="FormLayoutSettings"/>): дескрипторы не хранятся, их каждый раз отдаёт
+/// провайдер. Параметры самих полей (правила, редактор) здесь не редактируются — они живут
+/// в настройках владельца формы.
 /// </summary>
 public partial class FormLayoutEditor
 {
@@ -28,184 +29,77 @@ public partial class FormLayoutEditor
     /// </summary>
     [Parameter] public EventCallback OnResetRequested { get; set; }
 
-    readonly List<LayoutRow> _rows = [];
-    List<FormZoneDescriptor> _zones = [];
+    /// <summary>Черновик раскладки — состояние дизайнера (переживает ре-рендеры)</summary>
+    public FormLayoutDraft Draft => _draft ??= new FormLayoutDraft([], []);
+
+    FormLayoutDraft? _draft;
     FormDefinition? _source;
 
-    /// <summary>Зона, в которую добавляется новая секция</summary>
-    public string NewSectionZone { get; set; } = "";
-
-    public IReadOnlyList<FormZoneDescriptor> Zones => _zones;
-
-    /// <summary>Варианты ширины элемента в зоне (пустой ключ — на всю ширину)</summary>
+    /// <summary>Варианты ширины колонки (пустой ключ — на всю ширину)</summary>
     public static readonly IReadOnlyList<(string Key, string Title)> Widths =
     [
-        ("", "—"),
         (FormItemWidths.Full, "Во всю ширину"),
         (FormItemWidths.Half, "Половина"),
         (FormItemWidths.Third, "Треть"),
         (FormItemWidths.Quarter, "Четверть"),
     ];
 
+    /// <summary>Зона приёма: пунктирная рамка и минимальная высота, чтобы пустое место было видно</summary>
+    public static string DropAreaStyle
+        => "border:1px dashed var(--neutral-stroke-accessible); border-radius:4px; padding:6px; min-height:44px";
+
     protected override void OnParametersSet()
     {
         if (ReferenceEquals(_source, Definition)) return;
 
         _source = Definition;
-        Rebuild();
+        _draft = Definition is null ? null : new FormLayoutDraft(Definition.Items, ZonesOf(Definition));
     }
 
-    void Rebuild()
-    {
-        _rows.Clear();
-
-        if (Definition is not { } definition)
-        {
-            _zones = [];
-            return;
-        }
-
-        _zones = definition.Zones.Count > 0
+    static IReadOnlyList<FormZoneDescriptor> ZonesOf(FormDefinition definition)
+        => definition.Zones.Count > 0
             ? definition.Zones.ToList()
-            : definition.Items.Select(i => i.Zone ?? "")
+            : definition.Items.Select(item => item.Zone ?? "")
                               .Distinct()
                               .Select(zone => new FormZoneDescriptor { Key = zone, Title = zone })
                               .ToList();
 
-        var fallbackZone = _zones.FirstOrDefault()?.Key ?? "";
-        foreach (var item in definition.Items)
-        {
-            _rows.Add(new LayoutRow
-            {
-                Key = item.Key,
-                Field = item.Field,
-                Zone = string.IsNullOrEmpty(item.Zone) ? fallbackZone : item.Zone,
-                Title = item.Title,
-                SectionTitle = item.Kind == FormItemKind.Heading ? item.Title : null,
-                Visible = item.Visible,
-                Width = item.Width,
-            });
-        }
+    /// <summary>Дерево зоны для дизайнера — тот же проектор, что и у рендера формы</summary>
+    public IReadOnlyList<FormLayoutNode> TreeOf(string zone) => FormLayoutTree.Build(Draft.Items, zone);
 
-        if (_zones.All(z => z.Key != NewSectionZone))
-            NewSectionZone = fallbackZone;
-    }
+    /// <summary>Цель броска в корень зоны (вне контейнеров)</summary>
+    public static LayoutDropTarget RootTarget(string zone) => new(zone, null, null);
 
-    /// <summary>Строки зоны в порядке отображения; Depth = 1 у полей, идущих за маркером секции</summary>
-    public IEnumerable<(LayoutRow Row, int Depth)> EntriesOf(string zone)
+    /// <summary>Заголовок узла: переопределение раскладки, затем ключ ресурса, затем заголовок поля</summary>
+    public string DisplayTitle(FormItem item)
     {
-        var depth = 0;
+        if (!string.IsNullOrWhiteSpace(item.Title)) return item.Title;
+        if (item.Field is not { } descriptor) return item.Key;
 
-        foreach (var row in _rows.Where(r => r.Zone == zone))
-        {
-            yield return (row, depth);
-
-            if (row.IsSection) depth = 1;
-        }
+        return string.IsNullOrEmpty(descriptor.TitleKey) ? descriptor.Title : L[descriptor.TitleKey];
     }
 
-    public string ZoneTitle(string key) => _zones.FirstOrDefault(zone => zone.Key == key)?.Title ?? key;
+    /// <summary>Имя таба контейнера</summary>
+    public static string TabTitle(FormItem container)
+        => string.IsNullOrWhiteSpace(container.Title) ? "Контейнер" : container.Title;
 
-    /// <summary>Заголовок строки: переопределение раскладки, затем ключ ресурса, затем заголовок поля</summary>
-    public string DisplayTitle(LayoutRow row)
+    /// <summary>Доля ширины ячейки в ряду — дизайнер показывает пропорции как на форме</summary>
+    public static string FlexStyle(FormItem item) => item.Width switch
     {
-        if (!string.IsNullOrWhiteSpace(row.Title)) return row.Title;
-        if (row.Field is not { } field) return row.Key;
-
-        return string.IsNullOrEmpty(field.TitleKey) ? field.Title : L[field.TitleKey];
-    }
+        FormItemWidths.Half => "flex:0 0 50%; max-width:50%",
+        FormItemWidths.Third => "flex:0 0 33%; max-width:33%",
+        FormItemWidths.Quarter => "flex:0 0 25%; max-width:25%",
+        _ => "",
+    };
 
     //=====================================
     // изменения
 
-    public Task EmitAsync()
-        => ValueChanged.InvokeAsync(new FormLayoutSettings { Items = _rows.Select(ToItem).ToList() });
+    public Task EmitAsync() => ValueChanged.InvokeAsync(Draft.ToSettings());
 
-    static FormItem ToItem(LayoutRow row) => row.IsSection
-        ? new FormItem
-        {
-            Key = row.Key,
-            Kind = FormItemKind.Heading,
-            Zone = row.Zone,
-            Title = row.SectionTitle,
-        }
-        : new FormItem
-        {
-            Key = row.Key,
-            Zone = row.Zone,
-            Title = string.IsNullOrWhiteSpace(row.Title) ? null : row.Title,
-            Visible = row.Visible,
-            Width = row.Width,
-        };
-
-    /// <summary>Сосед по зоне: раскладка плоская, порядок строк и есть порядок отображения</summary>
-    public bool CanMove(LayoutRow row, int delta)
+    public async Task AddContainerAsync(string zone)
     {
-        var zone = _rows.Where(r => r.Zone == row.Zone).ToList();
-        var index = zone.IndexOf(row);
-        var target = index + delta;
-
-        return index >= 0 && target >= 0 && target < zone.Count;
-    }
-
-    public async Task MoveAsync(LayoutRow row, int delta)
-    {
-        var zone = _rows.Where(r => r.Zone == row.Zone).ToList();
-        var index = zone.IndexOf(row);
-        var target = index + delta;
-        if (index < 0 || target < 0 || target >= zone.Count) return;
-
-        var other = zone[target];
-        var left = _rows.IndexOf(row);
-        var right = _rows.IndexOf(other);
-
-        (_rows[left], _rows[right]) = (_rows[right], _rows[left]);
-
-        await EmitAsync();
-    }
-
-    public async Task SetZoneAsync(LayoutRow row, string zone)
-    {
-        if (string.IsNullOrEmpty(zone) || row.Zone == zone) return;
-
-        row.Zone = zone;
-        await EmitAsync();
-    }
-
-    public async Task SetWidthAsync(LayoutRow row, string width)
-    {
-        row.Width = string.IsNullOrEmpty(width) ? null : width;
-        await EmitAsync();
-    }
-
-    public async Task SetSectionTitleAsync(LayoutRow row, string title)
-    {
-        row.SectionTitle = title;
-        await EmitAsync();
-    }
-
-    /// <summary>Добавляет маркер секции в конец выбранной зоны</summary>
-    public async Task AddSectionAsync()
-    {
-        var zone = _zones.Any(z => z.Key == NewSectionZone) ? NewSectionZone : _zones.FirstOrDefault()?.Key;
-        if (zone is null) return;
-
-        _rows.Add(new LayoutRow
-        {
-            Key = NewSectionKey(),
-            Zone = zone,
-            SectionTitle = "Секция",
-        });
-
-        await EmitAsync();
-    }
-
-    /// <summary>Убирает маркер секции: её поля остаются на своих местах</summary>
-    public async Task RemoveSectionAsync(LayoutRow section)
-    {
-        if (!_rows.Remove(section)) return;
-
-        await EmitAsync();
+        if (Draft.AddContainer(zone, "Контейнер") is not null) await EmitAsync();
     }
 
     public async Task ResetAsync()
@@ -214,40 +108,18 @@ public partial class FormLayoutEditor
         await OnResetRequested.InvokeAsync();
     }
 
-    string NewSectionKey()
+    /// <summary>Обработчик броска: у <c>FluentDragContainer.OnDropEnd</c> void-делегат</summary>
+    public void OnDropEnd(FluentDragEventArgs<FormItem> args) => _ = DropAsync(args);
+
+    /// <summary>Перенос узла: зона, родитель и место приезжают с целью броска</summary>
+    public async Task DropAsync(FluentDragEventArgs<FormItem> args)
     {
-        var taken = _rows.Select(row => row.Key).ToHashSet();
+        if (args.Source.Item is not { } dragged) return;
+        if (args.Target.Data is not LayoutDropTarget target) return;
 
-        string key;
-        do
-        {
-            key = FormItem.NewKey(FormItemKind.Heading);
-        }
-        while (taken.Contains(key));
-
-        return key;
+        if (Draft.Move(dragged.Key, target.ParentKey, target.BeforeKey, target.Zone)) await EmitAsync();
     }
 
-    /// <summary>Строка элемента раскладки: то, что правит дизайнер</summary>
-    public sealed class LayoutRow
-    {
-        public required string Key { get; init; }
-
-        /// <summary>Дескриптор поля провайдера (у маркера секции отсутствует); в раскладку не сохраняется</summary>
-        public FormFieldDescriptor? Field { get; init; }
-
-        public string Zone { get; set; } = "";
-
-        /// <summary>Заголовок строки-заголовка: неполевой узел <see cref="FormItemKind.Heading"/></summary>
-        public string? SectionTitle { get; set; }
-
-        /// <summary>Переопределение заголовка поля (пусто = заголовок провайдера)</summary>
-        public string? Title { get; set; }
-
-        public bool Visible { get; set; } = true;
-
-        public string? Width { get; set; }
-
-        public bool IsSection => SectionTitle is not null;
-    }
+    /// <summary>Куда бросают узел: зона, ключ родителя и узел, перед которым вставляют (null — в конец)</summary>
+    public sealed record LayoutDropTarget(string Zone, string? ParentKey, string? BeforeKey);
 }

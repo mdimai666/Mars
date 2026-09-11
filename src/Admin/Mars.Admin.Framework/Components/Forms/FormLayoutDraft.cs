@@ -58,16 +58,17 @@ public class FormLayoutDraft
         => Add(FormItemKind.Container, null, zone, title);
 
     /// <summary>Ряд в контейнер, колонку или в корень зоны</summary>
-    public FormItem? AddRow(string? parent) => Add(FormItemKind.Row, parent);
+    public FormItem? AddRow(string? parent, string? zone = null) => Add(FormItemKind.Row, parent, zone);
 
     /// <summary>Колонка в ряд — со своей шириной (<see cref="FormItemWidths"/>)</summary>
     public FormItem? AddColumn(string rowKey, string? width = null)
         => Add(FormItemKind.Column, rowKey, null, null, width);
 
-    public FormItem? AddHeading(string? parent, string text)
-        => Add(FormItemKind.Heading, parent, null, text);
+    public FormItem? AddHeading(string? parent, string? zone = null, string? text = null)
+        => Add(FormItemKind.Heading, parent, zone, text);
 
-    public FormItem? AddDivider(string? parent) => Add(FormItemKind.Divider, parent);
+    public FormItem? AddDivider(string? parent, string? zone = null)
+        => Add(FormItemKind.Divider, parent, zone);
 
     /// <summary>
     /// Поле встаёт в конец родителя (parent = null — в корень зоны): уже размещённое переносится,
@@ -79,12 +80,13 @@ public class FormLayoutDraft
         if (field is null) return null;
 
         if (_items.Any(item => item.Key == fieldKey))
-            return Move(fieldKey, parent, -1, zone) ? Find(fieldKey) : null;
+            return Move(fieldKey, parent, null, zone) ? Find(fieldKey) : null;
 
         return Add(field, parent, zone);
     }
 
-    FormItem? Add(FormItemKind kind, string? parent, string? zone = null, string? title = null, string? width = null)
+    /// <summary>Новый узел в конец родителя: parent = null — корень зоны (её задаёт <paramref name="zone"/>)</summary>
+    public FormItem? Add(FormItemKind kind, string? parent, string? zone = null, string? title = null, string? width = null)
         => Add(new FormItem { Key = NewKey(kind), Kind = kind, Title = title, Width = width }, parent, zone);
 
     FormItem? Add(FormItem node, string? parent, string? zone = null)
@@ -108,11 +110,11 @@ public class FormLayoutDraft
     // перенос и удаление
 
     /// <summary>
-    /// Переносит узел вместе с поддеревом к новому родителю (null — корень зоны) на позицию
-    /// <paramref name="index"/> среди детей (-1 — в конец). Перенос в собственное поддерево и на
-    /// недопустимого родителя отменяется; зона узла переезжает вместе с ним.
+    /// Переносит узел вместе с поддеревом к новому родителю (null — корень зоны): перед узлом
+    /// <paramref name="beforeKey"/> среди детей или в конец, если он не задан. Перенос в собственное
+    /// поддерево и на недопустимого родителя отменяется; зона переезжает вместе с узлом.
     /// </summary>
-    public bool Move(string key, string? parent, int index = -1, string? zone = null)
+    public bool Move(string key, string? parent, string? beforeKey = null, string? zone = null)
     {
         var indexInItems = _items.FindIndex(item => item.Key == key);
         if (indexInItems < 0) return false;
@@ -132,11 +134,9 @@ public class FormLayoutDraft
         _items.RemoveAll(item => block.Any(moved => moved.Key == item.Key));
 
         var siblings = parent is null ? RootsOf(targetZone ?? "") : ChildrenOf(parent);
-        var position = index >= 0 && index < siblings.Count
-            ? _items.IndexOf(siblings[index])
-            : _items.Count;
+        var before = beforeKey is null ? null : siblings.FirstOrDefault(item => item.Key == beforeKey);
 
-        _items.InsertRange(position, block);
+        _items.InsertRange(before is null ? _items.Count : _items.IndexOf(before), block);
         return true;
     }
 

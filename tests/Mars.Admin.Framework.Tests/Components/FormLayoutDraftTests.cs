@@ -116,7 +116,7 @@ public class FormLayoutDraftTests
     }
 
     [Fact]
-    public void Move_ToIndex_ReordersSiblings()
+    public void Move_BeforeNode_ReordersSiblings()
     {
         var draft = Draft();
         var row = draft.AddRow(null)!;
@@ -126,7 +126,7 @@ public class FormLayoutDraftTests
 
         draft.ChildrenOf(column.Key).Select(i => i.Key).Should().Equal(title.Key, slug.Key);
 
-        draft.Move(slug.Key, column.Key, 0).Should().BeTrue();
+        draft.Move(slug.Key, column.Key, title.Key).Should().BeTrue();
 
         draft.ChildrenOf(column.Key).Select(i => i.Key).Should().Equal(slug.Key, title.Key);
     }

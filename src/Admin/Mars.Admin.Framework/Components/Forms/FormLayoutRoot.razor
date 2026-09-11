@@ -1,0 +1,24 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Ряд-уровень зоны или контейнера: дети, зона приёма «в конец» и кнопки добавления.
+   Parent = null — корень зоны. *@
+<FluentDropZone TItem="FormItem" Data="@Target()" Draggable="false" Droppable="true" StopPropagation="true"
+                Style="@FormLayoutEditor.DropAreaStyle">
+    <div class="d-flex gap-2 flex-wrap align-items-start">
+        @foreach (var node in Nodes)
+        {
+            <FormLayoutCell Node="@node" />
+        }
+        @if (Nodes.Count == 0)
+        {
+            <span class="text-secondary">пусто: перетащите сюда ряд, колонку или поле</span>
+        }
+    </div>
+</FluentDropZone>
+
+<div class="hstack gap-2 mt-2">
+    <FluentButton Appearance="Appearance.Neutral" OnClick="AddRowAsync">Ряд</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="AddHeadingAsync">Заголовок</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="AddDividerAsync">Разделитель</FluentButton>
+</div>

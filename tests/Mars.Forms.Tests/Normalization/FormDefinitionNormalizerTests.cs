@@ -218,6 +218,49 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
+    public void ColumnWithBrokenParent_IsDropped_ItsFieldGoesToZoneRoot()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "orphan-col", Parent = "ghost", Kind = FormItemKind.Column, Zone = "main" },
+            new() { Key = "title", Parent = "orphan-col" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        result.Select(i => i.Key).Should().Equal("title", "slug", "status");
+        result.First().Parent.Should().BeNull();
+    }
+
+    [Fact]
+    public void CyclicPlacement_BreaksIntoZoneRoots()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "row-a", Zone = "main", Kind = FormItemKind.Row, Parent = "row-b" },
+            new() { Key = "row-b", Zone = "main", Kind = FormItemKind.Row, Parent = "row-a" },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        result.Where(i => i.Key.StartsWith("row-")).Should().OnlyContain(i => i.Parent == null);
+    }
+
+    [Fact]
+    public void ParentAfterChild_InList_StillAttaches()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "title", Parent = "row-1" },
+            new() { Key = "row-1", Zone = "main", Kind = FormItemKind.Row },
+        };
+
+        var result = _normalizer.Normalize(saved, Defaults());
+
+        result.Single(i => i.Key == "title").Parent.Should().Be("row-1", "порядок узлов в списке не важен");
+    }
+
+    [Fact]
     public void StructureNodeWithFieldKey_IsDropped_FieldSurvives()
     {
         var saved = new List<FormItem>
@@ -243,7 +286,8 @@ public class FormDefinitionNormalizerTests
             new() { Key = "group-1", Zone = "main", Kind = FormItemKind.Heading, Title = "Основное" },
             new() { Key = "slug", Parent = "col-1", Width = FormItemWidths.Half, Visible = false },
             new() { Key = "ghost", Zone = "side" },
-            new() { Key = "orphan-col", Kind = FormItemKind.Column },
+            new() { Key = "orphan-col", Parent = "ghost", Kind = FormItemKind.Column },
+            new() { Key = "status-in-column", Parent = "orphan-col" },
         };
 
         var once = _normalizer.Normalize(saved, Defaults());

@@ -46,9 +46,10 @@ else
                 var loose = tree.Where(node => node.Item.Kind != FormItemKind.Container).ToList();
 
                 <div class="card">
-                    <div class="card-header hstack gap-2 align-items-center">
+                    <div class="card-header hstack gap-2 align-items-center layout-node">
                         <strong>@zone.Title</strong>
-                        <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => AddContainerAsync(zone.Key))" IconStart="@(new Icons.Regular.Size16.Add())">
+                        <FluentButton Appearance="Appearance.Neutral" Class="layout-actions"
+                                      OnClick="@(() => AddContainerAsync(zone.Key))" IconStart="@(new Icons.Regular.Size16.Add())">
                             Контейнер
                         </FluentButton>
                     </div>

@@ -12,6 +12,9 @@ public partial class FormLayoutIconButton
 
     [Parameter] public string? Title { get; set; }
 
+    /// <summary>Дополнительные классы кнопки: дизайнер помечает так действия, скрытые до наведения</summary>
+    [Parameter] public string? Class { get; set; }
+
     [Parameter] public bool Disabled { get; set; }
 
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }

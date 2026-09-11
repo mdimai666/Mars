@@ -3,20 +3,22 @@
 
 @* Ряд-уровень зоны или контейнера: ряды идут вертикальным списком, потому что рядом
    с ними ничего, кроме рядов, стоять не может. Parent = null — корень зоны. *@
-<FluentDropZone TItem="FormItem" Data="@Target()" Draggable="false" Droppable="true" StopPropagation="true"
-                Style="@FormLayoutEditor.DropAreaStyle">
-    <div class="vstack gap-2">
-        @foreach (var node in Nodes)
-        {
-            <FormLayoutCell Node="@node" />
-        }
-        @if (Nodes.Count == 0)
-        {
-            <span class="text-secondary">пусто: перетащите сюда строку</span>
-        }
-    </div>
-</FluentDropZone>
+<div class="layout-node">
+    <FluentDropZone TItem="FormItem" Data="@Target()" Draggable="false" Droppable="true" StopPropagation="true"
+                    Style="@FormLayoutEditor.DropAreaStyle">
+        <div class="vstack gap-2">
+            @foreach (var node in Nodes)
+            {
+                <FormLayoutCell Node="@node" />
+            }
+            @if (Nodes.Count == 0)
+            {
+                <span class="text-secondary">пусто: перетащите сюда строку</span>
+            }
+        </div>
+    </FluentDropZone>
 
-<div class="hstack gap-2 mt-2">
-    <FluentButton Appearance="Appearance.Neutral" OnClick="AddRowAsync" IconStart="@(new Icons.Regular.Size16.Add())">Строка</FluentButton>
+    <div class="hstack gap-2 mt-2 layout-actions">
+        <FluentButton Appearance="Appearance.Neutral" OnClick="AddRowAsync" IconStart="@(new Icons.Regular.Size16.Add())">Строка</FluentButton>
+    </div>
 </div>

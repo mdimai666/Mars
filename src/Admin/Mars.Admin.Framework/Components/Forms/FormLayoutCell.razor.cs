@@ -20,8 +20,8 @@ public partial class FormLayoutCell
     /// <summary>Ячейка сетки: у колонки — её доля из 12, у ряда и элемента — во всю ширину</summary>
     string CellStyle => Node.Item.Kind == FormItemKind.Column ? FormLayoutEditor.FlexStyle(Node.Item.Width) : "";
 
-    /// <summary>Классы видимой части: ряд и колонка — блок во всю ячейку, элемент — компактная строка</summary>
-    string BoxClass => Node.Item.Kind == FormItemKind.Column ? "h-100" : "";
+    /// <summary>Классы видимой части: сам узел (к нему привязаны кнопки при наведении) и растяжка колонки</summary>
+    string NodeClass => Node.Item.Kind == FormItemKind.Column ? "layout-node h-100" : "layout-node";
 
     /// <summary>Рамка по типу узла: у ряда и у колонки цвета разные, элемент — прямоугольник с названием</summary>
     string BoxStyle => Node.Item.Kind switch

@@ -1,0 +1,18 @@
+/*
+  Кнопки добавления и удаления узла видны только при наведении на сам узел и прячутся, когда
+  курсор ушёл во вложенный узел — там свои действия. Место под кнопками сохраняется: visibility,
+  а не display. Видимость узла раздаётся его потомкам кастомным свойством, поэтому вложенный узел
+  перекрывает родителя своим значением, а не показывается вместе с ним.
+*/
+
+::deep .layout-node {
+    --layout-actions: hidden;
+}
+
+::deep .layout-node:hover:not(:has(.layout-node:hover)) {
+    --layout-actions: visible;
+}
+
+::deep .layout-actions {
+    visibility: var(--layout-actions, hidden);
+}

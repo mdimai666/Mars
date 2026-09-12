@@ -212,7 +212,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var created = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.Id == postTypeRequest.Id);
         created.Should().NotBeNull();
-        var createdField = created!.MetaFields.Single(s => s.Id == metaFields[0].Id);
+        var createdField = created!.MetaFields!.Single(s => s.Id == metaFields[0].Id);
         createdField.IsMultiple.Should().BeTrue();
         createdField.Options.GetKind().Should().Be(MetaFieldKindCatalog.List);
     }

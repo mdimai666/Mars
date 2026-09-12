@@ -108,123 +108,73 @@
         @* ///////////////////////////////////////////////////////////////////////////////// *@
         @* ///////////////////////////////////////////////////////////////////////////////// *@
 
-        @if (false)
-        {
-            <div style="height: 534px; overflow:auto;">
-                <FluentDataGrid ItemsProvider="dataProvider"
-                                @ref=table
-                                ShowHover="false"
-                                ItemSize="46"
-                                Virtualize
-                                GenerateHeader="GenerateHeaderOption.Sticky"
-                                OnRowClick="OnRowClick"
-                                GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
-                                TGridItem="FileListItemResponse">
-                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f => f.Name))"
-                                    Title="Name"
-                                    Sortable="true">
+        <div style="__height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            Pagination="pagination"
+                            ShowHover="false"
+                            GenerateHeader="GenerateHeaderOption.None"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
+                            Class="MarsMediaList_Grid items-container gap-2 d-file-list"
+                            TGridItem="FileListItemResponse">
+                <TemplateColumn Title="Name" Context="file" Style="height:unset;">
 
-                        @* <div class="vstack">
-                        <a href="@urlEditPage/@context.Id" class="text-primary">
-                            <div>@context.FullName</div>
-                        </a>
-                    </div> *@
-
-                        @context.Name
-
-                    </TemplateColumn>
-                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f => f.Size))"
-                                    Title="Size"
-                                    Sortable="true">
-                        <span title="@context.Size">@context.Size.ToHumanizedSize()</span>
-                    </TemplateColumn>
-                    <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d"
-                                    InitialSortDirection="SortDirection.Ascending"
-                                    IsDefaultSortColumn="true"
-                                    Sortable="true" />
-                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                        <div class="hstack">
-                            <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
-                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
-                            </DFluentDeleteButton>
-                            <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
-                                @* <FluentMenuItem OnClick="@(e=>OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem> *@
-                            </FluentMenuButton>
-                        </div>
-                    </TemplateColumn>
-                </FluentDataGrid>
-            </div>
-        }
-        else
-        {
-            <div style="__height: 534px; overflow:auto;">
-                <FluentDataGrid ItemsProvider="dataProvider"
-                                @ref=table
-                                Pagination="pagination"
-                                ShowHover="false"
-                                GenerateHeader="GenerateHeaderOption.None"
-                                OnRowClick="OnRowClick"
-                                GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
-                                Class="MarsMediaList_Grid items-container gap-2 d-file-list"
-                                TGridItem="FileListItemResponse">
-                    <TemplateColumn Title="Name" Context="file" Style="height:unset;">
-
-                        <div class="d-file-item xcenter" title=@FileHintTitle(file)>
-                            <div class="d-file-item-actions-top">
-                                <div>
-                                    @*<a href="@file.FileUrl" class="btn btn-sm btn-primary xcenter" style="height:23px;">
-                        <Icon Type="link"/>
-                        </a>*@
-                                </div>
-
-                                <div class="hstack gap-1">
-                                    @if (!ReadOnly)
-                                    {
-                                        <FluentButton IconStart="@(new Icons.Regular.Size16.FolderOpen())"
-                                                      Title="Переместить в папку"
-                                                      Appearance="Appearance.Accent"
-                                                      Color="white" BackgroundColor="var(--bs-secondary)"
-                                                      OnClick=@(e=>OpenMoveDialog(file)) />
-                                        <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())"
-                                                      Appearance="Appearance.Accent"
-                                                      Color="white" BackgroundColor="var(--bs-danger)"
-                                                      OnClick=@(e=>ItemRemoveClick(file)) />
-                                    }
-                                </div>
-                                @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                    <div class="d-file-item xcenter" title=@FileHintTitle(file)>
+                        <div class="d-file-item-actions-top">
+                            <div>
+                                @*<a href="@file.FileUrl" class="btn btn-sm btn-primary xcenter" style="height:23px;">
+                    <Icon Type="link"/>
+                    </a>*@
                             </div>
 
-                            @if (file.IsImage)
+                            <div class="hstack gap-1">
+                                @if (!ReadOnly)
+                                {
+                                    <FluentButton IconStart="@(new Icons.Regular.Size16.FolderOpen())"
+                                                  Title="Переместить в папку"
+                                                  Appearance="Appearance.Accent"
+                                                  Color="white" BackgroundColor="var(--bs-secondary)"
+                                                  OnClick=@(e=>OpenMoveDialog(file)) />
+                                    <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())"
+                                                  Appearance="Appearance.Accent"
+                                                  Color="white" BackgroundColor="var(--bs-danger)"
+                                                  OnClick=@(e=>ItemRemoveClick(file)) />
+                                }
+                            </div>
+                            @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                        </div>
+
+                        @if (file.IsImage)
+                        {
+                            <Image2 Width="102px" PreviewSrc=@(file.Url)
+                                    Src="@(file.PreviewIcon)"
+                                    Title="@file.Name"
+                                    Class="cursor-pointer" />
+                        }
+                        else
+                        {
+                            <div class="d-file-preview-icon" style="background-image:url('@(file.PreviewIcon)')"></div>
+                        }
+
+                        <div class="d-file-item-actions-bottom">
+                            @if (ItemActionBottom is null)
                             {
-                                <Image2 Width="102px" PreviewSrc=@(file.Url)
-                                        Src="@(file.PreviewIcon)"
-                                        Title="@file.Name"
-                                        Class="cursor-pointer" />
+                                <a href="@file.Url" target="_blank">
+                                    <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Size="small">открыть</FluentButton>
+                                </a>
                             }
                             else
                             {
-                                <div class="d-file-preview-icon" style="background-image:url('@(file.PreviewIcon)')"></div>
+                                @ItemActionBottom(file)
                             }
-
-                            <div class="d-file-item-actions-bottom">
-                                @if (ItemActionBottom is null)
-                                {
-                                    <a href="@file.Url" target="_blank">
-                                        <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Size="small">открыть</FluentButton>
-                                    </a>
-                                }
-                                else
-                                {
-                                    @ItemActionBottom(file)
-                                }
-                            </div>
-
                         </div>
 
-                    </TemplateColumn>
-                </FluentDataGrid>
-            </div>
-        }
+                    </div>
+
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
         @* ///////////////////////////////////////////////////////////////////////////////// *@
         @* ///////////////////////////////////////////////////////////////////////////////// *@
 

@@ -155,7 +155,7 @@ public class UpdatePostTypeTests : ApplicationTests
 
         viewModel.PostType.SystemFields!.Single(s => s.Key == SystemFieldsCatalog.Slug)
                  .Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
-        viewModel.PostType.SystemFields.Single(s => s.Key == SystemFieldsCatalog.Excerpt)
+        viewModel.PostType.SystemFields!.Single(s => s.Key == SystemFieldsCatalog.Excerpt)
                  .Editor.Should().Be(FormEditorCatalog.Multiline);
     }
 

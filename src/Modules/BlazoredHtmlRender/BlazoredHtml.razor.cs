@@ -93,10 +93,8 @@ public partial class BlazoredHtml
             {
 
             }
-            else if (d.Name.Length > 4 && ComponentsDict.ContainsKey(d.OriginalName))
+            else if (d.Name.Length > 4 && ComponentsDict.TryGetValue(d.OriginalName ?? d.Name, out var com))
             {
-                Type com = ComponentsDict[d.OriginalName];
-
                 //Console.WriteLine($">OpenComponent='{d.OriginalName}'");
                 builder.OpenComponent(index, com);
 
@@ -104,11 +102,12 @@ public partial class BlazoredHtml
 
                 foreach (var a in d.Attributes)
                 {
-                    bool isComHasProp = props.ContainsKey(a.OriginalName);
+                    var attrName = a.OriginalName ?? a.Name;
+                    bool isComHasProp = props.ContainsKey(attrName);
 
                     if (isComHasProp)
                     {
-                        PropertyInfo prop = props[a.OriginalName];
+                        PropertyInfo prop = props[attrName];
                         bool isStringProp = prop.PropertyType == typeof(string);
 
                         if (isStringProp)
@@ -120,7 +119,7 @@ public partial class BlazoredHtml
                             //Console.WriteLine($"prop.PropertyType='{prop.PropertyType}'");
                             if (prop.PropertyType == typeof(Guid))
                             {
-                                builder.AddAttribute(index, a.Name, Guid.Parse(a.Value));
+                                builder.AddAttribute(index, a.Name, Guid.Parse(a.Value ?? ""));
                             }
                             else
                             {
@@ -143,7 +142,7 @@ public partial class BlazoredHtml
                                 else if (prop.PropertyType == typeof(OneOf<System.String, RenderFragment, MarkupString>))
                                 {
                                     OneOf<System.String, RenderFragment, MarkupString> x = new();
-                                    x = a.Value;
+                                    x = a.Value ?? "";
                                     castedValue = x;
 
                                 }
@@ -201,7 +200,7 @@ public partial class BlazoredHtml
             else
             {
                 //Console.WriteLine($">OpenElement='{d.OriginalName}'");
-                builder.OpenElement(index, d.OriginalName);
+                builder.OpenElement(index, d.OriginalName ?? d.Name);
 
                 foreach (var a in d.Attributes)
                 {

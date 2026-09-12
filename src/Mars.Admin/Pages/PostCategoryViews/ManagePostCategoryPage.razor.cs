@@ -17,7 +17,6 @@ public partial class ManagePostCategoryPage
     public static string GetPageLink(string postType) => $"PostCategory/{postType}";
 
     string prevPostType = "";
-    bool _busy;
     Guid _selId;
     bool showEditForm;
 

@@ -53,13 +53,13 @@
                                     @item.Method?.Name
                                 </div>
                                 <div>
-                                    <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.Method.Helper.Description" />
+                                    <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.Method?.Helper.Description" />
                                 </div>
                                 <div>
                                     @for (int i = 0; i < item.Parameters.Count; i++)
                                     {
                                         var p = i;
-                                        <FluentTextField Placeholder="@item.Method.Parameters.ElementAtOrDefault(p)?.Name"
+                                        <FluentTextField Placeholder="@item.Method?.Parameters.ElementAtOrDefault(p)?.Name"
                                                          @bind-Value="item.Parameters[p]" />
                                     }
                                 </div>

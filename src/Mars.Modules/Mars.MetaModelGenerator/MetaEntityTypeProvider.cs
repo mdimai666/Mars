@@ -34,7 +34,7 @@ internal class MetaEntityTypeProvider : IMetaEntityTypeProvider
                     GenSourceCodeMasterHelper.GetNormalizedTypeName(postType.TypeName),
                     typeof(PostEntity),
                     // Query-поля вычислимые и не имеют хранимой колонки — в Mto-модель не попадают
-                    postType.MetaFields.Where(f => f.Type != EMetaFieldType.Query).ToArray(),
+                    postType.MetaFields!.Where(f => f.Type != EMetaFieldType.Query).ToArray(),
                     new DisplayAttribute() { Name = postType.Title, Description = "" })
                 );
         }

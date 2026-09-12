@@ -17,11 +17,7 @@
             <XActionsDropDown ContextPart="@POSTTYPE" />
         </SectionActions>
         <ChildContent>
-            @if (_busy)
-            {
-                <SharedLoader1 />
-            }
-            else if (postType is null)
+            @if (postType is null)
             {
                 <SharedContentNoRecords />
             }

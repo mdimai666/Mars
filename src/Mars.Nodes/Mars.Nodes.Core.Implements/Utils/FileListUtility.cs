@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Implements.Utils;
 public class FileListUtility
 {
     private readonly List<GitIgnorePattern> _ignorePatterns = [];
-    private string _repositoryRoot = default!;
+    private string? _repositoryRoot;
     public bool EnableDebugOutput { get; set; } = false;
 
     /// <summary>
@@ -175,7 +175,7 @@ public class FileListUtility
         // Парсим все .gitignore файлы
         foreach (var gitIgnoreFile in gitIgnoreFiles)
         {
-            var basePath = Path.GetDirectoryName(gitIgnoreFile);
+            var basePath = Path.GetDirectoryName(gitIgnoreFile) ?? searchPath;
 
             if (!File.Exists(gitIgnoreFile))
                 continue;
@@ -269,9 +269,9 @@ public class FileListUtility
         public bool IsNegation { get; }
         public bool IsDirectoryOnly { get; }
         private readonly Regex _regex;
-        private readonly string _repositoryRoot;
+        private readonly string? _repositoryRoot;
 
-        public GitIgnorePattern(string pattern, string basePath, string repositoryRoot)
+        public GitIgnorePattern(string pattern, string basePath, string? repositoryRoot)
         {
             BasePath = basePath;
             OriginalPattern = pattern;

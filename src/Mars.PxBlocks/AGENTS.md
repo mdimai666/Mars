@@ -121,7 +121,12 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
   - `connectionChecker.ts` — `PxConnectionChecker extends Blockly.ConnectionChecker`,
     зарегистрирован как `pxt`, включён опцией `plugins: { connectionChecker: 'pxt' }`;
   - `extensions/objectBuilder.ts` — mutator "create object": кнопка «+» добавляет пары
-    field→value, состояние через `saveExtraState/loadExtraState`.
+    field→value, состояние через `saveExtraState/loadExtraState`;
+  - `dialogs.ts` — окна модуля вместо нативных окон Blockly (prompt/confirm/alert):
+    создание и переименование переменной, удаление переменной, предупреждения;
+  - `railDelete.ts` — рейка категорий зарегистрирована delete-областью Blockly
+    (DRAG_TARGET + DELETE_AREA): бросок блока на рейку удаляет его, как в MakeCode,
+    при наведении рейка краснеет и показывает корзинку (класс `pxb-rail-drop`).
 - `PxBlocksWorkspace.razor` — **полотно**: inject, параметры `OptionsJson`/`Toolbox`/`Types`/
   `BlockDefinitions`, события `OnReady`/`OnWorkspaceChanged`, примитивы `SaveAsync`/`LoadAsync`/
   `ClearAsync`/`UndoAsync`/`RedoAsync`.

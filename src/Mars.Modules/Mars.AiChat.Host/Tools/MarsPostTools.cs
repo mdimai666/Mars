@@ -45,7 +45,8 @@ public class MarsPostTools
         try
         {
             var blank = await _postService.GetEditModelBlank(type, CancellationToken.None);
-            var contentEditor = blank.PostType.ContentEditorKey();
+            // ключ редактора слота контента — из дескриптора формы (пусто = обычный многострочный текст)
+            var contentEditor = blank.Form.Field(SystemFieldsCatalog.Content)?.Field?.Editor ?? "";
 
             var content = contentEditor switch
             {

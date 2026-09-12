@@ -136,7 +136,8 @@ public partial class EditPostView : IAiChatPageHandler
         SystemFieldsCatalog.Tags, SystemFieldsCatalog.Categories, SystemFieldsCatalog.Content,
     ];
 
-    string ContentEditorKey => f?.Model.PostType.ContentEditorKey() ?? "";
+    /// <summary>Ключ редактора слота контента — из дескриптора формы (пусто = обычный многострочный текст)</summary>
+    string ContentEditorKey => f?.Model.Form?.Field(SystemFieldsCatalog.Content)?.Field?.Editor ?? "";
 
     public string GetInfo()
     {

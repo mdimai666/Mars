@@ -15,4 +15,8 @@ public static class FormItemExtensions
     /// <summary>Листы-поля в порядке раскладки (маркеры секций пропускаются)</summary>
     public static IEnumerable<FormItem> FlattenFields(this IEnumerable<FormItem> items)
         => items.Where(item => item.Field is not null);
+
+    /// <summary>Лист-поле по ключу (маркеры секций пропускаются)</summary>
+    public static FormItem? Field(this FormDefinition definition, string key)
+        => definition.Fields().FirstOrDefault(item => item.Key == key);
 }

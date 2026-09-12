@@ -18,28 +18,16 @@ public record PostTypeDetail : PostTypeSummary
     /// <summary>Сохранённая раскладка формы редактирования (<c>post_types.Options["form"]</c>); null — раскладка по умолчанию</summary>
     public FormLayoutSettings? Form { get; init; }
 
-    /// <summary>
-    /// Параметры системных полей (<c>post_types.Options["systemFields"]</c>); null — не заданы.
-    /// При отсутствии сохранённых материализуются из легаси-раскладки — см.
-    /// <c>PostTypeOptionsCatalog.GetEffectiveSystemFields</c>.
-    /// </summary>
+    /// <summary>Параметры системных полей (<c>post_types.Options["systemFields"]</c>); null — не заданы</summary>
     public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
-/// <summary>Контент типа поста — системный слот <see cref="SystemFieldsCatalog.Content"/> (фича «Контент»)</summary>
+/// <summary>Системный слот контента (<see cref="SystemFieldsCatalog.Content"/>, фича «Контент»)</summary>
 public static class PostTypeDetailContentExtensions
 {
-    /// <summary>Параметры слота контента: выбранный редактор и язык кода</summary>
-    public static FormFieldSettings? ContentSettings(this PostTypeDetail postType)
-        => postType.SystemFields?.FirstOrDefault(s => s.Key == SystemFieldsCatalog.Content);
-
     /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
     public static string ContentEditorKey(this PostTypeDetail postType)
         => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, postType.SystemFields);
-
-    /// <summary>Язык кода редактора контента</summary>
-    public static string ContentCodeLang(this PostTypeDetail postType)
-        => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, postType.SystemFields);
 }
 
 public record PostTypePresentation

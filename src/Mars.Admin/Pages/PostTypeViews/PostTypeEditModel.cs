@@ -212,12 +212,6 @@ public class PostTypeEditModel : IBasicEntity
         return field;
     }
 
-    /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
-    public string ContentEditorKey() => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, SystemFields);
-
-    /// <summary>Язык кода редактора контента</summary>
-    public string ContentCodeLang() => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, SystemFields);
-
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = [];
 
     //==========================================

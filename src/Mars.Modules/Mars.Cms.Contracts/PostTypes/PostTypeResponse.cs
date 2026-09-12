@@ -68,10 +68,11 @@ public record PostTypeDetailResponse : IBasicEntityResponse
 
     public string? ImageFieldKey { get; init; }
 
-    /// <summary>Сохранённая раскладка формы редактирования; null — раскладка по умолчанию</summary>
-    public FormLayoutSettings? Form { get; init; }
-
-    /// <summary>Параметры системных полей (правила, редактор); null — не заданы</summary>
+    /// <summary>
+    /// Параметры системных полей (правила, редактор) — <c>post_types.Options["systemFields"]</c>;
+    /// null — не заданы. Симметрично <see cref="CreatePostTypeRequest.SystemFields"/> и
+    /// <see cref="UpdatePostTypeRequest.SystemFields"/>: что принимает запись, то отдаёт чтение.
+    /// </summary>
     public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 
 }
@@ -111,20 +112,4 @@ public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse
 {
     public required PostTypePresentationResponse Presentation { get; init; }
 
-}
-
-/// <summary>Контент типа поста — системный слот <see cref="SystemFieldsCatalog.Content"/> (фича «Контент»)</summary>
-public static class PostTypeDetailResponseContentExtensions
-{
-    /// <summary>Параметры слота контента: выбранный редактор и язык кода</summary>
-    public static FormFieldSettings? ContentSettings(this PostTypeDetailResponse postType)
-        => postType.SystemFields?.FirstOrDefault(s => s.Key == SystemFieldsCatalog.Content);
-
-    /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
-    public static string ContentEditorKey(this PostTypeDetailResponse postType)
-        => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, postType.SystemFields);
-
-    /// <summary>Язык кода редактора контента</summary>
-    public static string ContentCodeLang(this PostTypeDetailResponse postType)
-        => SystemFieldsCatalog.CodeLang(SystemFieldsCatalog.Content, postType.SystemFields);
 }

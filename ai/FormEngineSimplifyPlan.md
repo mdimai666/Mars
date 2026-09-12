@@ -1,7 +1,7 @@
 # План: упрощение FormEngine (Mars.Forms)
 
-> **Статус: R0–R6 выполнены 2026-09-10** (согласовано в тот же день: полный рефактор ядра,
-> значения — в модели, раскладка — плоский список с маркерами секций). Ветка
+> **Статус: R0–R10 выполнены (2026-09-12)** (базовые решения согласованы 2026-09-10: полный
+> рефактор ядра, значения — в модели, раскладка — плоский список с маркерами секций). Ветка
 > `ai/form-engine-simplify`, коммит на каждый шаг. План **заменяет** «этапы A–D» и фазы C/D
 > из [FormEnginePlan.md](./FormEnginePlan.md); тот файл остаётся историей проектирования и
 > as-is-инвентарём, работы ведутся по этому плану.
@@ -337,6 +337,59 @@ Mars.Forms.Abstractions
 `Mars.Server.Tests` 473/473. E2E: `CreatePostTests`, `EditPostMetaFieldsTests`, `EditUserPageTests`,
 `EditPostSystemFieldEditorTests` и новый `EditPostRelationFieldTests` (поле-связь: рендер
 редактора из дескриптора, выбор цели пикером, запись `ModelId` в EAV) — зелёные.
+
+## R10 — раскладка уходит из контракта данных, параметры слотов остаются — выполнено 2026-09-12
+
+`PostTypeDetailResponse` (`GET api/PostType/{id}`) — контракт данных типа, но он нёс два
+«редакторских» поля: `Form` (сохранённая раскладка) и `SystemFields` (параметры слотов).
+Потребители у них оказались разные, поэтому и решения разные.
+
+1. **`Form` убран из ответа — читателей не было.** Раскладку пишет и читает страница презентации
+   своей парой контрактов: `UpdatePostTypePresentationRequest.Form` → `GET presentation/edit`
+   (`PostTypePresentationEditViewModel.FormLayout`); диалог раскладки из формы поста ходит туда же.
+   `PostTypeDetailResponse.Form` заполнялся маппингом и не читался нигде — в контрактах раскладка
+   была двойником.
+2. **`SystemFields` в ответе оставлены (решение пользователя, 2026-09-12).** Контракт чтения
+   симметричен записи: `CreatePostTypeRequest.SystemFields` и `UpdatePostTypeRequest.SystemFields`
+   принимают параметры слотов, значит `GET` их отдаёт. Первоначальный вариант «параметры слотов
+   тоже уехали в `PostTypeEditViewModel`» отменён: `PostTypeEditViewModel` вернулся к
+   `{ PostType, MetaRelationModels }`, а `PostTypeEditModel.ToModel` берёт `SystemFields`
+   из ответа, как раньше.
+3. **Ключ редактора слота в форме поста берётся из дескриптора** (выбор при обсуждении R10).
+   `PostFormBuilder.SlotItem` и раньше сводил `Options["systemFields"]` в
+   `FormFieldDescriptor.Editor` (+`Options.codeLang`), поэтому сырые настройки в рендере не нужны:
+   `EditPostView.ContentEditorKey` и ИИ-инструмент `MarsPostTools.CreatePost` читают
+   `FormDefinition.Field(SystemFieldsCatalog.Content)?.Field?.Editor`. Это последнее место, где
+   рендер поста читал настройки напрямую.
+
+Что сделано:
+
+- `PostTypeDetailResponse`: убрано `Form`, `SystemFields` оставлено (с комментарием про симметрию
+  с запросами записи); удалён `PostTypeDetailResponseContentExtensions` — `ContentSettings` был
+  мёртв, `ContentEditorKey`/`ContentCodeLang` заменены дескриптором.
+- Хранильный `PostTypeDetail` не тронут (`SystemFields` нужны `PostFormBuilder.SlotItem`, `Form` —
+  `PostFormBuilder.Build` и `GetPresentationEditModel`); легаси-комментарий про удалённый в R1
+  `PostTypeOptionsCatalog.GetEffectiveSystemFields` убран.
+- `PostTypeMapping.ToResponse(PostTypeDetail)` перестал маппить `Form` (одна строка).
+- `Mars.Forms.Contracts`: `FormItemExtensions.Field(this FormDefinition, key)` — поиск листа-поля
+  по ключу (нужен форме поста и ИИ-инструменту); покрыт `FormItemExtensionsTests`
+  (поле находится среди структурных узлов сетки, структурный узел и неполевой элемент не находятся).
+- `PostTypeEditModel`: `ContentEditorKey()`/`ContentCodeLang()` удалены как осиротевшие
+  (страница типа читает редактор слота в панели настроек через `SystemFieldsCatalog`).
+- `MarsPostTools` и `EditPostView` читают редактор из дескриптора; `ai/AiChatGuide.md` поправлен.
+- У `PostTypeDetail`-extension оставлен только живой `ContentEditorKey` (`PostTransformer`,
+  `BlockEditor1PostContentProcessor`, `PostTransformerTests`); мёртвые `ContentSettings`/
+  `ContentCodeLang` удалены и там.
+
+Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 107/107;
+`Mars.Admin.Framework.Tests` 50/50; `Mars.Server.Tests` 473/473; интеграционные
+`Controllers.PostTypes.UpdatePostTypeTests` 3/3, `Services.PostTransformerTests` 1/1,
+`Controllers.Posts` 32 (2 skipped). **Известный красный (не от R10):**
+`UpdatePostTypePresentationTests.UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions` —
+ожидает `viewModel.Form.Items.First().Key == tags`, но после сеточной раскладки
+(`fcc1308c…7b30268c`) элементы нормализуются в ряд+колонку, и первым идёт узел с сгенерированным
+ключом. Ассершен старше сетки (последний коммит файла `e7b0920c` — предок `7b30268c`), правится
+вместе с работой по `FormLayoutGridPlan.md`.
 
 ## Решение: панели настроек — не редакторы значений (зафиксировано 2026-09-12)
 

@@ -37,7 +37,9 @@ internal class PostTypeViewService : IPostTypeViewService
     public async Task DropViewAsync(string typeName, CancellationToken cancellationToken = default)
     {
         var viewName = GetViewName(typeName);
-        await _marsDbContext.Database.ExecuteSqlRawAsync($"DROP VIEW IF EXISTS \"{viewName}\"", cancellationToken);
+#pragma warning disable EF1002 // идентификатор нельзя передать параметром; QuoteIdentifier гарантирует charset [A-Za-z0-9_]
+        await _marsDbContext.Database.ExecuteSqlRawAsync($"DROP VIEW IF EXISTS {QuoteIdentifier(viewName)}", cancellationToken);
+#pragma warning restore EF1002
     }
 
     public async Task<IReadOnlyList<T>> ListFromViewAsync<T>(string typeName,
@@ -50,13 +52,13 @@ internal class PostTypeViewService : IPostTypeViewService
 
         var columns = BuildColumns(postType);
         var selectColumns = properties is null
-            ? columns.Select(c => $"\"{c.Property}\"").ToList()
+            ? columns.Select(c => QuoteIdentifier(c.Property)).ToList()
             // column pruning: только запрошенные свойства из известных колонок
             : columns.Where(c => properties.Contains(c.Property, StringComparer.OrdinalIgnoreCase))
-                     .Select(c => $"\"{c.Property}\"")
+                     .Select(c => QuoteIdentifier(c.Property))
                      .ToList();
 
-        var sql = new StringBuilder($"SELECT {string.Join(", ", selectColumns)} FROM \"{viewName}\"");
+        var sql = new StringBuilder($"SELECT {string.Join(", ", selectColumns)} FROM {QuoteIdentifier(viewName)}");
         if (take is int limit)
         {
             sql.Append($" LIMIT {limit}");
@@ -115,18 +117,39 @@ internal class PostTypeViewService : IPostTypeViewService
         return ViewPrefix + builder.ToString();
     }
 
+    internal static string QuoteIdentifier(string identifier)
+    {
+        if (string.IsNullOrEmpty(identifier))
+            throw new ArgumentException("SQL identifier must not be empty.", nameof(identifier));
+
+        foreach (var ch in identifier)
+        {
+            if (!char.IsAsciiLetterOrDigit(ch) && ch != '_')
+                throw new ArgumentException($"SQL identifier '{identifier}' contains invalid character '{ch}'.", nameof(identifier));
+        }
+
+        return $"\"{identifier}\"";
+    }
+
+    /// <summary>
+    /// Литерал внутри CREATE VIEW параметром не передать (представление не может хранить параметры),
+    /// поэтому экранирование ручное: при standard_conforming_strings=on удвоения апострофа достаточно.
+    /// </summary>
+    internal static string QuoteLiteral(string value)
+        => $"'{value.Replace("'", "''")}'";
+
     internal static string BuildViewSql(PostTypeDetail postType, string viewName)
     {
         var columns = BuildColumns(postType);
-        var selectList = string.Join(",\n    ", columns.Select(c => $"{c.Expression} AS \"{c.Property}\""));
+        var selectList = string.Join(",\n    ", columns.Select(c => $"{c.Expression} AS {QuoteIdentifier(c.Property)}"));
 
         return $"""
-            CREATE OR REPLACE VIEW "{viewName}" AS
+            CREATE OR REPLACE VIEW {QuoteIdentifier(viewName)} AS
             SELECT
                 {selectList}
             FROM "posts" AS "p"
             JOIN "post_types" AS "pt" ON "p"."post_type_id" = "pt"."id"
-            WHERE "pt"."type_name" = '{postType.TypeName.Replace("'", "''")}';
+            WHERE "pt"."type_name" = {QuoteLiteral(postType.TypeName)};
             """;
     }
 

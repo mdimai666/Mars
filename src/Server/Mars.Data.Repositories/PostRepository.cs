@@ -288,7 +288,7 @@ internal class PostRepository : IPostRepository
 
                 case PostTypeGridConstants.Author when filter.Op == PostGridFilterOps.Contains && !string.IsNullOrWhiteSpace(filter.Value):
                     var authorPattern = $"%{filter.Value.Trim()}%";
-                    q = q.Where(p => p.User != null && EF.Functions.ILike(p.User.UserName, authorPattern));
+                    q = q.Where(p => p.User != null && EF.Functions.ILike(p.User.UserName!, authorPattern));
                     break;
 
                 case PostTypeGridConstants.CreatedAt when DateTimeOffset.TryParse(filter.Value, out var date):

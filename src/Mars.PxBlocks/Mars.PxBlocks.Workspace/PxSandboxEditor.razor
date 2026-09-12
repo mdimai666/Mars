@@ -118,7 +118,7 @@
     private bool _running;
     private string? _runError;
     private string? _highlightedBlockId;
-    private DateTime _lastHighlightAt;
+    private long _lastHighlightAt;
 
     /// <summary>Строк вывода держим в панели; обрезка — пачкой, чтобы не сдвигать список на каждую строку.</summary>
     private const int OutputLineLimit = 1000;
@@ -441,8 +441,9 @@
     /// <summary>Троттлинг подсветки: в цикле блоки мелькают часто, interop шлём не чаще ~30 мс.</summary>
     private void RequestHighlight(string blockId)
     {
-        var now = DateTime.Now;
-        if ((now - _lastHighlightAt).TotalMilliseconds < 30)
+        // Монотонный счётчик: DateTime зависит от перевода часов.
+        var now = Environment.TickCount64;
+        if (now - _lastHighlightAt < 30)
             return;
 
         _lastHighlightAt = now;

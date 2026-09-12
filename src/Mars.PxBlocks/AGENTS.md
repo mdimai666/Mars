@@ -109,7 +109,8 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
 
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Workspace` — RCL-редактор
 - `JsSrc/` — TypeScript, сборка Vite в `wwwroot/dist/PxBlocks.js` (ESM, коммитится вместе
-  с `wwwroot/media/`; загрузка через `import("./_content/Mars.PxBlocks.Workspace/dist/PxBlocks.js")`):
+  с `wwwroot/media/`; загрузка через `import("./_content/Mars.PxBlocks.Workspace/dist/PxBlocks.js?v=…")`,
+  версия в query — cache-busting, как в AiChatAssets/MarsCodeEditor2):
   - `index.ts` — `injectWorkspace` (прячет нативное меню категорий inline + resize),
     `updateToolbox`, `selectCategory`/`clearToolboxSelection`/`isFlyoutVisible` (flyout
     из Blazor-рейки), `setTypes`, `registerBlockDefinitions`,
@@ -134,7 +135,7 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
 - `PxSandboxEditor.razor` — **браузерная песочница** (до Этапа 9 — PxBlocksEditor):
   тулбар Undo/Redo/Clear/Center/Run/Stop + статус, панель вывода, автосейв в
   localStorage (Blazored.LocalStorage, ключ — `StorageKey`), исполнение in-process
-  или на сервере (`RunTransport`, `RunMode`/`RunEventNames`). Единственный редактор,
+  или на сервере (`RunTransport`, `EventNames`). Единственный редактор,
   запускающий полный JSON программы из браузера.
 - `PxToolboxRail.razor` — рейка категорий в стиле MakeCode: иконки (inline SVG), поиск
   (дебаунс 250 мс, временная flyout-категория "Search"), экспандер Advanced; выбранная

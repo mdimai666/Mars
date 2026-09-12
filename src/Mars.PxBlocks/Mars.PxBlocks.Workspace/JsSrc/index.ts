@@ -8,7 +8,7 @@ import './functions/blocks';
 import { ensureFunctionMsg } from './functions/constants';
 import { functionsFlyout } from './functions/manager';
 import { registerFunctionCallbacks } from './functions/dialog';
-import { ensurePromptDialog } from './prompt';
+import { ensureBlocklyDialogs } from './dialogs';
 
 ensureFunctionMsg();
 
@@ -60,8 +60,8 @@ const defaultOptions: Blockly.BlocklyOptions = {
 };
 
 export function injectWorkspace(element: HTMLElement, optionsJson?: string, toolboxJson?: string): Blockly.WorkspaceSvg {
-    // Ввод имени переменной (создание/переименование) — окно модуля, не нативный prompt.
-    ensurePromptDialog();
+    // Ввод имени переменной и подтверждения — окна модуля, не нативные окна Blockly.
+    ensureBlocklyDialogs();
 
     const extra = optionsJson ? JSON.parse(optionsJson) as Blockly.BlocklyOptions : {};
     // toolbox должен существовать с момента inject, иначе updateToolbox позже не сработает.

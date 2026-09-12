@@ -13,15 +13,16 @@ public record FormDefinition
     /// <summary>Зоны в порядке объявления (для рендера и дизайнера)</summary>
     public IReadOnlyCollection<FormZoneDescriptor> Zones { get; init; } = [];
 
-    /// <summary>Элементы в порядке отображения: листы-поля и маркеры секций</summary>
+    /// <summary>Элементы в порядке отображения: поля и узлы сетки (контейнеры, ряды, колонки,
+    /// заголовки, разделители)</summary>
     public IReadOnlyCollection<FormItem> Items { get; init; } = [];
 
-    /// <summary>Листы-поля в порядке раскладки (маркеры секций пропускаются)</summary>
+    /// <summary>Поля в порядке раскладки (структурные и неполевые узлы пропускаются)</summary>
     public IEnumerable<FormItem> Fields() => Items.FlattenFields();
 }
 
 /// <summary>
-/// Хранимая раскладка формы: порядок, зоны, видимость, ширина и маркеры секций — без дескрипторов.
+/// Хранимая раскладка формы: порядок, зоны, видимость, ширина и узлы сетки — без дескрипторов.
 /// Для поста — <c>post_types.Options["form"]</c>, для автономных форм — таблица <c>forms</c>.
 /// </summary>
 public record FormLayoutSettings

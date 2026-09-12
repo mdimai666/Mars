@@ -12,11 +12,11 @@ public static class FormItemExtensions
     public static FormLayoutSettings ToLayout(this IEnumerable<FormItem> items)
         => new() { Items = items.Select(i => i.ToLayout()).ToList() };
 
-    /// <summary>Листы-поля в порядке раскладки (маркеры секций пропускаются)</summary>
+    /// <summary>Поля в порядке раскладки (структурные и неполевые узлы пропускаются)</summary>
     public static IEnumerable<FormItem> FlattenFields(this IEnumerable<FormItem> items)
         => items.Where(item => item.Field is not null);
 
-    /// <summary>Лист-поле по ключу (маркеры секций пропускаются)</summary>
+    /// <summary>Поле по ключу; null — поля с таким ключом в форме нет</summary>
     public static FormItem? Field(this FormDefinition definition, string key)
         => definition.Fields().FirstOrDefault(item => item.Key == key);
 }

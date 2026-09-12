@@ -9,8 +9,8 @@ public record PostEditViewModel
     public required PostTypeDetailResponse PostType { get; init; }
 
     /// <summary>
-    /// Определение формы редактирования: дерево контейнеров с дескрипторами полей
-    /// (системные слоты и метаполя типа). См. <c>ai/FormEnginePlan.md</c>.
+    /// Определение формы редактирования: поля и узлы сетки с дескрипторами
+    /// (системные слоты и метаполя типа). См. <c>ai/FormEngineGuide.md</c>.
     /// </summary>
     public required FormDefinition Form { get; init; }
 }

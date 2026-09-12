@@ -1,0 +1,108 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Узел дизайнера: ячейка сетки (ряд, колонка) или элемент внутри колонки. Внешний слой —
+   флекс-ячейка размера, внутренний — видимая рамка; сам узел и источник, и цель перетаскивания
+   (бросок на него вставляет перед ним у его родителя). Классы layout-node/layout-actions
+   связывают узел со своими кнопками: они видны только при наведении (см. FormLayoutEditor.razor.css). *@
+<FluentDropZone TItem="FormItem" Item="@Node.Item" Data="@Target()" Draggable="true" Droppable="true"
+                StopPropagation="true" Style="@CellStyle">
+    <div class="@NodeClass" style="@BoxStyle">
+        <div class="vstack gap-1">
+
+            @if (Node.Item.Kind == FormItemKind.Row)
+            {
+                <div class="d-flex gap-2 align-items-stretch">
+                    <div class="vstack gap-1 align-items-start justify-content-start flex-grow-0 flex-shrink-0" style="width: 50px;">
+                        <span class="text-secondary text-nowrap">строка</span>
+                        <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                              Title="Удалить строку" OnClick="RemoveAsync" />
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-wrap align-items-stretch">
+                            @foreach (var child in Node.Children)
+                            {
+                                <FormLayoutCell Node="@child" />
+                            }
+                        </div>
+                        <FluentDropZone TItem="FormItem" Data="@InsideTarget()" Draggable="false" Droppable="true"
+                                        StopPropagation="true" Style="@FormLayoutEditor.DropAreaStyle">
+                            <span class="text-secondary">в конец строки</span>
+                        </FluentDropZone>
+                        <div class="hstack gap-2 flex-wrap my-2 layout-actions">
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="AddColumnAsync" IconStart="@(new Icons.Regular.Size16.Add())">Колонка</FluentButton>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Node.Item.Kind == FormItemKind.Column)
+            {
+                <div class="hstack gap-1 align-items-center justify-content-end">
+                    <FluentSelect TOption="string" Value="@Width" ValueChanged="SetWidthAsync" Style="width:80px;min-width:50px;">
+                        @foreach (var (key, title) in FormLayoutEditor.Widths)
+                        {
+                            <FluentOption Value="@key">@title</FluentOption>
+                        }
+                    </FluentSelect>
+                    <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                          Title="Удалить колонку" OnClick="RemoveAsync" />
+                </div>
+                <div class="vstack gap-1">
+                    @foreach (var child in Node.Children)
+                    {
+                        <FormLayoutCell Node="@child" />
+                    }
+                </div>
+                <FluentDropZone TItem="FormItem" Data="@InsideTarget()" Draggable="false" Droppable="true"
+                                StopPropagation="true" Style="@FormLayoutEditor.DropAreaStyle">
+                    <span class="text-secondary">в конец колонки</span>
+                </FluentDropZone>
+                <div class="hstack gap-2 flex-wrap layout-actions">
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddRowAsync">+ Строка</FluentButton>
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddHeadingAsync">+ Заголовок</FluentButton>
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddDividerAsync">+ Разделитель</FluentButton>
+                </div>
+            }
+            else if (Node.Item.Kind == FormItemKind.Container)
+            {
+                <div class="hstack gap-1 align-items-center">
+                    <FluentTextField Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Имя таба"
+                                     Style="width:200px" />
+                    <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                          Title="Удалить контейнер" OnClick="RemoveAsync" />
+                </div>
+                <FormLayoutRoot Zone="@(Node.Item.Zone ?? "")" Nodes="@Node.Children" Parent="@Node.Item" />
+            }
+            else if (Node.Item.Kind == FormItemKind.Heading)
+            {
+                <div class="hstack gap-1 align-items-center">
+                    <FluentTextField Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок"
+                                     Style="width:180px" />
+                    <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                          Title="Удалить заголовок" OnClick="RemoveAsync" />
+                </div>
+            }
+            else if (Node.Item.Kind == FormItemKind.Divider)
+            {
+                <div class="hstack gap-1 align-items-center">
+                    <span class="text-secondary">разделитель</span>
+                    <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                          Title="Удалить разделитель" OnClick="RemoveAsync" />
+                </div>
+            }
+            else
+            {
+                <div class="hstack gap-1 align-items-center justify-content-between">
+                    <span class="text-nowrap">@Editor.DisplayTitle(Node.Item)</span>
+                    <div class="hstack gap-1">
+                        <FormLayoutIconButton Icon="@VisibilityIcon" Title="@VisibilityTitle"
+                                              OnClick="ToggleVisibleAsync" />
+                        <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
+                                              Title="Убрать из раскладки" OnClick="RemoveAsync" />
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</FluentDropZone>

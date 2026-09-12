@@ -1,0 +1,31 @@
+@using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Contracts
+@using Mars.Forms.Front
+
+@* Файл/изображение метаполя: мульти-загрузка (список файлов) или одиночный выбор медиа.
+   Папка загрузки, дроп-зона и фильтр типов — из параметров поля. *@
+
+@if (Binding.Field.Multiple)
+{
+    <MetaValueFileMulti Binding="@Binding" />
+}
+else
+{
+    <FSelectMedia @bind-Value="ModelId"
+                  UploadFolder="@Binding.Field.Options.GetUploadFolder()"
+                  DropZoneEnabled="@Binding.Field.Options.IsDropZoneEnabled()"
+                  Accept="@(Binding.Field.Type == FormFieldType.Image ? "image/*" : "*")" />
+}
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    /// <summary>Значение поля — идентификатор файла; «не выбрано» пишется как null</summary>
+    Guid ModelId
+    {
+        get => Binding.Value is Guid id ? id : Guid.Empty;
+        set => Binding.Value = value == Guid.Empty ? null : value;
+    }
+}

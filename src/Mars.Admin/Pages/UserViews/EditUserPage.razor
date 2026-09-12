@@ -1,6 +1,7 @@
 @page "/EditUser/{ID:guid}"
 @* @page "/EditUser" *@
 
+@using Mars.Admin.Framework.Components.Forms
 @using Mars.Identity.Contracts.Roles
 @using Mars.Identity.Contracts.Users
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -71,12 +72,13 @@
                 <FluentDatePicker @bind-Value="@model.BirthDate" />
             </FormItem2>
 
-            <CascadingValue Value="@model.MetaValues">
-                <CascadingValue Value="@model.UserType.MetaFields">
-                    @* <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue Vertical Client /> *@
-                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
-                </CascadingValue>
-            </CascadingValue>
+            @if (model.Form is not null)
+            {
+                <MetaValuesForm @ref="metaValueForm"
+                                Definition="model.Form"
+                                MetaValues="model.MetaValues"
+                                MetaFields="model.UserType.MetaFields" />
+            }
 
             @* <Avatar class="img-fluid" Size="200" Icon="user"></Avatar>
             <UserAvatar Value="@user.AvatarUrl" Size="200px" /> *@

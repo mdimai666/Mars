@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
@@ -15,11 +14,5 @@ public partial class EditUserTypePage
     [Parameter] public Guid ID { get; set; }
 
     StandardEditContainer<UserTypeEditModel> f = default!;
-
-    void AddNewField()
-    {
-        int order = f.Model.MetaFields.Any() ? f.Model.MetaFields.Max(s => s.Order) + 1 : 0;
-        f.Model.MetaFields.Add(FormMetaField.NewField(order));
-    }
 
 }

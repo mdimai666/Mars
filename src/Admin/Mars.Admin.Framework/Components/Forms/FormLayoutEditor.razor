@@ -1,0 +1,92 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Дизайнер раскладки: зоны, контейнеры-табы и сетка ряды/колонки. Всё переносится
+   перетаскиванием (FluentDragContainer/FluentDropZone): узел — и цель, и источник, поэтому
+   бросок на узел вставляет перед ним в его родителя, а бросок на пустую зону узла — в конец. *@
+
+@if (_draft is null)
+{
+    <div class="text-secondary">Определение формы не загружено.</div>
+}
+else
+{
+    <FluentDragContainer TItem="FormItem" OnDropEnd="OnDropEnd" Class="vstack gap-3">
+
+        <div class="hstack gap-2 align-items-center justify-content-end">
+            <FluentButton Appearance="Appearance.Stealth"
+                          Title="Сбросить к стандартной раскладке"
+                          IconStart="@(new Icons.Regular.Size16.ArrowUndo())"
+                          OnClick="ResetAsync">
+              Сбросить
+            </FluentButton>
+        </div>
+
+        @if (_draft.UnplacedFields.Count > 0)
+        {
+            <div class="card">
+                <div class="card-header">Поля типа вне раскладки</div>
+                <div class="card-body hstack gap-2 flex-wrap">
+                    @foreach (var field in _draft.UnplacedFields)
+                    {
+                        <FluentDropZone TItem="FormItem" Item="@field" Draggable="true" Droppable="false"
+                                        StopPropagation="true">
+                            <FluentBadge Appearance="Appearance.Accent">@DisplayTitle(field)</FluentBadge>
+                        </FluentDropZone>
+                    }
+                </div>
+            </div>
+        }
+
+        <CascadingValue Value="this" IsFixed="true">
+            @foreach (var zone in _draft.Zones)
+            {
+                var tree = TreeOf(zone.Key);
+                var containers = tree.Where(node => node.Item.Kind == FormItemKind.Container).ToList();
+                var loose = tree.Where(node => node.Item.Kind != FormItemKind.Container).ToList();
+
+                <div class="card">
+                    <div class="card-header hstack gap-2 align-items-center layout-node">
+                        <strong>@zone.Title</strong>
+                        <FluentButton Appearance="Appearance.Neutral" Class="layout-actions"
+                                      OnClick="@(() => AddContainerAsync(zone.Key))" IconStart="@(new Icons.Regular.Size16.Add())">
+                            Контейнер
+                        </FluentButton>
+                    </div>
+                    <div class="card-body">
+                        @if (containers.Count > 0)
+                        {
+                            <FluentTabs>
+                                @foreach (var container in containers)
+                                {
+                                    <FluentTab Label="@TabTitle(container.Item)">
+                                        <FormLayoutCell Node="@container" />
+                                    </FluentTab>
+                                }
+                            </FluentTabs>
+                            <div class="mt-2">
+                                @if (loose.Count > 0)
+                                {
+                                    <FormLayoutRoot Zone="@zone.Key" Nodes="@loose" />
+                                }
+                                else
+                                {
+                                    <FluentDropZone TItem="FormItem" Data="@RootTarget(zone.Key)" Draggable="false"
+                                                    Droppable="true" StopPropagation="true"
+                                                    Style="@DropAreaStyle">
+                                        <span class="text-secondary">в корень зоны — вне контейнеров</span>
+                                    </FluentDropZone>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <FormLayoutRoot Zone="@zone.Key" Nodes="@tree" />
+                        }
+                    </div>
+                </div>
+            }
+        </CascadingValue>
+
+    </FluentDragContainer>
+}

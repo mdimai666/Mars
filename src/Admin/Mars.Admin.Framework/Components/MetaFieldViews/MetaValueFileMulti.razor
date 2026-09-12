@@ -1,11 +1,10 @@
 @using Mars.Admin.Framework.Components.MediaViews
-@using Mars.Cms.Contracts.MetaFields
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits FluentComponentBase
 
 @{
     // превью файла в квадратном контейнере (общее для таблицы и карточек)
-    RenderFragment<MetaValueEditModel> preview = row => @<text>
+    RenderFragment<Guid> preview = row => @<text>
         @if (IsLoading(row))
         {
             <SharedLoader2 />
@@ -94,11 +93,11 @@
         <FluentLabel Color="Color.Neutral">-⚪ Не выбрано-</FluentLabel>
     }
 
-    @if (Meta.DropZoneEnabled)
+    @if (DropZoneEnabled)
     {
         <div class="mt-1">
-            <DropTileZone FolderPath="@Meta.UploadFolder"
-                          Accept="@(Meta.Type == MetaFieldType.Image ? "image/*" : "*")"
+            <DropTileZone FolderPath="@UploadFolder"
+                          Accept="@(IsImage ? "image/*" : "*")"
                           TileClass="@(IsCardsView ? "d-drop-tile-card" : "d-drop-tile-row")"
                           OnFilesUploaded="OnFilesUploadedAsync" />
         </div>

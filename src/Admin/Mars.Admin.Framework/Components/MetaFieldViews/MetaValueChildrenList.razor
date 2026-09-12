@@ -52,7 +52,7 @@
             <FluentLabel Color="Color.Neutral">— пусто —</FluentLabel>
         }
 
-        @if (_dropField is not null && Meta.DropZoneEnabled)
+        @if (_dropField is not null && DropZoneEnabled)
         {
             <div class="mt-1">
                 <DropTileZone FolderPath="@_dropField.Options.GetUploadFolder()"
@@ -112,7 +112,7 @@
             <FluentLabel Color="Color.Neutral">— пусто —</FluentLabel>
         }
 
-        @if (_dropField is not null && Meta.DropZoneEnabled)
+        @if (_dropField is not null && DropZoneEnabled)
         {
             <div class="mt-1">
                 <DropTileZone FolderPath="@_dropField.Options.GetUploadFolder()"

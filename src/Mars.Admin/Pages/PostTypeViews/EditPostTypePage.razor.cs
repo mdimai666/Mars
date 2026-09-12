@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -24,18 +23,18 @@ public partial class EditPostTypePage
     string url = "";
     string import_json = "";
     bool visibleImportModal;
+    bool systemFieldsCollapsed;
+    bool metaFieldsCollapsed;
+
+    void ToggleSystemFields() => systemFieldsCollapsed = !systemFieldsCollapsed;
+
+    void ToggleMetaFields() => metaFieldsCollapsed = !metaFieldsCollapsed;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         url = Q.ServerUrlJoin($"/api/PostType/PostTypeExport/{ID}");
-    }
-
-    void AddNewField()
-    {
-        int order = f.Model.MetaFields.Any() ? f.Model.MetaFields.Max(s => s.Order) + 1 : 0;
-        f.Model.MetaFields.Add(FormMetaField.NewField(order));
     }
 
     async Task OnToggleFeatureAsync(PostTypeEditModel context, string feature, bool enabled)

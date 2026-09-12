@@ -1,6 +1,7 @@
 @page "/EditPostCategoryType"
 @page "/EditPostCategoryType/{ID:guid}"
 
+@using Mars.Admin.Framework.Components.Forms
 @using Mars.Cms.Contracts.PostCategoryTypes
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
@@ -57,21 +58,8 @@
                     </div>
                     <div class="card-body">
                         <div class="card-section">
-
-                            @if (!context.MetaFields.Any())
-                            {
-                                <SharedContentNoRecords />
-                            }
-
-                            <CascadingValue Value="@context.MetaFields">
-                                <CascadingValue Value="@context.MetaRelationModels">
-                                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField />
-                                </CascadingValue>
-                            </CascadingValue>
-
-                            <div class="mt-2">
-                                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())" OnClick="AddNewField">Добавить</FluentButton>
-                            </div>
+                            <MetaFieldsGroup Fields="context.MetaFields"
+                                             MetaRelationModels="context.MetaRelationModels" />
                         </div>
                     </div>
                 </div>

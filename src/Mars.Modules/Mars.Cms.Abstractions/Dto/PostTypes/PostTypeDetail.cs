@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
@@ -13,24 +14,20 @@ public record PostTypeDetail : PostTypeSummary
     public required IReadOnlyCollection<MetaFieldDto> MetaFields { get; init; }
 
     public required PostTypePresentation Presentation { get; init; }
+
+    /// <summary>Сохранённая раскладка формы редактирования (<c>post_types.Options["form"]</c>); null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
+
+    /// <summary>Параметры системных полей (<c>post_types.Options["systemFields"]</c>); null — не заданы</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
-/// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
+/// <summary>Системный слот контента (<see cref="SystemFieldsCatalog.Content"/>, фича «Контент»)</summary>
 public static class PostTypeDetailContentExtensions
 {
-    /// <summary>Поле контента: фича включена и поле с фиксированным ключом существует</summary>
-    public static MetaFieldDto? ContentField(this PostTypeDetail postType)
-        => postType.EnabledFeatures.Contains(PostTypeConstants.Features.Content)
-            ? postType.MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
-            : null;
-
-    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
+    /// <summary>Ключ редактора контента (пусто = обычный многострочный текст)</summary>
     public static string ContentEditorKey(this PostTypeDetail postType)
-        => postType.ContentField()?.Options.GetEditor() ?? "";
-
-    /// <summary>Язык кода редактора контента</summary>
-    public static string ContentCodeLang(this PostTypeDetail postType)
-        => postType.ContentField()?.Options.GetCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
+        => SystemFieldsCatalog.EditorKey(SystemFieldsCatalog.Content, postType.SystemFields);
 }
 
 public record PostTypePresentation

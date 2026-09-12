@@ -10,11 +10,9 @@ public static class MetaValuesEnricher
 {
     /// <param name="metaValues"></param>
     /// <param name="metaFields"></param>
-    /// <param name="contentFieldKey">Поле контента фичи: значения нет в мета-значениях (оно в posts.Content)</param>
     public static IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(
                                                             IEnumerable<MetaValueDetailDto> metaValues,
-                                                            IReadOnlyCollection<MetaFieldDto> metaFields,
-                                                            string? contentFieldKey = null)
+                                                            IReadOnlyCollection<MetaFieldDto> metaFields)
     {
 
         var valuesByMfId = metaValues.GroupBy(s => s.MetaField.Id)
@@ -25,7 +23,6 @@ public static class MetaValuesEnricher
         foreach (var mf in metaFields)
         {
             if (mf.Type == MetaFieldType.Query) continue; // вычислимое — хранимых значений нет
-            if (contentFieldKey is not null && mf.Key == contentFieldKey) continue; // значение — в posts.Content
 
             if (valuesByMfId.TryGetValue(mf.Id, out var values))
             {

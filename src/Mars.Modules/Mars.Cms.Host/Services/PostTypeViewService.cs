@@ -136,6 +136,8 @@ internal class PostTypeViewService : IPostTypeViewService
     /// </summary>
     internal static IReadOnlyList<ViewColumnInfo> BuildColumns(PostTypeDetail postType)
     {
+        // базовые колонки заданы явно, а не через SystemFieldsCatalog: в каталоге нет слота для Id,
+        // а ключи слотов не совпадают с именами колонок (status → status_id, author → user_id)
         var columns = new List<ViewColumnInfo>
         {
             new("Id", "\"p\".\"id\""),

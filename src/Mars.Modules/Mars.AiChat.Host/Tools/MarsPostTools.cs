@@ -4,10 +4,10 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Hubs;
 using Mars.Core.Features;
+using Mars.Forms.Contracts;
 using Mars.Nodes.Abstractions.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -45,12 +45,13 @@ public class MarsPostTools
         try
         {
             var blank = await _postService.GetEditModelBlank(type, CancellationToken.None);
-            var contentEditor = blank.PostType.ContentEditorKey();
+            // ключ редактора слота контента — из дескриптора формы (пусто = обычный многострочный текст)
+            var contentEditor = blank.Form.Field(SystemFieldsCatalog.Content)?.Field?.Editor ?? "";
 
             var content = contentEditor switch
             {
-                MetaFieldEditorCatalog.BlockEditor => BuildBlockEditorJson(contentText),
-                MetaFieldEditorCatalog.Wysiwyg => BuildHtml(contentText),
+                FormEditorCatalog.BlockEditor => BuildBlockEditorJson(contentText),
+                FormEditorCatalog.Wysiwyg => BuildHtml(contentText),
                 _ => contentText,
             };
 

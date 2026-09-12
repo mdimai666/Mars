@@ -1,0 +1,17 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор многострочного текста *@
+
+<FluentTextArea Rows="4"
+                Value="@(Binding.ValueAt(Index) as string)"
+                ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+                Name="@Binding.Field.Key"
+                Disabled="@Binding.ReadOnly"
+                Required="@Binding.Field.Required"
+                Class="w-100" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+}

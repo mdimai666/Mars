@@ -50,30 +50,6 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
             Visibility = PostTypeVisibility.Public,
             PostStatusList = [],
             MetaFields = [
-                new MetaFieldDto
-                {
-                    Id = Guid.NewGuid(),
-                    Title = FeatureFieldsCatalog.ContentFieldTitle,
-                    Key = FeatureFieldsCatalog.ContentFieldKey,
-                    Type = MetaFieldType.Text,
-                    MaxValue = null,
-                    MinValue = null,
-                    Description = "",
-                    IsNullable = true,
-                    IsMultiple = false,
-                    Default = null,
-                    Options = new JsonObject
-                    {
-                        [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
-                        [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
-                    },
-                    Order = 999,
-                    Tags = [],
-                    Hidden = false,
-                    Disabled = false,
-                    Variants = [],
-                    ModelName = null,
-                },
                 _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1" },
                 _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.Int, Key = "int1" },
             ],

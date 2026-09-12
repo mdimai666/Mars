@@ -23,8 +23,6 @@ public static class MainAdminFramework
         services.AddFluentUIComponents();
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
-        services.TryAddSingleton<Mars.Admin.Framework.Components.MetaFieldViews.IMetaFieldEditorLocator,
-            Mars.Admin.Framework.Components.MetaFieldViews.MetaFieldEditorLocator>();
 
         if (!OperatingSystem.IsBrowser()) return;
 

@@ -1,4 +1,5 @@
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
@@ -13,5 +14,8 @@ public record UpdatePostTypePresentationQuery
 
     /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
     public PostTypeGridSettings? Grid { get; init; }
+
+    /// <summary>Раскладка формы редактирования поста; null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
 
 }

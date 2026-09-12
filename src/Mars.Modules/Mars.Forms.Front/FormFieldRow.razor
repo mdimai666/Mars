@@ -1,0 +1,68 @@
+@namespace Mars.Forms.Front
+@inject IFormEditorLocator Editors
+
+<div class="form-field mb-3" data-key="@Item.Key" title="@Item.Key">
+    <FluentLabel>@Binding.Title</FluentLabel>
+
+    @if (EditorComponent is not null)
+    {
+        <DynamicComponent Type="@EditorComponent" Parameters="@EditorParameters" />
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <FluentLabel Color="@Color.Warning">
+                    нет редактора для поля <strong>@Item.Key</strong> (тип @Item.Field!.Type)
+                </FluentLabel>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Item.Field!.Description))
+    {
+        <div class="text-secondary fz10px">@Item.Field.Description</div>
+    }
+    @foreach (var error in Binding.Errors)
+    {
+        <div class="text-danger fz10px">@error.Message</div>
+    }
+    @foreach (var message in _validationErrors)
+    {
+        <div class="text-danger fz10px">@message</div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
+
+    [Parameter] public FormItem Item { get; set; } = default!;
+
+    FormFieldBinding _binding = default!;
+    IReadOnlyList<string> _validationErrors = [];
+
+    protected override void OnParametersSet()
+    {
+        _binding = new FormFieldBinding
+        {
+            Item = Item,
+            Field = Item.Field!,
+            Values = Context.Values,
+            TitleResolver = Context.TitleResolver,
+        };
+
+        // встроенные правила проверяются тут же: ошибка появляется без похода на сервер
+        _validationErrors = _binding.ValidationErrors;
+    }
+
+    FormFieldBinding Binding => _binding;
+
+    /// <summary>Явный ключ редактора (раскладка → дескриптор), иначе встроенный редактор типа</summary>
+    Type? EditorComponent
+        => Editors.GetEditorComponent(_binding.Editor, LookupType, _binding.IsList)
+           ?? Editors.GetDefaultEditor(_binding.ElementType, _binding.IsList);
+
+    FormFieldType LookupType => _binding.IsList ? _binding.ElementType : _binding.Field.Type;
+
+    Dictionary<string, object> EditorParameters => new() { ["Binding"] = _binding };
+}

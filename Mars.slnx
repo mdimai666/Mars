@@ -59,6 +59,11 @@
     <Project Path="src/Mars.Modules/Mars.Excel.Abstractions/Mars.Excel.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Excel.Host/Mars.Excel.Host.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/Forms/">
+    <Project Path="src/Mars.Modules/Mars.Forms.Abstractions/Mars.Forms.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Forms.Contracts/Mars.Forms.Contracts.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Forms.Front/Mars.Forms.Front.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/Identity/">
     <Project Path="src/Mars.Modules/Mars.Identity.Abstractions/Mars.Identity.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Identity.Contracts/Mars.Identity.Contracts.csproj" />
@@ -211,6 +216,7 @@
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.DockerImage.Tests/Mars.DockerImage.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />
+    <Project Path="tests/Mars.Forms.Tests/Mars.Forms.Tests.csproj" />
     <Project Path="tests/Mars.HttpSmartAuthFlow.Integration.Tests/Mars.HttpSmartAuthFlow.Integration.Tests.csproj" Id="25ae82d2-c596-4840-a5f0-24539b970fda" />
     <Project Path="tests/Mars.Integration.Tests/Mars.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Nodes.Tests/Mars.Nodes.Tests.csproj" />

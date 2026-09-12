@@ -1,0 +1,30 @@
+@using Mars.Forms.Front
+@implements IDisposable
+
+@* Общий редактор «WYSIWYG (Quill)»: значение — HTML-строка поля. Тяжёлый — печатают в редакторе,
+   в значение формы оно уходит перед сохранением (FormCommitHooks). *@
+
+<WysiwygEditor @ref=_editor Content="@Html" />
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
+
+    WysiwygEditor? _editor;
+
+    string Html
+    {
+        get => Binding.Value as string ?? "";
+        set => Binding.Value = value;
+    }
+
+    protected override void OnInitialized() => Context.Commits.Register(CommitAsync);
+
+    async Task CommitAsync()
+    {
+        if (_editor is not null) Html = await _editor.GetHTML();
+    }
+
+    public void Dispose() => Context.Commits.Unregister(CommitAsync);
+}

@@ -2,6 +2,7 @@ using Flurl.Http;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
+using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
@@ -86,4 +87,10 @@ internal class PostTypeServiceClient : BasicServiceClient, IPostTypeServiceClien
     public Task UpdatePresentation(UpdatePostTypePresentationRequest request)
         => _client.Request($"{_basePath}{_controllerName}/presentation/update")
                     .PutJsonAsync(request);
+
+    public Task<FormDefinition?> GetFormDefinition(Guid id, bool saved = true)
+        => _client.Request($"{_basePath}{_controllerName}/form", id)
+                    .SetQueryParam(nameof(saved), saved)
+                    .OnError(OnStatus404ReturnNull)
+                    .GetJsonAsync<FormDefinition?>();
 }

@@ -6,11 +6,14 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
+using Mars.Forms.Contracts;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Nodes;
 
 namespace Mars.Integration.Tests.Controllers.PostTypes;
 
@@ -96,5 +99,102 @@ public class UpdatePostTypeTests : ApplicationTests
                     .ExcludingMissingMembers());
             });
         });
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostType_WithSystemFields_StoresThemInTypeOptions()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Update);
+        _ = nameof(PostTypeController.GetEditModel);
+        var client = AppFixture.GetClient();
+
+        var ef = AppFixture.MarsDbContext();
+        var postType = _fixture.Create<PostTypeEntity>();
+        postType.TypeName = $"sys{Guid.NewGuid():N}"[..12];
+        postType.EnabledFeatures = [PostTypeConstants.Features.Excerpt];
+        postType.Options = null;
+
+        ef.PostTypes.Add(postType);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+
+        var request = _fixture.Create<UpdatePostTypeRequest>() with
+        {
+            Id = postType.Id,
+            TypeName = postType.TypeName,
+            EnabledFeatures = [PostTypeConstants.Features.Excerpt],
+            ImageFieldKey = null,
+            MetaFields = [],
+            PostStatusList = [],
+            SystemFields =
+            [
+                new FormFieldSettings
+                {
+                    Key = SystemFieldsCatalog.Slug,
+                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Unique }],
+                },
+                new FormFieldSettings { Key = SystemFieldsCatalog.Excerpt, Editor = FormEditorCatalog.Multiline },
+            ],
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PutJsonAsync(request).CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        ef.ChangeTracker.Clear();
+        var entity = ef.PostTypes.First(s => s.Id == postType.Id);
+        entity.Options.GetSystemFields()!.Select(s => s.Key).Should()
+              .Equal(SystemFieldsCatalog.Slug, SystemFieldsCatalog.Excerpt);
+        entity.Options.GetFormLayout().Should().BeNull("параметры полей не пишутся в раскладку формы");
+
+        var viewModel = await client.Request(_apiUrl, "edit", postType.Id)
+                                    .GetJsonAsync<PostTypeEditViewModel>();
+
+        viewModel.PostType.SystemFields!.Single(s => s.Key == SystemFieldsCatalog.Slug)
+                 .Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
+        viewModel.PostType.SystemFields.Single(s => s.Key == SystemFieldsCatalog.Excerpt)
+                 .Editor.Should().Be(FormEditorCatalog.Multiline);
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostType_WithoutSystemFields_KeepsStoredOnes()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Update);
+        var client = AppFixture.GetClient();
+
+        var ef = AppFixture.MarsDbContext();
+        var postType = _fixture.Create<PostTypeEntity>();
+        postType.TypeName = $"keep{Guid.NewGuid():N}"[..12];
+        postType.Options = ((JsonNode?)null).WithSystemFields(
+        [
+            new FormFieldSettings { Key = SystemFieldsCatalog.Slug, Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Unique }] },
+        ]);
+
+        ef.PostTypes.Add(postType);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+
+        var request = _fixture.Create<UpdatePostTypeRequest>() with
+        {
+            Id = postType.Id,
+            TypeName = postType.TypeName,
+            MetaFields = [],
+            PostStatusList = [],
+            SystemFields = null,
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PutJsonAsync(request).CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        ef.ChangeTracker.Clear();
+        ef.PostTypes.First(s => s.Id == postType.Id).Options.GetSystemFields()!
+          .Single().Key.Should().Be(SystemFieldsCatalog.Slug, "null в запросе сохранённые параметры не трогает");
     }
 }

@@ -1,3 +1,4 @@
+@using Mars.Admin.Framework.Components.Forms
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <StandardEditForm1 TModel="PostCategoryEditModel"
@@ -37,11 +38,13 @@
             <InputTags2 @bind-Value=context.Tags />
         </FormItem2>
 
-        <CascadingValue Value="@context.MetaValues">
-            <CascadingValue Value="@context.PostCategoryType.MetaFields">
-                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
-            </CascadingValue>
-        </CascadingValue>
+        @if (context.Form is not null)
+        {
+            <MetaValuesForm @ref="metaValueForm"
+                            Definition="context.Form"
+                            MetaValues="context.MetaValues"
+                            MetaFields="context.PostCategoryType.MetaFields" />
+        }
 
     </div>
 

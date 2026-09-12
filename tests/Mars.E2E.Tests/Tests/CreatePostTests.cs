@@ -15,7 +15,7 @@ public class CreatePostTests : BaseE2ETests
     {
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task CreatePost_WithRequiredFields_Persists()
     {
         // Arrange
@@ -27,12 +27,12 @@ public class CreatePostTests : BaseE2ETests
 
         await Page.GotoAsync($"{BaseUrl}/dev/EditPost/post");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await Page.WaitForSelectorAsync("[name='Title']", new() { Timeout = 3000 });
+        await Page.WaitForSelectorAsync("[name='title']", new() { Timeout = 3000 });
 
         // Act — fill required fields
-        await FillTextField(Page, "Title", title);
+        await FillTextField(Page, "title", title);
         await Task.Delay(500);
-        await FillTextField(Page, "Slug", slug);
+        await FillTextField(Page, "slug", slug);
 
         // Fill Content via BlockEditor (Editor.js)
         await FillBlockEditorContent(Page, contentGuid);

@@ -32,6 +32,12 @@ public interface IPostRepository : IDisposable
     Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken);
     Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Занят ли slug другим постом типа (кроме <paramref name="exceptId"/>) — сравнение по <c>lower()</c>,
+    /// как у индексов <c>posts.slug</c>. Проверка правила <c>unique</c> формы поста.
+    /// </summary>
+    Task<bool> SlugOccupiedAsync(string typeName, string slug, Guid? exceptId, CancellationToken cancellationToken);
+
     Task<int> CountByTypeAsync(Guid postTypeId, CancellationToken cancellationToken);
     Task<PostDetail?> GetFirstByTypeAsync(string typeName, CancellationToken cancellationToken);
     Task<int> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken);

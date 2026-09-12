@@ -15,7 +15,7 @@ public class AuthTests : BaseE2ETests
     {
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task LoginPage_ValidData_Succeeds()
     {
         // Arrange

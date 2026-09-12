@@ -1,0 +1,225 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="card field-definition">
+    <div class="card-header d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-fill flex-wrap" style="cursor:pointer" @onclick="Toggle">
+            <i class="bi @(Expanded ? "bi-chevron-up" : "bi-chevron-down")"></i>
+            @if (!string.IsNullOrEmpty(Definition.TypeIcon))
+            {
+                <span>@Definition.TypeIcon</span>
+            }
+            <strong class="@TitleStyle">@DisplayTitle</strong>
+            <span class="text-secondary fz12px">@Definition.Key</span>
+            <span class="text-primary fz12px">(@TypeTitle)</span>
+
+            @if (Definition.Required && !Capabilities.CanEditRequired)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">обязательное</FluentBadge>
+            }
+            @if (Definition.ReadOnly)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">только чтение</FluentBadge>
+            }
+            @if (Definition.Multiple && !Capabilities.CanEditMultiple)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">несколько значений</FluentBadge>
+            }
+            @if (Definition.Hidden && !Capabilities.CanHide)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">hidden</FluentBadge>
+            }
+            @if (Definition.Disabled && !Capabilities.CanDisable)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">выключено</FluentBadge>
+            }
+            @if (!string.IsNullOrEmpty(Definition.Feature))
+            {
+                <FluentBadge Appearance="Appearance.Neutral" title="Поле доступно, пока включена фича типа">
+                    фича: @L[Definition.Feature]
+                </FluentBadge>
+            }
+            @if (Definition.Protected)
+            {
+                <FluentBadge Appearance="Appearance.Neutral"
+                             title="Поле защищено фичей типа: чтобы удалить его — снимите галочку фичи">
+                    фича
+                </FluentBadge>
+            }
+        </div>
+
+        <div class="hstack gap-3">
+            @if (Capabilities.CanClone)
+            {
+                <FluentButton Appearance="Appearance.Stealth" OnClick="CloneAsync">
+                    <span class="text-secondary">дублировать</span>
+                </FluentButton>
+            }
+            @if (Capabilities.CanDelete && !Definition.Protected)
+            {
+                <DFluentDeleteButton OnConfirm="DeleteAsync">
+                    <span class="text-danger">удалить</span>
+                </DFluentDeleteButton>
+            }
+        </div>
+    </div>
+
+    @if (Expanded)
+    {
+        <div class="card-body vstack gap-3">
+
+            <div class="row row-cols-2 g-4">
+                @if (Capabilities.CanEditTitle)
+                {
+                    <div class="col">
+                        <FluentTextField Label="Заголовок" Style="min-width:200px" Required
+                                         Appearance="FluentInputAppearance.Filled"
+                                         Value="@Definition.Title" ValueChanged="SetTitleAsync" />
+                        @if (ValidationMessage(nameof(Definition.Title)) is { } titleError)
+                        {
+                            <div class="text-danger fz12px">@titleError</div>
+                        }
+                    </div>
+                }
+                @if (Capabilities.CanEditKey)
+                {
+                    <div class="col">
+                        <FluentTextField Label="Ключ" Required
+                                         Value="@Definition.Key" ValueChanged="SetKeyAsync" />
+                        @if (ValidationMessage(nameof(Definition.Key)) is { } keyError)
+                        {
+                            <div class="text-danger fz12px">@keyError</div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="row row-cols-2 g-4">
+                @if (Capabilities.CanEditDescription)
+                {
+                    <div class="col">
+                        <label>Описание</label>
+                        <FluentTextArea Rows="2" Class="w-100"
+                                        Value="@Definition.Description" ValueChanged="SetDescriptionAsync" />
+                    </div>
+                }
+                @if (Capabilities.CanEditTags)
+                {
+                    <div class="col">
+                        <label>Теги</label>
+                        <InputTags2 Value="TagsValue" ValueChanged="SetTagsAsync" />
+                    </div>
+                }
+            </div>
+
+            <div class="d-flex gap-4">
+                @if (Capabilities.CanEditRequired)
+                {
+                    <FluentSwitch Value="@Definition.Required" ValueChanged="SetRequiredAsync" Label="Обязательное" />
+                }
+                @if (Capabilities.CanEditMultiple && Definition.SupportsMultiple)
+                {
+                    <FluentSwitch Value="@Definition.Multiple" ValueChanged="SetMultipleAsync" Label="Несколько значений" />
+                }
+            </div>
+
+            @if (Capabilities.CanChangeType && TypePickerComponent is not null)
+            {
+                <DynamicComponent Type="TypePickerComponent" Parameters="PanelParameters" />
+            }
+
+            <div class="d-flex gap-3 flex-wrap align-items-end">
+                @if (Capabilities.CanEditEditor)
+                {
+                    <div class="vstack">
+                        <FluentLabel>Редактор значения</FluentLabel>
+                        <FluentSelect TOption="string" Width="250px"
+                                      Value="@(Definition.Editor ?? "")"
+                                      ValueChanged="SetEditorAsync">
+                            <FluentOption TOption="string" Value="">— обычный для типа —</FluentOption>
+                            @foreach (var editor in Editors)
+                            {
+                                <FluentOption TOption="string" Value="@editor.Key">@editor.Title</FluentOption>
+                            }
+                        </FluentSelect>
+                    </div>
+                }
+
+                @if (Capabilities.CanEditLimits && Definition.SupportsLimits)
+                {
+                    <div class="vstack">
+                        <FluentLabel>Ограничитель</FluentLabel>
+                        <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentLabel>
+                        <div class="mt-2 hstack gap-3">
+                            <label>min</label>
+                            <FluentNumberField @bind-Value="MinValue" Style="width:100px;" />
+                            <span style="text-align:center;">-</span>
+                            <label>max</label>
+                            <FluentNumberField @bind-Value="MaxValue" Style="width:100px;" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @foreach (var panel in Panels)
+            {
+                <DynamicComponent Type="panel" Parameters="PanelParameters" />
+            }
+
+            @if (Capabilities.CanEditRules && AvailableRules.Count > 0)
+            {
+                <div class="vstack gap-2">
+                    <FluentLabel>Валидация</FluentLabel>
+                    <div class="text-secondary fz12px">
+                        Правила системных полей применяются на всех путях записи, не только в админ-форме
+                    </div>
+
+                    @for (var i = 0; i < Definition.Rules.Count; i++)
+                    {
+                        var index = i;
+                        var rule = Definition.Rules[index];
+                        <div class="hstack gap-2 align-items-center flex-wrap">
+                            <FluentSelect TOption="string" Width="220px" Value="@rule.Type"
+                                          ValueChanged="@(type => SetRuleTypeAsync(index, type))">
+                                @foreach (var (key, title) in AvailableRules)
+                                {
+                                    <FluentOption Value="@key">@title</FluentOption>
+                                }
+                            </FluentSelect>
+                            @foreach (var name in ParamsOf(rule.Type))
+                            {
+                                var parameter = name;
+                                <FluentTextField Label="@parameter" Placeholder="@parameter" Style="min-width:170px"
+                                                 Value="@FormRuleParams.Read(rule, parameter)"
+                                                 ValueChanged="@(value => SetRuleParamAsync(index, parameter, value))" />
+                            }
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveRuleAsync(index))">
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </FluentButton>
+                        </div>
+                    }
+
+                    <div>
+                        <FluentButton OnClick="AddRuleAsync">Добавить правило</FluentButton>
+                    </div>
+                </div>
+            }
+
+            <div class="hstack gap-3">
+                @if (Capabilities.CanHide)
+                {
+                    <FluentSwitch Value="@Definition.Hidden" ValueChanged="SetHiddenAsync" Label="@AppRes.Hidden" />
+                }
+                @if (Capabilities.CanDisable)
+                {
+                    <FluentSwitch Value="@Definition.Disabled" ValueChanged="SetDisabledAsync" Label="@AppRes.Disabled" />
+                }
+                @if (Capabilities.CanEditOrder)
+                {
+                    <FluentNumberField @bind-Value="OrderValue" Label="@AppRes.SortingOrder" Style="width:100px" />
+                }
+            </div>
+
+        </div>
+    }
+</div>

@@ -428,6 +428,21 @@ internal class PostRepository : IPostRepository
                         => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug.ToLower() == slug.ToLower(), cancellationToken);
 #pragma warning restore RCS1155 // Use StringComparison when comparing strings
 
+    // Тот же lower() что и в ExistAsync/GetDetailBySlug — иначе планировщик не берёт ix_posts_post_type_id_slug_lower.
+#pragma warning disable CA1862, CA1304, CA1311
+    public Task<bool> SlugOccupiedAsync(string typeName, string slug, Guid? exceptId, CancellationToken cancellationToken)
+    {
+#pragma warning disable RCS1155 // Use StringComparison when comparing strings
+        var query = _marsDbContext.Posts.AsNoTracking()
+                                    .Where(s => s.PostType.TypeName == typeName && s.Slug.ToLower() == slug.ToLower());
+#pragma warning restore RCS1155 // Use StringComparison when comparing strings
+
+        if (exceptId is Guid id) query = query.Where(s => s.Id != id);
+
+        return query.AnyAsync(cancellationToken);
+    }
+#pragma warning restore CA1862, CA1304, CA1311
+
     public Task<int> CountByTypeAsync(Guid postTypeId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

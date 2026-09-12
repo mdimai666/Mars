@@ -95,6 +95,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Forms.Abstractions\Mars.Forms.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Identity.Host\Mars.Identity.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />

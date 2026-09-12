@@ -6,7 +6,8 @@
     xUnit v3 test projects build as MTP executables (OutputType=Exe). This script runs them
     directly (the "dotnet test" MTP driver path is blocked on SDK 10.0.400, exit 5).
     Default: unit + Docker-integration projects. Mars.E2E.Tests and Mars.DockerImage.Tests
-    are excluded unless -IncludeE2E.
+    are excluded unless -IncludeE2E (E2E inside that suite включаются переменной
+    окружения MARS_E2E_TESTS=1, которую ставит сам -IncludeE2E).
 
 .PARAMETER Configuration
     Build/runtime configuration (Debug/Release). Default: Debug.
@@ -24,7 +25,9 @@
     Do not run "dotnet build Mars.slnx" first.
 
 .PARAMETER IncludeE2E
-    Also run Mars.E2E.Tests and Mars.DockerImage.Tests.
+    Also run Mars.E2E.Tests and Mars.DockerImage.Tests. Для E2E это ещё и включает прогон
+    (переменная окружения MARS_E2E_TESTS=1, её читает атрибут E2EFact); контейнерные тесты
+    дополнительно требуют MARS_DOCKER_TESTS=1.
 
 .PARAMETER List
     Print discovered projects and exit without building/running.
@@ -114,6 +117,12 @@ if (-not $SkipBuild) {
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Build failed (exit $LASTEXITCODE)."
     }
+}
+
+# атрибут E2EFact читает включение из окружения, поэтому -IncludeE2E его выставляет
+if ($IncludeE2E) {
+    $env:MARS_E2E_TESTS = '1'
+    Write-Host '==> MARS_E2E_TESTS=1 (E2E-тесты включены)'
 }
 
 $runDir = Join-Path (Join-Path $env:TEMP 'mars-test-runs') (Get-Date -Format 'yyyyMMdd-HHmmss')

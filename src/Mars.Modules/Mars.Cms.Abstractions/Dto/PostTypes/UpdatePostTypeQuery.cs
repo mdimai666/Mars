@@ -1,6 +1,7 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
@@ -21,4 +22,7 @@ public record UpdatePostTypeQuery : IGeneralPostTypeQuery, IGeneralMetaFieldsSup
 
     public required IReadOnlyCollection<MetaFieldDto> MetaFields { get; init; }
     public string? ImageFieldKey { get; init; }
+
+    /// <summary>Параметры системных полей; null — не прислали, сохранённые в Options не трогаем</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }

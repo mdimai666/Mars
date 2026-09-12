@@ -7,6 +7,7 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
+using Mars.Forms.Contracts;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -111,5 +112,63 @@ public class UpdatePostTypePresentationTests : ApplicationTests
         var viewModel = await client.Request(_apiUrl, "edit", postType.Id)
                                     .GetJsonAsync<PostTypePresentationEditViewModel>();
         viewModel.Presentation.Grid.Should().BeEquivalentTo(grid);
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.UpdatePresentation);
+        _ = nameof(PostTypeController.GetPresentationEditModel);
+        var client = AppFixture.GetClient();
+
+        var ef = AppFixture.MarsDbContext();
+        var postType = _fixture.Create<PostTypeEntity>();
+        postType.TypeName = $"form{Guid.NewGuid():N}"[..12];
+        postType.EnabledFeatures = [PostTypeConstants.Features.Tags];
+
+        ef.PostTypes.Add(postType);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+        AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
+
+        var layout = new FormLayoutSettings
+        {
+            Items =
+            [
+                new FormItem
+                {
+                    Key = SystemFieldsCatalog.Tags,
+                    Zone = SystemFieldsCatalog.Zones.Main,
+                },
+            ],
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl, "update")
+                                 .PutJsonAsync(new UpdatePostTypePresentationRequest
+                                 {
+                                     Id = postType.Id,
+                                     ListViewTemplate = "",
+                                     Form = layout,
+                                 })
+                                 .CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        var entity = ef.PostTypes.First(s => s.Id == postType.Id);
+        entity.Options.GetFormLayout().Should().NotBeNull("раскладка формы живёт в опциях типа");
+
+        var viewModel = await client.Request(_apiUrl, "edit", postType.Id)
+                                    .GetJsonAsync<PostTypePresentationEditViewModel>();
+
+        viewModel.FormLayout!.Items.Single().Key.Should().Be(SystemFieldsCatalog.Tags);
+
+        // сохранённая раскладка доезжает до определения формы: элементы сетки (ряд/колонка) —
+        // часть представления, поле ищется по ключу, а не по позиции в списке
+        var tags = viewModel.Form!.Field(SystemFieldsCatalog.Tags);
+        tags.Should().NotBeNull("поле из сохранённой раскладки должно быть в определении формы");
+        tags!.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
     }
 }

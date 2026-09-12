@@ -1,0 +1,84 @@
+@namespace Mars.Forms.Front
+@using Mars.Forms.Contracts
+
+@* Точка входа рендера: одна зона = один экземпляр. Дерево раскладки строит общий проектор
+   FormLayoutTree (плоский список → узлы). Контейнеры зоны становятся табами, если их больше
+   одного; корневые узлы без контейнера рисуются рядом, как легаси-раскладка. *@
+<CascadingValue Value="@_context">
+    @if (_containers.Count >= 2)
+    {
+        <FluentTabs>
+            @foreach (var container in _containers)
+            {
+                <FluentTab Label="@TabTitle(container.Item)">
+                    @Row(container.Children)
+                </FluentTab>
+            }
+        </FluentTabs>
+    }
+    else if (_containers.Count == 1)
+    {
+        @Row(_containers[0].Children)
+    }
+
+    @if (_loose.Count > 0)
+    {
+        @Row(_loose)
+    }
+</CascadingValue>
+
+@code {
+    [Parameter] public FormDefinition Definition { get; set; } = default!;
+
+    [Parameter] public IFormValueStore Values { get; set; } = default!;
+
+    /// <summary>Ключ зоны из определения провайдера (пусто — единственная зона)</summary>
+    [Parameter] public string Zone { get; set; } = "";
+
+    [Parameter] public bool Client { get; set; }
+
+    /// <summary>Резолвер переводимых заголовков (локализатор страницы-потребителя)</summary>
+    [Parameter] public Func<string, string>? TitleResolver { get; set; }
+
+    /// <summary>Свой рендер листа-поля (иначе встроенный <see cref="FormFieldRow"/>)</summary>
+    [Parameter] public RenderFragment<FormItem>? FieldTemplate { get; set; }
+
+    /// <summary>Общие хуки отложенной записи на форму (одни на все зоны страницы)</summary>
+    [Parameter] public FormCommitHooks? Commits { get; set; }
+
+    /// <summary>Общие живые редакторы на форму (одни на все зоны страницы)</summary>
+    [Parameter] public FormLiveEditors? LiveEditors { get; set; }
+
+    FormRenderContext _context = default!;
+    IReadOnlyList<FormLayoutNode> _containers = [];
+    IReadOnlyList<FormLayoutNode> _loose = [];
+
+    protected override void OnParametersSet()
+    {
+        _context = new FormRenderContext
+        {
+            Definition = Definition,
+            Values = Values,
+            Client = Client,
+            TitleResolver = TitleResolver,
+            FieldTemplate = FieldTemplate,
+            Commits = Commits ?? new FormCommitHooks(),
+            LiveEditors = LiveEditors ?? new FormLiveEditors(),
+        };
+
+        var roots = FormLayoutTree.Build(Definition?.Items ?? [], Zone);
+
+        _containers = roots.Where(node => node.Item.Kind == FormItemKind.Container).ToList();
+        _loose = roots.Where(node => node.Item.Kind != FormItemKind.Container).ToList();
+    }
+
+    /// <summary>Ряд узлов зоны: корневые узлы и содержимое контейнера — ячейки одной строки</summary>
+    RenderFragment Row(IReadOnlyList<FormLayoutNode> nodes) => @<div class="row">
+        @foreach (var node in nodes)
+        {
+            <FormLayoutNodeView Node="@node" />
+        }
+    </div>;
+
+    static string TabTitle(FormItem item) => string.IsNullOrWhiteSpace(item.Title) ? item.Key : item.Title;
+}

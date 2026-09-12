@@ -1,4 +1,4 @@
-using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Services;
 
@@ -10,7 +10,7 @@ public interface IPostContentProcessorsLocator
     /// GetProvider
     /// </summary>
     /// <param name="postContentType">
-    /// Ключ редактора контента (<see cref="MetaFieldEditorCatalog"/>) —
+    /// Ключ редактора контента (<see cref="FormEditorCatalog"/>) —
     /// редактор поля контента типа (<c>Options.editor</c> поля <c>content</c>).
     /// </param>
     /// <returns></returns>

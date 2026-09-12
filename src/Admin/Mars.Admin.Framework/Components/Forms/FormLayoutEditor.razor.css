@@ -1,0 +1,22 @@
+/*
+  Кнопки добавления и удаления узла проявляются при наведении на сам узел и гаснут, когда курсор
+  ушёл во вложенный узел — там свои действия. Место под кнопками сохраняется всегда, а погашенная
+  кнопка не ловит клик (pointer-events). Видимость узла раздаётся его потомкам кастомным свойством,
+  поэтому вложенный узел перекрывает родителя своим значением, а не показывается вместе с ним.
+*/
+
+::deep .layout-node {
+    --layout-actions-opacity: 0;
+    --layout-actions-events: none;
+}
+
+::deep .layout-node:hover:not(:has(.layout-node:hover)) {
+    --layout-actions-opacity: 1;
+    --layout-actions-events: auto;
+}
+
+::deep .layout-actions {
+    opacity: var(--layout-actions-opacity, 0);
+    pointer-events: var(--layout-actions-events, none);
+    transition: opacity 300ms;
+}

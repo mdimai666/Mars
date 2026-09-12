@@ -1,0 +1,16 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор короткой строки *@
+
+<FluentTextField Value="@(Binding.ValueAt(Index) as string)"
+                 ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+                 Name="@Binding.Field.Key"
+                 Disabled="@Binding.ReadOnly"
+                 Required="@Binding.Field.Required" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    /// <summary>Индекс элемента множественного поля; -1 — значение целиком</summary>
+    [Parameter] public int Index { get; set; } = -1;
+}

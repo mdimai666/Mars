@@ -9,6 +9,7 @@ import { ensureFunctionMsg } from './functions/constants';
 import { functionsFlyout } from './functions/manager';
 import { registerFunctionCallbacks } from './functions/dialog';
 import { ensureBlocklyDialogs } from './dialogs';
+import { registerRailDeleteArea } from './railDelete';
 
 ensureFunctionMsg();
 
@@ -79,6 +80,9 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
         nativeToolbox.HtmlDiv.style.display = 'none';
     }
     workspace.resize();
+
+    // Бросок блока на рейку категорий удаляет блок (как в MakeCode).
+    registerRailDeleteArea(workspace, element);
 
     // «Переменные» и «Функции» — свои flyout-ы: блоки переменных ядра названы
     // core.variables.* (определения отдаёт сервер), а штатная категория Blockly

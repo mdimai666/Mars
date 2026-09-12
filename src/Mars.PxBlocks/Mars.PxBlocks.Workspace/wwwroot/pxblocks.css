@@ -104,6 +104,32 @@ line.blocklyFlyoutLine {
     user-select: none;
 }
 
+/* Бросок блока на рейку: рейка — delete-область Blockly (railDelete.ts), как в MakeCode —
+   краснеет и показывает корзинку по центру. */
+.pxb-rail.pxb-rail-drop {
+    background: #f6d3d5;
+    box-shadow: inset 0 0 0 2px #d13438;
+}
+
+.pxb-rail-drop-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    color: #d13438;
+    pointer-events: none;
+}
+
+.pxb-rail-drop-hint svg {
+    width: 56px;
+    height: 56px;
+}
+
+.pxb-rail.pxb-rail-drop .pxb-rail-drop-hint {
+    display: flex;
+}
+
 .pxb-rail-search {
     position: relative;
     padding: 8px;

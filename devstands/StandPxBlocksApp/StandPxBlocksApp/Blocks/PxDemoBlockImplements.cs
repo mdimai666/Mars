@@ -41,9 +41,9 @@ public sealed class PxDemoObjectImplement : IPxExpressionImplement
 }
 
 /// <summary>Общий приёмник: печатает входящее значение.</summary>
-public abstract class PxDemoTakeImplement(string typeId) : IPxStatementImplement
+public abstract class PxDemoTakeImplement : IPxStatementImplement
 {
-    public string TypeId { get; } = typeId;
+    public abstract string TypeId { get; }
 
     public Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -54,17 +54,17 @@ public abstract class PxDemoTakeImplement(string typeId) : IPxStatementImplement
 
 public sealed class PxDemoTakeNumberImplement : PxDemoTakeImplement
 {
-    public PxDemoTakeNumberImplement() : base("demostand.demo.take_number") { }
+    public override string TypeId => "demostand.demo.take_number";
 }
 
 public sealed class PxDemoTakeAnyImplement : PxDemoTakeImplement
 {
-    public PxDemoTakeAnyImplement() : base("demostand.demo.take_any") { }
+    public override string TypeId => "demostand.demo.take_any";
 }
 
 public sealed class PxDemoTakeObjectImplement : PxDemoTakeImplement
 {
-    public PxDemoTakeObjectImplement() : base("demostand.demo.take_object") { }
+    public override string TypeId => "demostand.demo.take_object";
 }
 
 /// <summary>«Создать объект»: пары поле→значение мутатора (входы px_obj_value_N, поля px_obj_key_N).</summary>

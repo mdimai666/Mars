@@ -19,55 +19,24 @@ public sealed class PxBlockImplementsLocator
     public bool Knows(string typeId) => _types.ContainsKey(typeId);
 
     /// <summary>
-    /// Регистрация типа. TypeId читается пробой: экземпляр без конструктора
-    /// (свойство-литерал), иначе — создание с посильными аргументами (TypeId из
-    /// базового конструктора, как у стандартных листьев).
+    /// Регистрация типа: TypeId читается у экземпляра, созданного БЕЗ конструктора, —
+    /// код реализаций при регистрации не выполняется (TypeId объявлен литералом).
     /// </summary>
     public void Register(Type type)
     {
         if (!typeof(IPxBlockImplement).IsAssignableFrom(type) || type.IsAbstract || type.IsInterface)
             throw new ArgumentException($"Type '{type.Name}' is not an IPxBlockImplement implementation", nameof(type));
 
-        var typeId = ProbeTypeId(type);
-        if (string.IsNullOrEmpty(typeId))
-            throw new InvalidOperationException($"Implementation '{type.Name}': failed to read TypeId during registration");
-
-        _types[typeId] = type;
+        _types[ReadTypeId(type)] = type;
     }
 
-    private static string? ProbeTypeId(Type type)
+    private static string ReadTypeId(Type type)
     {
-        IPxBlockImplement probe;
-        try
-        {
-            probe = (IPxBlockImplement)RuntimeHelpers.GetUninitializedObject(type);
-            if (!string.IsNullOrEmpty(probe.TypeId))
-                return probe.TypeId;
-        }
-        catch
-        {
-            // Тип не пережил создание без конструктора — пробуем конструкторы.
-        }
+        var typeId = ((IPxBlockImplement)RuntimeHelpers.GetUninitializedObject(type)).TypeId;
+        if (string.IsNullOrEmpty(typeId))
+            throw new InvalidOperationException($"Implementation '{type.Name}': TypeId must be a non-empty literal");
 
-        foreach (var constructor in type.GetConstructors())
-        {
-            var parameters = constructor.GetParameters();
-            if (parameters.Any(p => p.ParameterType.IsValueType))
-                continue;
-
-            try
-            {
-                probe = (IPxBlockImplement)constructor.Invoke(new object?[parameters.Length]);
-                if (!string.IsNullOrEmpty(probe.TypeId))
-                    return probe.TypeId;
-            }
-            catch
-            {
-                // Проба с null-аргументами не удалась — пробуем следующий конструктор.
-            }
-        }
-
-        return null;
+        return typeId;
     }
 
     /// <summary>Скан сборки на реализации IPxBlockImplement (конструктор — любой публичный).</summary>

@@ -8,7 +8,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 
 internal sealed class StdTextJoin : PxExpressionImplement
 {
-    public StdTextJoin() : base("core.text.join") { }
+    public override string TypeId => "core.text.join";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -23,7 +23,7 @@ internal sealed class StdTextJoin : PxExpressionImplement
 /// <summary>core.text.append: дописать к переменной — использует переменные контекста.</summary>
 internal sealed class StdTextAppend : PxStatementImplement
 {
-    public StdTextAppend() : base("core.text.append") { }
+    public override string TypeId => "core.text.append";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -38,7 +38,7 @@ internal sealed class StdTextAppend : PxStatementImplement
 
 internal sealed class StdTextLength : PxExpressionImplement
 {
-    public StdTextLength() : base("core.text.length") { }
+    public override string TypeId => "core.text.length";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(call.Input("VALUE").ToText().Length));
@@ -46,7 +46,7 @@ internal sealed class StdTextLength : PxExpressionImplement
 
 internal sealed class StdTextIsEmpty : PxExpressionImplement
 {
-    public StdTextIsEmpty() : base("core.text.is_empty") { }
+    public override string TypeId => "core.text.is_empty";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxBooleanValue(string.IsNullOrEmpty(call.Input("VALUE").ToText())));
@@ -55,7 +55,7 @@ internal sealed class StdTextIsEmpty : PxExpressionImplement
 /// <summary>core.text.index_of: результат 1-основный; 0 — не найдено (семантика Blockly).</summary>
 internal sealed class StdTextIndexOf : PxExpressionImplement
 {
-    public StdTextIndexOf() : base("core.text.index_of") { }
+    public override string TypeId => "core.text.index_of";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -72,7 +72,7 @@ internal sealed class StdTextIndexOf : PxExpressionImplement
 
 internal sealed class StdTextCharAt : PxExpressionImplement
 {
-    public StdTextCharAt() : base("core.text.char_at") { }
+    public override string TypeId => "core.text.char_at";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -99,7 +99,7 @@ internal sealed class StdTextCharAt : PxExpressionImplement
 
 internal sealed class StdTextChangeCase : PxExpressionImplement
 {
-    public StdTextChangeCase() : base("core.text.change_case") { }
+    public override string TypeId => "core.text.change_case";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -119,7 +119,7 @@ internal sealed class StdTextChangeCase : PxExpressionImplement
 
 internal sealed class StdTextTrim : PxExpressionImplement
 {
-    public StdTextTrim() : base("core.text.trim") { }
+    public override string TypeId => "core.text.trim";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -138,7 +138,7 @@ internal sealed class StdTextTrim : PxExpressionImplement
 
 internal sealed class StdTextPrint : PxStatementImplement
 {
-    public StdTextPrint() : base("core.text.print") { }
+    public override string TypeId => "core.text.print";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -151,7 +151,7 @@ internal sealed class StdTextPrint : PxStatementImplement
 /// длина 0 — до конца, отрицательная — пустая строка.</summary>
 internal sealed class StdTextSubstring : PxExpressionImplement
 {
-    public StdTextSubstring() : base("core.text.substring") { }
+    public override string TypeId => "core.text.substring";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -176,7 +176,7 @@ internal sealed class StdTextSubstring : PxExpressionImplement
 
 internal sealed class StdTextIncludes : PxExpressionImplement
 {
-    public StdTextIncludes() : base("core.text.includes") { }
+    public override string TypeId => "core.text.includes";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxBooleanValue(
@@ -186,7 +186,7 @@ internal sealed class StdTextIncludes : PxExpressionImplement
 /// <summary>core.text.compare: порядковое сравнение как в MakeCode — -1/0/1.</summary>
 internal sealed class StdTextCompare : PxExpressionImplement
 {
-    public StdTextCompare() : base("core.text.compare") { }
+    public override string TypeId => "core.text.compare";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(
@@ -195,7 +195,7 @@ internal sealed class StdTextCompare : PxExpressionImplement
 
 internal sealed class StdTextSplit : PxExpressionImplement
 {
-    public StdTextSplit() : base("core.text.split") { }
+    public override string TypeId => "core.text.split";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -214,7 +214,7 @@ internal sealed class StdTextSplit : PxExpressionImplement
 /// <summary>core.text.parse: семантика parseFloat — число в начале текста, иначе NaN.</summary>
 internal sealed partial class StdTextParse : PxExpressionImplement
 {
-    public StdTextParse() : base("core.text.parse") { }
+    public override string TypeId => "core.text.parse";
 
     [GeneratedRegex(@"^[+-]?(?:Infinity|NaN|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)")]
     private static partial Regex LeadingNumberRegex();
@@ -230,7 +230,7 @@ internal sealed partial class StdTextParse : PxExpressionImplement
 
 internal sealed class StdTextCharCode : PxExpressionImplement
 {
-    public StdTextCharCode() : base("core.text.char_code") { }
+    public override string TypeId => "core.text.char_code";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {

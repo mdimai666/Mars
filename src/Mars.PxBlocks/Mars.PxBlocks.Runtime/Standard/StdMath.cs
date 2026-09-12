@@ -5,7 +5,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 
 internal sealed class StdMathArithmetic : PxExpressionImplement
 {
-    public StdMathArithmetic() : base("core.math.arithmetic") { }
+    public override string TypeId => "core.math.arithmetic";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -28,7 +28,7 @@ internal sealed class StdMathArithmetic : PxExpressionImplement
 
 internal sealed class StdMathSingle : PxExpressionImplement
 {
-    public StdMathSingle() : base("core.math.single") { }
+    public override string TypeId => "core.math.single";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -53,7 +53,7 @@ internal sealed class StdMathSingle : PxExpressionImplement
 /// <summary>core.math.trig: тригонометрия Blockly работает в градусах.</summary>
 internal sealed class StdMathTrig : PxExpressionImplement
 {
-    public StdMathTrig() : base("core.math.trig") { }
+    public override string TypeId => "core.math.trig";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -77,7 +77,7 @@ internal sealed class StdMathTrig : PxExpressionImplement
 
 internal sealed class StdMathConstant : PxExpressionImplement
 {
-    public StdMathConstant() : base("core.math.constant") { }
+    public override string TypeId => "core.math.constant";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -98,7 +98,7 @@ internal sealed class StdMathConstant : PxExpressionImplement
 
 internal sealed class StdMathNumberProperty : PxExpressionImplement
 {
-    public StdMathNumberProperty() : base("core.math.number_property") { }
+    public override string TypeId => "core.math.number_property";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -140,7 +140,7 @@ internal sealed class StdMathNumberProperty : PxExpressionImplement
 
 internal sealed class StdMathRound : PxExpressionImplement
 {
-    public StdMathRound() : base("core.math.round") { }
+    public override string TypeId => "core.math.round";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -160,7 +160,7 @@ internal sealed class StdMathRound : PxExpressionImplement
 
 internal sealed class StdMathModulo : PxExpressionImplement
 {
-    public StdMathModulo() : base("core.math.modulo") { }
+    public override string TypeId => "core.math.modulo";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -172,7 +172,7 @@ internal sealed class StdMathModulo : PxExpressionImplement
 
 internal sealed class StdMathRandomInt : PxExpressionImplement
 {
-    public StdMathRandomInt() : base("core.math.random_int") { }
+    public override string TypeId => "core.math.random_int";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -186,7 +186,7 @@ internal sealed class StdMathRandomInt : PxExpressionImplement
 
 internal sealed class StdMathRandomFloat : PxExpressionImplement
 {
-    public StdMathRandomFloat() : base("core.math.random_float") { }
+    public override string TypeId => "core.math.random_float";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(context.Random.NextDouble()));
@@ -194,7 +194,7 @@ internal sealed class StdMathRandomFloat : PxExpressionImplement
 
 internal sealed class StdMathMinMax : PxExpressionImplement
 {
-    public StdMathMinMax() : base("core.math.min_max") { }
+    public override string TypeId => "core.math.min_max";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -208,7 +208,7 @@ internal sealed class StdMathMinMax : PxExpressionImplement
 /// <summary>core.math.map: пропорциональный перенос значения из одного диапазона в другой (без ограничения, как в MakeCode).</summary>
 internal sealed class StdMathMap : PxExpressionImplement
 {
-    public StdMathMap() : base("core.math.map") { }
+    public override string TypeId => "core.math.map";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {

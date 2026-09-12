@@ -5,7 +5,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 
 internal sealed class StdLogicNegate : PxExpressionImplement
 {
-    public StdLogicNegate() : base("core.logic.negate") { }
+    public override string TypeId => "core.logic.negate";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxBooleanValue(!call.Input("BOOL").IsTruthy()));
@@ -14,7 +14,7 @@ internal sealed class StdLogicNegate : PxExpressionImplement
 /// <summary>core.logic.compare: равенство структурное (по типу и значению), порядок — числа либо строки.</summary>
 internal sealed class StdLogicCompare : PxExpressionImplement
 {
-    public StdLogicCompare() : base("core.logic.compare") { }
+    public override string TypeId => "core.logic.compare";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {

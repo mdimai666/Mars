@@ -55,4 +55,10 @@ public static class PxCoreBlocks
 
     /// <summary>Хат-блок «цикл» — тело повторяется после старта (аналог loop()).</summary>
     public const string LoopEvent = "core.events.loop";
+
+    /// <summary>
+    /// Узел, подставленный парсером вместо пустого сокета (пустой шаг цикла = 1 и т.п.):
+    /// блока с таким typeId в workspace нет — диагностика и подсветка идут по BlockId.
+    /// </summary>
+    public const string Synthetic = "synthetic";
 }

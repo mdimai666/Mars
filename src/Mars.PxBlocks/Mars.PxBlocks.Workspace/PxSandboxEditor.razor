@@ -62,7 +62,7 @@
     /// <summary>
     /// Имя контекста редактора: определения и toolbox берутся из
     /// api/PxBlocks/Contexts/{имя}, при запуске политика исполнения (события, лимиты)
-    /// применяется на сервере из этого контекста. Явные RunMode/RunEventNames и
+    /// применяется на сервере из этого контекста. Явные EventNames и
     /// BlockDefinitionsJson/Toolbox имеют приоритет.
     /// </summary>
     [Parameter] public string? Context { get; set; }
@@ -83,18 +83,14 @@
     /// </summary>
     [Parameter] public IPxRunTransport? RunTransport { get; set; }
 
-    /// <summary>Режим запуска: все верхнеуровневые стеки (по умолчанию) или только события.</summary>
-    [Parameter] public PxEditorRunMode RunMode { get; set; } = PxEditorRunMode.AllTopLevel;
-
     /// <summary>
-    /// Для режима <see cref="PxEditorRunMode.Events"/> — имена исполняемых событий
-    /// (PxEvents.Start / PxEvents.Loop). Запуск идёт фазами в порядке этого списка:
-    /// сначала ВСЕ блоки-события с первым именем (в порядке workspace), затем все
-    /// со вторым и т.д. При ["start", "loop"] все «старты» гарантированно исполняются
-    /// до всех «циклов», независимо от их раскладки на полотне. Пустой список — ничего
-    /// не исполняется. Пример: <c>RunEventNames="new[] { PxEvents.Start, PxEvents.Loop }"</c>.
+    /// Имена исполняемых событий (PxEvents.Start / PxEvents.Loop): null (по умолчанию) —
+    /// все верхнеуровневые стеки в порядке workspace (события Loop — после всех); пустой
+    /// список — не исполняется ничего; иначе фазы в порядке списка: сначала ВСЕ блоки
+    /// с первым именем, затем со вторым и т.д. При ["start", "loop"] все «старты»
+    /// гарантированно исполняются до всех «циклов», независимо от их раскладки на полотне.
     /// </summary>
-    [Parameter] public IReadOnlyList<string>? RunEventNames { get; set; }
+    [Parameter] public IReadOnlyList<string>? EventNames { get; set; }
 
     /// <summary>Отображение рейки категорий: авто-сворачивание при малой ширине, явно полная или компактная.</summary>
     [Parameter] public PxRailDisplay RailDisplay { get; set; } = PxRailDisplay.Auto;
@@ -236,7 +232,7 @@
                 // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop
                 // (YieldEvery не даёт повесить UI); защита от случайных циклов — та же кнопка.
                 StepLimit = 0,
-                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+                EventNames = EventNames
             };
             var result = await interpreter.RunAsync(program, options, _runCancellation!.Token);
             await ApplyResultAsync(result.Canceled, result.Success, result.ErrorMessage, result.ErrorBlockId, result.Steps);
@@ -290,7 +286,7 @@
                 // только кнопкой Stop), события — по явным параметрам редактора.
                 ContextName = Context,
                 StepLimit = Context != null ? null : 0,
-                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+                EventNames = EventNames
             }, _runCancellation!.Token);
         }
         catch (OperationCanceledException)

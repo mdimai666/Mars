@@ -257,9 +257,10 @@ break/continue, процедуры с параметрами и рекурсие
 в Blockly JSON, шапку рисует zelos-ядро), парсер сводит их в `PxEventBlock`
 (`PxEvents.Start`/`PxEvents.Loop`). Семантика: обычные стеки и события Start идут
 в порядке workspace, события Loop — после всех и повторяются (выход — break или Stop).
-Режимы запуска `PxBlocksEditor`: `RunMode=AllTopLevel` (по умолчанию — как раньше)
-и `RunMode=Events` + `RunEventNames` (массив имён; в рантайме — `PxRunOptions.EventNames`).
-В режиме Events запуск идёт **фазами в порядке списка**: сначала ВСЕ события с первым
+Режимы запуска `PxBlocksEditor` задаёт один параметр `EventNames` (в рантайме —
+`PxRunOptions.EventNames`): null по умолчанию — все верхнеуровневые стеки (как раньше),
+пустой список — не исполняется ничего, список имён — фазы в порядке списка.
+При заданном списке запуск идёт **фазами в порядке списка**: сначала ВСЕ события с первым
 именем (в порядке workspace), затем со вторым и т.д. — при `["start","loop"]` Loop
 гарантированно после Start независимо от раскладки на полотне. В режиме по умолчанию
 Loop тоже всегда после всех (включая Start). В редакторе лимит шагов снят (`StepLimit=0` —
@@ -401,7 +402,7 @@ PxRunManagerTests + запуск с ContextName: политика событий
   (без Transport берётся RunTransport, если он IPxBlocksApiClient) — определения и
   toolbox из Contexts/{имя}; при запуске уходит `PxRunRequest.ContextName`, и при
   Context библиотека НЕ шлёт свой StepLimit=0 — лимиты/события берёт политика
-  контекста на сервере. Явные RunMode/RunEventNames — переопределение.
+  контекста на сервере. Явные EventNames (и BlockDefinitionsJson/Toolbox) — переопределение.
   (Локальный in-process запуск контекстную политику не применяет — задел.)
 - Стенд: `Controllers/PxRunController` (маршрут как ждёт PxServerRunClient:
   POST api/PxBlocks/Run и api/PxBlocks/Stop/{runId:guid} → IPxRunManager) и контекст
@@ -424,11 +425,11 @@ REST-дым: Contexts (sandbox+demo), Run через контроллер сте
 
 Сделано (Путь 1 — хост запускает сам и передаёт свой объект):
 - `PxBlockImplementsLocator` хранит ТИПЫ (`RegisterAssembly` — любой публичный
-  конструктор; TypeId читается пробой: экземпляр без конструктора либо создание
-  с посильными аргументами — стандартные листья берут TypeId из базового
-  конструктора). `Create(typeId, state)` — конструктор с параметром, совместимым
-  с состоянием запуска, иначе без параметров. `Find` и регистрация экземпляров
-  убраны; `Knows(typeId)` — проверка без создания.
+  конструктор; TypeId — абстрактное свойство реализации со значением-литералом,
+  локатор читает его у экземпляра, созданного БЕЗ конструктора
+  (`GetUninitializedObject`), поэтому код реализаций при регистрации не выполняется).
+  `Create(typeId, state)` — конструктор с параметром, совместимым с состоянием
+  запуска, иначе без параметров. `Knows(typeId)` — проверка без создания.
 - `PxContext`: `State` + `GetState<T>()`; `Implement(typeId)` — ленивый экземпляр
   имплементации на запуск (кэш до конца запуска). `PxRunOptions.State`.
 - `IPxRunManager.Start(request, state = null)`: state передаётся во владение

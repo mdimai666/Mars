@@ -9,7 +9,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 /// </summary>
 internal sealed class StdLoopsPause : PxStatementImplement
 {
-    public StdLoopsPause() : base("core.loops.pause") { }
+    public override string TypeId => "core.loops.pause";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {

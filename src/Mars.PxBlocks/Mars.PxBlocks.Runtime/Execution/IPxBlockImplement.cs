@@ -7,10 +7,13 @@ namespace Mars.PxBlocks.Runtime.Execution;
 /// <summary>
 /// Реализация исполнения блока-«листа» по TypeId (аналог INodeImplement&lt;TNode&gt;
 /// в Mars.Nodes). Регистрируется в PxBlockImplementsLocator, обычно — целой сборкой.
+/// TypeId реализации объявляют абстрактным свойством базы (Std*) либо реализуют
+/// напрямую: значение — литерал, локатор читает его без выполнения конструкторов,
+/// а экземпляры создаются только на запуск (состояние запуска — в полях).
 /// </summary>
 public interface IPxBlockImplement
 {
-    /// <summary>TypeId блока из определения (PxBlockDefinition.TypeId).</summary>
+    /// <summary>TypeId блока из определения (PxBlockDefinition.TypeId) — литерал.</summary>
     string TypeId { get; }
 }
 

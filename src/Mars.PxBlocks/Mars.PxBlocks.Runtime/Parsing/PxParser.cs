@@ -115,7 +115,7 @@ public sealed class PxParser
                 VariableId = FieldVariableId(block, "VAR", blockId),
                 From = ExpressionInput(block, "FROM") ?? NullLiteral(blockId),
                 To = ExpressionInput(block, "TO") ?? NullLiteral(blockId),
-                By = ExpressionInput(block, "BY") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.LogicNull, BlockId = blockId },
+                By = ExpressionInput(block, "BY") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.Synthetic, BlockId = blockId },
                 Body = StatementInput(block, "DO")
             },
 
@@ -156,7 +156,7 @@ public sealed class PxParser
                 TypeId = type,
                 BlockId = blockId,
                 VariableId = FieldVariableId(block, "VAR", blockId),
-                Delta = ExpressionInput(block, "DELTA") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.LogicNull, BlockId = blockId }
+                Delta = ExpressionInput(block, "DELTA") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.Synthetic, BlockId = blockId }
             },
 
             PxCoreBlocks.IfReturn or PxCoreBlocks.FunctionsIfReturn => new PxIfReturnStatement
@@ -487,6 +487,19 @@ public sealed class PxParser
         return inputs;
     }
 
+    /// <summary>
+    /// Поле блока → PxFieldData: поле-переменная (объект с id в blockly 13 либо строка-id
+    /// в старых форматах), число, текст; остальное (булевы поля и пр.) — JSON-текстом.
+    /// </summary>
+    private static PxFieldData ToFieldData(JsonNode? node) => node switch
+    {
+        JsonObject obj when obj["id"] != null => PxFieldData.OfVariable(obj["id"]!.ToString()),
+        JsonValue v when v.TryGetValue(out double number) => PxFieldData.OfNumber(number),
+        JsonValue v when v.TryGetValue(out string? text) => PxFieldData.OfText(text ?? ""),
+        JsonValue v => PxFieldData.OfText(v.ToJsonString()),
+        _ => new PxFieldData()
+    };
+
     private static Dictionary<string, PxFieldData> ParseFields(JsonObject block)
     {
         var fields = new Dictionary<string, PxFieldData>(StringComparer.Ordinal);
@@ -494,17 +507,7 @@ public sealed class PxParser
             return fields;
 
         foreach (var (name, value) in fieldsObject)
-        {
-            fields[name] = value switch
-            {
-                // Поле-переменная: объект с id (blockly 13) либо строка-id (старые форматы).
-                JsonObject obj when obj["id"] != null => PxFieldData.OfVariable(obj["id"]!.ToString()),
-                JsonValue v when v.TryGetValue(out double number) => PxFieldData.OfNumber(number),
-                JsonValue v when v.TryGetValue(out string? text) => PxFieldData.OfText(text ?? ""),
-                JsonValue v => PxFieldData.OfText(v.ToJsonString()),
-                _ => new PxFieldData()
-            };
-        }
+            fields[name] = ToFieldData(value);
 
         return fields;
     }
@@ -527,11 +530,11 @@ public sealed class PxParser
         return input["block"] as JsonObject ?? input["shadow"] as JsonObject;
     }
 
+    /// <summary>Текст поля: строковое — как есть, иначе JSON-текст (числа и булевы поля Blockly — тоже текст).</summary>
     private static string FieldText(JsonObject block, string fieldName)
     {
-        if (block["fields"] is not JsonObject fields || fields[fieldName] is not JsonValue value)
-            return "";
-        return value.TryGetValue(out string? text) ? text ?? "" : value.ToJsonString();
+        var node = block["fields"] is JsonObject fields ? fields[fieldName] : null;
+        return ToFieldData(node).Text ?? (node is JsonValue value ? value.ToJsonString() : "");
     }
 
     private static string FieldVariableId(JsonObject block, string fieldName, string blockId)
@@ -560,6 +563,7 @@ public sealed class PxParser
 
     private static string BlockId(JsonObject block) => (string?)block["id"] ?? "";
 
+    /// <summary>Пустой сокет значения — подставленный null-литерал (блока в workspace нет).</summary>
     private static PxNullLiteral NullLiteral(string blockId)
-        => new() { TypeId = PxCoreBlocks.LogicNull, BlockId = blockId };
+        => new() { TypeId = PxCoreBlocks.Synthetic, BlockId = blockId };
 }

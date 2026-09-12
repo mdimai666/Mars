@@ -8,7 +8,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 /// встроенные блоки Blockly (toolbox), и серверные определения — typeId общие.</summary>
 internal sealed class StdListsCreateEmpty : PxExpressionImplement
 {
-    public StdListsCreateEmpty() : base("lists_create_empty") { }
+    public override string TypeId => "lists_create_empty";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxListValue());
@@ -16,7 +16,7 @@ internal sealed class StdListsCreateEmpty : PxExpressionImplement
 
 internal sealed class StdListsCreateWith : PxExpressionImplement
 {
-    public StdListsCreateWith() : base("lists_create_with") { }
+    public override string TypeId => "lists_create_with";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxListValue(
@@ -28,7 +28,7 @@ internal sealed class StdListsCreateWith : PxExpressionImplement
 
 internal sealed class StdListsRepeat : PxExpressionImplement
 {
-    public StdListsRepeat() : base("lists_repeat") { }
+    public override string TypeId => "lists_repeat";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -40,7 +40,7 @@ internal sealed class StdListsRepeat : PxExpressionImplement
 
 internal sealed class StdListsLength : PxExpressionImplement
 {
-    public StdListsLength() : base("lists_length") { }
+    public override string TypeId => "lists_length";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -52,7 +52,7 @@ internal sealed class StdListsLength : PxExpressionImplement
 
 internal sealed class StdListsIndexOf : PxExpressionImplement
 {
-    public StdListsIndexOf() : base("array_indexof") { }
+    public override string TypeId => "array_indexof";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -71,7 +71,7 @@ internal sealed class StdListsIndexOf : PxExpressionImplement
 
 internal sealed class StdListsGet : PxExpressionImplement
 {
-    public StdListsGet() : base("lists_index_get") { }
+    public override string TypeId => "lists_index_get";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -85,7 +85,7 @@ internal sealed class StdListsGet : PxExpressionImplement
 
 internal sealed class StdListsSet : PxStatementImplement
 {
-    public StdListsSet() : base("lists_index_set") { }
+    public override string TypeId => "lists_index_set";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -98,7 +98,7 @@ internal sealed class StdListsSet : PxStatementImplement
 
 internal sealed class StdArrayPush : PxStatementImplement
 {
-    public StdArrayPush() : base("array_push") { }
+    public override string TypeId => "array_push";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -109,7 +109,7 @@ internal sealed class StdArrayPush : PxStatementImplement
 
 internal sealed class StdArrayPop : PxExpressionImplement
 {
-    public StdArrayPop() : base("array_pop") { }
+    public override string TypeId => "array_pop";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult(Lists.List(call).RemoveLast());
@@ -117,7 +117,7 @@ internal sealed class StdArrayPop : PxExpressionImplement
 
 internal sealed class StdArrayPopStatement : PxStatementImplement
 {
-    public StdArrayPopStatement() : base("array_pop_statement") { }
+    public override string TypeId => "array_pop_statement";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -128,7 +128,7 @@ internal sealed class StdArrayPopStatement : PxStatementImplement
 
 internal sealed class StdArrayShift : PxExpressionImplement
 {
-    public StdArrayShift() : base("array_shift") { }
+    public override string TypeId => "array_shift";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult(Lists.List(call).RemoveFirst());
@@ -136,7 +136,7 @@ internal sealed class StdArrayShift : PxExpressionImplement
 
 internal sealed class StdArrayShiftStatement : PxStatementImplement
 {
-    public StdArrayShiftStatement() : base("array_shift_statement") { }
+    public override string TypeId => "array_shift_statement";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -147,7 +147,7 @@ internal sealed class StdArrayShiftStatement : PxStatementImplement
 
 internal sealed class StdArrayUnshift : PxExpressionImplement
 {
-    public StdArrayUnshift() : base("array_unshift") { }
+    public override string TypeId => "array_unshift";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(
@@ -156,7 +156,7 @@ internal sealed class StdArrayUnshift : PxExpressionImplement
 
 internal sealed class StdArrayUnshiftStatement : PxStatementImplement
 {
-    public StdArrayUnshiftStatement() : base("array_unshift_statement") { }
+    public override string TypeId => "array_unshift_statement";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -167,7 +167,7 @@ internal sealed class StdArrayUnshiftStatement : PxStatementImplement
 
 internal sealed class StdArrayRemoveAt : PxExpressionImplement
 {
-    public StdArrayRemoveAt() : base("array_removeat") { }
+    public override string TypeId => "array_removeat";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult(Lists.List(call).RemoveAt((int)call.Input("INDEX").ToNumber()));
@@ -175,7 +175,7 @@ internal sealed class StdArrayRemoveAt : PxExpressionImplement
 
 internal sealed class StdArrayRemoveAtStatement : PxStatementImplement
 {
-    public StdArrayRemoveAtStatement() : base("array_removeat_statement") { }
+    public override string TypeId => "array_removeat_statement";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -186,7 +186,7 @@ internal sealed class StdArrayRemoveAtStatement : PxStatementImplement
 
 internal sealed class StdArrayInsertAt : PxStatementImplement
 {
-    public StdArrayInsertAt() : base("array_insertAt") { }
+    public override string TypeId => "array_insertAt";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -197,7 +197,7 @@ internal sealed class StdArrayInsertAt : PxStatementImplement
 
 internal sealed class StdArrayPickRandom : PxExpressionImplement
 {
-    public StdArrayPickRandom() : base("array_pickRandom") { }
+    public override string TypeId => "array_pickRandom";
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -211,7 +211,7 @@ internal sealed class StdArrayPickRandom : PxExpressionImplement
 
 internal sealed class StdArrayReverse : PxStatementImplement
 {
-    public StdArrayReverse() : base("array_reverse") { }
+    public override string TypeId => "array_reverse";
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {

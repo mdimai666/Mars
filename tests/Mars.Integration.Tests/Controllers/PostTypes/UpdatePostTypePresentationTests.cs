@@ -164,7 +164,11 @@ public class UpdatePostTypePresentationTests : ApplicationTests
                                     .GetJsonAsync<PostTypePresentationEditViewModel>();
 
         viewModel.FormLayout!.Items.Single().Key.Should().Be(SystemFieldsCatalog.Tags);
-        viewModel.Form!.Items.First().Key.Should().Be(SystemFieldsCatalog.Tags);
-        viewModel.Form.Items.First().Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
+
+        // сохранённая раскладка доезжает до определения формы: элементы сетки (ряд/колонка) —
+        // часть представления, поле ищется по ключу, а не по позиции в списке
+        var tags = viewModel.Form!.Field(SystemFieldsCatalog.Tags);
+        tags.Should().NotBeNull("поле из сохранённой раскладки должно быть в определении формы");
+        tags!.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
     }
 }

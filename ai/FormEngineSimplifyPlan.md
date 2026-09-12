@@ -383,13 +383,16 @@ Mars.Forms.Abstractions
 
 Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 107/107;
 `Mars.Admin.Framework.Tests` 50/50; `Mars.Server.Tests` 473/473; интеграционные
-`Controllers.PostTypes.UpdatePostTypeTests` 3/3, `Services.PostTransformerTests` 1/1,
-`Controllers.Posts` 32 (2 skipped). **Известный красный (не от R10):**
-`UpdatePostTypePresentationTests.UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions` —
-ожидает `viewModel.Form.Items.First().Key == tags`, но после сеточной раскладки
-(`fcc1308c…7b30268c`) элементы нормализуются в ряд+колонку, и первым идёт узел с сгенерированным
-ключом. Ассершен старше сетки (последний коммит файла `e7b0920c` — предок `7b30268c`), правится
-вместе с работой по `FormLayoutGridPlan.md`.
+`Controllers.PostTypes` 19/19 (в т.ч. починенный
+`UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions`), `Services.PostTransformerTests` 1/1,
+`Controllers.Posts` 32 (2 skipped).
+
+**Попутно починен устаревший ассершен.** `UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions`
+проверял `viewModel.Form.Items.First().Key == tags`, но после сеточной раскладки
+(`fcc1308c…7b30268c`) элементы нормализуются в ряд+колонку, и первым в списке идёт узел с
+сгенерированным ключом. Ассершен старше сетки (последний коммит файла `e7b0920c` — предок
+`7b30268c`), поэтому тест был красным **до** R10: теперь поле ищется по ключу
+(`Form.Field(SystemFieldsCatalog.Tags)`), а зона проверяется у самого поля, а не у позиции в списке.
 
 ## Решение: панели настроек — не редакторы значений (зафиксировано 2026-09-12)
 

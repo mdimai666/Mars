@@ -8,6 +8,7 @@ import './functions/blocks';
 import { ensureFunctionMsg } from './functions/constants';
 import { functionsFlyout } from './functions/manager';
 import { registerFunctionCallbacks } from './functions/dialog';
+import { ensurePromptDialog } from './prompt';
 
 ensureFunctionMsg();
 
@@ -47,7 +48,10 @@ const defaultOptions: Blockly.BlocklyOptions = {
     move: {
         scrollbars: true,
         drag: true,
-        wheel: false,
+        // Раскладку колеса Blockly считает по паре флагов zoom.wheel/move.wheel:
+        // колесо скроллит полотно, Ctrl/Cmd — зум, Shift — прокрутка по горизонтали.
+        // При move.wheel=false (и zoom.wheel=true) колесо зумит всегда.
+        wheel: true,
     },
     sounds: false,
     plugins: {
@@ -56,6 +60,9 @@ const defaultOptions: Blockly.BlocklyOptions = {
 };
 
 export function injectWorkspace(element: HTMLElement, optionsJson?: string, toolboxJson?: string): Blockly.WorkspaceSvg {
+    // Ввод имени переменной (создание/переименование) — окно модуля, не нативный prompt.
+    ensurePromptDialog();
+
     const extra = optionsJson ? JSON.parse(optionsJson) as Blockly.BlocklyOptions : {};
     // toolbox должен существовать с момента inject, иначе updateToolbox позже не сработает.
     const toolbox = toolboxJson

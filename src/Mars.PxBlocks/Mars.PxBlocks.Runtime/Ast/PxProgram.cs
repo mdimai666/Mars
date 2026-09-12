@@ -1,6 +1,6 @@
 namespace Mars.PxBlocks.Runtime.Ast;
 
-/// <summary>Программа, собранная парсером из Blockly JSON (PxWorkspaceState.BlocksJson).</summary>
+/// <summary>Программа, собранная парсером из Blockly JSON workspace.</summary>
 public sealed class PxProgram
 {
     /// <summary>Переменные workspace (Blockly serialization → variables).</summary>

@@ -3,22 +3,13 @@ namespace Mars.PxBlocks.Core.Definitions;
 /// <summary>
 /// Fluent-построитель <see cref="PxBlockDefinition"/>: создаётся через <see cref="PxMaster.Define"/>,
 /// неявно приводится к определению. Классы-блоки в этом стиле не нужны; наследование
-/// остаётся для блоков с динамической структурой (переопределение ToJson, мутаторы).
+/// остаётся для блоков с динамической структурой (переопределение ToJsonNode, мутаторы).
 /// </summary>
 public sealed class PxBlockBuilder
 {
     private readonly PxBlockDefinition _definition;
 
     internal PxBlockBuilder(string typeId) => _definition = new PxBlockDefinition { TypeId = typeId };
-
-    /// <summary>Блок-оператор с коннекторами предыдущий/следующий (поведение по умолчанию; метод — для читаемости).</summary>
-    public PxBlockBuilder Statement()
-    {
-        _definition.OutputType = null;
-        _definition.HasPrevious = true;
-        _definition.HasNext = true;
-        return this;
-    }
 
     /// <summary>Блок-значение с выходом указанного типа.</summary>
     public PxBlockBuilder Output(string type)

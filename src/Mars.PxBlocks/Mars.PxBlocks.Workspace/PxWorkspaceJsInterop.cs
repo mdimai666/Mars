@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -5,12 +6,19 @@ namespace Mars.PxBlocks.Workspace;
 
 public class PxWorkspaceJsInterop : IAsyncDisposable
 {
+    // URL модуля с версией в query (?v=…) — cache-busting по конвенции
+    // AiChatAssets/AppAdminSpaHtmlScripts: статика отдаётся без Cache-Control,
+    // без версии в урле браузер может держать старый js из эвристического кеша.
+    private static readonly string ModuleVersion = Uri.EscapeDataString(
+        typeof(PxWorkspaceJsInterop).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? "0.0.0");
+
     private readonly Lazy<Task<IJSObjectReference>> _moduleTask;
 
     public PxWorkspaceJsInterop(IJSRuntime jsRuntime)
     {
         _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Mars.PxBlocks.Workspace/dist/PxBlocks.js").AsTask());
+            "import", $"./_content/Mars.PxBlocks.Workspace/dist/PxBlocks.js?v={ModuleVersion}").AsTask());
     }
 
     public async ValueTask<IJSObjectReference> InjectWorkspace(ElementReference element, string? optionsJson = null, string? toolboxJson = null)

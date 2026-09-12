@@ -23,10 +23,10 @@ await page.screenshot({ path: outDir + 'flyout-Functions.png' });
 await page.click('.pxb-rail-item:has-text("Variables")');
 await page.waitForTimeout(600);
 await page.click('.blocklyFlyout .blocklyFlyoutButton');
-// Blockly 13: свой DOM-диалог вместо window.prompt.
-await page.waitForSelector('dialog.blocklyDialog');
-await page.fill('#blockly-form-input', 'counter');
-await page.click('.blocklyDialogConfirmButton');
+// Имя переменной вводится окном модуля (нативный prompt Blockly заменён).
+await page.waitForSelector('.pxb-fn-dialog--prompt .pxb-fn-input');
+await page.fill('.pxb-fn-input', 'counter');
+await page.click('.pxb-fn-dialog--prompt .pxb-fn-done');
 await page.waitForTimeout(600);
 await page.click('.pxb-rail-item:has-text("Basic")'); // закрыть/сбросить flyout
 await page.waitForTimeout(400);

@@ -368,3 +368,27 @@ line.blocklyFlyoutLine {
     flex: 1;
     min-height: 0;
 }
+
+/* Ввод имени переменной: та же карточка в компактном виде — input вместо мини-воркспейса. */
+.pxb-fn-dialog--prompt {
+    width: min(420px, 92vw);
+    height: auto;
+}
+
+.pxb-fn-body {
+    padding: 14px 12px;
+}
+
+.pxb-fn-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.pxb-fn-input:focus {
+    outline: none;
+    border-color: #577e46;
+}

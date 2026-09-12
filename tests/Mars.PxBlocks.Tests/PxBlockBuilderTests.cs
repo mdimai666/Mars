@@ -18,7 +18,6 @@ public class PxBlockBuilderTests
     public void Fluent_StatementBlock()
     {
         PxBlockDefinition def = PxMaster.Define("mission_start")
-            .Statement()
             .Colour("#107C10")
             .Tooltip("Старт миссии")
             .Message("старт со скоростью {speed} и делать {DO}",
@@ -71,7 +70,6 @@ public class PxBlockBuilderTests
     public void Fluent_Dropdown()
     {
         PxBlockDefinition def = PxMaster.Define("demo_mode")
-            .Statement()
             .Message("режим {MODE}", PxMaster.Dropdown("MODE", ("быстрый", "fast"), ("медленный", "slow")));
 
         var node = JsonNode.Parse(def.ToJson())!.AsObject();

@@ -5,7 +5,7 @@ using Mars.PxBlocks.Runtime.Execution;
 namespace Mars.PxBlocks.Runtime.Parsing;
 
 /// <summary>
-/// Blockly JSON (PxWorkspaceState.BlocksJson) → AST. Форматы — по blockly 13.1.1:
+/// Blockly JSON workspace → AST. Форматы — по blockly 13.1.1:
 /// поля-переменные как {"id": …}, extraState мутаторов (controls_if, procedures,
 /// text_join), отключённые блоки помечены disabledReasons. Структурные блоки
 /// (control flow, переменные, функции, короткое замыкание) уходят в узлы ядра;

@@ -39,9 +39,6 @@ public sealed class PxContext
     /// <summary>Собранные строки вывода (text_print); параллельно стримятся событием Output.</summary>
     public IReadOnlyList<string> OutputLines => _output;
 
-    /// <summary>Отображение id переменной → имя (для сообщений об ошибках).</summary>
-    public IReadOnlyDictionary<string, string> VariableNames { get; }
-
     /// <summary>
     /// Состояние запуска — объект, который хост передал на исполнение (браузер,
     /// соединение, сервис…). Имплементации получают его конструктором (создаются
@@ -67,7 +64,6 @@ public sealed class PxContext
         Random = options.RandomSeed is int seed ? new Random(seed) : new Random();
 
         Global = new PxScope();
-        VariableNames = program.Variables.ToDictionary(v => v.Id, v => v.Name, StringComparer.Ordinal);
 
         // Переменные workspace объявлены заранее: стартовые значения — по именам
         // из InitialVariables, остальные — с нуля (как в MakeCode).

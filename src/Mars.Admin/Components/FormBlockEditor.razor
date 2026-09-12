@@ -55,8 +55,7 @@
         if (_editor is null) return "Редактор блоков ещё не инициализирован.";
 
         var json = BuildBlockEditorJson(value);
-        _editor.Content = EditorJsContent.FromJson(json);
-        await _editor.SetContent();
+        await _editor.SetContent(EditorJsContent.FromJson(json));
         Json = json; // страховка, если JS onChange запаздывает
         return null;
     }

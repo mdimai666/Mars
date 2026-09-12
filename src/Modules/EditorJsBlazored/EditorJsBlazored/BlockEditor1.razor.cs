@@ -88,7 +88,7 @@ public partial class BlockEditor1 : BlazorInteropComponent
     [JSInvokable]
     public void OnReady()
     {
-        SetContent();
+        RenderContent();
     }
 
     /// <summary>
@@ -110,9 +110,15 @@ public partial class BlockEditor1 : BlazorInteropComponent
         await JSRuntime.InvokeAsync<string>("editorJsHandler.initializeEditor", new object[] { ClientComponentID, DomElement, DotNetObjectReference.Create(this) });
     }
 
-    public Task SetContent()
+    public Task RenderContent()
     {
         return CallClientMethod("render", Content);
+    }
+
+    public Task SetContent(EditorJsContent content)
+    {
+        Content = content;
+        return RenderContent();
     }
 
     [JSInvokable]
@@ -158,6 +164,6 @@ public partial class BlockEditor1 : BlazorInteropComponent
     public void Clear()
     {
         Content = new();
-        SetContent();
+        RenderContent();
     }
 }

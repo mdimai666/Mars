@@ -19,11 +19,12 @@ public class BlockQuote : IEditorJsBlock
             Console.Error.WriteLine($"Alignment not valid '{Alignment}'. Must one of [{string.Join(", ", AlignmentValues)}]");
         }
         var cssClasses = "editorjs block-quote";
+        var caption = string.IsNullOrEmpty(Caption) ? "" : $" - {Caption}";
 
         if (Alignment == "center")
-            return @$"<blockquote class=""{cssClasses}"" style=""margin: auto 0;"">${Text}</blockquote> - ${Caption}";
+            return @$"<blockquote class=""{cssClasses}"" style=""margin: auto 0;"">{Text}</blockquote>{caption}";
         else
-            return $"<blockquote class=\"{cssClasses}\">${Text}</blockquote> - ${Caption}";
+            return $"<blockquote class=\"{cssClasses}\">{Text}</blockquote>{caption}";
 
     }
 }

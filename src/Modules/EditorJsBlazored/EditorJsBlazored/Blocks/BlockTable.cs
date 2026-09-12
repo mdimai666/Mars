@@ -19,18 +19,18 @@ public class BlockTable : IEditorJsBlock
         int rowIndex = 0;
         foreach (var row in Content)
         {
-            var isHeadingRow = (WithHeading && rowIndex == 0);
+            var cellTag = (WithHeading && rowIndex == 0) ? "th" : "td";
 
-            sb.AppendLine(isHeadingRow ? "<th>" : "<tr>");
+            sb.AppendLine("<tr>");
             foreach (var col in row)
             {
-                sb.AppendLine($"<td>{col}</td>");
+                sb.AppendLine($"<{cellTag}>{col}</{cellTag}>");
             }
-            sb.AppendLine(isHeadingRow ? "</th>" : "</tr>");
+            sb.AppendLine("</tr>");
             rowIndex++;
         }
 
-        sb.AppendLine("<table>");
+        sb.AppendLine("</table>");
 
         return sb.ToString();
     }

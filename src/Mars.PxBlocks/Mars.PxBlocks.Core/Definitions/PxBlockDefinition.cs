@@ -44,7 +44,8 @@ public partial class PxBlockDefinition
     /// </summary>
     public string? Hat { get; set; }
 
-    public virtual string ToJson()
+    /// <summary>Blockly-JSON определения; наследники с динамической структурой переопределяют его.</summary>
+    public virtual JsonObject ToJsonNode()
     {
         var node = new JsonObject { ["type"] = TypeId };
 
@@ -85,11 +86,13 @@ public partial class PxBlockDefinition
         if (Mutator != null)
             node["mutator"] = Mutator;
 
-        return node.ToJsonString();
+        return node;
     }
 
+    public string ToJson() => ToJsonNode().ToJsonString();
+
     public static string ToArrayJson(IEnumerable<PxBlockDefinition> definitions) =>
-        new JsonArray(definitions.Select(d => JsonNode.Parse(d.ToJson())).ToArray()).ToJsonString();
+        new JsonArray(definitions.Select(d => (JsonNode?)d.ToJsonNode()).ToArray()).ToJsonString();
 
     [GeneratedRegex(@"\{([^{}]+)\}")]
     private static partial Regex NamedHoleRegex();

@@ -17,13 +17,6 @@ internal sealed class ProbeExpressionImplement : IPxExpressionImplement
 
 public class PxInterpreterTests
 {
-    private static PxBlockImplementsLocator LocatorWithProbe()
-    {
-        var locator = PxInterpreter.CreateDefaultImplements();
-        locator.Register(typeof(ProbeExpressionImplement));
-        return locator;
-    }
-
     [Fact]
     public async Task SetVariable_And_Print_Arithmetic()
     {
@@ -1059,7 +1052,7 @@ public class PxInterpreterTests
         }
         """;
 
-        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast(), LocatorWithProbe());
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast(), PxTestRun.Locator(typeof(ProbeExpressionImplement)));
 
         Assert.True(result.Success);
         Assert.Equal(["false"], result.Output); // зонд не вычислялся
@@ -1086,7 +1079,7 @@ public class PxInterpreterTests
         }
         """;
 
-        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast(), LocatorWithProbe());
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast(), PxTestRun.Locator(typeof(ProbeExpressionImplement)));
 
         Assert.True(result.Success);
         Assert.Equal(["7"], result.Output);

@@ -95,14 +95,7 @@ public sealed class PxEditorContext
             }
 
             var toolbox = PxDefaultToolbox.Create();
-            if (Categories.Count > 0)
-            {
-                var index = toolbox.Contents.FindIndex(item => item is PxToolboxSeparator);
-                if (index < 0)
-                    index = toolbox.Contents.Count;
-                toolbox.Contents.InsertRange(index, Categories);
-            }
-
+            toolbox.InsertDomainCategories(Categories);
             _toolboxCache = toolbox;
             return _toolboxCache;
         }

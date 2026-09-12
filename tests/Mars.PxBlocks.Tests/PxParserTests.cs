@@ -20,6 +20,15 @@ internal static class PxTestRun
     /// <summary>Дефолтные опции тестов: без уступок потоку, воспроизводимый random.</summary>
     public static PxRunOptions Fast(PxRunOptions? options = null)
         => options ?? new PxRunOptions { YieldEvery = 0, RandomSeed = 1 };
+
+    /// <summary>Локатор по умолчанию + указанные имплементации (пробы тестов).</summary>
+    public static PxBlockImplementsLocator Locator(params Type[] implements)
+    {
+        var locator = PxInterpreter.CreateDefaultImplements();
+        foreach (var implement in implements)
+            locator.Register(implement);
+        return locator;
+    }
 }
 
 public class PxParserTests

@@ -15,8 +15,6 @@ public sealed class PxInterpreter
     public PxInterpreter(PxBlockImplementsLocator? implements = null)
         => _implements = implements ?? CreateDefaultImplements();
 
-    public PxBlockImplementsLocator Implements => _implements;
-
     /// <summary>Локатор по умолчанию: стандартные листья этой сборки (математика, логика, текст…).</summary>
     public static PxBlockImplementsLocator CreateDefaultImplements()
     {
@@ -89,7 +87,7 @@ public sealed class PxInterpreter
         }
     }
 
-    /// <summary>Стек операторов: каждый блок — событие Entered/Exited (материал для подсветки).</summary>
+    /// <summary>Стек операторов: каждый блок — событие BlockEntered (материал для подсветки).</summary>
     private static async Task ExecuteChainAsync(PxStatement? node, PxScope scope, PxContext context)
     {
         while (node != null)
@@ -97,7 +95,8 @@ public sealed class PxInterpreter
             await context.StepAsync(node.BlockId);
             context.Fire(new PxExecutionEvent(PxExecutionEventKind.BlockEntered, node.BlockId, null));
             await ExecuteOneAsync(node, scope, context);
-            context.Fire(new PxExecutionEvent(PxExecutionEventKind.BlockExited, node.BlockId, null));
+            if (context.EmitBlockExited)
+                context.Fire(new PxExecutionEvent(PxExecutionEventKind.BlockExited, node.BlockId, null));
             node = node.Next;
         }
     }

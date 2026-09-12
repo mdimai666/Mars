@@ -8,12 +8,4 @@
         </Description>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
-    </ItemGroup>
-
 </Project>

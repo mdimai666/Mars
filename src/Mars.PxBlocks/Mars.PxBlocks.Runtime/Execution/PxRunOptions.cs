@@ -28,6 +28,12 @@ public sealed class PxRunOptions
     public Action<PxExecutionEvent>? OnEvent { get; init; }
 
     /// <summary>
+    /// События BlockExited (блок покинут). По умолчанию выключены: на каждый оператор
+    /// это удваивает поток событий, а потребителей у них сейчас нет (отладчик — задел).
+    /// </summary>
+    public bool EmitBlockExited { get; init; }
+
+    /// <summary>
     /// Режим «только переданные события»: исполняются только блоки-события (PxEventBlock),
     /// фазы идут в порядке этого списка — сначала ВСЕ события с первым именем (в порядке
     /// workspace), затем со вторым и т.д. Например, ["start", "loop"] — все «старты»,

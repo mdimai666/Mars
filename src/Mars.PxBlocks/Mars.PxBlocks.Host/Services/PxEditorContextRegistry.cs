@@ -5,10 +5,7 @@ using Mars.PxBlocks.Abstractions;
 
 namespace Mars.PxBlocks.Host.Services;
 
-/// <summary>
-/// Реестр контекстов редактора: наполняется при старте приложения
-/// (IPxEditorContextRegistry.Register после UsePxBlocks), читается запросами.
-/// </summary>
+/// <inheritdoc/>
 public sealed class PxEditorContextRegistry : IPxEditorContextRegistry
 {
     private readonly List<PxEditorContext> _contexts = [];

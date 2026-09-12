@@ -2,29 +2,9 @@
 // Математика (мутатор math_is_divisibleby_mutator), Переменные (свой flyout-колбэк
 // core.variables.*), Циклы, Текст. Любая ошибка Blockly — в PAGE/CONSOLE ERROR.
 // Запуск: node e2e/check-flyouts.mjs [url]   (по умолчанию http://localhost:5215)
-import { chromium } from 'playwright';
-import { mkdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { cliUrl, flyoutBlocks, openPage, outDir } from './helpers.mjs';
 
-const url = process.argv[2] ?? 'http://localhost:5215';
-const outDir = fileURLToPath(new URL('./out/', import.meta.url));
-mkdirSync(outDir, { recursive: true });
-
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
-const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
-page.on('pageerror', (e) => console.log('PAGE ERROR:', e.message));
-page.on('console', (m) => {
-    if (m.type() === 'error') console.log('CONSOLE ERROR:', m.text());
-});
-await page.goto(url, { waitUntil: 'load' });
-await page.waitForSelector('.pxb-rail');
-await page.waitForSelector('.blocklySvg');
-await page.waitForTimeout(1200);
-
-const flyoutBlocks = () =>
-    [...document.querySelectorAll('.blocklyFlyout .blocklyDraggable')]
-        .map((el) => el.getAttribute('data-id'))
-        .filter(Boolean).length;
+const { browser, page } = await openPage(cliUrl());
 
 for (const category of ['Math', 'Loops', 'Text', 'Arrays']) {
     await page.click(`.pxb-rail-item:has-text("${category}")`);

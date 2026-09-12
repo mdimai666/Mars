@@ -7,11 +7,7 @@ using Mars.PxBlocks.Abstractions.Services;
 
 namespace Mars.PxBlocks.Host.Services;
 
-/// <summary>
-/// Серверный реестр блоков: определения PxBlockSet (уходят в редактор JSON-ом) и
-/// реализации исполнения IPxBlockImplement (исполняют программу на сервере).
-/// Наполняется при старте приложения (UsePxBlocks + RegisterAssembly доменных сборок).
-/// </summary>
+/// <inheritdoc/>
 public sealed class PxBlockCatalog : IPxBlockCatalog
 {
     private readonly List<PxBlockDefinition> _definitions = [];
@@ -30,16 +26,7 @@ public sealed class PxBlockCatalog : IPxBlockCatalog
             if (_toolboxCache == null)
             {
                 var toolbox = PxDefaultToolbox.Create();
-                if (_toolboxCategories.Count > 0)
-                {
-                    // Доменные категории — перед разделителем и «Переменные»/«Функции»,
-                    // как категории расширений в MakeCode.
-                    var index = toolbox.Contents.FindIndex(item => item is PxToolboxSeparator);
-                    if (index < 0)
-                        index = toolbox.Contents.Count;
-                    toolbox.Contents.InsertRange(index, _toolboxCategories);
-                }
-
+                toolbox.InsertDomainCategories(_toolboxCategories);
                 _toolboxCache = toolbox;
             }
 

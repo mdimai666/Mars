@@ -212,14 +212,16 @@ internal sealed class StdTextSplit : PxExpressionImplement
 }
 
 /// <summary>core.text.parse: семантика parseFloat — число в начале текста, иначе NaN.</summary>
-internal sealed class StdTextParse : PxExpressionImplement
+internal sealed partial class StdTextParse : PxExpressionImplement
 {
     public StdTextParse() : base("core.text.parse") { }
 
+    [GeneratedRegex(@"^[+-]?(?:Infinity|NaN|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)")]
+    private static partial Regex LeadingNumberRegex();
+
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
-        var match = Regex.Match(call.Input("VALUE").ToText().TrimStart(),
-            @"^[+-]?(?:Infinity|NaN|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)");
+        var match = LeadingNumberRegex().Match(call.Input("VALUE").ToText().TrimStart());
 
         var result = match.Success ? double.Parse(match.Value, CultureInfo.InvariantCulture) : double.NaN;
         return ValueTask.FromResult<PxValue>(new PxNumberValue(result));

@@ -123,6 +123,10 @@
     private string? _runError;
     private string? _highlightedBlockId;
     private DateTime _lastHighlightAt;
+
+    /// <summary>Строк вывода держим в панели; обрезка — пачкой, чтобы не сдвигать список на каждую строку.</summary>
+    private const int OutputLineLimit = 1000;
+    private const int OutputTrimChunk = 256;
     private readonly List<string> _outputLines = [];
 
     private Guid? _serverRunId;
@@ -431,8 +435,8 @@
             case PxExecutionEventKind.Output when executionEvent.Text != null:
                 _outputLines.Add(executionEvent.Text);
                 // Бесконечные события Loop штампуют строки — держим панель обозримой.
-                if (_outputLines.Count > 1000)
-                    _outputLines.RemoveRange(0, _outputLines.Count - 1000);
+                if (_outputLines.Count > OutputLineLimit + OutputTrimChunk)
+                    _outputLines.RemoveRange(0, _outputLines.Count - OutputLineLimit);
                 StateHasChanged();
                 break;
         }

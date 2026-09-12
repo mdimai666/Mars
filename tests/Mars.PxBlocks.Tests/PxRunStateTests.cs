@@ -87,13 +87,6 @@ public class PxRunStateTests
     }
     """;
 
-    private static PxBlockImplementsLocator LocatorWithProbe(Type probe)
-    {
-        var locator = PxInterpreter.CreateDefaultImplements();
-        locator.Register(probe);
-        return locator;
-    }
-
     private static PxRunOptions WithState(object? state)
         => PxTestRun.Fast(new PxRunOptions { YieldEvery = 0, State = state });
 
@@ -139,7 +132,7 @@ public class PxRunStateTests
         var state = new ProbeRunState { Label = "из состояния" };
 
         var result = await PxTestRun.RunAsync(
-            PrintProbeJson("test_state_only"), WithState(state), LocatorWithProbe(typeof(StateOnlyImplement)));
+            PrintProbeJson("test_state_only"), WithState(state), PxTestRun.Locator(typeof(StateOnlyImplement)));
 
         Assert.True(result.Success);
         Assert.Equal(["из состояния"], result.Output);
@@ -148,7 +141,7 @@ public class PxRunStateTests
     [Fact]
     public async Task RunAsync_State_ImplementationIsCreatedPerRun()
     {
-        var locator = LocatorWithProbe(typeof(StateOnlyImplement));
+        var locator = PxTestRun.Locator(typeof(StateOnlyImplement));
         var first = new ProbeRunState { Label = "one" };
         var second = new ProbeRunState { Label = "two" };
 
@@ -166,7 +159,7 @@ public class PxRunStateTests
     [Fact]
     public async Task RunAsync_State_SameTypeLeaves_ShareInstanceWithinRun()
     {
-        var locator = LocatorWithProbe(typeof(StateOnlyImplement));
+        var locator = PxTestRun.Locator(typeof(StateOnlyImplement));
         var state = new ProbeRunState { Label = "x" };
 
         var result = await PxTestRun.RunAsync(TwoProbesJson, WithState(state), locator);
@@ -183,7 +176,7 @@ public class PxRunStateTests
         var state = new ProbeRunState { Label = "через GetState" };
 
         var result = await PxTestRun.RunAsync(
-            PrintProbeJson("test_getstate_probe"), WithState(state), LocatorWithProbe(typeof(GetStateProbeImplement)));
+            PrintProbeJson("test_getstate_probe"), WithState(state), PxTestRun.Locator(typeof(GetStateProbeImplement)));
 
         Assert.True(result.Success);
         Assert.Equal(["через GetState"], result.Output);
@@ -193,7 +186,7 @@ public class PxRunStateTests
     public async Task RunAsync_GetState_WithoutState_Fails()
     {
         var result = await PxTestRun.RunAsync(
-            PrintProbeJson("test_getstate_probe"), WithState(null), LocatorWithProbe(typeof(GetStateProbeImplement)));
+            PrintProbeJson("test_getstate_probe"), WithState(null), PxTestRun.Locator(typeof(GetStateProbeImplement)));
 
         Assert.False(result.Success);
         Assert.Contains("Run state is not set", result.ErrorMessage);
@@ -203,7 +196,7 @@ public class PxRunStateTests
     public async Task RunAsync_GetState_StateOfAnotherType_Fails()
     {
         var result = await PxTestRun.RunAsync(
-            PrintProbeJson("test_getstate_probe"), WithState(new object()), LocatorWithProbe(typeof(GetStateProbeImplement)));
+            PrintProbeJson("test_getstate_probe"), WithState(new object()), PxTestRun.Locator(typeof(GetStateProbeImplement)));
 
         Assert.False(result.Success);
         Assert.Contains("Run state is not set", result.ErrorMessage);

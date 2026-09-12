@@ -37,22 +37,15 @@ public sealed class PxRunManager : IPxRunManager
 
     public PxRunResponse Start(PxRunRequest request, object? state = null)
     {
-        // Политика запуска из контекста (режим событий, лимиты); неизвестный контекст —
-        // ошибка сразу, как и ошибка разбора. Состояние запуска в обоих случаях
-        // возвращается хосту через dispose — запуск не состоялся.
+        // Политика запуска из контекста (режим событий, лимиты). Ранние отказы (неизвестный
+        // контекст, ошибка разбора, несовместимые InitialVariables) возвращают состояние
+        // хосту через dispose — запуск не состоялся.
         PxEditorContext? context = null;
         if (request.ContextName != null)
         {
             context = _contexts.Get(request.ContextName);
             if (context == null)
-            {
-                DisposeState(state);
-                return new PxRunResponse
-                {
-                    Started = false,
-                    ErrorMessage = $"Context '{request.ContextName}' is not registered"
-                };
-            }
+                return Fail($"Context '{request.ContextName}' is not registered");
         }
 
         PxProgram program;
@@ -62,22 +55,11 @@ public sealed class PxRunManager : IPxRunManager
         }
         catch (PxParseException exception)
         {
-            DisposeState(state);
-            return new PxRunResponse
-            {
-                Started = false,
-                ErrorMessage = exception.Message,
-                ErrorBlockId = exception.BlockId
-            };
+            return Fail(exception.Message, exception.BlockId);
         }
         catch (JsonException exception)
         {
-            DisposeState(state);
-            return new PxRunResponse
-            {
-                Started = false,
-                ErrorMessage = $"Invalid workspace JSON: {exception.Message}"
-            };
+            return Fail($"Invalid workspace JSON: {exception.Message}");
         }
 
         IReadOnlyDictionary<string, PxValue>? initialVariables;
@@ -87,12 +69,7 @@ public sealed class PxRunManager : IPxRunManager
         }
         catch (Exception exception)
         {
-            DisposeState(state);
-            return new PxRunResponse
-            {
-                Started = false,
-                ErrorMessage = $"Initial variables: {exception.Message}"
-            };
+            return Fail($"Initial variables: {exception.Message}");
         }
 
         // RunId назначает клиент (подписывается на события до запроса Run); Empty — сами.
@@ -101,12 +78,17 @@ public sealed class PxRunManager : IPxRunManager
         if (!_runs.TryAdd(runId, session))
         {
             session.Dispose();
-            DisposeState(state);
-            return new PxRunResponse { Started = false, ErrorMessage = $"Run {runId} is already active" };
+            return Fail($"Run {runId} is already active");
         }
 
         _ = Task.Run(() => ExecuteAsync(session, program, request, context, state, initialVariables));
         return new PxRunResponse { RunId = runId, Started = true };
+
+        PxRunResponse Fail(string message, string? blockId = null)
+        {
+            DisposeState(state);
+            return new PxRunResponse { Started = false, ErrorMessage = message, ErrorBlockId = blockId };
+        }
     }
 
     public bool Stop(Guid runId)
@@ -183,25 +165,8 @@ public sealed class PxRunManager : IPxRunManager
     }
 
     /// <summary>Синхронная уборка состояния (ранние отказы Start — запуск не состоялся).</summary>
-    private static void DisposeState(object? state)
-    {
-        try
-        {
-            switch (state)
-            {
-                case IAsyncDisposable asyncDisposable:
-                    asyncDisposable.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                    break;
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-            }
-        }
-        catch
-        {
-            // Ошибка уборки не должна заслонять причину отказа.
-        }
-    }
+    private static void DisposeState(object? state) =>
+        DisposeStateAsync(state).AsTask().GetAwaiter().GetResult();
 
     private static async ValueTask DisposeStateAsync(object? state)
     {
@@ -219,7 +184,7 @@ public sealed class PxRunManager : IPxRunManager
         }
         catch
         {
-            // Ошибка уборки не должна заслонять итог исполнения.
+            // Ошибка уборки не должна заслонять причину отказа Start или итог исполнения.
         }
     }
 }

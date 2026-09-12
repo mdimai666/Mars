@@ -20,6 +20,8 @@ public sealed class PxContext
     internal Dictionary<string, PxFunctionDef> Functions { get; } = new(StringComparer.Ordinal);
     internal Action<PxExecutionEvent>? RaiseEvent { get; set; }
 
+    internal bool EmitBlockExited { get; }
+
     public CancellationToken CancellationToken { get; }
 
     public int StepLimit { get; }
@@ -59,6 +61,7 @@ public sealed class PxContext
         YieldEvery = options.YieldEvery;
         OutputLimit = options.OutputLimit;
         RaiseEvent = options.OnEvent;
+        EmitBlockExited = options.EmitBlockExited;
         Implements = implements;
         State = state;
         Random = options.RandomSeed is int seed ? new Random(seed) : new Random();

@@ -24,11 +24,15 @@
         </div>
     }
     <div class="pxb-rail-list">
-        @foreach (var category in Categories.Where(c => !c.Advanced))
+        @{
+            var categories = Toolbox?.Contents.OfType<PxToolboxCategory>().ToArray() ?? [];
+            var advanced = categories.Where(c => c.Advanced).ToArray();
+        }
+        @foreach (var category in categories.Where(c => !c.Advanced))
         {
             @Row(category)
         }
-        @if (AdvancedCategories.Any())
+        @if (advanced.Length > 0)
         {
             <button class="pxb-rail-item pxb-rail-advanced" @onclick="ToggleAdvanced">
                 <svg class="pxb-chev @(_advancedOpen ? "open" : "")" viewBox="0 0 16 16" fill="none"
@@ -39,7 +43,7 @@
             </button>
             @if (_advancedOpen)
             {
-                @foreach (var category in AdvancedCategories)
+                @foreach (var category in advanced)
                 {
                     @Row(category)
                 }
@@ -65,11 +69,6 @@
     private bool _popFocusPending;
     private ElementReference _popInput;
     private CancellationTokenSource? _debounce;
-
-    private IEnumerable<PxToolboxCategory> Categories =>
-        Toolbox?.Contents.OfType<PxToolboxCategory>() ?? [];
-
-    private IEnumerable<PxToolboxCategory> AdvancedCategories => Categories.Where(c => c.Advanced);
 
     private RenderFragment Row(PxToolboxCategory category) =>
         @<button class="pxb-rail-item @(Selected == category.Name ? "selected" : "")"

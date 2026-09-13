@@ -5,7 +5,7 @@ using Mars.Nodes.Core.Nodes.Functions;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 
-namespace Mars.Nodes.FormEditor.EditForms;
+namespace Mars.Nodes.FormEditor.EditForms.Functions;
 
 public partial class FunctionNodeForm
 {

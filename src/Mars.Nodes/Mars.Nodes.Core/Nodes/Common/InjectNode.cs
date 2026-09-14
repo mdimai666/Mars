@@ -56,6 +56,11 @@ public class InjectNode : Node, IValidatableObject
 
             if (!VarNode.IsValidVarType(field.VarType))
                 yield return new ValidationResult($"Type '{field.VarType}' is not supported.", [nameof(Fields)]);
+
+            if (!InputValueKind.IsValid(field.ValueKind))
+                yield return new ValidationResult($"Value kind '{field.ValueKind}' is not supported.", [nameof(Fields)]);
+            else if (field.ValueKind == InputValueKind.Expression && string.IsNullOrWhiteSpace(field.Value))
+                yield return new ValidationResult($"Field '{field.Key}': expression must not be empty.", [nameof(Fields)]);
         }
     }
 
@@ -81,6 +86,9 @@ public class InjectNodeField
 
     [Display(Name = "Type")]
     public string VarType { get; set; } = "string";
+
+    [Display(Name = "Value kind")]
+    public string ValueKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "Value")]
     public string Value { get; set; } = "";

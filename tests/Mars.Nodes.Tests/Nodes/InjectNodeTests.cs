@@ -1,8 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using FluentAssertions;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Exceptions;
+using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Tests.Services;
+using NSubstitute;
 
 namespace Mars.Nodes.Tests.Nodes;
 
@@ -232,5 +236,180 @@ public class InjectNodeTests : NodeServiceUnitTestBase
 
         //Assert
         results.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void BindRootPaths_ReplacesResolvableMsgPath()
+    {
+        //Arrange
+        var msg = new NodeMsg { Payload = "abc" };
+        var scope = new ExpressionScope(Substitute.For<IRuntimeNodeScope>(), msg);
+        var interpreter = InputValueResolver.CreateInterpreter(scope.Rns, msg);
+
+        //Act
+        var bound = InputValueResolver.BindRootPaths("msg.Payload.Count() + 1", interpreter, scope);
+
+        //Assert
+        bound.Should().Be("msg_Payload.Count() + 1");
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_EvaluatesArithmetic()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "count", VarType = "int", ValueKind = InputValueKind.Expression, Value = "2 + 3" }] };
+
+        //Act
+        var msg = await ExecuteNode(node);
+
+        //Assert
+        msg.Get("count").Should().Be(5);
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_ReadsMsgPayload()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "copy", ValueKind = InputValueKind.Expression, Value = "msg.Payload" }] };
+
+        //Act
+        var msg = await ExecuteNode(node, new NodeMsg { Payload = "hello" });
+
+        //Assert
+        msg.Get("copy").Should().Be("hello");
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_ReadsMsgContext()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "copy", ValueKind = InputValueKind.Expression, Value = "msg.status" }] };
+        var input = new NodeMsg();
+        input.Set("status", "ok");
+
+        //Act
+        var msg = await ExecuteNode(node, input);
+
+        //Assert
+        msg.Get("copy").Should().Be("ok");
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_LinqOnPayloadString()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "len", VarType = "int", ValueKind = InputValueKind.Expression, Value = "msg.Payload.Count() + 1" }] };
+
+        //Act
+        var msg = await ExecuteNode(node, new NodeMsg { Payload = "abc" });
+
+        //Assert
+        msg.Get("len").Should().Be(4);
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_ConvertsResultToVarType()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "asText", VarType = "string", ValueKind = InputValueKind.Expression, Value = "2 + 3" }] };
+
+        //Act
+        var msg = await ExecuteNode(node);
+
+        //Assert
+        msg.Get("asText").Should().Be("5");
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_StringLiteralNotRewritten()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = InputValueKind.Expression, Value = "\"msg.Payload\"" }] };
+
+        //Act
+        var msg = await ExecuteNode(node, new NodeMsg { Payload = "hello" });
+
+        //Assert
+        msg.Get("x").Should().Be("msg.Payload");
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_BadExpression_Throws()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = InputValueKind.Expression, Value = "1 +" }] };
+
+        //Act
+        var act = () => ExecuteNode(node);
+
+        //Assert
+        await act.Should().ThrowAsync<NodeExecuteException>();
+    }
+
+    [Fact]
+    public async Task Execute_ExpressionField_NullResultForValueType_Throws()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", VarType = "int", ValueKind = InputValueKind.Expression, Value = "msg.Missing" }] };
+
+        //Act
+        var act = () => ExecuteNode(node);
+
+        //Assert
+        await act.Should().ThrowAsync<NodeExecuteException>();
+    }
+
+    [Fact]
+    public async Task Execute_UnknownValueKind_Throws()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = "somethingElse", Value = "1" }] };
+
+        //Act
+        var act = () => ExecuteNode(node);
+
+        //Assert
+        await act.Should().ThrowAsync<NodeExecuteException>();
+    }
+
+    [Fact]
+    public void Validate_UnknownValueKind_ReportsError()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = "somethingElse", Value = "1" }] };
+
+        //Act
+        var results = node.Validate(new ValidationContext(node)).ToList();
+
+        //Assert
+        results.Should().Contain(r => r.ErrorMessage!.Contains("Value kind"));
+    }
+
+    [Fact]
+    public void Validate_EmptyExpression_ReportsError()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = InputValueKind.Expression, Value = "  " }] };
+
+        //Act
+        var results = node.Validate(new ValidationContext(node)).ToList();
+
+        //Assert
+        results.Should().Contain(r => r.ErrorMessage!.Contains("expression must not be empty"));
+    }
+
+    [Fact]
+    public void Serialize_ValueKind_RoundTrips()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", VarType = "int", ValueKind = InputValueKind.Expression, Value = "1 + 1" }] };
+
+        //Act
+        var json = JsonSerializer.Serialize<Node>(node, _jsonSerializerOptions);
+        var restored = JsonSerializer.Deserialize<Node>(json, _jsonSerializerOptions) as InjectNode;
+
+        //Assert
+        json.Should().Contain("ValueKind");
+        restored!.Fields[0].ValueKind.Should().Be(InputValueKind.Expression);
     }
 }

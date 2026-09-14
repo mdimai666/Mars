@@ -1,6 +1,6 @@
 # План: реворк полей нод — от одного `Payload` к источникам значений
 
-> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; дизайн этапа 2 согласован — 2026-09-14, ветка `ai/nodes-rework`.**
+> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаг 1 прототипа выполнен — 2026-09-14, ветка `ai/nodes-rework`.**
 > Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
 > (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
 > ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
@@ -159,17 +159,27 @@ node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
 `@`-конвенция (`VariableSetNodeImpl.ReadFieldAsExpression`, сейчас `FileWriteNodeImpl.FilePath` и
 `HttpRequestNodeImpl.Url`) удаляется при переезде нод на `ValueKind`.
 
-Резолвер — одна точка: скоуп вынимается из `VariableSetNodeImpl.CreateInterpreter` (`msg` через
-`DynamicNodeMsgWrapper`, `flow`, `global`, `var`, `env`) в общий `ResolveScope`; kind `msg`/`flow`/
-`global` компилируются в выражение `msg.<path>` / `flow.<path>` / `global.<path>`, т.е. весь резолвинг —
-один путь через движок выражений; `const` — парсинг по `VarType` (логика из `InjectNodeImpl` выносится
-в общее место). `msg.Payload.Count() + 1` — на прототипе проверить LINQ-extensions движка
-(string как `IEnumerable<char>`).
+Резолвер — одна точка: `InputValueResolver` в `Mars.Nodes.Core.Implements/Utils` (шаг 1, 2026-09-14).
+Движок — DynamicExpresso напрямую (`InterpreterOptions.Default | LateBindObject` + reference на
+`System.Linq.Enumerable`), не `XInterpreter`: тот создаёт `Interpreter` с `Default`-опциями и тащит
+зависимость от SiteEngine. Скоуп — `ExpressionScope(Rns, Msg)` с корнями `msg` (`DynamicNodeMsgWrapper`),
+`GlobalContext`, `FlowContext`, `VarNode`, `env`; scope-обёртки `ContextPropertyAccesableObject` /
+`ContextVarNodesAccesableObject` переехали сюда из `VariableSetNodeImpl` (его `CreateInterpreter`
+на `XInterpreter` остаётся для собственных нужд до шага 4). kind `msg`/`flow`/`global` (шаг 2)
+будут компилироваться в выражение `root.<path>` — весь резолвинг одним путём; `const` — парсинг по
+`VarType` (бывшая логика `InjectNodeImpl`).
 
-Куда жить резолверу: `Mars.Nodes.Core` не ссылается на DynamicExpresso, а `XInterpreter` лежит в
-`Mars.SiteEngine.Abstractions` (архдолг: ноды зависят от SiteEngine). Кандидат — новый проект
-`Mars.Nodes.Expressions` (резолвер + скоуп + обёртка над движком); выбор движка (DynamicExpresso против
-Roslyn `CSharpScript` из `FunctionNode`) — на старте шага 1.
+Статическая типизация корневых путей (`BindRootPaths`): C#-runtime-байндер **не резолвит extension-
+методы LINQ на dynamic-приёмнике** (`msg.Payload.Count()` падал бы RuntimeBinderException'ом), поэтому
+перед eval пути `msg.*` / `GlobalContext.*` / `FlowContext.*` / `VarNode.*` resolve'ятся в значения и
+подменяются в тексте выражения параметрами со статическим типом (`msg_Payload`); LINQ после этого
+парсится статически. Пути внутри строковых литералов не подменяются (маска литералов); неразрешимые
+(null/отсутствующие) пути остаются dynamic.
+
+Куда жить резолверу: на шаге 1 — `Mars.Nodes.Core.Implements/Utils` (DynamicExpresso там уже
+ссылается); вынос в `Mars.Nodes.Expressions` отложен до переезда остальных нод (шаг 4), чтобы не
+заводить проект под одного потребителя. Выбор движка закрыт: DynamicExpresso (Roslyn `CSharpScript`
+из `FunctionNode` — для полного C#, не для полей ввода).
 
 Схема для пикера: фаза A — свободный ввод + автокомплит по JSON последнего входящего сообщения ноды
 (INPUT-панель как в n8n; debug-сообщения уже несут JSON); фаза B — типизированные выходы (этап 4) и
@@ -177,11 +187,18 @@ Roslyn `CSharpScript` из `FunctionNode`) — на старте шага 1.
 
 Прототип-порядок:
 
-1. `ValueKind` у `InjectNodeField` + резолвер (`const`/`expression`) + тесты.
+1. ✅ `ValueKind` у `InjectNodeField` + резолвер (`const`/`expression`) + тесты (2026-09-14):
+   `InputValueKind` в Core (`const`/`expression` + `IsValid`), `ValueKind` на поле с дефолтом `const`,
+   валидация неизвестного kind и пустого expression, `InputValueResolver` + 13 новых тестов
+   (арифметика, `msg.Payload`, `msg.<context>`, `msg.Payload.Count() + 1`, конвертация в `VarType`,
+   литерал `"msg.Payload"` не подменяется, ошибки eval/null/kind, round-trip `ValueKind`);
+   `Mars.Nodes.Tests` — 445/445.
 2. kind `msg` + `FieldPathPicker` (текст + простой автокомплит без схемы).
 3. `ValueSourceEditor` в форме Inject.
 4. Переезд на `ValueKind`: `SwitchNode.Conditions`, `EvalNode.Input` (сейчас «строка — всегда
-   выражение»), `FileWriteNode.FilePath`, `HttpRequestNode.Url`; `@`-конвенция удаляется.
+   выражение»), `FileWriteNode.FilePath`, `HttpRequestNode.Url`; `@`-конвенция удаляется; туда же —
+   перевод `VariableSetNodeImpl` с `XInterpreter` на `InputValueResolver` и вынос в
+   `Mars.Nodes.Expressions`.
 
 ## Этап 3 — UI источников: добор (набросок)
 
@@ -209,6 +226,13 @@ Monaco для expression и для массивов/объектов в `const`.
   рабочий путь — placeholder + `FluentValidationMessage` на элемент.
 - В `Mars.Nodes.Core` есть `Globals.cs` с `global using Mars.Nodes.Core.Nodes.Common` — поэтому в примерах
   `InjectNodeField` доступен без using (проверено при переводе примеров).
+- C#-runtime-байндер не резолвит extension-методы (LINQ) на dynamic-приёмнике — любое выражение вида
+  `msg.X.Count()` без статической типизации приёмника падает RuntimeBinderException'ом; лечится
+  `BindRootPaths` (подмена корневых путей параметрами со статическим типом). Встанет снова в шаге 2
+  (автокомплит/парсер путей) — не изобретать обход заново.
+- .NET-regex с lookahead «сегмент не метод» (`(?!\s*\()`) на бэктреке обрезает сегмент
+  (`msg.Payload.Coun`): усечённый сегмент проходит lookahead. Нужна полная граница сегмента:
+  `(?![A-Za-z0-9_(])` (проверено 2026-09-14 на `RootPathRegex`).
 
 ## Отклонённые альтернативы
 

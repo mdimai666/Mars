@@ -1,9 +1,9 @@
-using System.Dynamic;
 using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Models;
 using Mars.Nodes.Core.Implements.Models;
+using Mars.Nodes.Core.Implements.Utils;
 using Mars.SiteEngine.Abstractions.Templators;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
@@ -35,76 +35,6 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
         callback(input);
 
         return Task.CompletedTask;
-    }
-
-    class ContextPropertyAccesableObject : DynamicObject
-    {
-        private readonly VariablesContextDictionary _dict;
-
-        public ContextPropertyAccesableObject(VariablesContextDictionary dict)
-        {
-            _dict = dict;
-        }
-
-        // установка свойства
-        //public override bool TrySetMember(SetMemberBinder binder, object? value)
-        //{
-        //    if (value is not null)
-        //    {
-        //        members[binder.Name] = value;
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        // получение свойства
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
-        {
-            //result = null;
-            //if (members.ContainsKey(binder.Name))
-            //{
-            //    result = members[binder.Name];
-            //    return true;
-            //}
-            //return false;
-            return _dict.TryGetValue(binder.Name, out result);
-        }
-
-        // вызов метода
-        //public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
-        //{
-        //    result = null;
-        //    if (args?[0] is int number)
-        //    {
-        //        // получаем метод по имен
-        //        dynamic method = members[binder.Name];
-        //        // вызываем метод, передавая его параметру значение args?[0]
-        //        result = method(number);
-        //    }
-        //    // если result не равен null, то вызов метода прошел успешно
-        //    return result != null;
-        //}
-    }
-
-    class ContextVarNodesAccesableObject : DynamicObject
-    {
-        private readonly IReadOnlyDictionary<string, VarNode> _dict;
-
-        public ContextVarNodesAccesableObject(IReadOnlyDictionary<string, VarNode> _varNodesDict)
-        {
-            _dict = _varNodesDict;
-        }
-
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
-        {
-            if (_dict.TryGetValue(binder.Name, out var varNode))
-            {
-                result = varNode.Value;
-                return true;
-            }
-            result = null;
-            return false;
-        }
     }
 
     public static XInterpreter CreateInterpreter(IRuntimeNodeScope RNS, NodeMsg input)

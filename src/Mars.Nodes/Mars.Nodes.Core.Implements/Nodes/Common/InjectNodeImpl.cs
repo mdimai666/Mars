@@ -23,7 +23,7 @@ public class InjectNodeImpl : INodeImplement<InjectNode>
 
         foreach (var field in Node.Fields)
         {
-            if (field.ValueKind == InputValueKind.Expression)
+            if (field.ValueKind is InputValueKind.Expression or InputValueKind.Msg)
                 interpreter ??= InputValueResolver.CreateInterpreter(RNS, input);
 
             var value = InputValueResolver.Resolve(field.ValueKind, field.Value, field.VarType, interpreter, new ExpressionScope(RNS, input), Node, $"Field '{field.Key}'");

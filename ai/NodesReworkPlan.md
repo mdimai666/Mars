@@ -1,6 +1,6 @@
 # План: реворк полей нод — от одного `Payload` к источникам значений
 
-> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаг 1 прототипа выполнен — 2026-09-14, ветка `ai/nodes-rework`.**
+> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаги 1–2 прототипа выполнены — 2026-09-14, ветка `ai/nodes-rework`.**
 > Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
 > (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
 > ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
@@ -193,7 +193,12 @@ node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
    (арифметика, `msg.Payload`, `msg.<context>`, `msg.Payload.Count() + 1`, конвертация в `VarType`,
    литерал `"msg.Payload"` не подменяется, ошибки eval/null/kind, round-trip `ValueKind`);
    `Mars.Nodes.Tests` — 445/445.
-2. kind `msg` + `FieldPathPicker` (текст + простой автокомплит без схемы).
+2. ✅ kind `msg` + `FieldPathPicker` (2026-09-14): kind компилируется в выражение `msg.<path>`
+   (тот же путь резолвинга; статическая типизация `BindRootPaths` работает и здесь), валидация
+   пустого пути; компонент `FieldPathPicker.razor` в `EditForms/Components` — input с префиксом-корнем
+   (`msg.`), попап по `Candidates` + свободный ввод, пропы `Root`/`Value`/`Candidates`/`Placeholder`
+   (`Schema`/`ExpectedType` — с фазой A); стили в `wwwroot/css/style.less` (компилирует пользователь).
+   +6 тестов, `Mars.Nodes.Tests` — 451/451. Подключение к форме — шаг 3.
 3. `ValueSourceEditor` в форме Inject.
 4. Переезд на `ValueKind`: `SwitchNode.Conditions`, `EvalNode.Input` (сейчас «строка — всегда
    выражение»), `FileWriteNode.FilePath`, `HttpRequestNode.Url`; `@`-конвенция удаляется; туда же —

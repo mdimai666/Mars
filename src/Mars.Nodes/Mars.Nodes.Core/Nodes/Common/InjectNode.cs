@@ -61,6 +61,8 @@ public class InjectNode : Node, IValidatableObject
                 yield return new ValidationResult($"Value kind '{field.ValueKind}' is not supported.", [nameof(Fields)]);
             else if (field.ValueKind == InputValueKind.Expression && string.IsNullOrWhiteSpace(field.Value))
                 yield return new ValidationResult($"Field '{field.Key}': expression must not be empty.", [nameof(Fields)]);
+            else if (field.ValueKind == InputValueKind.Msg && string.IsNullOrWhiteSpace(field.Value))
+                yield return new ValidationResult($"Field '{field.Key}': path must not be empty.", [nameof(Fields)]);
         }
     }
 

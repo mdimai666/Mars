@@ -1,0 +1,57 @@
+<div class="field-path-picker">
+    <span class="fpp-root">@Root.</span>
+    <input class="fpp-input" type="text" value="@Value" placeholder="@Placeholder"
+           @oninput="OnInput" @onfocus="Open" />
+    <button type="button" class="fpp-toggle" tabindex="-1" @onclick="Toggle">@(_open ? "▴" : "▾")</button>
+    @if (_open && Filtered.Any())
+    {
+        <div class="fpp-popup">
+            @foreach (var candidate in Filtered)
+            {
+                <div class="fpp-item" @key="candidate" @onclick="() => Select(candidate)">@candidate</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    bool _open;
+
+    [Parameter]
+    public string Root { get; set; } = "msg";
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public IReadOnlyCollection<string> Candidates { get; set; } = [];
+
+    [Parameter]
+    public string Placeholder { get; set; } = "path";
+
+    IEnumerable<string> Filtered => Candidates
+        .Where(c => c != Value && c.StartsWith(Value, StringComparison.OrdinalIgnoreCase))
+        .OrderBy(c => c, StringComparer.OrdinalIgnoreCase);
+
+    void Open() => _open = true;
+
+    void Toggle() => _open = !_open;
+
+    async Task OnInput(ChangeEventArgs e) => await SetValue(e.Value?.ToString() ?? "");
+
+    async Task Select(string candidate)
+    {
+        _open = false;
+        await SetValue(candidate);
+    }
+
+    async Task SetValue(string value)
+    {
+        if (value == Value) return;
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+}

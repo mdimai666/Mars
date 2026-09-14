@@ -412,4 +412,96 @@ public class InjectNodeTests : NodeServiceUnitTestBase
         json.Should().Contain("ValueKind");
         restored!.Fields[0].ValueKind.Should().Be(InputValueKind.Expression);
     }
+
+    [Fact]
+    public async Task Execute_MsgField_ReadsPayload()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "copy", ValueKind = InputValueKind.Msg, Value = "Payload" }] };
+
+        //Act
+        var msg = await ExecuteNode(node, new NodeMsg { Payload = "hello" });
+
+        //Assert
+        msg.Get("copy").Should().Be("hello");
+    }
+
+    [Fact]
+    public async Task Execute_MsgField_ReadsContextKey()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "copy", ValueKind = InputValueKind.Msg, Value = "status" }] };
+        var input = new NodeMsg();
+        input.Set("status", "ok");
+
+        //Act
+        var msg = await ExecuteNode(node, input);
+
+        //Assert
+        msg.Get("copy").Should().Be("ok");
+    }
+
+    [Fact]
+    public async Task Execute_MsgField_ReadsNestedPayloadProperty()
+    {
+        //Arrange
+        var node = new InjectNode
+        {
+            Fields =
+            [
+                new() { Key = "name", ValueKind = InputValueKind.Msg, Value = "Name" },
+                new() { Key = "age", VarType = "int", ValueKind = InputValueKind.Msg, Value = "Age" },
+            ]
+        };
+
+        //Act
+        var msg = await ExecuteNode(node, new NodeMsg { Payload = new Person("Bob", 3) });
+
+        //Assert
+        msg.Get("name").Should().Be("Bob");
+        msg.Get("age").Should().Be(3);
+    }
+
+    [Fact]
+    public async Task Execute_MsgField_ConvertsToVarType()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "asText", VarType = "string", ValueKind = InputValueKind.Msg, Value = "count" }] };
+        var input = new NodeMsg();
+        input.Set("count", 42);
+
+        //Act
+        var msg = await ExecuteNode(node, input);
+
+        //Assert
+        msg.Get("asText").Should().Be("42");
+    }
+
+    [Fact]
+    public async Task Execute_MsgField_MissingPathForValueType_Throws()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", VarType = "int", ValueKind = InputValueKind.Msg, Value = "nope" }] };
+
+        //Act
+        var act = () => ExecuteNode(node);
+
+        //Assert
+        await act.Should().ThrowAsync<NodeExecuteException>();
+    }
+
+    [Fact]
+    public void Validate_EmptyMsgPath_ReportsError()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "x", ValueKind = InputValueKind.Msg, Value = " " }] };
+
+        //Act
+        var results = node.Validate(new ValidationContext(node)).ToList();
+
+        //Assert
+        results.Should().Contain(r => r.ErrorMessage!.Contains("path must not be empty"));
+    }
+
+    record Person(string Name, int Age);
 }

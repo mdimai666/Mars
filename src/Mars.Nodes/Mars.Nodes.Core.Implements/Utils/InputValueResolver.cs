@@ -76,6 +76,7 @@ public static class InputValueResolver
         return kind switch
         {
             InputValueKind.Const => ResolveConst(value, varType, node, source),
+            InputValueKind.Msg => ResolveExpression($"msg.{value}", varType, interpreter, scope, node, source),
             InputValueKind.Expression => ResolveExpression(value, varType, interpreter, scope, node, source),
             _ => throw new NodeExecuteException(node, $"{source}: unknown value kind '{kind}'."),
         };

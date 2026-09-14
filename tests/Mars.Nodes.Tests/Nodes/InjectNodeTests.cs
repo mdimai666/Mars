@@ -4,7 +4,7 @@ using FluentAssertions;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements.Utils;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Tests.Services;
 using NSubstitute;
 

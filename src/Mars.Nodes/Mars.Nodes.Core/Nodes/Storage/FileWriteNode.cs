@@ -9,6 +9,7 @@ public class FileWriteNode : Node
 {
     public override string TypeId => "core.FileWriteNode";
 
+    public string FilePathKind { get; set; } = InputValueKind.Const;
     public string FilePath { get; set; } = "";
     public FileWriteMode WriteMode { get; set; } = FileWriteMode.Overwrite;
 

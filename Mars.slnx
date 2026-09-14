@@ -158,6 +158,7 @@
     <Project Path="src/Mars.Nodes/Mars.Nodes.Abstractions/Mars.Nodes.Abstractions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core.Implements/Mars.Nodes.Core.Implements.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core/Mars.Nodes.Core.csproj" />
+    <Project Path="src/Mars.Nodes/Mars.Nodes.Expressions/Mars.Nodes.Expressions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.FormEditor/Mars.Nodes.FormEditor.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Front.Abstractions/Mars.Nodes.Front.Abstractions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Host/Mars.Nodes.Host.csproj" />

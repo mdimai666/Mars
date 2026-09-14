@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Nodes.Expressions</PackageId>
+        <Product>Mars.Nodes.Expressions</Product>
+        <Description>
+            Mars Nodes expression resolver and dynamic msg wrapper;
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DynamicExpresso.Core" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -29,6 +29,7 @@ public class SwitchNode : Node
 
     public class Condition
     {
+        public string ValueKind { get; set; } = InputValueKind.Expression;
         public string Value { get; set; } = "";
     }
 }

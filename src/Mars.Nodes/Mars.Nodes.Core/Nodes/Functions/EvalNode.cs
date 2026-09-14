@@ -9,6 +9,7 @@ public class EvalNode : Node
 {
     public override string TypeId => "core.EvalNode";
 
+    public string ValueKind { get; set; } = InputValueKind.Expression;
     public string Input { get; set; } = "Payload + 1";
 
     public EvalNode()

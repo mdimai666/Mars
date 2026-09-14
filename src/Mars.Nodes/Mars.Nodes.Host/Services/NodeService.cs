@@ -9,6 +9,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Events;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Helpers;
@@ -414,7 +415,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     internal void VarNodesSetDefaultValues()
     {
         var varNodesImpl = Nodes.Values.OfType<VarNodeImpl>().ToList();
-        var ppt = VariableSetNodeImpl.CreateInterpreter(_runtime.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
+        var ppt = InputValueResolver.CreateInterpreter(_runtime.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
 
         foreach (var flowGroup in varNodesImpl.GroupBy(s => s.RNS.Flow))
         {
@@ -422,7 +423,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             {
                 var valueExpression = nodeImpl.Node.DefaultValue;
                 if (string.IsNullOrEmpty(valueExpression)) continue;
-                var calcedValue = ppt.Get.Eval(valueExpression);
+                var calcedValue = ppt.Eval(valueExpression);
                 nodeImpl.Node.TrySetValue(calcedValue);
             }
         }

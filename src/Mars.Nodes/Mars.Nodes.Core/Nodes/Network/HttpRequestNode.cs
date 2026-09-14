@@ -13,6 +13,7 @@ public class HttpRequestNode : Node
 
     public override string DisplayName => Name.AsNullIfEmpty() ?? Url.AsNullIfEmpty() ?? base.Label;
     public string Method { get; set; } = "GET";
+    public string UrlKind { get; set; } = InputValueKind.Const;
     public string Url { get; set; } = "http://localhost";
 
     public static readonly string[] MethodVariants = ["GET", "POST", "PUT", "DELETE", "HEAD", "PATCH", "PATCH"];

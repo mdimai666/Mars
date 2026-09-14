@@ -1,4 +1,6 @@
+using DynamicExpresso;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -16,9 +18,12 @@ public class EvalNodeImpl : INodeImplement<EvalNode>
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
+        Interpreter? interpreter = null;
 
-        var result = ppt.Get.Eval(Node.Input);
+        if (Node.ValueKind is InputValueKind.Expression or InputValueKind.Msg)
+            interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+
+        var result = InputValueResolver.Resolve(Node.ValueKind, Node.Input, "", interpreter, new ExpressionScope(RNS, input), Node, "Input");
 
         input.Payload = result;
 

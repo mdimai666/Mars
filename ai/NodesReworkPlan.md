@@ -1,6 +1,6 @@
 # План: реворк полей нод — от одного `Payload` к источникам значений
 
-> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаги 1–3 прототипа выполнены — 2026-09-14, ветка `ai/nodes-rework`.**
+> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — прототип выполнен целиком (шаги 1–4) — 2026-09-14, ветка `ai/nodes-rework`.**
 > Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
 > (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
 > ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
@@ -206,10 +206,22 @@ node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
    `InjectNodeForm` — теперь этот редактор (`@bind-Value` + `@bind-ValueKind`); bool/placeholder-
    хелперы формы удалены (переехали в компонент); стили в `style.less` (компилирует пользователь).
    Визуальная проверка — пользователем в `/dev/nodered`.
-4. Переезд на `ValueKind`: `SwitchNode.Conditions`, `EvalNode.Input` (сейчас «строка — всегда
-   выражение»), `FileWriteNode.FilePath`, `HttpRequestNode.Url`; `@`-конвенция удаляется; туда же —
-   перевод `VariableSetNodeImpl` с `XInterpreter` на `InputValueResolver` и вынос в
-   `Mars.Nodes.Expressions`.
+4. ✅ Переезд на `ValueKind` (2026-09-14): `SwitchNode.Condition.ValueKind` и `EvalNode.ValueKind`
+   (дефолт `expression`), `FileWriteNode.FilePathKind` и `HttpRequestNode.UrlKind` (дефолт `const`);
+   все четыре impl резолвятся через `InputValueResolver` (литеральные спец-кейсы `true/1/false/0` в
+   Switch удалены — eval литерала даёт то же; мёртвая NCalc-ветка `#if DynamicExpresso` удалена);
+   `ReadFieldAsExpression` (@-конвенция FileWrite/HttpRequest) удалена целиком;
+   `VariableSetNodeImpl` переведён с `XInterpreter` на резолвер (`SetExpression` принимает
+   `Interpreter`), его `CreateInterpreter` удалён — потребители (`NodeService.VarNodesSetDefaultValues`,
+   `InlineFunctionNodeImpl`, тесты) переведены на `InputValueResolver.CreateInterpreter`;
+   **вынос: новый проект `Mars.Nodes.Expressions`** (`InputValueResolver` + `ExpressionScope` +
+   scope-обёртки + `DynamicNodeMsgWrapper`, namespace `Mars.Nodes.Expressions`), ссылка
+   `SiteEngine.Abstractions` из `Core.Implements` **снята** (архдолг закрыт: в Core.Implements не
+   осталось кода с `Mars.SiteEngine`). +4 теста (Switch const/msg, Eval expression/const),
+   `Mars.Nodes.Tests` — 455/455.
+   Остаток @-конвенции: аргументы `InlineFunctionNode` (`@expr` в `node.Arguments`) — отдельный
+   механизм, не тронут (кандидат в добор этапа 3). Формы Switch/Eval/FileWrite/HttpRequest на
+   `ValueSourceEditor` не переведены (свойства kind пока видны только в JSON) — следующим шагом.
 
 ## Этап 3 — UI источников: добор (набросок)
 

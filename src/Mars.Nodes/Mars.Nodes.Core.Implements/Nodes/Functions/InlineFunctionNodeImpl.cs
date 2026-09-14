@@ -1,6 +1,7 @@
 using System.Reflection;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.StringFunctions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -46,7 +47,7 @@ public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>
 
         var nodeArgumentsList = node.Arguments.ToList();
 
-        var ppt = paramsWithoutExecutionParams.Any() ? VariableSetNodeImpl.CreateInterpreter(RNS, input) : null;
+        var ppt = paramsWithoutExecutionParams.Any() ? InputValueResolver.CreateInterpreter(RNS, input) : null;
 
         for (int i = 0; i < parametersInfo.Length; i++)
         {
@@ -69,7 +70,7 @@ public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>
                 if (isLiteralValue)
                     calcValue = StringValueParser.ParseByType(param.ParameterType, nodePassArgument);
                 else
-                    calcValue = ppt.Get.Eval(nodePassArgument[1..], param.ParameterType);
+                    calcValue = ppt.Eval(nodePassArgument[1..], param.ParameterType);
                 args.Add(calcValue);
 
                 argumentIndex++;

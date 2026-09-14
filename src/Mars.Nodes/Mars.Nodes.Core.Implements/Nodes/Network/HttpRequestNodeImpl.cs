@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using DynamicExpresso;
 using Flurl.Http;
 using Mars.Core.Extensions;
 using Mars.HttpSmartAuthFlow;
@@ -7,8 +8,8 @@ using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Mapping;
 using Mars.Nodes.Core.Implements.Models;
-using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Nodes.Network;
+using Mars.Nodes.Expressions;
 using static Mars.Nodes.Core.Nodes.Network.HttpRequestNode;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 
@@ -42,10 +43,13 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
             ? _authClientManager.GetOrCreateClient(MapConfig())
             : new FlurlClient(RNS.GetHttpClient());
 
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
+        Interpreter? interpreter = null;
+
+        if (Node.UrlKind is InputValueKind.Expression or InputValueKind.Msg)
+            interpreter = InputValueResolver.CreateInterpreter(RNS, input);
 
         var method = Node.Method?.Trim().ToUpperInvariant() ?? "GET";
-        var requestUrl = VariableSetNodeImpl.ReadFieldAsExpression(Node.Url, ppt);
+        var requestUrl = (string)InputValueResolver.Resolve(Node.UrlKind, Node.Url, "string", interpreter, new ExpressionScope(RNS, input), Node, "Url")!;
 
         if (string.IsNullOrEmpty(requestUrl))
             throw new NodeExecuteException(Node, "Url is empty");

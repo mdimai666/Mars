@@ -6,10 +6,11 @@ using System.Text.RegularExpressions;
 using DynamicExpresso;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Models;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements.Models;
+using Mars.Nodes.Core.Nodes.Common;
 
-namespace Mars.Nodes.Core.Implements.Utils;
+namespace Mars.Nodes.Expressions;
 
 public class ContextPropertyAccesableObject : DynamicObject
 {
@@ -58,12 +59,20 @@ public static class InputValueResolver
 
     public static Interpreter CreateInterpreter(IRuntimeNodeScope rns, NodeMsg? input = null)
     {
+        return CreateInterpreter(rns.GlobalContext, rns.FlowContext, rns.VarNodesDict, input);
+    }
+
+    public static Interpreter CreateInterpreter(VariablesContextDictionary globalContext,
+                                                VariablesContextDictionary? flowContext,
+                                                IReadOnlyDictionary<string, VarNode> varNodesDict,
+                                                NodeMsg? input = null)
+    {
         var interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LateBindObject);
         interpreter.Reference(typeof(Enumerable));
 
-        interpreter.SetVariable(nameof(IRuntimeNodeScope.GlobalContext), new ContextPropertyAccesableObject(rns.GlobalContext));
-        interpreter.SetVariable(nameof(IRuntimeNodeScope.FlowContext), new ContextPropertyAccesableObject(rns.FlowContext ?? new()));
-        interpreter.SetVariable(nameof(VarNode), new ContextVarNodesAccesableObject(rns.VarNodesDict));
+        interpreter.SetVariable(nameof(IRuntimeNodeScope.GlobalContext), new ContextPropertyAccesableObject(globalContext));
+        interpreter.SetVariable(nameof(IRuntimeNodeScope.FlowContext), new ContextPropertyAccesableObject(flowContext ?? new()));
+        interpreter.SetVariable(nameof(VarNode), new ContextVarNodesAccesableObject(varNodesDict));
         interpreter.SetVariable("env", (string key) => Environment.GetEnvironmentVariable(key));
         if (input is not null)
             interpreter.SetVariable("msg", new DynamicNodeMsgWrapper(input));
@@ -84,6 +93,9 @@ public static class InputValueResolver
 
     public static object? ResolveConst(string value, string varType, Node node, string source)
     {
+        if (string.IsNullOrEmpty(varType))
+            return value;
+
         if (varType == VarNode.TimestampTypeName)
             return ResolveTimestampConst(value, node, source);
 
@@ -227,6 +239,9 @@ public static class InputValueResolver
 
     static object? ConvertToVarType(object? raw, string expression, string varType, Node node, string source)
     {
+        if (string.IsNullOrEmpty(varType))
+            return raw;
+
         var target = VarNode.ResolveClrType(varType);
 
         if (target == typeof(string))

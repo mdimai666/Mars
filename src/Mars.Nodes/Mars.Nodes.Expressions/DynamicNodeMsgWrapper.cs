@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Dynamic;
 using System.Reflection;
+using Mars.Nodes.Core;
 
-namespace Mars.Nodes.Core.Implements.Models;
+namespace Mars.Nodes.Expressions;
 
 /// <summary>
 /// Работает как обертка для NodeMsg с правильными типами.

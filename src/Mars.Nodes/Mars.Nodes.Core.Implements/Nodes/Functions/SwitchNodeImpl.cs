@@ -1,4 +1,6 @@
+using DynamicExpresso;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -14,42 +16,36 @@ public class SwitchNodeImpl : INodeImplement<SwitchNode>
         RNS = rns;
     }
 
-#if !DynamicExpresso
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
+        Interpreter? interpreter = null;
         var someConditionIsTrue = false;
 
-        for (int i = 0; i < Node.Conditions.Length; i++)
+        for (var i = 0; i < Node.Conditions.Length; i++)
         {
-            var a = Node.Conditions[i];
+            var condition = Node.Conditions[i];
 
-            if (string.IsNullOrEmpty(a.Value)) continue;
+            if (string.IsNullOrEmpty(condition.Value)) continue;
+            if (condition.Value == SwitchNode.ElseConditionValue) continue;
 
-            bool result;
+            if (condition.ValueKind is InputValueKind.Expression or InputValueKind.Msg)
+                interpreter ??= InputValueResolver.CreateInterpreter(RNS, input);
 
-            if (a.Value == "true" || a.Value == "1") result = true;
-            else if (a.Value == "false" || a.Value == "0") result = false;
-            else if (a.Value == SwitchNode.ElseConditionValue) continue;
-            else
-            {
-                result = ppt.Get.Eval<bool>(a.Value);
-            }
+            var result = (bool)InputValueResolver.Resolve(condition.ValueKind, condition.Value, "bool", interpreter, new ExpressionScope(RNS, input), Node, $"Condition {i + 1}")!;
 
-            if (result == true)
-            {
-                someConditionIsTrue = true;
-                callback(input, i);
-                if (Node.BreakAfterFirst)
-                {
-                    break;
-                }
-            }
+            if (!result) continue;
+
+            someConditionIsTrue = true;
+            callback(input, i);
+
+            if (Node.BreakAfterFirst)
+                break;
         }
 
         if (!someConditionIsTrue)
         {
             var @else = Node.Conditions.FirstOrDefault(s => s.Value == SwitchNode.ElseConditionValue);
+
             if (@else != null)
             {
                 var elseIndex = Node.Conditions.IndexOf(@else);
@@ -59,91 +55,4 @@ public class SwitchNodeImpl : INodeImplement<SwitchNode>
 
         return Task.CompletedTask;
     }
-#else
-
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
-    {
-        for (int i = 0; i < Node.Conditions.Count; i++)
-        {
-            var a = Node.Conditions[i];
-
-            if (string.IsNullOrEmpty(a.Value)) continue;
-
-            try
-            {
-                //https://github.com/ncalc/ncalc
-                var expr = new Expression(a.Value);
-
-                var inputDict = input.AsFullDict();
-                expr.Parameters = inputDict!;
-
-                //expr.Parameters["Payload"] = input.Payload!;
-                //expr.Parameters["msg"] = input;
-
-                //PROBLEM: property access like msg.Property1.SubProperty2 do not work out of the box
-                // EvaluateParameter does not work because '.' dot in the name is Parsing error
-                expr.EvaluateParameter += (name, args) =>
-                {
-                    if (name == "Payload")
-                    {
-                        args.Result = input.Payload;
-                        return;
-                    }
-
-                    //if (name.StartsWith("msg."))
-                    {
-                        object? current = inputDict;
-
-                        var parts = name.Split('.');
-
-                        foreach (var part in parts.Skip(1))
-                        {
-                            var prop = current!.GetType().GetProperty(part);
-                            current = prop?.GetValue(current);
-                        }
-
-                        if (current == null)
-                        {
-                            args.Result = null;
-                            return;
-                        }
-
-                        // Если convertible — типизированный результат
-                        if (current is IConvertible)
-                        {
-                            var type = current.GetType();
-                            args.Result = Convert.ChangeType(current, type);
-                            return;
-                        }
-
-                        // иначе отдаём как есть (например class)
-                        args.Result = current;
-                        return;
-                    }
-
-                    //if (name == "msg")
-                    //    args.Result = input;
-                };
-
-                var result = (bool)expr.Evaluate()!;
-
-                if (result == true)
-                {
-                    callback(input, i);
-                    if (Node.BreakAfterFirst)
-                    {
-                        break;
-                    }
-                }
-            }
-            catch (NCalc.Exceptions.NCalcParserException ex)
-            {
-                throw new NodeExecuteException(Node, ex.Message + $" Expression='{a.Value}'.", ex);
-            }
-        }
-
-        return Task.CompletedTask;
-
-    }
-#endif
 }

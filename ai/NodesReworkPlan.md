@@ -1,6 +1,6 @@
 # План: реворк полей нод — от одного `Payload` к источникам значений
 
-> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаги 1–2 прототипа выполнены — 2026-09-14, ветка `ai/nodes-rework`.**
+> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — дизайн согласован, шаги 1–3 прототипа выполнены — 2026-09-14, ветка `ai/nodes-rework`.**
 > Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
 > (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
 > ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
@@ -199,7 +199,13 @@ node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
    (`msg.`), попап по `Candidates` + свободный ввод, пропы `Root`/`Value`/`Candidates`/`Placeholder`
    (`Schema`/`ExpectedType` — с фазой A); стили в `wwwroot/css/style.less` (компилирует пользователь).
    +6 тестов, `Mars.Nodes.Tests` — 451/451. Подключение к форме — шаг 3.
-3. `ValueSourceEditor` в форме Inject.
+3. ✅ `ValueSourceEditor` в форме Inject (2026-09-14): компонент в `EditForms/Components` —
+   кнопка-селект kind (`const` / `msg.` / `expr`) + редактор по kind: const — текст по `VarType`
+   (bool — select true/false, timestamp — placeholder «empty = now»), msg — `FieldPathPicker`
+   (`ShowRoot=false`: корень виден на кнопке kind), expression — mono-input. Колонка Value в
+   `InjectNodeForm` — теперь этот редактор (`@bind-Value` + `@bind-ValueKind`); bool/placeholder-
+   хелперы формы удалены (переехали в компонент); стили в `style.less` (компилирует пользователь).
+   Визуальная проверка — пользователем в `/dev/nodered`.
 4. Переезд на `ValueKind`: `SwitchNode.Conditions`, `EvalNode.Input` (сейчас «строка — всегда
    выражение»), `FileWriteNode.FilePath`, `HttpRequestNode.Url`; `@`-конвенция удаляется; туда же —
    перевод `VariableSetNodeImpl` с `XInterpreter` на `InputValueResolver` и вынос в

@@ -1,5 +1,8 @@
 <div class="field-path-picker">
-    <span class="fpp-root">@Root.</span>
+    @if (ShowRoot)
+    {
+        <span class="fpp-root">@Root.</span>
+    }
     <input class="fpp-input" type="text" value="@Value" placeholder="@Placeholder"
            @oninput="OnInput" @onfocus="Open" />
     <button type="button" class="fpp-toggle" tabindex="-1" @onclick="Toggle">@(_open ? "▴" : "▾")</button>
@@ -19,6 +22,9 @@
 
     [Parameter]
     public string Root { get; set; } = "msg";
+
+    [Parameter]
+    public bool ShowRoot { get; set; } = true;
 
     [Parameter]
     public string Value { get; set; } = "";

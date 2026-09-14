@@ -21,17 +21,10 @@
                     <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
                 </div>
                 <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
-                    <div class="d-grid align-items-center" style="grid-template-columns: 1fr 140px 1fr 33px; column-gap: 10px;">
+                    <div class="d-grid align-items-center" style="grid-template-columns: 1fr 130px 1.5fr 33px; column-gap: 10px;">
                         <FluentTextField @bind-Value="item.Key" Placeholder="Key" Class="w-100" />
                         <FluentSelect TOption="string" Items="@VarTypeItems" @bind-SelectedOption="item.VarType" Style="min-width: unset;" />
-                        @if (item.VarType == "bool")
-                        {
-                            <FluentSelect TOption="string" Items="@BoolItems" @bind-SelectedOption="item.Value" Style="min-width: unset;" />
-                        }
-                        else
-                        {
-                            <FluentTextField @bind-Value="item.Value" Placeholder="@ValuePlaceholder(item)" Class="w-100" />
-                        }
+                        <ValueSourceEditor @bind-Value="item.Value" @bind-ValueKind="item.ValueKind" VarType="item.VarType" />
                         <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                     </div>
                     <FluentValidationMessage For=@(() => item.Key) />
@@ -78,15 +71,7 @@
     [CascadingParameter] Node Value { get; set; } = default!;
     InjectNode Node { get => (InjectNode)Value; set => Value = value; }
 
-    static readonly string[] BoolItems = ["true", "false"];
-
     IReadOnlyList<string> VarTypeItems => VarNode.ListTypesSelect();
-
-    string ValuePlaceholder(InjectNodeField field) => field.VarType switch
-    {
-        VarNode.TimestampTypeName => "empty = now (unix millis)",
-        _ => field.VarType,
-    };
 
     void SortList(FluentSortableListEventArgs args) => Node.Fields = Node.Fields.MoveItem(args.OldIndex, args.NewIndex);
 

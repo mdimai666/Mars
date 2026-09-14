@@ -33,6 +33,8 @@ public class VarNode : Node, IValidatableObject
 
     }
 
+    public const string TimestampTypeName = "timestamp";
+
     internal static readonly Dictionary<string, Type> _typesDict = new()
     {
         ["int"] = typeof(int),
@@ -44,6 +46,7 @@ public class VarNode : Node, IValidatableObject
         ["string"] = typeof(string),
         ["DateTime"] = typeof(DateTime),
         ["Guid"] = typeof(Guid),
+        [TimestampTypeName] = typeof(long),
     };
 
     internal static readonly Dictionary<Type, string> _pureArrayInitsDict = new()
@@ -87,6 +90,7 @@ public class VarNode : Node, IValidatableObject
             "string" => "",
             "DateTime" => DateTime.MinValue,
             "Guid" => Guid.Empty,
+            TimestampTypeName => 0L,
             _ => throw new NotImplementedException()
         };
     }
@@ -121,7 +125,7 @@ public class VarNode : Node, IValidatableObject
     {
         return _listTypesSelect ??= [
             .._typesDict.Keys,
-            .._typesDict.Keys.Select(s=>$"{s}[]")
+            .._typesDict.Keys.Where(s => s != TimestampTypeName).Select(s=>$"{s}[]")
         ];
     }
 

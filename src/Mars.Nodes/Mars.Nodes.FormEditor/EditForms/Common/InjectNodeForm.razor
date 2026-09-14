@@ -1,15 +1,50 @@
 @using Mars.Admin.Framework.Components
+@using Mars.Core.Utils
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.Extensions.Localization
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Mars.Nodes.FormEditor.EditForms.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(InjectNode))]
 @inject IStringLocalizer<AppRes> L
 
 <div class="form-group d-flex flex-column flex-fill gap-4">
-    <FormItem2 For="() => Node.Payload">
-        <FluentTextField @bind-Value=Node.Payload Class="w-100" Placeholder="DateTimeOffset.Now.ToUnixTimeMilliseconds" />
-    </FormItem2>
+
+    <div class="vstack gap-2">
+        <div class="text-secondary">
+            <b>@InjectNode.PayloadKey</b> becomes <code>msg.Payload</code>, any other key becomes <code>msg.&lt;key&gt;</code>
+        </div>
+
+        <FluentSortableList Id="injectFields" Handle="true" Items="Node.Fields" OnUpdate="@SortList" Context="item">
+            <ItemTemplate>
+                <div class="sortable-grab">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                </div>
+                <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                    <div class="d-grid align-items-center" style="grid-template-columns: 1fr 140px 1fr 33px; column-gap: 10px;">
+                        <FluentTextField @bind-Value="item.Key" Placeholder="Key" Class="w-100" />
+                        <FluentSelect TOption="string" Items="@VarTypeItems" @bind-SelectedOption="item.VarType" Style="min-width: unset;" />
+                        @if (item.VarType == "bool")
+                        {
+                            <FluentSelect TOption="string" Items="@BoolItems" @bind-SelectedOption="item.Value" Style="min-width: unset;" />
+                        }
+                        else
+                        {
+                            <FluentTextField @bind-Value="item.Value" Placeholder="@ValuePlaceholder(item)" Class="w-100" />
+                        }
+                        <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                    </div>
+                    <FluentValidationMessage For=@(() => item.Key) />
+                    <FluentValidationMessage For=@(() => item.VarType) />
+                    <FluentValidationMessage For=@(() => item.Value) />
+                </div>
+            </ItemTemplate>
+        </FluentSortableList>
+
+        <div class="mt-1 hstack gap-1">
+            <FluentButton OnClick="AddNew" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
+        </div>
+    </div>
 
     <div class="hstack gap-3">
         <div class="hstack gap-2">
@@ -42,5 +77,21 @@
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;
     InjectNode Node { get => (InjectNode)Value; set => Value = value; }
+
+    static readonly string[] BoolItems = ["true", "false"];
+
+    IReadOnlyList<string> VarTypeItems => VarNode.ListTypesSelect();
+
+    string ValuePlaceholder(InjectNodeField field) => field.VarType switch
+    {
+        VarNode.TimestampTypeName => "empty = now (unix millis)",
+        _ => field.VarType,
+    };
+
+    void SortList(FluentSortableListEventArgs args) => Node.Fields = Node.Fields.MoveItem(args.OldIndex, args.NewIndex);
+
+    void AddNew() => Node.Fields = [.. Node.Fields, new() { Key = $"field{Node.Fields.Length + 1}" }];
+
+    void DeleteItem(InjectNodeField item) => Node.Fields = Node.Fields.Where(s => s != item).ToArray();
 
 }

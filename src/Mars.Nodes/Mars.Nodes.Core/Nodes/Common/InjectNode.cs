@@ -5,11 +5,20 @@ namespace Mars.Nodes.Core.Nodes.Common;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/InjectNode/InjectNode{.lang}.md")]
 [Display(GroupName = "common")]
-public class InjectNode : Node
+public class InjectNode : Node, IValidatableObject
 {
     public override string TypeId => "core.InjectNode";
 
-    public string Payload { get; set; } = "";
+    public const string PayloadKey = "Payload";
+
+    InjectNodeField[] _fields = [new() { Key = PayloadKey, VarType = VarNode.TimestampTypeName }];
+
+    [ValidateComplexType]
+    public InjectNodeField[] Fields
+    {
+        get => _fields;
+        set => _fields = value ?? [];
+    }
 
     [Display(Name = "Run at startup")]
     public bool RunAtStartup { get; set; }
@@ -28,45 +37,51 @@ public class InjectNode : Node
         Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
     }
 
-}
-
-class InputSource<T>
-{
-#pragma warning disable CS0414 // The field 'InputSource<T>.Type' is assigned but its value is never used
-    string Type = default!;
-    T Value = default!;
-#pragma warning restore CS0414 // The field 'InputSource<T>.Type' is assigned but its value is never used
-    object get()
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        throw new NotImplementedException();
+        if (Fields.Length == 0)
+        {
+            yield return new ValidationResult("Add at least one field.", [nameof(Fields)]);
+            yield break;
+        }
+
+        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var field in Fields)
+        {
+            if (!IsValidKey(field.Key))
+                yield return new ValidationResult($"Key '{field.Key}' must be an identifier (letter or underscore first).", [nameof(Fields)]);
+            else if (!keys.Add(field.Key))
+                yield return new ValidationResult($"Key '{field.Key}' is duplicated.", [nameof(Fields)]);
+
+            if (!VarNode.IsValidVarType(field.VarType))
+                yield return new ValidationResult($"Type '{field.VarType}' is not supported.", [nameof(Fields)]);
+        }
     }
 
-    void sdsd()
+    static bool IsValidKey(string? key)
+        => !string.IsNullOrEmpty(key)
+           && (char.IsLetter(key[0]) || key[0] == '_')
+           && key.All(c => char.IsLetterOrDigit(c) || c == '_');
+
+    public InjectNode SetPayload(string payload)
     {
-
-        object z = get();
+        var field = _fields.FirstOrDefault(s => s.Key == PayloadKey);
+        if (field == null) _fields = [.. _fields, new() { Key = PayloadKey, Value = payload, VarType = "string" }];
+        else { field.Value = payload; field.VarType = "string"; }
+        return this;
     }
-
 }
 
-class InputSource
+public class InjectNodeField
 {
-    //string Name;
+    [Required]
+    [Display(Name = "Key")]
+    public string Key { get; set; } = "";
 
-}
+    [Display(Name = "Type")]
+    public string VarType { get; set; } = "string";
 
-enum InputType
-{
-    String,
-    Number,
-    Boolean,
-    DateTime,
-    Flow,
-    Global,
-
-}
-
-public class DrawNode
-{
-
+    [Display(Name = "Value")]
+    public string Value { get; set; } = "";
 }

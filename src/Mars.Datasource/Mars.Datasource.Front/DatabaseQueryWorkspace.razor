@@ -2,6 +2,7 @@
 @using Mars.Admin.Framework.Services
 @using Mars.Datasource
 @using Mars.Datasource.Dto
+@using Mars.Datasource.Front.Components
 @using Mars.Datasource.Front.Services
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -206,43 +207,70 @@ else
                             else
                             {
                                 <div class="d-flex flex-column h-100">
-                                    <div class="flex-shrink-0 text-secondary fz14px">
-                                        @res!.Rows.Length rows in @res.ElapsedMs ms · @res.DatabaseDriver
-                                        @if (res.Truncated)
-                                        {
-                                            <span class="text-warning ms-2">показаны первые @MaxRows — в результате есть ещё строки</span>
-                                        }
+                                    <div class="flex-shrink-0 hstack text-secondary fz14px">
+                                        <span>
+                                            @res!.Rows.Length rows in @res.ElapsedMs ms · @res.DatabaseDriver
+                                            @if (res.Truncated)
+                                            {
+                                                <span class="text-warning ms-2">показаны первые @MaxRows — в результате есть ещё строки</span>
+                                            }
+                                        </span>
+                                        <button class="btn btn-sm btn-light ms-auto" title="Таблица или дерево JSON"
+                                                @onclick=@(() => showJsonView = !showJsonView)>
+                                            @(showJsonView ? "table" : "json")
+                                        </button>
                                     </div>
-                                    <div class="overflow-scroll 1custom-scroll1 flex-fill" style="width:calc(100vw - 270px - 20px)">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    @foreach (var column in res.Columns)
-                                                    {
-                                                        <th>
-                                                            <span class="text-nowrap">@column.Name</span>
-                                                            <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
-                                                        </th>
-                                                    }
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var row in raw!)
-                                                {
+                                    @if (showJsonView)
+                                    {
+                                        <div class="overflow-scroll 1custom-scroll1 flex-fill">
+                                            <JsonViewer Json="@resultJsonText" Expanded="1" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="overflow-scroll 1custom-scroll1 flex-fill" style="width:calc(100vw - 270px - 20px)">
+                                            <table class="table table-sm">
+                                                <thead>
                                                     <tr>
-                                                        @foreach (var col in row)
+                                                        @foreach (var column in res.Columns)
                                                         {
-                                                            <td>
-                                                                <span class="text-nowrap">
-                                                                    @col
-                                                                </span>
-                                                            </td>
+                                                            <th>
+                                                                <span class="text-nowrap">@column.Name</span>
+                                                                <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
+                                                            </th>
                                                         }
                                                     </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var row in raw!)
+                                                    {
+                                                        <tr>
+                                                            @for (int i = 0; i < row.Length; i++)
+                                                            {
+                                                                var column = i < res.Columns.Length ? res.Columns[i] : null;
+                                                                var value = row[i];
+                                                                <td>
+                                                                    @if (column?.IsJson == true && value is not null)
+                                                                    {
+                                                                        <details>
+                                                                            <summary class="fz14px text-secondary" title="показать JSON">json</summary>
+                                                                            <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
+                                                                        </details>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="text-nowrap">
+                                                                            @value
+                                                                        </span>
+                                                                    }
+                                                                </td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
                                 </div>
                             }
                         </section>

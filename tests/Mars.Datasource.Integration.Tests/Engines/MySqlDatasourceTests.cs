@@ -80,6 +80,32 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
+    public async Task Query_JsonColumn_MarksColumnAsJson()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        await using (var command = new MySqlCommand("CREATE TABLE todo_json (Id INT PRIMARY KEY, Data JSON)", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await using (var command = new MySqlCommand("""INSERT INTO todo_json (Id, Data) VALUES (1, '{"a": {"b": 1}}')""", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM `todo_json`" });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Columns.Single(c => c.Name == "Data").IsJson.Should().BeTrue();
+
+        var columns = await se.Columns("todo_json");
+        columns["Data"].IsJson.Should().BeTrue();
+    }
+
+    [IntegrationFact]
     public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);

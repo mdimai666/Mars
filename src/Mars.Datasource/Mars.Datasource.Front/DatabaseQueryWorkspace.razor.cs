@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Services;
 using Mars.Core.Extensions;
@@ -47,7 +49,63 @@ public partial class DatabaseQueryWorkspace
 
     bool loadingQuery = false;
 
+    bool showJsonView;
+
     string? errorMessage;
+
+    /// <summary>
+    /// Текущий результат как JSON: json/jsonb-колонки разворачиваются вложенными объектами,
+    /// остальные значения остаются строками.
+    /// </summary>
+    string? resultJsonText
+    {
+        get
+        {
+            if (res is null || !res.Ok) return null;
+
+            JsonArray array = new();
+
+            foreach (var row in res.Rows)
+            {
+                JsonObject obj = new();
+
+                for (var i = 0; i < res.Columns.Length && i < row.Length; i++)
+                {
+                    var column = res.Columns[i];
+                    var value = row[i];
+
+                    if (value is null)
+                    {
+                        obj[column.Name] = null;
+                    }
+                    else if (column.IsJson && TryParseJson(value) is JsonNode node)
+                    {
+                        obj[column.Name] = node;
+                    }
+                    else
+                    {
+                        obj[column.Name] = JsonValue.Create(value);
+                    }
+                }
+
+                array.Add(obj);
+            }
+
+            return array.ToJsonString();
+        }
+    }
+
+    static JsonNode? TryParseJson(string value)
+    {
+        try
+        {
+            return JsonNode.Parse(value);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
 
     CodeEditor2? _editor = default!;
 

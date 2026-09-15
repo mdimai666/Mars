@@ -30,6 +30,7 @@ public static class DataSourceMapping
           IsLong = entity.IsLong,
           IsUnique = entity.IsUnique,
           IsNullable = entity.IsNullable,
+          IsJson = entity.IsJson,
           ClrDataTypeFullName = entity.DataType.FullName ?? "",
           DataTypeName = entity.DataTypeName,
       };

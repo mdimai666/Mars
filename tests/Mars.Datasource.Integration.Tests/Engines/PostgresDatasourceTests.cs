@@ -104,6 +104,33 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
+    public async Task Query_JsonColumn_MarksColumnAsJson()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        await using (var command = new NpgsqlCommand("CREATE TABLE todo_json (id int PRIMARY KEY, data jsonb)", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await using (var command = new NpgsqlCommand("""INSERT INTO todo_json (id, data) VALUES (1, '{"a": {"b": 1}}')""", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM todo_json" });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Columns.Single(c => c.Name == "data").IsJson.Should().BeTrue();
+        result.Columns.Single(c => c.Name == "id").IsJson.Should().BeFalse();
+
+        var columns = await se.Columns("todo_json");
+        columns["data"].IsJson.Should().BeTrue();
+    }
+
+    [IntegrationFact]
     public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);

@@ -196,16 +196,26 @@
       с признаком `Kind` (одно дерево вместо двух списков). Материализованные вьюхи проверены
       только на psql — в MsSQL их нет, в MySQL тоже.
 
-### Этап 4. JSON-режим
+### Этап 4. JSON-режим — сделано 2026-09-15
 
-- [ ] `IsJson` в `QueryColumn`: psql `json/jsonb`, mysql `JSON`, mssql — эвристика (тип + `ISJSON`).
-- [ ] Доделать `SqlQueryJson`-подход во все три движка и поднять в интерфейс (сейчас только psql и
-      нигде не подключён) — как «дерево всего результата» для запросов вида `row_to_json`.
-- [ ] Отображение: json-viewer в ячейке (разворот в поповере) для `IsJson`.
-- [ ] Инфраструктура json-viewer: добавить `/mars/vendor/json-viewer/index.js` в dev-shell
-      `src/Mars.Admin/wwwroot/index.html` (сейчас его там нет → локально компонент не поднимется),
-      проставить `version: appVersion` в `Mars.SiteEngine.Host/WebSite/Scripts/AppAdminSpaHtmlScripts.cs:75`,
-      bump `MarsAppVersion` в `Directory.Build.props`, написать Blazor-обёртку + interop (в репо её нет).
+- [x] `IsJson` приходит и из результата запроса (`QueryColumn.IsJson`), и из схемы
+      (`QTableColumn.IsJson` + `QTableColumnResponse.IsJson`) — общий признак в `QColumnMapping.IsJson`
+      (`json`, `jsonb`).
+- [x] json-viewer подключён: дев-оболочка `src/Mars.Admin/wwwroot/index.html`, боевой список скриптов
+      `Mars.SiteEngine.Host/WebSite/Scripts/AppAdminSpaHtmlScripts.cs` (добавлен `version: appVersion`,
+      раньше версии в URL не было вовсе), `MarsAppVersion` → `0.8.3-alpha.15`.
+- [x] Blazor-обёртка `Mars.Datasource.Front/Components/JsonViewer.razor` — своего interop'а не нужно,
+      это веб-компонент (shadow DOM), атрибуты передаются из разметки; в репо обёртки не было.
+- [x] В рабочей области: переключатель «table / json» для всего результата (все колонки как объекты,
+      json-колонки разворачиваются вложенными объектами) и разворот json-значения прямо в ячейке.
+- [x] Тесты: json-колонка распознаётся и в результате, и в схеме — на psql (`jsonb`) и MySQL (`JSON`).
+- **Отклонено:** портировать `SqlQueryJson` (постресовый `row_to_json` + префикс имени таблицы) в
+  MsSQL/MySQL. Вложенный вид — это *представление* тех же плоских данных, поэтому он собран на клиенте:
+  работает на всех движках и не требует от пользователя писать агрегаты. `SqlQueryJson` остаётся
+  внутренним — его использует backup-драйвер.
+- **Ограничение:** в MsSQL нет json-типа (данные лежат в `nvarchar`), поэтому автоопределение
+  json-колонки там невозможно — подсветка в ячейках не появится, пока не появится явная настройка
+  «считать колонку JSON».
 
 ### Этап 5. Визуал
 

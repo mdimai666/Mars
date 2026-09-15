@@ -544,6 +544,12 @@ drop+create не делаем); тело вьюхи — **проверка, чт
   при пересоздании DOM (сплиттер/вкладки) ссылку нельзя считать живой.
 - Connection string не логировать и не выводить в ошибках; AiChat его читать уже не даёт
   (`MarsOptionsTools` `ReadDenied`) — не сломать.
+- **`ColumnSize` — `long?`, не `int?`.** В MySQL `CHARACTER_MAXIMUM_LENGTH` — `BIGINT UNSIGNED`, и у
+  `longtext`/`longblob` он равен 4294967295 (> `int.MaxValue`); общий `QDatabaseStructureBuilder.ReadColumn`
+  читает размер через `Convert.ToInt64`. Симптом старого бага: «Test connection» проходит (он читает только
+  `Tables()`), а открытие объекта в редакторе падает `OverflowException` на чтении колонок. У `JSON`-колонки
+  в MySQL это поле `NULL` — размер в структуру не приходит. Тест-регрессия:
+  `MySqlDatasourceTests.DatabaseStructure_LongTextColumn_SizeAboveInt32`.
 - После правок js/css, грузящихся в браузер, bump `MarsAppVersion` (`Directory.Build.props`).
 
 ## 8. Отклонено / отложено (с причинами)

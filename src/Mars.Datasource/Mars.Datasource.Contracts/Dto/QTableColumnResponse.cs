@@ -4,7 +4,9 @@ public record QTableColumnResponse
 {
     public required string ColumnName { get; init; }
     public required int ColumnOrdinal { get; init; }
-    public required int? ColumnSize { get; init; }
+
+    /// <summary>Размер из каталога: у MySQL longtext/JSON он больше int (4294967295).</summary>
+    public required long? ColumnSize { get; init; }
     public required bool? IsAutoIncrement { get; init; }
     public required bool? IsKey { get; init; }
     public required bool? IsLong { get; init; }

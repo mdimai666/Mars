@@ -4,7 +4,10 @@ public class QTableColumn
 {
     public string ColumnName { get; set; } = "";
     public int ColumnOrdinal { get; set; }
-    public int? ColumnSize { get; set; }
+
+    /// <summary>Размер из каталога: у MySQL longtext/JSON он больше int (4294967295).</summary>
+    public long? ColumnSize { get; set; }
+
     public bool? IsAutoIncrement { get; set; }
     public bool? IsKey { get; set; }
     public bool? IsLong { get; set; }

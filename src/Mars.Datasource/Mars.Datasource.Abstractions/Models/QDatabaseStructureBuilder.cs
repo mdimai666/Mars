@@ -18,7 +18,10 @@ public class QColumnMeta
     public string TableName { get; set; } = "";
     public string ColumnName { get; set; } = "";
     public int ColumnOrdinal { get; set; }
-    public int? ColumnSize { get; set; }
+
+    /// <summary>Размер из каталога: в MySQL это `BIGINT UNSIGNED`, у longtext/JSON он больше int.</summary>
+    public long? ColumnSize { get; set; }
+
     public string DataTypeName { get; set; } = "";
     public bool IsNullable { get; set; } = true;
     public bool IsKey { get; set; }
@@ -49,7 +52,7 @@ public static class QDatabaseStructureBuilder
         ColumnName = reader.GetString(2),
         ColumnOrdinal = Convert.ToInt32(reader.GetValue(3)),
         DataTypeName = reader.GetString(4),
-        ColumnSize = reader.IsDBNull(5) ? null : Convert.ToInt32(reader.GetValue(5)),
+        ColumnSize = reader.IsDBNull(5) ? null : Convert.ToInt64(reader.GetValue(5)),
         IsNullable = Convert.ToBoolean(reader.GetValue(6)),
         IsKey = Convert.ToBoolean(reader.GetValue(7)),
     };

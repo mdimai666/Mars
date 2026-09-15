@@ -140,6 +140,29 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
+    public async Task DatabaseStructure_LongTextColumn_SizeAboveInt32()
+    {
+        // CHARACTER_MAXIMUM_LENGTH в MySQL — BIGINT UNSIGNED: у longtext это 4294967295,
+        // поэтому чтение структуры не должно конвертировать размер в int.
+        // У JSON-колонки это поле пустое — его размер в структуру не приходит.
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        await using (var command = new MySqlCommand("CREATE TABLE todo_long (Id INT PRIMARY KEY, Body LONGTEXT, Doc JSON)", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var structure = await se.DatabaseStructure();
+        var columns = structure.Tables.Single(t => t.TableName == "todo_long").Columns;
+
+        columns["Body"].ColumnSize.Should().BeGreaterThan(int.MaxValue);
+        columns["Doc"].ColumnSize.Should().BeNull();
+    }
+
+    [IntegrationFact]
     public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);

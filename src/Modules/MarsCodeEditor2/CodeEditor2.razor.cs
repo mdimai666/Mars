@@ -12,6 +12,15 @@ public partial class CodeEditor2 : IDisposable
 {
     StandaloneCodeEditor editor1 = default!;
 
+    /// <summary>
+    /// JS-редактор создаётся в <see cref="EditorOnDidInit"/>. До этого SetValue/GetValue падали
+    /// с «Couldn't find the editor with id»: операции до создания редактора — штатная ситуация.
+    /// </summary>
+    bool editorCreated;
+
+    /// <summary>Значение, запрошенное до создания редактора; подставляется сразу после инициализации.</summary>
+    string? pendingValue;
+
     public StandaloneCodeEditor Monaco => editor1!;
 
     public static class Language
@@ -107,6 +116,14 @@ public partial class CodeEditor2 : IDisposable
             _ = JSRuntime.InvokeVoidAsync("monaco.editor.setTheme", "logview");
         }
 
+        editorCreated = true;
+
+        if (pendingValue is not null)
+        {
+            await editor1.SetValue(pendingValue);
+            pendingValue = null;
+        }
+
         _ = OnInit.InvokeAsync();
     }
 
@@ -123,13 +140,25 @@ public partial class CodeEditor2 : IDisposable
 
     public Task<string> GetValue()
     {
-        return editor1?.GetValue()!;
+        if (!editorCreated)
+        {
+            return Task.FromResult(pendingValue ?? Value);
+        }
+
+        return editor1.GetValue();
     }
 
     public async Task SetValue(string value)
     {
-        //await SendEditorCode(value, Lang);
-        await editor1?.SetValue(value);
+        if (!editorCreated)
+        {
+            // JS-редактора ещё нет (создаётся в EditorOnDidInit): запоминаем и подставим после инициализации.
+            // Раньше такой вызов падал с «Couldn't find the editor with id».
+            pendingValue = value;
+            return;
+        }
+
+        await editor1.SetValue(value);
     }
 
     public async Task SetModelLanguage(string language)

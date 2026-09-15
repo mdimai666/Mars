@@ -1,5 +1,7 @@
 .ds-workspace {
-    height: calc(100vh - 42px);
+    /* лэйаут админки растягивает @Body в main.flex-fill — заполняем родителя, а не считаем vh */
+    height: 100%;
+    min-height: 0;
 }
 
 .ds-topmenu {
@@ -13,6 +15,20 @@
 
 .ds-pane {
     min-height: 0;
+}
+
+.ds-editor {
+    /* flex-basis, а не height: Monaco внутри обязан получить ограниченную высоту */
+    flex: 0 0 220px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.ds-result {
+    /* без min-height:0 вложенный overflow-scroll не ограничивается и содержимое срезается */
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .ds-tabs {

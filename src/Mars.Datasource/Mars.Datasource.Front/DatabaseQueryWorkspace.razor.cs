@@ -47,6 +47,11 @@ public partial class DatabaseQueryWorkspace
     SelectDatasourceDto? source => listDatasources.FirstOrDefault(s => s.Slug == DataSourceConfigSlug);
 
     CodeEditor2? _editor;
+
+    /// <summary>JS-редактор создаётся не в момент появления ссылки на компонент, а в OnInit —
+    /// до этого SetValue/GetValue падают с «Couldn't find the editor with id».</summary>
+    bool _editorReady;
+
     bool _editorNeedsSync;
 
     string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
@@ -72,7 +77,14 @@ public partial class DatabaseQueryWorkspace
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_editorNeedsSync || _editor is null || activeTab is null) return;
+        if (!_editorNeedsSync || !_editorReady) return;
+
+        await SyncEditorAsync();
+    }
+
+    async Task OnEditorInitAsync()
+    {
+        _editorReady = true;
 
         await SyncEditorAsync();
     }
@@ -170,7 +182,7 @@ public partial class DatabaseQueryWorkspace
     async Task RememberEditorSqlAsync()
     {
         var tab = activeTab;
-        if (tab is null || _editor is null) return;
+        if (!_editorReady || tab is null || _editor is null) return;
 
         var sql = await _editor.GetValue();
         if (!string.IsNullOrWhiteSpace(sql)) tab.Sql = sql;
@@ -178,7 +190,7 @@ public partial class DatabaseQueryWorkspace
 
     async Task SyncEditorAsync()
     {
-        if (_editor is null || activeTab is null) return;
+        if (!_editorReady || _editor is null || activeTab is null) return;
 
         _editorNeedsSync = false;
         await _editor.SetValue(activeTab.Sql);
@@ -186,7 +198,7 @@ public partial class DatabaseQueryWorkspace
 
     async Task<string> ReadEditorSqlAsync()
     {
-        if (_editor is null) return activeTab?.Sql ?? "";
+        if (!_editorReady || _editor is null) return activeTab?.Sql ?? "";
 
         return await _editor.GetValue();
     }
@@ -258,6 +270,8 @@ public partial class DatabaseQueryWorkspace
         tab.Sql = BuildBrowseSql(table);
         tab.Changes.Clear();
         tab.ShowJson = false;
+
+        _editorNeedsSync = true;
 
         await SyncEditorAsync();
         await RunActiveTabAsync();

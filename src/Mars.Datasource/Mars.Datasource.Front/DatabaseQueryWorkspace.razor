@@ -6,15 +6,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject NavigationManager nav
 
-@if (Busy)
-{
-    <div class="p-5 main-fill xcenter">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-}
-else if (errorMessage is not null)
+@if (errorMessage is not null)
 {
     <div class="p-4">
         <div class="alert alert-danger">@errorMessage</div>
@@ -22,11 +14,15 @@ else if (errorMessage is not null)
 }
 else if (database is null)
 {
-    <div class="p-4 text-secondary">структура базы недоступна</div>
+    <div class="p-5 main-fill xcenter">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else
 {
-    <div class="ds-workspace d-flex flex-column">
+    <div class="ds-workspace d-flex flex-column flex-fill">
         <section class="ds-topmenu flex-shrink-0 hstack px-2">
             <div class="dropdown">
                 <a class="btn btn-light btn-sm rounded-0 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -60,33 +56,44 @@ else
                 <div class="ds-pane h-100 d-flex flex-column">
                     <div class="flex-shrink-0 hstack gap-1 p-2">
                         <input class="form-control form-control-sm" placeholder="таблица…" @bind="tableFilter" @bind:event="oninput" />
-                        <button class="btn btn-sm btn-light" title="Обновить структуру" @onclick="RefreshStructureAsync">
+                        <button class="btn btn-sm btn-light" title="Обновить структуру" disabled="@Busy" @onclick="RefreshStructureAsync">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
                     </div>
                     <div class="flex-fill overflow-scroll">
-                        <ul class="list-group list-group-flush">
-                            @foreach (var group in filteredTables.GroupBy(t => t.TableSchema.SchemaName))
-                            {
-                                if (hasMultipleSchemas)
+                        @if (Busy)
+                        {
+                            <div class="p-3 text-center">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var group in filteredTables.GroupBy(t => t.TableSchema.SchemaName))
                                 {
-                                    <li class="list-group-item px-2 py-1 fz14px text-secondary bg-light">@group.Key</li>
+                                    if (hasMultipleSchemas)
+                                    {
+                                        <li class="list-group-item px-2 py-1 fz14px text-secondary bg-light">@group.Key</li>
+                                    }
+                                    @foreach (var item in group)
+                                    {
+                                        var table = item;
+                                        <li class="list-group-item list-group-item-action px-2 py-1 hstack @(table == activeTab?.Table ? "active" : "")"
+                                            title="@table.TableSchema.Kind"
+                                            @onclick="() => OpenTableAsync(table)">
+                                            <span class="text-nowrap">@table.TableName</span>
+                                            @if (table.TableSchema.IsView)
+                                            {
+                                                <span class="badge bg-secondary fz14px ms-1">@table.TableSchema.Kind</span>
+                                            }
+                                        </li>
+                                    }
                                 }
-                                @foreach (var item in group)
-                                {
-                                    var table = item;
-                                    <li class="list-group-item list-group-item-action px-2 py-1 hstack @(table == activeTab?.Table ? "active" : "")"
-                                        title="@table.TableSchema.Kind"
-                                        @onclick="() => OpenTableAsync(table)">
-                                        <span class="text-nowrap">@table.TableName</span>
-                                        @if (table.TableSchema.IsView)
-                                        {
-                                            <span class="badge bg-secondary fz14px ms-1">@table.TableSchema.Kind</span>
-                                        }
-                                    </li>
-                                }
-                            }
-                        </ul>
+                            </ul>
+                        }
                     </div>
                 </div>
             </FluentMultiSplitterPane>
@@ -153,11 +160,12 @@ else
                         </details>
                     }
 
-                    <div class="flex-shrink-0 px-2" style="height:170px">
-                        <CodeEditor2 @ref="_editor" Lang=@CodeEditor2.Language.sql Value="" />
+                    <div class="ds-editor px-2">
+                        <CodeEditor2 @ref="_editor" Lang=@CodeEditor2.Language.sql Value="" OnInit="OnEditorInitAsync"
+                                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
                     </div>
 
-                    <div class="ds-result flex-fill overflow-hidden px-2 pb-2">
+                    <div class="ds-result px-2 pb-2">
                         @if (activeTab?.Loading == true)
                         {
                             <div class="p-4 text-center">

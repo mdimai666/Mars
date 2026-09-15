@@ -1,3 +1,13 @@
+.ds-grid {
+    min-height: 0;
+}
+
+/* Скроллер результата: без min-height:0 flex-элемент не сжимается и таблица срезается. */
+.ds-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
 .ds-result-table {
     width: max-content;
     min-width: 100%;

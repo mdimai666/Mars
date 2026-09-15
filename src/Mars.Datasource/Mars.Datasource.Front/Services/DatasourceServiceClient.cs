@@ -1,7 +1,7 @@
 using Flurl.Http;
 using Mars.Contracts.Common;
-using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Contracts.Dto;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.Datasource.Front.Services;
 
@@ -22,6 +22,10 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "TestConnection")
                     .PostJsonAsync(dto)
                     .ReceiveJson<UserActionResult>();
+
+    public Task<IReadOnlyCollection<DatasourceDriverResponse>> Drivers()
+        => _client.Request($"{_basePath}{_controllerName}", "Drivers")
+                    .GetJsonAsync<IReadOnlyCollection<DatasourceDriverResponse>>();
 
     public Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName)
         => _client.Request($"{_basePath}{_controllerName}", "Columns")

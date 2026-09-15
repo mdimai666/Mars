@@ -1,9 +1,10 @@
 using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Services;
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Contracts.Dto;
 using Mars.Datasource.Front.Components;
 using Mars.Datasource.Front.Services;
+using Mars.Datasource.Contracts.Models;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -459,10 +460,9 @@ public partial class DatabaseQueryWorkspace
 
     Func<string, string> Quoter()
     {
-        var start = source?.QuoteStart ?? '"';
-        var end = source?.QuoteEnd ?? '"';
+        var dialect = SqlDialectMapping.Dialect(source?.Driver);
 
-        return name => $"{start}{name}{end}";
+        return name => SqlDialectMapping.Quote(dialect, name);
     }
 
     //=== вьюхи ================================================================

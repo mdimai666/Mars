@@ -3,8 +3,9 @@ using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
-using Mars.Datasource.Dto;
-using Mars.Datasource.Mappings;
+using Mars.Datasource.Contracts.Dto;
+using Mars.Datasource.Abstractions.Mappings;
+using Mars.Datasource.Contracts.Models;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,5 +88,12 @@ public class DatasourceController : ControllerBase
     public ActionResult<IEnumerable<SelectDatasourceDto>> ListSelectDatasource()
     {
         return Ok(ds.ListSelectDatasource());
+    }
+
+    /// <summary>Провайдеры, подключённые к модулю: ключ, подсказка строки подключения, ссылка на док.</summary>
+    [HttpGet]
+    public ActionResult<IEnumerable<DatasourceDriverResponse>> Drivers()
+    {
+        return Ok(ds.Drivers());
     }
 }

@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
-using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Contracts.Dto;
+using Mars.Datasource.Contracts.Models;
 using Mars.WebApiClient.Interfaces;
 
 //namespace Mars.Datasource.Front.Services;
@@ -10,6 +10,9 @@ namespace Mars.Datasource.Front.Services;
 public interface IDatasourceServiceClient
 {
     Task<UserActionResult> TestConnection(ConnectionStringTestDto dto);
+
+    /// <summary>Подключённые провайдеры источников (список движков для формы настроек).</summary>
+    Task<IReadOnlyCollection<DatasourceDriverResponse>> Drivers();
     Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName);
     Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
     Task<QDatabaseStructureResponse> DatabaseStructure(string slug);

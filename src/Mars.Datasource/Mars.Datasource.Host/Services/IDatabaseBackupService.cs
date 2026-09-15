@@ -1,4 +1,5 @@
 using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.Datasource.Host.Services;
 

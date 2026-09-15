@@ -1,6 +1,7 @@
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
-using Mars.Datasource.Nodes;
+using Mars.Datasource.Contracts.Models;
+using Mars.Datasource.Contracts.Nodes;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 using Microsoft.Extensions.DependencyInjection;

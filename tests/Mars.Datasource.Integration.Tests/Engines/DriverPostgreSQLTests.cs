@@ -1,5 +1,6 @@
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.PostgreSQL;
+using Mars.Datasource.Providers.PostgreSQL;
+using Mars.Datasource.Contracts.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Datasource.Integration.Tests.Engines;

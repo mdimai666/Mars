@@ -1,7 +1,8 @@
 using FluentAssertions;
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.MySQL;
+using Mars.Datasource.Providers.MySQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
+using Mars.Datasource.Contracts.Models;
 using Mars.Integration.Tests.Attributes;
 using MySqlConnector;
 

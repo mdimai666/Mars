@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.AiChat.Host.Tools;
 

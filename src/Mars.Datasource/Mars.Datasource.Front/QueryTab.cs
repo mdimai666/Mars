@@ -1,5 +1,5 @@
-using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Contracts.Dto;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.Datasource.Front;
 

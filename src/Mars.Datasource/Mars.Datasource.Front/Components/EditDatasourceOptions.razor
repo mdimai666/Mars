@@ -1,8 +1,10 @@
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Admin.Framework.Components
-@using Mars.Datasource
-@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Dto
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Services
 @using Microsoft.FluentUI.AspNetCore.Components
+@inject IDatasourceServiceClient datasourceService
 
 <div class="vstack gap-4">
     @foreach (var _config in opt.Configs)
@@ -35,19 +37,9 @@
                                 <div class="col col-lg-6">
                                     <div class="">
                                         <label>Driver</label>
-                                        @* <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@config.Driver
-                                                                                           class="form-select form-xs"
-                                                                                           TValue="string"
-                                                                                           @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))>
-                                            @foreach (var m in DatasourceConfig.DriverList)
-                                            {
-                                                <option value="@m">@m</option>
-                                            }
-                                        </Microsoft.AspNetCore.Components.Forms.InputSelect> *@
-
                                         <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Driver"
                                                                                                OptionText=@(s=>s.ToString())
-                                                                                               Items="DatasourceConfig.DriverList"
+                                                                                               Items="DriverKeys"
                                                                                                @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
                                                                                                Style="width: 250px;">
 
@@ -57,9 +49,9 @@
                                 <div class="col-12 mt-3">
                                     <div class="d-flex gap-5 fz14px">
                                         <label>ConnectionString</label>
-                                        @if (string.IsNullOrEmpty(config.HelpLinkConnectionString) == false)
+                                        @if (HelpLink(config.Driver) is string helpLink)
                                         {
-                                            <a href="@config.HelpLinkConnectionString" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                            <a href="@helpLink" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
                                         }
                                     </div>
                                     <div class="mt-2">
@@ -94,11 +86,25 @@
 @code {
     [CascadingParameter] public DatasourceOption opt { get; set; } = default!;
 
-    protected override void OnInitialized()
+    /// <summary>Провайдеры приходят от сервера: движок можно подключить, не правя ядро модуля.</summary>
+    IReadOnlyCollection<DatasourceDriverResponse> drivers = [];
+
+    IEnumerable<string> DriverKeys => drivers.Select(d => d.Driver);
+
+    protected override async Task OnInitializedAsync()
     {
         if (opt.Configs.Count == 0)
         {
             opt.Configs.Add(new DatasourceConfig());
+        }
+
+        try
+        {
+            drivers = await datasourceService.Drivers();
+        }
+        catch
+        {
+            // Список движков — подсказка в форме: без него редактор остаётся рабочим.
         }
     }
 
@@ -112,6 +118,9 @@
     {
         opt.Configs.Remove(cfg);
     }
+
+    string? HelpLink(string driver)
+        => drivers.FirstOrDefault(d => string.Equals(d.Driver, driver, StringComparison.OrdinalIgnoreCase))?.HelpLink;
 
     string? SlugError(DatasourceConfig config)
     {
@@ -128,7 +137,9 @@
     {
         if (string.IsNullOrEmpty(cfg.ConnectionString) || cfg.IsDefaultString())
         {
-            cfg.ConnectionString = cfg.GetDefaultConnectionString();
+            cfg.ConnectionString = drivers
+                .FirstOrDefault(d => string.Equals(d.Driver, cfg.Driver, StringComparison.OrdinalIgnoreCase))
+                ?.DefaultConnectionString ?? cfg.ConnectionString;
         }
     }
 }

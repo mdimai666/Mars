@@ -1,3 +1,4 @@
+using Mars.Datasource.Contracts.Models;
 namespace Mars.Datasource.Abstractions.Models;
 
 /// <summary>Готовый план правки строки: SQL с параметрами (значения в текст не подставляются).</summary>

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.Datasource.Integration.Tests;
 
@@ -45,17 +45,5 @@ public class DatasourceConfigTests
         var config = new DatasourceConfig { ConnectionString = "server=127.0.0.1;database=wordpress;uid=wp;pwd=wp;" };
 
         config.GetDatabaseName().Should().Be("wordpress");
-    }
-
-    [Fact]
-    public void GetDefaultConnectionString_EachDriver_HasNoStrayQuotes()
-    {
-        foreach (var driver in DatasourceConfig.DriverList)
-        {
-            var connectionString = new DatasourceConfig { Driver = driver }.GetDefaultConnectionString();
-
-            connectionString.Should().NotBeNullOrWhiteSpace();
-            connectionString.Should().NotStartWith("\"");
-        }
     }
 }

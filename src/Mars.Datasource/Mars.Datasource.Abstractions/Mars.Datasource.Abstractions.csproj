@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
     <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+    <ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

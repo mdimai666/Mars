@@ -3,9 +3,8 @@ using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
-using Mars.Datasource.Host.MsSQL;
-using Mars.Datasource.Host.MySQL;
-using Mars.Datasource.Host.PostgreSQL;
+using Mars.Datasource.Contracts.Dto;
+using Mars.Datasource.Contracts.Models;
 using Mars.Options.Abstractions.Services;
 using Microsoft.Extensions.Configuration;
 
@@ -18,6 +17,9 @@ internal class DatasourceService : IDatasourceService
 {
     private readonly IOptionService _optionService;
     private readonly IDatabaseBackupService _databaseBackupService;
+
+    /// <summary>Провайдеры по ключу источника: ядро модуля их не создаёт, их регистрирует корень композиции.</summary>
+    readonly Dictionary<string, IDatasourceDriverFactory> _drivers;
 
     string _connectionString;
     DatasourceConfig _defaultConfig;
@@ -42,7 +44,8 @@ internal class DatasourceService : IDatasourceService
         }
     }
 
-    public DatasourceService(IConfiguration configuration, IOptionService optionService, IDatabaseBackupService databaseBackupService)
+    public DatasourceService(IConfiguration configuration, IOptionService optionService, IDatabaseBackupService databaseBackupService,
+        IEnumerable<IDatasourceDriverFactory> drivers)
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
@@ -55,7 +58,19 @@ internal class DatasourceService : IDatasourceService
         };
         _optionService = optionService;
         _databaseBackupService = databaseBackupService;
+        _drivers = drivers.ToDictionary(d => d.Driver, StringComparer.OrdinalIgnoreCase);
     }
+
+    public IReadOnlyCollection<DatasourceDriverResponse> Drivers()
+        => _drivers.Values
+            .Select(d => new DatasourceDriverResponse
+            {
+                Driver = d.Driver,
+                DefaultConnectionString = d.DefaultConnectionString,
+                HelpLink = d.HelpLink,
+            })
+            .OrderBy(d => d.Driver, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
     public void InvalidateLocalDictCache(DatasourceOption opt)
     {
@@ -111,13 +126,9 @@ internal class DatasourceService : IDatasourceService
 
     IDatasourceDriver ResolveEngine(DatasourceConfig config)
     {
-        return config.Driver switch
-        {
-            "psql" => new DatasourcePostgreSQLDriver(config),
-            "mssql" => new DatasourceMsSQLDriver(config),
-            "mysql" => new DatasourceMySQLDriver(config),
-            _ => throw new NotImplementedException($"Driver \"{config.Driver}\" not found")
-        };
+        if (_drivers.TryGetValue(config.Driver, out var factory)) return factory.Create(config);
+
+        throw new NotSupportedException($"Провайдер источников \"{config.Driver}\" не подключён");
     }
 
     public async Task<UserActionResult> TestConnection(ConnectionStringTestDto dto)

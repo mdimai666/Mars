@@ -1,7 +1,8 @@
 using FluentAssertions;
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.MsSQL;
+using Mars.Datasource.Providers.MsSQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
+using Mars.Datasource.Contracts.Models;
 using Mars.Integration.Tests.Attributes;
 using Microsoft.Data.SqlClient;
 

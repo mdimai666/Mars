@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Datasource.Contracts</PackageId>
+        <Description>Mars external database connections: wire contracts shared by the admin front, the WebApiClient and datasource providers.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+    </ItemGroup>
+
+</Project>

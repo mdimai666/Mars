@@ -8,9 +8,11 @@
 Статус на 2026-09-16: ревизия сделана, **этапы 1–5.5 выполнены и закоммичены** (`313fb04e`, `0068b272`,
 `02757a32`, `15e7a327`, `5e5d6f4d`, `b43632ef` — доводка верстки/редактора, `e1b4089d` — вторая итерация
 визуала грида, `4d7640d8` — ширина/типы/даты и модальная правка длинных значений). **Этапы 7 (управление
-вьюхами, коммит `aacd5347`) и 8 (лимит строк просмотра и «всего N») сделаны 2026-09-16**; этап 8 пока не
-закоммичен, этап 6 (не-SQL провайдеры) не начат; визуал этапов 5.1–8 проверяет пользователь в браузере,
-ветка `ai/datasource-rework` не запушена.
+вьюхами, коммит `aacd5347`), 8 (лимит строк просмотра и «всего N», `25e182cb`) и 9 (сворачивание схем,
+`3a77ea03`) сделаны 2026-09-16**; этап 6 (не-SQL провайдеры) не начат. **Структура модуля приведена в
+порядок 2026-09-16** (см. «Структура модуля» ниже): ядро больше не знает провайдеров, wire-DTO вынесены
+в `Mars.Datasource.Contracts`, драйверы переименованы в `Mars.Datasource.Providers.*`. Визуал этапов 5.1–9
+проверяет пользователь в браузере.
 
 ## 1. Принятые решения
 
@@ -33,13 +35,18 @@
 
 ## 2. As-is: что есть сейчас
 
-- **Модуль** `src/Mars.Datasource/` — 6 проектов: `Mars.Datasource.Abstractions` (контракты; единственный
-  пакет в NuGet), `Mars.Datasource` (узел `SqlNode`), `Mars.Datasource.Front` (Razor-библиотека,
-  `DatabaseQueryWorkspace.razor` — вся нынешняя рабочая область), `Mars.Datasource.Host` (singleton
+- **Модуль** `src/Mars.Datasource/` — 7 проектов (структура переделана 2026-09-16, см. Этап 10):
+  `Mars.Datasource.Contracts` (wire-DTO, узел `SqlNode`, модели опции; пакет в NuGet),
+  `Mars.Datasource.Abstractions` (серверные контракты: `IDatasourceDriver`/`IDatasourceDriverFactory`,
+  серверные модели структуры, билдеры, маппинги; пакет в NuGet), `Mars.Datasource.Host` (ядро: singleton
   `DatasourceService`, `DatasourceController`, CLI, `SqlNodeImpl`, AI-провайдер схемы),
-  `Mars.Datasource.Host.PostgreSQL|MsSQL|MySQL` (драйверы).
-- **Регистрация:** только `Mars.WebApp` (`MarsWebAppStartup.cs:106,215`), фронт — в WASM-админке
-  (`src/Mars.Admin/Program.cs:71,95`); `Mars.Admin.Host` DataSource не знает.
+  `Mars.Datasource.Providers.PostgreSQL|MsSQL|MySQL` (драйвер + фабрика + свой Add-хук),
+  `Mars.Datasource.Front` (Razor-библиотека, `DatabaseQueryWorkspace.razor` — рабочая область),
+  `Mars.Datasource` (агрегатор модуля: `AddDatasource`/`UseDatasource` — единственная точка подключения).
+- **Регистрация:** `Mars.WebApp` зовёт только агрегатор модуля — `AddDatasource()` в серверной цепочке и
+  `app.UseDatasource()` в пайплайне (`MarsWebAppStartup.cs`); фронт — в WASM-админке
+  (`src/Mars.Admin/Program.cs:71,95`), которая видит лишь `Contracts` + `Front`; `Mars.Admin.Host`
+  DataSource не знает.
 - **UI:** 4 страницы в `src/Mars.Admin/Builder/DataSourceViews/` (base href `/dev/`): `/datasource`
   (карточки), `/datasource/query`, `/datasource/config`, `/datasource/actions`. В меню — один пункт
   `src/Mars.Admin/Builder/BuilderASide.razor:19`.
@@ -107,8 +114,10 @@
   в него не влезают; «ConnectionString» — тоже SQL-понятие.
 - **G10. Секреты:** connection string открытым текстом в опции и в textarea админки; шифрования нет,
   логирования тоже нет (и не заводить).
-- **G11. Три драйвера жёстко прилинкованы** в `Mars.Datasource.Host.csproj` → провайдер нельзя поставить
-  пакетом.
+- **G11. Три драйвера были жёстко прилинкованы** к `Mars.Datasource.Host.csproj` → провайдер нельзя было
+  поставить пакетом. **Закрыто в Этапе 10**: Host знает только `Abstractions`/`Contracts`, провайдеры
+  регистрируются своими хуками из агрегатора. Осталось (Этап 6.4) — паковка провайдеров и загрузка их
+  как плагинов.
 - **G12.** Нет сохранённых запросов, истории, состояния вкладок; область пересоздаётся при смене slug.
 
 ## 5. Этапы
@@ -360,8 +369,9 @@
 - [ ] Google Sheets: сначала только чтение (CSV-экспорт), запись — OAuth + API отдельной фазой.
 - [ ] HTTP/REST как таблица: метод, заголовки, авторизация, ответ-массив → строки (переиспользует
       разбор JSON из Этапа 4).
-- [ ] Провайдеры как плагины: убрать жёсткие ссылки на три драйвера из `Mars.Datasource.Host.csproj`
-      в пользу динамической регистрации, иначе не-SQL источник нельзя поставить пакетом.
+- [x] Провайдеры как плагины: **жёсткие ссылки на три драйвера из `Mars.Datasource.Host.csproj` убраны в
+      Этапе 10** (фабрики в DI, регистрация хуками провайдеров из агрегатора). Осталось: `PackageId`
+      провайдерам и загрузка их из пакета/плагина — отдельным проходом (6.4).
 
 ### Этап 7. Управление вьюхами — сделано 2026-09-16
 
@@ -462,6 +472,49 @@ drop+create не делаем); тело вьюхи — **проверка, чт
 - Проверено: `dotnet build Mars.slnx` — 0 ошибок/0 предупреждений; в сгенерированном
       `DatabaseQueryWorkspace.razor.rz.scp.css` правила `.ds-schema` есть со scope-атрибутом
       (`.ds-schema[b-…]` — свои элементы, `::deep` не нужен). Вид дерева проверяет пользователь в браузере.
+
+### Этап 10. Структура модуля: провайдеры, Contracts, агрегатор — сделано 2026-09-16
+
+Решения пользователя: идём в самый глубокий вариант — развязка + переименование + wire-DTO в `Contracts`;
+агрегатор делаем проектом `Mars.Datasource` (без суффикса): WebApp зовёт одну строку, он же подключает
+`.Host` и провайдеров; пакеты — только `Abstractions` и `Contracts` (паковку провайдеров не трогаем,
+это 6.4). Причина: по `ai/ProjectStructureGuide.md` (п.1–3) сборка модулей — только в корне композиции,
+а ядро не должно `new`-ить реализации.
+
+- [x] `Mars.Datasource.Contracts` (новый проект, `PackageId mdimai666.Mars.Datasource.Contracts`):
+      wire-DTO `Dto/*Response` + `DatasourceDriverResponse`, узел `SqlNode` (`Contracts/Nodes`, как
+      `Mars.SemanticKernel.Contracts/Nodes`), wire-модели (`DatasourceConfig`, `DatasourceOption`,
+      `SelectDatasourceDto`, `ConnectionStringTestDto`, `DatasourceActionRequest`, `SqlRequest`/`SqlParam`,
+      `QueryResultDto`/`QueryColumn`, `SqlNonQueryResultActionDto`, `SqlQueryJsonResultActionDto`).
+      Осталось в `Abstractions` (серверная сторона): модели структуры `Q*`, `BackupSettings`/
+      `RestoreSettings`, билдеры (`SqlDialect`, `BrowseSqlBuilder`, `RowUpdateBuilder`, `ViewDdlBuilder`,
+      `SqlSafety`, `QueryResultMapping`), интерфейсы и `Mappings/DataSourceMapping` (переехал из корня
+      модуля — по гайду маппинги живут в `Abstractions`). Направление ссылок: `Abstractions → Contracts`.
+- [x] Провайдеры: `Mars.Datasource.Host.PostgreSQL|MsSQL|MySQL` → `Mars.Datasource.Providers.*`
+      (по образцу `Mars.TemplateEngine.Providers.*`). Каждый даёт `IDatasourceDriverFactory` (ключ движка,
+      подсказка строки подключения, help-ссылка, `Create(config)`) и хук `AddDatasourcePostgreSql/MsSql/
+      MySql`; ссылается только на `Abstractions` + `Contracts` (+ свой ADO-пакет) — ссылка на нод-движок
+      (`Mars.Datasource`) убрана как лишняя. Backup-драйвер psql регистрируется там же
+      (`IDatasourceBackupDriver.Driver`).
+- [x] Ядро: `Mars.Datasource.Host` больше не ссылается на провайдеров. `DatasourceService` и
+      `DatabaseBackupService` берут `IEnumerable<IDatasourceDriverFactory>` / `IEnumerable<IDatasourceBackupDriver>`
+      и резолвят по ключу; вместо `NotImplementedException` — «провайдер не подключён». Метаданные движков
+      уехали из `DatasourceConfig`/`SelectDatasourceDto` (и заодно `QuoteStart/QuoteEnd` — их заменил
+      `SqlDialectMapping.Quote`); список для формы редактора приходит с сервера: `GET api/Datasource/Drivers`
+      → `DatasourceDriverResponse[]` (+ `IDatasourceService.Drivers()`, метод в клиенте).
+- [x] Агрегатор `Mars.Datasource`: `AddDatasource()` = `Host` + `Front` + три провайдера, `UseDatasource()` —
+      те же хуки в пайплайне. В `Mars.WebApp` вместо четырёх вызовов (`AddDatasourceHost`,
+      `AddDatasourceWorkspace`, `UseDatasourceWorkspace`, `UseDatasourceHost`) — два.
+- [x] Грабля (поймана сборкой, важная для любых будущих провайдеров): на агрегатор **нельзя** ссылаться
+      из WASM — `FrameworkReference Microsoft.AspNetCore.App` даёт `NETSDK1082: There was no runtime pack
+      for Microsoft.AspNetCore.App ... 'browser-wasm'`. Поэтому `Mars.Admin` (WASM) видит только
+      `Contracts` + `Front`, и сам `Front` на агрегатор не ссылается.
+- [x] Тесты: `Mars.Datasource.Integration.Tests` получил прямые ссылки на провайдеров (движковые тесты
+      конструируют драйверы сами); `SourceBuilderTests` → `DatasourceProviderTests` (регистрация фабрик,
+      метаданные, единственный backup-драйвер — сюда же переехал тест про дефолтную строку подключения);
+      HTTP-контракт: `DataSourceTests.Drivers_Request_Success`.
+- Проверено: `dotnet build Mars.slnx` — 0 ошибок/0 предупреждений; `Mars.Datasource.Integration.Tests`
+      193/193 (включая Docker-движки), `Mars.WebApiClient.Integration.Tests` (датасорс) 12/12.
 
 ## 6. Проверка
 

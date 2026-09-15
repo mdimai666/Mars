@@ -2,8 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
+using Mars.Datasource.Contracts.Models;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -320,10 +320,9 @@ public partial class QueryResultGrid
 
     Func<string, string> Quoter()
     {
-        var start = Source?.QuoteStart ?? '"';
-        var end = Source?.QuoteEnd ?? '"';
+        var dialect = SqlDialectMapping.Dialect(Source?.Driver);
 
-        return name => $"{start}{name}{end}";
+        return name => SqlDialectMapping.Quote(dialect, name);
     }
 
     int ColumnIndex(string columnName)

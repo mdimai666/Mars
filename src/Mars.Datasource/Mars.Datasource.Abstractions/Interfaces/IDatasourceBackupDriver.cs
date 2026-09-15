@@ -5,6 +5,9 @@ namespace Mars.Datasource.Abstractions.Interfaces;
 
 public interface IDatasourceBackupDriver
 {
+    /// <summary>Ключ движка, для которого умеет backup/restore (`psql`).</summary>
+    public string Driver { get; }
+
     /// <exception cref="DatasourceOperationException"></exception>
     /// <exception cref="NotImplementedException"></exception>
     public Task Backup(string connectionString, BackupSettings settings, CancellationToken cancellationToken = default);

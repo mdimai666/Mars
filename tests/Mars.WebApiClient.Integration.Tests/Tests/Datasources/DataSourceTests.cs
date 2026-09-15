@@ -3,6 +3,7 @@ using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Front.Services;
 using Mars.Datasource.Host.Controllers;
+using Mars.Datasource.Contracts.Models;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,22 @@ public class DataSourceTests : BaseWebApiClientTests
 
         //Assert
         result.Should().NotBeNull();
+    }
+
+    [IntegrationFact]
+    public async Task Drivers_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.Drivers);
+        _ = nameof(IDatasourceService.Drivers);
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Datasource().Drivers();
+
+        //Assert
+        result.Select(d => d.Driver).Should().BeEquivalentTo(["psql", "mssql", "mysql"]);
+        result.Should().OnlyContain(d => d.DefaultConnectionString != "" && d.HelpLink != "");
     }
 
     [IntegrationFact]

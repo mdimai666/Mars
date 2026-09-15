@@ -1,11 +1,16 @@
 using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Contracts.Models;
+using Mars.Datasource.Contracts.Dto;
 
 namespace Mars.Datasource.Abstractions.Services;
 
 public interface IDatasourceService
 {
     public DatasourceConfig DefaultConfig { get; }
+
+    /// <summary>Зарегистрированные провайдеры: ключ, подсказка строки подключения, ссылка на док.</summary>
+    public IReadOnlyCollection<DatasourceDriverResponse> Drivers();
 
     public void InvalidateLocalDictCache(DatasourceOption opt);
     public Task<UserActionResult> TestConnection(ConnectionStringTestDto dto);

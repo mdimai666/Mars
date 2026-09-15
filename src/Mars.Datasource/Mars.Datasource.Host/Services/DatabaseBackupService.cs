@@ -1,20 +1,23 @@
 using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.PostgreSQL;
+using Mars.Datasource.Contracts.Models;
 
 namespace Mars.Datasource.Host.Services;
 
 internal class DatabaseBackupService : IDatabaseBackupService
 {
+    readonly Dictionary<string, IDatasourceBackupDriver> _drivers;
+
+    public DatabaseBackupService(IEnumerable<IDatasourceBackupDriver> drivers)
+    {
+        _drivers = drivers.ToDictionary(d => d.Driver, StringComparer.OrdinalIgnoreCase);
+    }
+
     IDatasourceBackupDriver ResolveEngine(DatasourceConfig config)
     {
-        return config.Driver switch
-        {
-            "psql" => new DatasourcePostgreSQLBackupDriver(),
-            //"mssql" => new DatasourceMsSQLDriver(config),
-            //"mysql" => new DatasourceMySQLDriver(config),
-            _ => throw new NotImplementedException($"DatabaseBackupService for Driver \"{config.Driver}\" not found")
-        };
+        if (_drivers.TryGetValue(config.Driver, out var driver)) return driver;
+
+        throw new NotSupportedException($"Backup/restore для источника \"{config.Driver}\" не поддерживается");
     }
 
     public Task Backup(DatasourceConfig datasourceConfig, BackupSettings settings, CancellationToken cancellationToken)

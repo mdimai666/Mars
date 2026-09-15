@@ -35,9 +35,37 @@ public static class QueryResultMapping
             TimeSpan ts => ts.ToString("c", CultureInfo.InvariantCulture),
             byte[] bytes => Convert.ToBase64String(bytes),
             bool b => b ? "true" : "false",
+            System.Collections.IEnumerable items when items is not System.Collections.IDictionary => FormatArray(items),
             IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
             _ => value.ToString(),
         };
+
+    /// <summary>
+    /// Массив (в контракте бывает только у Postgres) — в литерале `{a,"b,c"}`: так его показывает psql,
+    /// и такое значение можно вернуть в `UPDATE` параметром, не пересобирая. Словари (hstore) не трогаем.
+    /// </summary>
+    static string FormatArray(System.Collections.IEnumerable items)
+    {
+        List<string> parts = [];
+
+        foreach (var item in items)
+        {
+            parts.Add(item switch
+            {
+                null or DBNull => "NULL",
+                System.Collections.IEnumerable nested when nested is not string => FormatArray(nested),
+                _ => QuoteArrayItem(Format(item) ?? ""),
+            });
+        }
+
+        return "{" + string.Join(",", parts) + "}";
+    }
+
+    static string QuoteArrayItem(string value)
+        => value.Length == 0 || value.Equals("NULL", StringComparison.OrdinalIgnoreCase)
+            || value.IndexOfAny(['{', '}', ',', '"', '\\', ' ', '\t', '\n', '\r']) >= 0
+                ? "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+                : value;
 
     /// <summary>
     /// Читает строки до <paramref name="maxRows"/> (0 — без ограничения).

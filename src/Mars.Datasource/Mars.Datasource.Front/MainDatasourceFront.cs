@@ -14,6 +14,7 @@ public static class MainDatasourceFront
         if (!OperatingSystem.IsBrowser()) return services;
 
         services.AddScoped<IDatasourceServiceClient, DatasourceServiceClient>();
+        services.AddScoped<MarsDatasourceFrontJsInterop>();
 
         return services;
     }

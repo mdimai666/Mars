@@ -15,6 +15,7 @@ public partial class QueryResultGrid
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
+    [Inject] MarsDatasourceFrontJsInterop jsInterop { get; set; } = default!;
 
     [Parameter, EditorRequired] public QueryResultDto Result { get; set; } = default!;
     [Parameter, EditorRequired] public QueryTab Tab { get; set; } = default!;
@@ -24,10 +25,18 @@ public partial class QueryResultGrid
     /// <summary>Вызывается после успешного сохранения правок — рабочая область перечитывает данные.</summary>
     [Parameter] public EventCallback OnSaved { get; set; }
 
+    /// <summary>Длина начальных и конечных символов, которые видны у сжатого значения.</summary>
+    const int MidHeadLength = 8;
+    const int MidTailLength = 6;
+
+    ElementReference _root;
     (int Row, string Column)? _editCell;
     string? _editValue;
     ElementReference _editInput;
     bool _focusNeeded;
+
+    QueryResultDto? _guidDetectedFor;
+    bool[] _guidColumns = [];
 
     protected override void OnParametersSet()
     {
@@ -37,10 +46,90 @@ public partial class QueryResultGrid
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            // Копирование выделения из грида отдаёт полные значения ячеек, а не «начало…конец».
+            await jsInterop.RegisterFullValueCopy(_root);
+        }
+
         if (!_focusNeeded) return;
 
         _focusNeeded = false;
         await _editInput.FocusAsync();
+    }
+
+    /// <summary>
+    /// Класс цвета по категории типа (<see cref="QColumnMapping.Kind"/>) — для значения ячейки и для подписи типа.
+    /// Строковые без класса: их большинство, и в ячейке это основной текст (цвет по умолчанию), а не подпись.
+    /// </summary>
+    static string? KindClass(string? dataTypeName)
+        => QColumnMapping.Kind(dataTypeName) switch
+        {
+            QColumnKind.Number => "ds-type-number",
+            QColumnKind.Boolean => "ds-type-bool",
+            QColumnKind.DateTime => "ds-type-date",
+            QColumnKind.Json => "ds-type-json",
+            _ => null,
+        };
+
+    /// <summary>
+    /// Начало и конец длинного значения без середины — для колонок с guid-ами: 36 символов
+    /// распирают таблицу, а по краям значение всё ещё узнаваемо. `null` — показываем целиком.
+    /// </summary>
+    (string Head, string Tail)? MidParts(int columnIndex, string? value)
+    {
+        if (value is null || !IsGuidColumn(columnIndex)) return null;
+        if (value.Length <= MidHeadLength + MidTailLength + 1) return null;
+
+        return (value[..MidHeadLength], value[^MidTailLength..]);
+    }
+
+    bool IsGuidColumn(int columnIndex)
+    {
+        if (!ReferenceEquals(_guidDetectedFor, Result))
+        {
+            _guidDetectedFor = Result;
+            _guidColumns = DetectGuidColumns();
+        }
+
+        return columnIndex >= 0 && columnIndex < _guidColumns.Length && _guidColumns[columnIndex];
+    }
+
+    bool[] DetectGuidColumns()
+    {
+        var flags = new bool[Result.Columns.Length];
+
+        for (var i = 0; i < flags.Length; i++)
+        {
+            flags[i] = QColumnMapping.Kind(Result.Columns[i].DataTypeName) == QColumnKind.Guid
+                || LooksLikeGuidColumn(i);
+        }
+
+        return flags;
+    }
+
+    /// <summary>Guid в char-колонке (MySQL, старые схемы) по типу не отличить — смотрим значения.</summary>
+    bool LooksLikeGuidColumn(int columnIndex)
+    {
+        const int sampleSize = 5;
+
+        var sampled = 0;
+        var guids = 0;
+
+        foreach (var row in Result.Rows)
+        {
+            if (sampled >= sampleSize) break;
+            if (columnIndex >= row.Length) continue;
+
+            var value = row[columnIndex];
+            if (string.IsNullOrEmpty(value)) continue;
+
+            sampled++;
+
+            if (Guid.TryParse(value, out _)) guids++;
+        }
+
+        return sampled > 0 && guids == sampled;
     }
 
     bool IsEditing((int Row, string Column) cell)
@@ -208,14 +297,15 @@ public partial class QueryResultGrid
 
             JsonArray array = new();
 
-            foreach (var row in Result.Rows)
+            for (var rowIndex = 0; rowIndex < Result.Rows.Length; rowIndex++)
             {
+                var row = Result.Rows[rowIndex];
                 JsonObject obj = new();
 
                 for (var i = 0; i < Result.Columns.Length && i < row.Length; i++)
                 {
                     var column = Result.Columns[i];
-                    var value = row[i];
+                    var value = Tab.Changes.TryGetValue((rowIndex, column.Name), out var pending) ? pending : row[i];
 
                     if (value is null)
                     {

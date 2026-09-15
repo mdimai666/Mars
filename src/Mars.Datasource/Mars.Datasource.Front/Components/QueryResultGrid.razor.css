@@ -1,5 +1,30 @@
+/* Палитра типов: одинаковая категория — один цвет (как подсветка типов в редакторах).
+   Красятся и значения ячеек, и подписи типов; строковые значения остаются цветом по умолчанию
+   (их большинство), а подпись строкового типа — приглушённая серая.
+   Тёмная тема светлее, иначе цвета не читаются. */
 .ds-grid {
     min-height: 0;
+    --ds-type-number: #1a63c9;
+    --ds-type-date: #1f7a45;
+    --ds-type-bool: #b25b00;
+    --ds-type-json: #7638c8;
+}
+
+body.dark .ds-grid {
+    --ds-type-number: #6ea8fe;
+    --ds-type-date: #66c98d;
+    --ds-type-bool: #ffb86b;
+    --ds-type-json: #c0a2f0;
+}
+
+/* Тёмная тема приходит двумя путями (см. base.less): класс на body и системная настройка. */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-mode) .ds-grid {
+        --ds-type-number: #6ea8fe;
+        --ds-type-date: #66c98d;
+        --ds-type-bool: #ffb86b;
+        --ds-type-json: #c0a2f0;
+    }
 }
 
 /* Скроллер результата: без min-height:0 flex-элемент не сжимается и таблица срезается. */
@@ -8,9 +33,15 @@
     min-height: 0;
 }
 
+/* Колонки по контенту: min-width:100% растягивал узкие таблицы на всю область. */
 .ds-result-table {
     width: max-content;
-    min-width: 100%;
+}
+
+/* Перегородки между ячейками; у последней колонки линии нет — иначе она висит на краю. */
+.ds-result-table th:not(:last-child),
+.ds-result-table td:not(:last-child) {
+    border-right: 1px solid var(--bs-border-color, #dee2e6);
 }
 
 .ds-result-table th {
@@ -22,6 +53,53 @@
 
 .ds-result-table td {
     cursor: text;
+}
+
+/* Сжатое значение (guid): середина скрыта, начало и конец видны. Полное значение — в title, редакторе и при копировании выделения. */
+.ds-mid {
+    display: inline-flex;
+    max-width: 110px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* Голова сжимается первой: конец значения важнее середины. */
+.ds-mid-head {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ds-mid-dots {
+    flex: 0 0 auto;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.ds-mid-tail {
+    flex: 0 0 auto;
+}
+
+.ds-type-number {
+    color: var(--ds-type-number);
+}
+
+.ds-type-text {
+    color: var(--mars-text-secondary, #8a8a8a);
+}
+
+.ds-type-date {
+    color: var(--ds-type-date);
+}
+
+.ds-type-bool {
+    color: var(--ds-type-bool);
+}
+
+.ds-type-json {
+    color: var(--ds-type-json);
 }
 
 .ds-cell-changed {

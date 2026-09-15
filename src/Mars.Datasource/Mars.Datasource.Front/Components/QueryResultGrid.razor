@@ -5,7 +5,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 
-<div class="ds-grid d-flex flex-column h-100">
+<div class="ds-grid d-flex flex-column h-100" @ref="_root">
     <div class="flex-shrink-0 hstack gap-2 text-secondary fz14px px-1">
         <span>@Result.Rows.Length rows · @Result.ElapsedMs ms · @Result.DatabaseDriver</span>
         @if (Result.Truncated)
@@ -15,6 +15,10 @@
         @if (Tab.Table is not null && !Tab.CanEdit)
         {
             <span class="text-secondary">правка недоступна: у таблицы нет первичного ключа</span>
+        }
+        else if (Tab.CanEdit)
+        {
+            <span class="text-secondary">правка ячейки — двойной клик</span>
         }
         <span class="ms-auto hstack gap-2">
             @if (Tab.Changes.Count > 0)
@@ -49,7 +53,7 @@
                                     <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
                                 }
                                 <span class="text-nowrap">@column.Name</span>
-                                <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
+                                <span class="@(KindClass(column.DataTypeName) ?? "ds-type-text") fz14px ms-1">@column.DataTypeName</span>
                             </th>
                         }
                     </tr>
@@ -62,21 +66,32 @@
                             @for (var i = 0; i < Result.Columns.Length; i++)
                             {
                                 var column = Result.Columns[i];
-                                var value = i < row.Length ? row[i] : null;
                                 var cell = (Row: rowIndex, Column: column.Name);
-                                var changed = Tab.Changes.ContainsKey(cell);
+                                var changed = Tab.Changes.TryGetValue(cell, out var pending);
+                                var value = changed ? pending : i < row.Length ? row[i] : null;
                                 var editing = IsEditing(cell);
+                                var mid = MidParts(i, value);
+                                var cellClass = changed ? "ds-cell-changed" : "";
+                                var valueClass = KindClass(column.DataTypeName) ?? "";
 
-                                <td class="@(changed ? "ds-cell-changed" : "")" @onclick="@(() => StartEdit(cell, value))">
+                                <td class="@cellClass @valueClass"
+                                    @ondblclick="@(() => StartEdit(cell, value))">
                                     @if (editing)
                                     {
                                         <input class="form-control form-control-sm" @ref="_editInput"
                                                @bind="_editValue" @bind:event="oninput"
                                                @onkeydown="OnEditKeyDown" @onblur="CommitEdit" />
                                     }
+                                    else if (mid is not null)
+                                    {
+                                        <span class="ds-mid" data-full="@value" title="@value">
+                                            <span class="ds-mid-head">@mid.Value.Head</span><span
+                                                class="ds-mid-dots">…</span><span class="ds-mid-tail">@mid.Value.Tail</span>
+                                        </span>
+                                    }
                                     else if (column.IsJson && value is not null)
                                     {
-                                        <details>
+                                        <details data-full="@value">
                                             <summary class="fz14px text-secondary" title="показать JSON">json</summary>
                                             <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
                                         </details>

@@ -1,25 +1,35 @@
-.table {
-    border-collapse: collapse;
+.ds-workspace {
+    height: calc(100vh - 42px);
 }
 
-.table, th, td {
-    border: 1px solid;
+.ds-topmenu {
+    height: 42px;
 }
 
-.tablelist-table__tool {
-    visibility: hidden;
+.ds-splitter {
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
-.tablelist-table.active:hover .tablelist-table__tool a {
-    visibility: visible;
-    color: var(--bs-white);
-    font-weight: bold;
+.ds-pane {
+    min-height: 0;
 }
 
-.tablelist-table:not(.active):hover .tablelist-table__tool a {
-    visibility: visible;
-    color: var(--bs-primary);
-    font-weight: bold;
+.ds-tabs {
+    overflow-x: auto;
 }
 
+.ds-tab {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-bottom: none;
+    border-radius: .25rem .25rem 0 0;
+    cursor: pointer;
+    color: var(--bs-secondary-color, #6c757d);
+    white-space: nowrap;
+}
 
+.ds-tab-active {
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-weight: 600;
+}

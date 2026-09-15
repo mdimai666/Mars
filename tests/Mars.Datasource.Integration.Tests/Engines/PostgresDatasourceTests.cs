@@ -131,6 +131,41 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
+    public async Task RowUpdatePlan_ExecutedByNonQuery_UpdatesRow()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT id, title FROM todo ORDER BY title" });
+        result.Ok.Should().BeTrue(result.Message);
+
+        var idIndex = Array.FindIndex(result.Columns, c => c.Name == "id");
+
+        // Так же, как это делает грид: ключ и новое значение — строки из результата запроса.
+        var plan = RowUpdateBuilder.Build(
+            "public",
+            "todo",
+            name => $"\"{name}\"",
+            ["id"],
+            new Dictionary<string, string?> { ["id"] = result.Rows[0][idIndex] },
+            new Dictionary<string, string?> { ["title"] = "edited" });
+
+        plan.Should().NotBeNull();
+
+        var nonQuery = await se.NonQuery(plan!.Sql, plan.Parameters);
+
+        nonQuery.Ok.Should().BeTrue(nonQuery.Message);
+        nonQuery.RowsAffected.Should().Be(1);
+
+        var after = await se.Query(new SqlRequest { Sql = "SELECT title FROM todo WHERE title = 'edited'" });
+        after.Rows.Should().HaveCount(1);
+    }
+
+    [IntegrationFact]
     public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);

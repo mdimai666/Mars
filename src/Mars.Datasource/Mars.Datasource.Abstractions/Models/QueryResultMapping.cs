@@ -76,13 +76,19 @@ public static class QueryResultMapping
         return message.Length > 500 ? message[..500] + "…" : message;
     }
 
-    public static void ApplyParameters(DbCommand command, IReadOnlyList<SqlParam>? parameters)
+    /// <summary>
+    /// Подставить параметры. <paramref name="configure"/> нужен провайдерам, которым мало
+    /// значения-строки: например Postgres выводит тип параметра из контекста только для unknown.
+    /// </summary>
+    public static void ApplyParameters(DbCommand command, IReadOnlyList<SqlParam>? parameters, Action<DbParameter>? configure = null)
     {
         if (parameters is null) return;
 
         foreach (var parameter in parameters)
         {
-            command.Parameters.Add(CreateParameter(command, parameter));
+            var dbParameter = CreateParameter(command, parameter);
+            configure?.Invoke(dbParameter);
+            command.Parameters.Add(dbParameter);
         }
     }
 

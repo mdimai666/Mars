@@ -33,4 +33,19 @@ public class SelectDatasourceDto
         "mysql" => '`',
         _ => '\"'
     };
+
+    /// <summary>Открывающий символ квотирования идентификатора — как у драйвера.</summary>
+    public char QuoteStart => Driver switch
+    {
+        "mssql" => '[',
+        _ => '\"'
+    };
+
+    /// <summary>Закрывающий символ квотирования идентификатора — как у драйвера.</summary>
+    public char QuoteEnd => Driver switch
+    {
+        "mssql" => ']',
+        "mysql" => '`',
+        _ => '\"'
+    };
 }

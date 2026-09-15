@@ -1,0 +1,96 @@
+@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Dto
+@using Mars.Datasource.Front.Components
+@using Mars.Datasource.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="ds-grid d-flex flex-column h-100">
+    <div class="flex-shrink-0 hstack gap-2 text-secondary fz14px px-1">
+        <span>@Result.Rows.Length rows · @Result.ElapsedMs ms · @Result.DatabaseDriver</span>
+        @if (Result.Truncated)
+        {
+            <span class="text-warning">показаны первые @Tab.MaxRows — в результате есть ещё строки</span>
+        }
+        @if (Tab.Table is not null && !Tab.CanEdit)
+        {
+            <span class="text-secondary">правка недоступна: у таблицы нет первичного ключа</span>
+        }
+        <span class="ms-auto hstack gap-2">
+            @if (Tab.Changes.Count > 0)
+            {
+                <button class="btn btn-sm btn-light" @onclick="DiscardChanges">Отменить (@Tab.Changes.Count)</button>
+                <button class="btn btn-sm btn-primary" @onclick="SaveAsync">Сохранить (@Tab.Changes.Count)</button>
+            }
+            <button class="btn btn-sm btn-light" title="Таблица или дерево JSON"
+                    @onclick="@(() => Tab.ShowJson = !Tab.ShowJson)">
+                @(Tab.ShowJson ? "table" : "json")
+            </button>
+        </span>
+    </div>
+
+    @if (Tab.ShowJson)
+    {
+        <div class="overflow-scroll flex-fill">
+            <JsonViewer Json="@resultJsonText" Expanded="1" />
+        </div>
+    }
+    else
+    {
+        <div class="overflow-scroll flex-fill">
+            <table class="table table-sm table-hover ds-result-table">
+                <thead>
+                    <tr>
+                        @foreach (var column in Result.Columns)
+                        {
+                            <th>
+                                @if (column.IsKey)
+                                {
+                                    <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
+                                }
+                                <span class="text-nowrap">@column.Name</span>
+                                <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var rowIndex = 0; rowIndex < Result.Rows.Length; rowIndex++)
+                    {
+                        var row = Result.Rows[rowIndex];
+                        <tr>
+                            @for (var i = 0; i < Result.Columns.Length; i++)
+                            {
+                                var column = Result.Columns[i];
+                                var value = i < row.Length ? row[i] : null;
+                                var cell = (Row: rowIndex, Column: column.Name);
+                                var changed = Tab.Changes.ContainsKey(cell);
+                                var editing = IsEditing(cell);
+
+                                <td class="@(changed ? "ds-cell-changed" : "")" @onclick="@(() => StartEdit(cell, value))">
+                                    @if (editing)
+                                    {
+                                        <input class="form-control form-control-sm" @ref="_editInput"
+                                               @bind="_editValue" @bind:event="oninput"
+                                               @onkeydown="OnEditKeyDown" @onblur="CommitEdit" />
+                                    }
+                                    else if (column.IsJson && value is not null)
+                                    {
+                                        <details>
+                                            <summary class="fz14px text-secondary" title="показать JSON">json</summary>
+                                            <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
+                                        </details>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-nowrap">@value</span>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

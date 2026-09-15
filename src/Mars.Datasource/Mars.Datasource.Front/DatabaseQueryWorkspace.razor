@@ -1,6 +1,4 @@
-@using Mars.Admin.Framework.Components
-@using Mars.Admin.Framework.Services
-@using Mars.Datasource
+@using Mars.Datasource.Abstractions.Models
 @using Mars.Datasource.Dto
 @using Mars.Datasource.Front.Components
 @using Mars.Datasource.Front.Services
@@ -14,30 +12,32 @@
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-
     </div>
 }
 else if (errorMessage is not null)
 {
-    <div class="p-5">
+    <div class="p-4">
         <div class="alert alert-danger">@errorMessage</div>
     </div>
 }
+else if (database is null)
+{
+    <div class="p-4 text-secondary">структура базы недоступна</div>
+}
 else
 {
-    <div class="d-flex no-gutters g-0 flex-fill flex-column">
-        <section class="TOPMENU flex-shrink-0 hstack" style="height:42px;">
-
+    <div class="ds-workspace d-flex flex-column">
+        <section class="ds-topmenu flex-shrink-0 hstack px-2">
             <div class="dropdown">
                 <a class="btn btn-light btn-sm rounded-0 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-database-check"></i>
                     @DataSourceConfigSlug
                 </a>
                 <ul class="dropdown-menu rounded-0 shadow fz14px">
-                    @foreach (var a in listDatasources)
+                    @foreach (var item in listDatasources)
                     {
-                        if (a.Slug == DataSourceConfigSlug) continue;
-                        <li><a class="dropdown-item" href="@thisurl?slug=@a.Slug">@a.Title</a></li>
+                        if (item.Slug == DataSourceConfigSlug) continue;
+                        <li><a class="dropdown-item" href="@($"{nav.BaseUri}datasource/query?slug={Uri.EscapeDataString(item.Slug)}")">@item.Title</a></li>
                     }
                     @if (listDatasources.Count > 1)
                     {
@@ -46,237 +46,142 @@ else
                     <li><a class="dropdown-item" href="@datasourceConfigUrl"><i class="bi bi-gear"></i> Настроить</a></li>
                 </ul>
             </div>
-
-            @* datasource &lt;select&gt; | asd | <a href="/dev/datasource/actions">info</a> *@
+            <span class="ms-auto text-secondary fz14px">
+                @database.DatabaseName · объектов: @database.Tables.Count
+                @if (source is not null)
+                {
+                    <span>· @source.Driver</span>
+                }
+            </span>
         </section>
-        <section class="d-flex flex-fill" style="height:calc(100% - 42px)">
-            <aside class="flex-shrink-0" style="width:200px;">
-                <div class="1card h-100 bg-white custom-scroll1 overflow-scroll">
-                    <div class="card-body p-2 hstack">
-                        <p class="card-text text-secondary mb-0">Tables (@database!.Tables.Count)</p>
-                        <button class="btn btn-sm btn-light ms-auto" title="Обновить структуру" @onclick=RefreshStructureAsync>
+
+        <FluentMultiSplitter Class="ds-splitter">
+            <FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">
+                <div class="ds-pane h-100 d-flex flex-column">
+                    <div class="flex-shrink-0 hstack gap-1 p-2">
+                        <input class="form-control form-control-sm" placeholder="таблица…" @bind="tableFilter" @bind:event="oninput" />
+                        <button class="btn btn-sm btn-light" title="Обновить структуру" @onclick="RefreshStructureAsync">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
                     </div>
-                    <ul class="list-group ac">
-                        @foreach (var group in database!.Tables.GroupBy(t => t.TableSchema.SchemaName))
-                        {
-                            if (hasMultipleSchemas)
+                    <div class="flex-fill overflow-scroll">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var group in filteredTables.GroupBy(t => t.TableSchema.SchemaName))
                             {
-                                <li class="list-group-item px-2 py-1 fz14px text-secondary bg-light">@group.Key</li>
+                                if (hasMultipleSchemas)
+                                {
+                                    <li class="list-group-item px-2 py-1 fz14px text-secondary bg-light">@group.Key</li>
+                                }
+                                @foreach (var item in group)
+                                {
+                                    var table = item;
+                                    <li class="list-group-item list-group-item-action px-2 py-1 hstack @(table == activeTab?.Table ? "active" : "")"
+                                        title="@table.TableSchema.Kind"
+                                        @onclick="() => OpenTableAsync(table)">
+                                        <span class="text-nowrap">@table.TableName</span>
+                                        @if (table.TableSchema.IsView)
+                                        {
+                                            <span class="badge bg-secondary fz14px ms-1">@table.TableSchema.Kind</span>
+                                        }
+                                    </li>
+                                }
                             }
-                            @foreach (var t in group)
-                            {
-                                var table = t;
-                                string _class = table == selTable ? "active" : "";
-                                <li class="list-group-item list-group-item-action tablelist-table @_class px-2 py-1 hstack"
-                                    @onclick=@(e => OnClickTable(table))>
-                                    <a role="button" class="cursor-default text-black">@t.TableName</a>
-                                    @if (t.TableSchema.IsView)
-                                    {
-                                        <span class="badge bg-secondary fz14px ms-1">@t.TableSchema.Kind</span>
-                                    }
-                                    <span class="ms-auto tablelist-table__tool">
-                                        <a class="" role="button" @onclick=@(() => ShowRecords(table))>[data]</a>
-                                    </span>
-                                </li>
-                            }
-                        }
-
-                    </ul>
+                        </ul>
+                    </div>
                 </div>
-            </aside>
-            <div class="flex-fill d-flex flex-column h-100">
-                <div class="h-50  d-flex flex-column" style="position:relative">
-                    <section class="p-3 h-100">
-                        @if (selTable is not null)
+            </FluentMultiSplitterPane>
+
+            <FluentMultiSplitterPane>
+                <div class="ds-pane h-100 d-flex flex-column">
+                    <div class="ds-tabs flex-shrink-0 hstack gap-1 px-2 pt-2">
+                        @foreach (var item in tabs)
                         {
-                            <div class="h-100 d-flex flex-column ">
-                                <div class="__TOP flex-shrink-0">
-                                    <h2>@selTable.TableName</h2>
-                                    <div class="__ACTIONS">
-                                        <div class="text-end">
-                                            <button class="btn btn-primary" @onclick=ClickQuery>QUERY</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card mt-2 flex-fill flex-shrink-0 custom-scroll1 overflow-scroll h-75">
-                                    <div class="card-body p-2">
+                            var tab = item;
+                            <span class="ds-tab hstack gap-1 px-2 py-1 @(tab == activeTab ? "ds-tab-active" : "")"
+                                  @onclick="() => SelectTabAsync(tab)">
+                                <span class="text-nowrap fz14px">@tab.Title</span>
+                                @if (tabs.Count > 1)
+                                {
+                                    <i class="bi bi-x" role="button" title="Закрыть" @onclick:stopPropagation="true"
+                                       @onclick="() => CloseTabAsync(tab)"></i>
+                                }
+                            </span>
+                        }
+                        <button class="btn btn-sm btn-light ms-1" title="Новый запрос" @onclick="() => AddTab()">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
 
-                                        @*=======================================*@
-                                        <!-- Nav pills -->
-                                        <ul class="nav nav-pills">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" data-bs-toggle="pill" href="#home">Structure</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-bs-toggle="pill" href="#menu1">Query</a>
-                                            </li>
-                                        </ul>
+                    <div class="flex-shrink-0 hstack gap-2 px-2 py-2">
+                        <FluentButton Appearance="Appearance.Accent" Disabled="@(activeTab?.Loading == true)"
+                                      OnClick="RunActiveTabAsync">
+                            Выполнить
+                        </FluentButton>
+                        @if (activeTab?.Result?.Truncated == true)
+                        {
+                            <FluentButton Appearance="Appearance.Neutral" Disabled="@(activeTab?.Loading == true)"
+                                          OnClick="RunMoreAsync">
+                                Показать больше
+                            </FluentButton>
+                        }
+                        <FluentButton Appearance="Appearance.Stealth"
+                                      OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
+                            AI help
+                        </FluentButton>
+                        @if (activeTab?.Table is { } opened)
+                        {
+                            <span class="ms-auto text-secondary fz14px">@opened.TableSchema.SchemaName.@opened.TableName</span>
+                        }
+                    </div>
 
-                                        <!-- Tab panes -->
-                                        <div class="tab-content">
-                                            <div class="tab-pane container active" id="home">
-                                                <div class="p-3">
-                                                    <table class="table table-hover table-striped mb-0" style="width:unset;">
+                    @if (activeTab?.Table is { } current)
+                    {
+                        <details class="flex-shrink-0 px-2 fz14px">
+                            <summary class="text-secondary">структура: @current.Columns.Count колонок</summary>
+                            <div class="overflow-scroll pt-1" style="max-height:120px">
+                                @foreach (var column in current.Columns.Values.OrderBy(c => c.ColumnOrdinal))
+                                {
+                                    <span class="badge bg-light text-dark border me-1 mb-1">
+                                        @if (column.IsKey == true)
+                                        {
+                                            <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
+                                        }
+                                        @column.ColumnName <span class="text-secondary">@column.DataTypeName</span>
+                                    </span>
+                                }
+                            </div>
+                        </details>
+                    }
 
-                                                        @foreach (var col in selTable.Columns.Values.OrderBy(c => c.ColumnOrdinal))
-                                                        {
-                                                            <tr>
-                                                                <td>
-                                                                    <div class="py-0 px-2">
-                                                                        @if (col.IsKey == true)
-                                                                        {
-                                                                            <i class="bi bi-key-fill text-warning" title="primary key"></i>
-                                                                        }
-                                                                        <b>@col.ColumnName</b>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="py-0 px-2">
-                                                                        @col.DataTypeName
-                                                                        @if (col.IsNullable == false)
-                                                                        {
-                                                                            <span class="text-secondary fz14px ms-1">not null</span>
-                                                                        }
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                    <div class="flex-shrink-0 px-2" style="height:170px">
+                        <CodeEditor2 @ref="_editor" Lang=@CodeEditor2.Language.sql Value="" />
+                    </div>
 
-                                                        }
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane container fade" id="menu1">
-                                                <div class="p-3 d-flex flex-column" style="height:350px;">
-                                                    <div class="d-flex flew-wrap gap-3 mb-2">
-                                                        <FluentButton OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
-                                                            <i class="bi bi-stars"></i>
-                                                            AI help
-                                                        </FluentButton>
-                                                    </div>
-                                                    <CodeEditor2 @ref=_editor
-                                                                 Lang=@CodeEditor2.Language.sql
-                                                                 Value="" />
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        @*=======================================*@
-
-                                    </div>
+                    <div class="ds-result flex-fill overflow-hidden px-2 pb-2">
+                        @if (activeTab?.Loading == true)
+                        {
+                            <div class="p-4 text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
                         }
+                        else if (activeTab?.Error is not null)
+                        {
+                            <div class="alert alert-danger">@activeTab.Error</div>
+                        }
+                        else if (activeTab?.Result is { } result)
+                        {
+                            <QueryResultGrid Result="result" Tab="activeTab" Slug="@DataSourceConfigSlug"
+                                             Source="source" OnSaved="RunActiveTabAsync" />
+                        }
                         else
                         {
-                            <h3 class="text-secondary">sel table</h3>
+                            <div class="text-secondary p-2">Выберите таблицу слева или напишите запрос и нажмите «Выполнить».</div>
                         }
-                    </section>
-                </div>
-                <div class="h-50 card shadow-lg">
-                    <div class="card-body p-3" style="max-height:calc(50vh - 50px);">
-                        <section class="h-100">
-                            @if (loadingQuery)
-                            {
-                                <div>
-                                    <div class="p-5 text-center">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            }
-                            else if (res is null)
-                            {
-                                <div>
-                                    <div class="text-secondary">
-                                        NULL
-                                    </div>
-                                </div>
-                            }
-                            else if (res.Ok == false)
-                            {
-                                <div>
-                                    <div class="alert alert-danger">
-                                        @res.Message
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="d-flex flex-column h-100">
-                                    <div class="flex-shrink-0 hstack text-secondary fz14px">
-                                        <span>
-                                            @res!.Rows.Length rows in @res.ElapsedMs ms · @res.DatabaseDriver
-                                            @if (res.Truncated)
-                                            {
-                                                <span class="text-warning ms-2">показаны первые @MaxRows — в результате есть ещё строки</span>
-                                            }
-                                        </span>
-                                        <button class="btn btn-sm btn-light ms-auto" title="Таблица или дерево JSON"
-                                                @onclick=@(() => showJsonView = !showJsonView)>
-                                            @(showJsonView ? "table" : "json")
-                                        </button>
-                                    </div>
-                                    @if (showJsonView)
-                                    {
-                                        <div class="overflow-scroll 1custom-scroll1 flex-fill">
-                                            <JsonViewer Json="@resultJsonText" Expanded="1" />
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="overflow-scroll 1custom-scroll1 flex-fill" style="width:calc(100vw - 270px - 20px)">
-                                            <table class="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        @foreach (var column in res.Columns)
-                                                        {
-                                                            <th>
-                                                                <span class="text-nowrap">@column.Name</span>
-                                                                <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
-                                                            </th>
-                                                        }
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var row in raw!)
-                                                    {
-                                                        <tr>
-                                                            @for (int i = 0; i < row.Length; i++)
-                                                            {
-                                                                var column = i < res.Columns.Length ? res.Columns[i] : null;
-                                                                var value = row[i];
-                                                                <td>
-                                                                    @if (column?.IsJson == true && value is not null)
-                                                                    {
-                                                                        <details>
-                                                                            <summary class="fz14px text-secondary" title="показать JSON">json</summary>
-                                                                            <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
-                                                                        </details>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <span class="text-nowrap">
-                                                                            @value
-                                                                        </span>
-                                                                    }
-                                                                </td>
-                                                            }
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </section>
                     </div>
                 </div>
-            </div>
-        </section>
+            </FluentMultiSplitterPane>
+        </FluentMultiSplitter>
     </div>
 }

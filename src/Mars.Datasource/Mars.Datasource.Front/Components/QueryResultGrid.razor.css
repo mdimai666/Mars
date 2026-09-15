@@ -1,0 +1,19 @@
+.ds-result-table {
+    width: max-content;
+    min-width: 100%;
+}
+
+.ds-result-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bs-body-bg, #fff);
+    z-index: 1;
+}
+
+.ds-result-table td {
+    cursor: text;
+}
+
+.ds-cell-changed {
+    background: var(--bs-warning-bg-subtle, #fff3cd);
+}

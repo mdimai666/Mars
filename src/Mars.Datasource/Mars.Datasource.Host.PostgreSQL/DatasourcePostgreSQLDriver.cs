@@ -1,9 +1,11 @@
+using System.Data.Common;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Npgsql;
 using Npgsql.Schema;
+using NpgsqlTypes;
 
 namespace Mars.Datasource.Host.PostgreSQL;
 
@@ -62,6 +64,19 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
           AND n.nspname NOT LIKE 'pg\_%'";
 
     const string ColumnsOrderBySql = " ORDER BY n.nspname, c.relname, a.attnum";
+
+    /// <summary>
+    /// Строковые параметры отправляем как unknown: иначе Npgsql помечает их text, и сравнение
+    /// с uuid/date/jsonb-колонкой падает с «operator does not exist». Значения приходят из грида
+    /// строками, поэтому тип должен выводить сам Postgres из контекста.
+    /// </summary>
+    static readonly Action<DbParameter> UntypedStrings = parameter =>
+    {
+        if (parameter is NpgsqlParameter npgsql && npgsql.Value is string)
+        {
+            npgsql.NpgsqlDbType = NpgsqlDbType.Unknown;
+        }
+    };
 
     public async Task<Dictionary<string, QTableColumn>> Columns(NpgsqlConnection conn, string tableName)
     {
@@ -162,7 +177,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
             await conn.OpenAsync(cancellationToken);
 
             await using var cmd = new NpgsqlCommand(request.Sql, conn);
-            QueryResultMapping.ApplyParameters(cmd, request.Parameters);
+            QueryResultMapping.ApplyParameters(cmd, request.Parameters, UntypedStrings);
             if (request.TimeoutSec is int timeoutSec)
             {
                 cmd.CommandTimeout = timeoutSec;
@@ -197,7 +212,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
             await conn.OpenAsync(cancellationToken);
 
             await using var cmd = new NpgsqlCommand(sql, conn);
-            QueryResultMapping.ApplyParameters(cmd, parameters);
+            QueryResultMapping.ApplyParameters(cmd, parameters, UntypedStrings);
             var rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             return new SqlNonQueryResultActionDto

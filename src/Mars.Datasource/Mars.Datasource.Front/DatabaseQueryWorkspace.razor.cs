@@ -1,8 +1,5 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Services;
-using Mars.Core.Extensions;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
@@ -20,107 +17,64 @@ public partial class DatabaseQueryWorkspace
     [Inject] IDialogService _dialogService { get; set; } = default!;
 
     bool Busy;
+    string? errorMessage;
+    string tableFilter = "";
 
-    string _dataSourceConfigSlug = DatasourceConfig.DefaultSlug;
+    string _slug = DatasourceConfig.DefaultSlug;
 
     [Parameter]
     public string DataSourceConfigSlug
     {
-        get => string.IsNullOrWhiteSpace(_dataSourceConfigSlug) ? DatasourceConfig.DefaultSlug : _dataSourceConfigSlug;
+        get => string.IsNullOrWhiteSpace(_slug) ? DatasourceConfig.DefaultSlug : _slug;
         set
         {
-            if (_dataSourceConfigSlug != value)
+            if (_slug != value)
             {
-                _dataSourceConfigSlug = value;
+                _slug = value;
                 _ = LoadAsync();
             }
         }
     }
 
     QDatabaseStructureResponse? database;
-
-    QTableResponse? selTable = null;
-
-    string?[][]? raw => res?.Rows;
-
-    QueryResultDto? res = null;
-
-    const int MaxRows = 500;
-
-    bool loadingQuery = false;
-
-    bool showJsonView;
-
-    string? errorMessage;
-
-    /// <summary>
-    /// Текущий результат как JSON: json/jsonb-колонки разворачиваются вложенными объектами,
-    /// остальные значения остаются строками.
-    /// </summary>
-    string? resultJsonText
-    {
-        get
-        {
-            if (res is null || !res.Ok) return null;
-
-            JsonArray array = new();
-
-            foreach (var row in res.Rows)
-            {
-                JsonObject obj = new();
-
-                for (var i = 0; i < res.Columns.Length && i < row.Length; i++)
-                {
-                    var column = res.Columns[i];
-                    var value = row[i];
-
-                    if (value is null)
-                    {
-                        obj[column.Name] = null;
-                    }
-                    else if (column.IsJson && TryParseJson(value) is JsonNode node)
-                    {
-                        obj[column.Name] = node;
-                    }
-                    else
-                    {
-                        obj[column.Name] = JsonValue.Create(value);
-                    }
-                }
-
-                array.Add(obj);
-            }
-
-            return array.ToJsonString();
-        }
-    }
-
-    static JsonNode? TryParseJson(string value)
-    {
-        try
-        {
-            return JsonNode.Parse(value);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
-
-    CodeEditor2? _editor = default!;
-
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = [];
 
-    string thisurl = "";
+    List<QueryTab> tabs = [];
+    string? activeTabId;
 
-    /// <summary>Абсолютный адрес от base path: относительный ломается на вложенных маршрутах.</summary>
+    QueryTab? activeTab => tabs.FirstOrDefault(t => t.Id == activeTabId) ?? tabs.FirstOrDefault();
+
+    SelectDatasourceDto? source => listDatasources.FirstOrDefault(s => s.Slug == DataSourceConfigSlug);
+
+    CodeEditor2? _editor;
+    bool _editorNeedsSync;
+
     string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
+
+    IEnumerable<QTableResponse> filteredTables => database is null
+        ? []
+        : (string.IsNullOrWhiteSpace(tableFilter)
+            ? database.Tables
+            : database.Tables.Where(t => t.TableName.Contains(tableFilter, StringComparison.OrdinalIgnoreCase)))
+          .OrderBy(t => t.TableSchema.SchemaName)
+          .ThenBy(t => t.TableName);
+
+    bool hasMultipleSchemas => database is not null
+        && database.Tables.Select(t => t.TableSchema.SchemaName).Distinct().Count() > 1;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        thisurl = new Uri(nav.Uri).LocalPath;
+
+        AddTab();
         _ = LoadAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_editorNeedsSync || _editor is null || activeTab is null) return;
+
+        await SyncEditorAsync();
     }
 
     async Task LoadAsync()
@@ -167,64 +121,174 @@ public partial class DatabaseQueryWorkspace
         }
     }
 
-    bool hasMultipleSchemas => database is not null
-        && database.Tables.Select(t => t.TableSchema.SchemaName).Distinct().Count() > 1;
+    //=== вкладки запросов =====================================================
 
-    async Task OnClickTable(QTableResponse table)
+    QueryTab AddTab()
     {
-        selTable = table;
+        var tab = new QueryTab { Title = $"query {tabs.Count + 1}" };
 
-        await Task.Delay(100);
+        tabs.Add(tab);
+        activeTabId = tab.Id;
+        _editorNeedsSync = true;
 
-        _editor?.SetValue(GetSelectRowsQuery(table.TableName));
+        StateHasChanged();
+
+        return tab;
     }
 
-    string GetSelectRowsQuery(string tableName)
+    async Task SelectTabAsync(QueryTab tab)
     {
-        var d = listDatasources.FirstOrDefault(s => s.Slug == DataSourceConfigSlug);
-        var q = d?.EscapeQuotationMark ?? '"';
-        if (d is not null)
+        if (tab == activeTab) return;
+
+        await RememberEditorSqlAsync();
+
+        activeTabId = tab.Id;
+        _editorNeedsSync = true;
+
+        StateHasChanged();
+    }
+
+    async Task CloseTabAsync(QueryTab tab)
+    {
+        await RememberEditorSqlAsync();
+
+        tabs.Remove(tab);
+
+        if (tabs.Count == 0)
         {
-            if (d.Driver == "mssql") return $"SELECT TOP 20 * FROM {q}{tableName}{q}\n";
+            AddTab();
+            return;
         }
-        return $"SELECT * FROM {q}{tableName}{q}\nLIMIT 20";
+
+        activeTabId = tabs[0].Id;
+        _editorNeedsSync = true;
+
+        StateHasChanged();
     }
 
-    async Task ClickQuery()
+    /// <summary>Текст редактора принадлежит активной вкладке: перед переключением забираем его.</summary>
+    async Task RememberEditorSqlAsync()
     {
-        if (selTable is null) return;
+        var tab = activeTab;
+        if (tab is null || _editor is null) return;
 
-        loadingQuery = true;
+        var sql = await _editor.GetValue();
+        if (!string.IsNullOrWhiteSpace(sql)) tab.Sql = sql;
+    }
+
+    async Task SyncEditorAsync()
+    {
+        if (_editor is null || activeTab is null) return;
+
+        _editorNeedsSync = false;
+        await _editor.SetValue(activeTab.Sql);
+    }
+
+    async Task<string> ReadEditorSqlAsync()
+    {
+        if (_editor is null) return activeTab?.Sql ?? "";
+
+        return await _editor.GetValue();
+    }
+
+    //=== выполнение ===========================================================
+
+    async Task RunActiveTabAsync()
+    {
+        var tab = activeTab;
+        if (tab is null || tab.Loading) return;
+
+        string sql = await ReadEditorSqlAsync();
+
+        if (string.IsNullOrWhiteSpace(sql))
+        {
+            _ = _messageService.Error("SQL-запрос пуст");
+            return;
+        }
+
+        if (SqlSafety.IsDestructive(sql) && !await ConfirmDestructiveAsync(sql)) return;
+
+        tab.Sql = sql;
+        tab.Title = tab.Table?.TableName ?? tab.Title;
+        tab.Loading = true;
+        tab.Error = null;
+
         StateHasChanged();
 
         try
         {
-            _ = WaitHelper.WaitForNotNull(() => _editor, 2000);
+            var result = await service.Query(DataSourceConfigSlug, new SqlRequest { Sql = sql, MaxRows = tab.MaxRows });
 
-            string sql = await _editor!.GetValue();
-
-            if (string.IsNullOrWhiteSpace(sql))
-            {
-                _ = _messageService.Error("SQL query is empty!");
-                return;
-            }
-
-            if (SqlSafety.IsDestructive(sql) && !await ConfirmDestructiveAsync(sql))
-            {
-                return;
-            }
-
-            res = await service.Query(DataSourceConfigSlug, new SqlRequest { Sql = sql, MaxRows = MaxRows });
+            tab.Result = result;
+            tab.Error = result.Ok ? null : result.Message;
         }
         catch (Exception ex)
         {
-            res = new QueryResultDto { Ok = false, Message = ex.Message };
+            tab.Result = null;
+            tab.Error = ex.Message;
         }
         finally
         {
-            loadingQuery = false;
+            tab.Loading = false;
             StateHasChanged();
         }
+    }
+
+    /// <summary>Запросить больше строк: серверный лимит растёт, SQL не меняется.</summary>
+    async Task RunMoreAsync()
+    {
+        var tab = activeTab;
+        if (tab is null) return;
+
+        tab.MaxRows *= 5;
+
+        await RunActiveTabAsync();
+    }
+
+    async Task OpenTableAsync(QTableResponse table)
+    {
+        var tab = activeTab ?? AddTab();
+
+        tab.Table = table;
+        tab.KeyColumns = table.Columns.Values
+            .Where(c => c.IsKey == true)
+            .Select(c => c.ColumnName)
+            .ToList();
+        tab.Title = table.TableName;
+        tab.Sql = BuildBrowseSql(table);
+        tab.Changes.Clear();
+        tab.ShowJson = false;
+
+        await SyncEditorAsync();
+        await RunActiveTabAsync();
+    }
+
+    string BuildBrowseSql(QTableResponse table)
+    {
+        var quote = Quoter();
+        var schema = table.TableSchema.SchemaName;
+
+        var name = string.IsNullOrEmpty(schema)
+            ? quote(table.TableName)
+            : $"{quote(schema)}.{quote(table.TableName)}";
+
+        var keys = table.Columns.Values
+            .Where(c => c.IsKey == true)
+            .OrderBy(c => c.ColumnOrdinal)
+            .Select(c => quote(c.ColumnName))
+            .ToList();
+
+        var orderBy = keys.Count == 0 ? "" : $" ORDER BY {string.Join(", ", keys)}";
+
+        return $"SELECT * FROM {name}{orderBy}";
+    }
+
+    Func<string, string> Quoter()
+    {
+        var start = source?.QuoteStart ?? '"';
+        var end = source?.QuoteEnd ?? '"';
+
+        return name => $"{start}{name}{end}";
     }
 
     async Task<bool> ConfirmDestructiveAsync(string sql)
@@ -241,13 +305,5 @@ public partial class DatabaseQueryWorkspace
         var result = await dialog.Result;
 
         return !result.Cancelled;
-    }
-
-    async Task ShowRecords(QTableResponse table)
-    {
-        selTable = table;
-        await Task.Delay(100);
-
-        await ClickQuery();
     }
 }

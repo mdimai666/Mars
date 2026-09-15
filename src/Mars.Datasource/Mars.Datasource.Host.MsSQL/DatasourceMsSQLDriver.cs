@@ -174,6 +174,27 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         return list;
     }
 
+    /// <summary>Определение вьюхи из `sys.sql_modules`; null — объекта нет.</summary>
+    const string ViewDefinitionSql = @"
+        SELECT m.definition
+        FROM sys.sql_modules m
+        JOIN sys.objects o ON o.object_id = m.object_id
+        JOIN sys.schemas s ON s.schema_id = o.schema_id
+        WHERE o.name = @tableName
+          AND (@schemaName = '' OR s.name = @schemaName)";
+
+    public async Task<string?> ViewDefinition(string schemaName, string tableName)
+    {
+        await using var conn = new SqlConnection(_config.ConnectionString);
+        await conn.OpenAsync();
+
+        await using var cmd = new SqlCommand(ViewDefinitionSql, conn);
+        cmd.Parameters.AddWithValue("@schemaName", schemaName ?? "");
+        cmd.Parameters.AddWithValue("@tableName", tableName);
+
+        return await cmd.ExecuteScalarAsync() as string;
+    }
+
     async Task<List<QTableMeta>> ReadTablesAsync(SqlConnection conn)
     {
         await using var cmd = new SqlCommand(TablesSql, conn);

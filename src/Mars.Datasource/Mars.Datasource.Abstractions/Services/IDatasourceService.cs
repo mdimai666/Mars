@@ -13,6 +13,9 @@ public interface IDatasourceService
     public Task<List<QTableSchema>> Tables(string slug);
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
 
+    /// <summary>Определение вьюхи (текст запроса), null — объекта нет или это не вьюха.</summary>
+    public Task<string?> ViewDefinition(string slug, string? schemaName, string tableName);
+
     /// <summary>Перечитать структуру базы, минуя кэш.</summary>
     public Task<QDatabaseStructure> RefreshStructure(string slug);
 

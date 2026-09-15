@@ -44,6 +44,11 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .PostAsync()
                     .ReceiveJson<QDatabaseStructureResponse>();
 
+    public Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name)
+        => _client.Request($"{_basePath}{_controllerName}", "ViewDefinition")
+                    .AppendQueryParam(new { slug, schema, name })
+                    .GetJsonAsync<ViewDefinitionResponse>();
+
     public Task<QueryResultDto> Query(string slug, SqlRequest request)
         => _client.Request($"{_basePath}{_controllerName}", "Query")
                     .AppendQueryParam(new { slug })

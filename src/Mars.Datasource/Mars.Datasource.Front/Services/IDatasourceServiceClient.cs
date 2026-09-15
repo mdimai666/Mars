@@ -16,6 +16,9 @@ public interface IDatasourceServiceClient
 
     /// <summary>Перечитать структуру базы, минуя серверный кэш.</summary>
     Task<QDatabaseStructureResponse> RefreshStructure(string slug);
+
+    /// <summary>Определение вьюхи; пустой `Sql` — движок текст не отдал.</summary>
+    Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name);
     Task<QueryResultDto> Query(string slug, SqlRequest request);
     Task<SqlNonQueryResultActionDto> NonQuery(string slug, SqlRequest request);
     Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);

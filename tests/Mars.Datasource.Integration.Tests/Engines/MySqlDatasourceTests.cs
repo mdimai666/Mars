@@ -80,6 +80,39 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
     }
 
     [IntegrationFact]
+    public async Task ViewDefinition_CreatedByBuilder_ReturnsBodyAndDrops()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+
+        var se = new DatasourceMySQLDriver(Config());
+        var view = $"todo_view_{Guid.NewGuid():N}";
+
+        var create = ViewDdlBuilder.Create(ViewDialect.MySql, connection.Database, view, "SELECT Id, Title FROM todo", replace: false);
+        create.Ok.Should().BeTrue(create.Error);
+
+        var created = await se.NonQuery(create.Sql!);
+        created.Ok.Should().BeTrue(created.Message);
+
+        var definition = await se.ViewDefinition(connection.Database, view);
+        definition.Should().NotBeNullOrWhiteSpace();
+        definition.Should().Contain("todo");
+
+        // Замена поверх существующей вьюхи проходит через CREATE OR REPLACE.
+        var replace = ViewDdlBuilder.Create(ViewDialect.MySql, connection.Database, view, "SELECT Id FROM todo", replace: true);
+        var replaced = await se.NonQuery(replace.Sql!);
+        replaced.Ok.Should().BeTrue(replaced.Message);
+        (await se.ViewDefinition(connection.Database, view)).Should().NotContain("Title");
+
+        var drop = ViewDdlBuilder.Drop(ViewDialect.MySql, connection.Database, view);
+        var dropped = await se.NonQuery(drop.Sql!);
+        dropped.Ok.Should().BeTrue(dropped.Message);
+
+        (await se.ViewDefinition(connection.Database, view)).Should().BeNull();
+    }
+
+    [IntegrationFact]
     public async Task Query_JsonColumn_MarksColumnAsJson()
     {
         await using var connection = new MySqlConnection(_fixture.ConnectionString);

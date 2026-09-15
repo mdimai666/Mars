@@ -53,6 +53,12 @@ public class DatasourceController : ControllerBase
         return (await ds.DatabaseStructure(slug)).ToResponse();
     }
 
+    [HttpGet]
+    public async Task<ViewDefinitionResponse> ViewDefinition([DefaultValue("default")] string slug, string? schema, string name)
+    {
+        return new ViewDefinitionResponse { Sql = await ds.ViewDefinition(slug, schema, name) ?? "" };
+    }
+
     [HttpPost]
     public async Task<ActionResult<QDatabaseStructureResponse>> RefreshStructure(string slug)
     {

@@ -30,6 +30,9 @@ internal class DatasourceService : IDatasourceService
     readonly ConcurrentDictionary<string, (QDatabaseStructure Structure, DateTime At)> _structureCache = new(StringComparer.OrdinalIgnoreCase);
     static readonly TimeSpan StructureCacheTtl = TimeSpan.FromSeconds(30);
 
+    /// <summary>Первый оператор, после которого кэш структуры уже неактуален.</summary>
+    static readonly string[] DdlKeywords = ["CREATE", "ALTER", "DROP", "REFRESH", "TRUNCATE"];
+
     Dictionary<string, DatasourceConfig> configs
     {
         get
@@ -161,6 +164,12 @@ internal class DatasourceService : IDatasourceService
         return tables;
     }
 
+    public async Task<string?> ViewDefinition(string slug, string? schemaName, string tableName)
+    {
+        var se = ResolveEngine(slug);
+        return await se.ViewDefinition(schemaName ?? "", tableName);
+    }
+
     public async Task<QDatabaseStructure> DatabaseStructure(string slug)
     {
         if (_structureCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < StructureCacheTtl)
@@ -192,6 +201,13 @@ internal class DatasourceService : IDatasourceService
     {
         var se = ResolveEngine(slug);
         var result = await se.NonQuery(sql, parameters, cancellationToken);
+
+        // DDL мог поменять состав объектов: без сброса дерево до TTL показывало бы старое.
+        if (result.Ok && DdlKeywords.Contains(SqlSafety.FirstWord(sql)))
+        {
+            _structureCache.TryRemove(slug, out _);
+        }
+
         return result;
     }
 

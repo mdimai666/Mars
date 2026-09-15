@@ -56,6 +56,9 @@ else
                 <div class="ds-pane h-100 d-flex flex-column">
                     <div class="flex-shrink-0 hstack gap-1 p-2">
                         <input class="form-control form-control-sm" placeholder="таблица…" @bind="tableFilter" @bind:event="oninput" />
+                        <button class="btn btn-sm btn-light text-nowrap" title="Новая вьюха" disabled="@Busy" @onclick="CreateViewAsync">
+                            <i class="bi bi-plus-lg"></i> вьюха
+                        </button>
                         <button class="btn btn-sm btn-light" title="Обновить структуру" disabled="@Busy" @onclick="RefreshStructureAsync">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
@@ -137,6 +140,15 @@ else
                         </FluentButton>
                         @if (activeTab?.Table is { } opened)
                         {
+                            @if (opened.TableSchema.Kind == QTableKind.View)
+                            {
+                                <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
+                                    определение
+                                </FluentButton>
+                                <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="DropViewAsync">
+                                    удалить
+                                </FluentButton>
+                            }
                             <span class="ms-auto text-secondary fz14px">@opened.TableSchema.SchemaName.@opened.TableName</span>
                         }
                     </div>

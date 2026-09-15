@@ -78,6 +78,32 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task ViewDefinition_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.ViewDefinition);
+        _ = nameof(IDatasourceService.ViewDefinition);
+        var client = GetWebApiClient();
+        var view = $"ds_test_view_{Guid.NewGuid():N}";
+
+        var created = await client.Datasource().NonQuery("default", new SqlRequest { Sql = $"CREATE VIEW \"{view}\" AS SELECT 1 AS id" });
+        created.Ok.Should().BeTrue(created.Message);
+
+        try
+        {
+            //Act
+            var result = await client.Datasource().ViewDefinition("default", null, view);
+
+            //Assert
+            result.Sql.Should().Contain("id");
+        }
+        finally
+        {
+            await client.Datasource().NonQuery("default", new SqlRequest { Sql = $"DROP VIEW \"{view}\"" });
+        }
+    }
+
+    [IntegrationFact]
     public async Task Tables_Request_Success()
     {
         //Arrange

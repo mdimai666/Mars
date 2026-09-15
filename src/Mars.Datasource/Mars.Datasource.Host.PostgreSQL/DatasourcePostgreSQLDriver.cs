@@ -112,6 +112,30 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         return list;
     }
 
+    /// <summary>
+    /// Определение вьюхи (`pg_get_viewdef`). Ищем по каталогу, а не через `::regclass`:
+    /// имена со схемой и кавычками не требуют склейки строки.
+    /// </summary>
+    const string ViewDefinitionSql = @"
+        SELECT pg_get_viewdef(c.oid, true)
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relname = @tableName
+          AND (@schemaName = '' OR n.nspname = @schemaName)
+        LIMIT 1";
+
+    public async Task<string?> ViewDefinition(string schemaName, string tableName)
+    {
+        await using var conn = new NpgsqlConnection(_config.ConnectionString);
+        await conn.OpenAsync();
+
+        await using var cmd = new NpgsqlCommand(ViewDefinitionSql, conn);
+        cmd.Parameters.AddWithValue("schemaName", schemaName ?? "");
+        cmd.Parameters.AddWithValue("tableName", tableName);
+
+        return await cmd.ExecuteScalarAsync() as string;
+    }
+
     public async Task<QDatabaseStructure> DatabaseStructure()
     {
         await using var conn = new NpgsqlConnection(_config.ConnectionString);

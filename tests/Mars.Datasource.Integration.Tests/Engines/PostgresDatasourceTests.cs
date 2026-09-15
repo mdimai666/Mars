@@ -104,6 +104,48 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
+    public async Task ViewDefinition_CreatedByBuilder_ReturnsBodyAndDrops()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+        var view = $"todo_view_{Guid.NewGuid():N}";
+
+        var create = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id, title FROM todo", replace: false);
+        create.Ok.Should().BeTrue(create.Error);
+
+        var created = await se.NonQuery(create.Sql!);
+        created.Ok.Should().BeTrue(created.Message);
+
+        var definition = await se.ViewDefinition("public", view);
+        definition.Should().NotBeNullOrWhiteSpace();
+        definition.Should().Contain("todo");
+
+        // Замена поверх существующей вьюхи проходит через OR REPLACE: колонки можно добавлять.
+        var replace = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id, title, content FROM todo", replace: true);
+        var replaced = await se.NonQuery(replace.Sql!);
+        replaced.Ok.Should().BeTrue(replaced.Message);
+        (await se.ViewDefinition("public", view)).Should().Contain("content");
+
+        // А убрать колонку Postgres через OR REPLACE не даёт — это ожидаемая ошибка движка,
+        // а не повод удалять вьюху за спиной пользователя (решение: drop+create не делаем).
+        var shrink = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id FROM todo", replace: true);
+        var shrunk = await se.NonQuery(shrink.Sql!);
+        shrunk.Ok.Should().BeFalse();
+        shrunk.Message.Should().NotBeNullOrWhiteSpace();
+        (await se.ViewDefinition("public", view)).Should().Contain("content");
+
+        var drop = ViewDdlBuilder.Drop(ViewDialect.Postgres, "public", view);
+        var dropped = await se.NonQuery(drop.Sql!);
+        dropped.Ok.Should().BeTrue(dropped.Message);
+
+        (await se.ViewDefinition("public", view)).Should().BeNull();
+        (await se.ViewDefinition("public", "no_such_view")).Should().BeNull();
+    }
+
+    [IntegrationFact]
     public async Task Query_JsonColumn_MarksColumnAsJson()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);

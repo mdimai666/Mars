@@ -19,4 +19,9 @@ public interface IDatasourceDriver
     public Task<Dictionary<string, QTableColumn>> Columns(string tableName);
     public Task<List<QTableSchema>> Tables();
     public Task<QDatabaseStructure> DatabaseStructure();
+
+    /// <summary>
+    /// Определение вьюхи так, как его хранит движок; null — объекта нет или это не вьюха.
+    /// </summary>
+    public Task<string?> ViewDefinition(string schemaName, string tableName);
 }

@@ -2,6 +2,7 @@ using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Services;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
+using Mars.Datasource.Front.Components;
 using Mars.Datasource.Front.Services;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -261,6 +262,9 @@ public partial class DatabaseQueryWorkspace
     {
         var tab = activeTab ?? AddTab();
 
+        // Открыли другой объект — «изменяем вьюху» больше не про него.
+        _viewSource = null;
+
         tab.Table = table;
         tab.KeyColumns = table.Columns.Values
             .Where(c => c.IsKey == true)
@@ -304,6 +308,161 @@ public partial class DatabaseQueryWorkspace
 
         return name => $"{start}{name}{end}";
     }
+
+    //=== вьюхи ================================================================
+
+    /// <summary>
+    /// Вьюха, определение которой загружено в редактор: диалог вьюхи предзаполняется ею
+    /// (сценарий «изменить существующую»).
+    /// </summary>
+    QTableResponse? _viewSource;
+
+    /// <summary>
+    /// Активный объект, если это обычная вьюха. Матвьюхи — вне этой фазы: у них другой DDL,
+    /// и кнопки, которые на них падают, показывать не стоит.
+    /// </summary>
+    QTableResponse? ViewObject()
+        => activeTab?.Table is { } table && table.TableSchema.Kind == QTableKind.View ? table : null;
+
+    async Task CreateViewAsync()
+    {
+        var content = new CreateViewDialogContent(
+            ViewDdlBuilder.Dialect(source?.Driver),
+            Schemas(),
+            await ReadEditorSqlAsync(),
+            _viewSource?.TableSchema.SchemaName ?? activeTab?.Table?.TableSchema.SchemaName,
+            _viewSource?.TableName,
+            _viewSource is not null);
+
+        var dialog = await _dialogService.ShowDialogAsync<CreateViewDialog>(content, new DialogParameters
+        {
+            Title = _viewSource is null ? "Новая вьюха" : $"Вьюха: {DisplayName(_viewSource)}",
+            Width = "min(760px, 95vw)",
+            Modal = true,
+            PreventDismissOnOverlayClick = true,
+        });
+
+        var result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is not ViewDdlRequest request) return;
+
+        if (!await ExecuteViewDdlAsync(request.Sql, "Вьюха сохранена")) return;
+
+        await OpenObjectAsync(request.SchemaName, request.ViewName);
+    }
+
+    async Task ShowViewDefinitionAsync()
+    {
+        if (ViewObject() is not { } table) return;
+
+        var response = await service.ViewDefinition(DataSourceConfigSlug, table.TableSchema.SchemaName, table.TableName);
+
+        var dialog = await _dialogService.ShowDialogAsync<ViewDefinitionDialog>(
+            new ViewDefinitionDialogContent(DisplayName(table), response.Sql),
+            new DialogParameters
+            {
+                Title = $"Определение: {DisplayName(table)}",
+                Width = "min(900px, 95vw)",
+                Modal = true,
+                PreventDismissOnOverlayClick = true,
+            });
+
+        var result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is not string definition || string.IsNullOrWhiteSpace(definition)) return;
+
+        _viewSource = table;
+
+        if (activeTab is not { } tab) return;
+
+        tab.Sql = definition;
+        _editorNeedsSync = true;
+
+        StateHasChanged();
+    }
+
+    async Task DropViewAsync()
+    {
+        if (ViewObject() is not { } table) return;
+
+        var plan = ViewDdlBuilder.Drop(ViewDdlBuilder.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
+
+        if (!plan.Ok)
+        {
+            _ = _messageService.Error(plan.Error!);
+            return;
+        }
+
+        var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
+            (MarkupString)$"Удалить вьюху <b>{DisplayName(table)}</b>?<br/><code>{plan.Sql}</code>",
+            new DialogParameters
+            {
+                Title = "Удаление вьюхи",
+                Modal = true,
+                PreventDismissOnOverlayClick = false,
+            });
+
+        if ((await dialog.Result).Cancelled) return;
+
+        await ExecuteViewDdlAsync(plan.Sql!, "Вьюха удалена");
+    }
+
+    /// <summary>
+    /// Выполнить собранный DDL вьюхи и перечитать структуру. Кэш структуры сбрасывает сервер:
+    /// `NonQuery` видит DDL (`CREATE`/`DROP`) и снимает его сам.
+    /// </summary>
+    async Task<bool> ExecuteViewDdlAsync(string sql, string success)
+    {
+        var response = await service.NonQuery(DataSourceConfigSlug, new SqlRequest { Sql = sql });
+
+        if (!response.Ok)
+        {
+            _ = _messageService.Error(response.Message);
+            return false;
+        }
+
+        _ = _messageService.Success(success);
+        _viewSource = null;
+
+        var current = activeTab?.Table;
+
+        await LoadAsync();
+
+        if (activeTab is not { } tab || current is null) return true;
+
+        // После DROP объекта в перечитанной структуре уже нет — вкладка перестаёт быть вьюхой.
+        tab.Table = FindObject(current.TableSchema.SchemaName, current.TableName);
+
+        return true;
+    }
+
+    async Task OpenObjectAsync(string schemaName, string viewName)
+    {
+        if (FindObject(schemaName, viewName) is { } table)
+        {
+            await OpenTableAsync(table);
+        }
+    }
+
+    QTableResponse? FindObject(string schemaName, string tableName)
+        => database?.Tables.FirstOrDefault(t =>
+            t.TableName == tableName && t.TableSchema.SchemaName == schemaName);
+
+    /// <summary>Схемы для выбора в диалоге вьюхи — из уже загруженной структуры.</summary>
+    List<string> Schemas()
+        => database is null
+            ? []
+            : database.Tables
+                .Select(t => t.TableSchema.SchemaName)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+    static string DisplayName(QTableResponse table)
+        => string.IsNullOrEmpty(table.TableSchema.SchemaName)
+            ? table.TableName
+            : $"{table.TableSchema.SchemaName}.{table.TableName}";
 
     async Task<bool> ConfirmDestructiveAsync(string sql)
     {

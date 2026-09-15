@@ -89,6 +89,25 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         return list;
     }
 
+    /// <summary>Определение вьюхи из `information_schema.VIEWS`; null — объекта нет.</summary>
+    const string ViewDefinitionSql = @"
+        SELECT VIEW_DEFINITION
+        FROM information_schema.VIEWS
+        WHERE TABLE_NAME = @tableName
+          AND (@schemaName = '' OR TABLE_SCHEMA = @schemaName)";
+
+    public async Task<string?> ViewDefinition(string schemaName, string tableName)
+    {
+        await using var conn = new MySqlConnection(_config.ConnectionString);
+        await conn.OpenAsync();
+
+        await using var cmd = new MySqlCommand(ViewDefinitionSql, conn);
+        cmd.Parameters.AddWithValue("@schemaName", schemaName ?? "");
+        cmd.Parameters.AddWithValue("@tableName", tableName);
+
+        return await cmd.ExecuteScalarAsync() as string;
+    }
+
     public async Task<QDatabaseStructure> DatabaseStructure()
     {
         await using var conn = new MySqlConnection(_config.ConnectionString);

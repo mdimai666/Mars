@@ -88,6 +88,30 @@ public partial class DatabaseQueryWorkspace
         }
     }
 
+    async Task RefreshStructureAsync()
+    {
+        Busy = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            database = await service.RefreshStructure(DataSourceConfigSlug);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            Busy = false;
+            StateHasChanged();
+        }
+    }
+
+    bool hasMultipleSchemas => database is not null
+        && database.Tables.Select(t => t.TableSchema.SchemaName).Distinct().Count() > 1;
+
     async Task OnClickTable(QTableResponse table)
     {
         selTable = table;

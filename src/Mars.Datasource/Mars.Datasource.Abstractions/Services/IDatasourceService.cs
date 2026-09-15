@@ -13,6 +13,9 @@ public interface IDatasourceService
     public Task<List<QTableSchema>> Tables(string slug);
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
 
+    /// <summary>Перечитать структуру базы, минуя кэш.</summary>
+    public Task<QDatabaseStructure> RefreshStructure(string slug);
+
     /// <summary>Выполнить запрос с возвратом данных.</summary>
     public Task<QueryResultDto> Query(string slug, SqlRequest request, CancellationToken cancellationToken = default);
 

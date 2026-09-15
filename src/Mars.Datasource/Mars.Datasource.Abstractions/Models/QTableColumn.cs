@@ -9,7 +9,8 @@ public class QTableColumn
     public bool? IsKey { get; set; }
     public bool? IsLong { get; set; }
     public bool? IsUnique { get; set; }
-    public Type DataType { get; set; } = default!;
+    public bool IsNullable { get; set; } = true;
+    public Type DataType { get; set; } = typeof(object);
     public string DataTypeName { get; set; } = "";
 
 }

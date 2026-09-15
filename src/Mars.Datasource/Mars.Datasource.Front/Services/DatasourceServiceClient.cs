@@ -38,6 +38,12 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .AppendQueryParam(new { slug })
                     .GetJsonAsync<QDatabaseStructureResponse>();
 
+    public Task<QDatabaseStructureResponse> RefreshStructure(string slug)
+        => _client.Request($"{_basePath}{_controllerName}", "RefreshStructure")
+                    .AppendQueryParam(new { slug })
+                    .PostAsync()
+                    .ReceiveJson<QDatabaseStructureResponse>();
+
     public Task<QueryResultDto> Query(string slug, SqlRequest request)
         => _client.Request($"{_basePath}{_controllerName}", "Query")
                     .AppendQueryParam(new { slug })

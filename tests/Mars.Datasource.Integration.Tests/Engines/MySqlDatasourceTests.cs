@@ -66,14 +66,17 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
-        Assert.True(columns.Count > 0);
+        columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        columns.Values.Single(c => c.ColumnName == "Title").IsNullable.Should().BeFalse();
 
         var tables = await se.Tables();
-        Assert.True(tables.Count > 0);
+        tables.Should().Contain(t => t.TableName == "todo" && t.Kind == QTableKind.Table);
 
         var structure = await se.DatabaseStructure();
-        Assert.True(structure.Tables.Count > 0);
-        Assert.NotNull(structure.DatabaseName);
+        var todo = structure.Tables.Single(t => t.TableName == "todo");
+        todo.TableSchema.Kind.Should().Be(QTableKind.Table);
+        todo.Columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        structure.DatabaseName.Should().NotBeNullOrEmpty();
     }
 
     [IntegrationFact]

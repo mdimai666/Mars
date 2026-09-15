@@ -54,6 +54,12 @@ public class DatasourceController : ControllerBase
     }
 
     [HttpPost]
+    public async Task<ActionResult<QDatabaseStructureResponse>> RefreshStructure(string slug)
+    {
+        return (await ds.RefreshStructure(slug)).ToResponse();
+    }
+
+    [HttpPost]
     public Task<QueryResultDto> Query([FromQuery] string slug, [FromBody] SqlRequest request, CancellationToken cancellationToken)
     {
         return ds.Query(slug, request, cancellationToken);

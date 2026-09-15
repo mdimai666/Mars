@@ -16,11 +16,8 @@ public static class QueryResultMapping
             ClrTypeName = column.DataType?.FullName ?? "",
             IsNullable = column.AllowDBNull ?? true,
             IsKey = isKey,
-            IsJson = IsJsonType(column.DataTypeName),
+            IsJson = QColumnMapping.IsJson(column.DataTypeName),
         };
-
-    public static bool IsJsonType(string? dataTypeName)
-        => dataTypeName?.ToLowerInvariant() is "json" or "jsonb";
 
     /// <summary>
     /// Значение в строку. Даты/время — в инвариантном формате, чтобы отредактированное

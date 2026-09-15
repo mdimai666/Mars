@@ -4,29 +4,31 @@ namespace Mars.Datasource.Abstractions.Models;
 
 public class QTableSchema
 {
-    //[QColumnOrdinal(0)]
     [Column("schemaname")]
     public string SchemaName { get; set; } = "";
     [Column("tablename")]
     public string TableName { get; set; } = "";
     [Column("tableowner")]
     public string TableOwner { get; set; } = "";
-    //[Column("tablespace")]
-    //public string TableSpace { get; set; }
-    //[Column("hasindexes")]
-    //public bool HasIndexes { get; set; }
-    //[Column("hasrules")]
-    //public bool HasRules { get; set; }
-    //[Column("hastriggers")]
-    //public bool HasTriggers { get; set; }
-    //[Column("rowsecurity")]
-    //public bool RowSecurity { get; set; }
+
+    /// <summary>table | view | matview</summary>
+    [Column("kind")]
+    public string Kind { get; set; } = QTableKind.Table;
+
+    public bool IsView => Kind != QTableKind.Table;
+
+    /// <summary>Имя для дерева: со схемой, если схема задана.</summary>
+    public string DisplayName => string.IsNullOrEmpty(SchemaName) ? TableName : $"{SchemaName}.{TableName}";
 
     public QTableSchema()
     {
 
     }
+}
 
-
-
+public static class QTableKind
+{
+    public const string Table = "table";
+    public const string View = "view";
+    public const string MaterializedView = "matview";
 }

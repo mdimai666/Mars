@@ -9,6 +9,7 @@ public record QTableColumnResponse
     public required bool? IsKey { get; init; }
     public required bool? IsLong { get; init; }
     public required bool? IsUnique { get; init; }
+    public required bool IsNullable { get; init; }
     public required string ClrDataTypeFullName { get; init; }
     public required string DataTypeName { get; init; }
 }

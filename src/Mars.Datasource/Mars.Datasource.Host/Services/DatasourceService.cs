@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
@@ -24,6 +25,11 @@ internal class DatasourceService : IDatasourceService
     public DatasourceConfig DefaultConfig => _defaultConfig;
 
     Dictionary<string, DatasourceConfig>? _configsCache;
+
+    /// <summary>Структура базы стоит десятков запросов к каталогу — держим её недолго в памяти.</summary>
+    readonly ConcurrentDictionary<string, (QDatabaseStructure Structure, DateTime At)> _structureCache = new(StringComparer.OrdinalIgnoreCase);
+    static readonly TimeSpan StructureCacheTtl = TimeSpan.FromSeconds(30);
+
     Dictionary<string, DatasourceConfig> configs
     {
         get
@@ -63,6 +69,9 @@ internal class DatasourceService : IDatasourceService
         }
 
         _configsCache = configs;
+
+        // Сменились настройки источников — структура могла измениться.
+        _structureCache.Clear();
     }
 
     void AutoUpdateConfig()
@@ -154,8 +163,21 @@ internal class DatasourceService : IDatasourceService
 
     public async Task<QDatabaseStructure> DatabaseStructure(string slug)
     {
-        var se = ResolveEngine(slug);
-        var structure = await se.DatabaseStructure();
+        if (_structureCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < StructureCacheTtl)
+        {
+            return cached.Structure;
+        }
+
+        return await RefreshStructure(slug);
+    }
+
+    /// <summary>Перечитать структуру у базы, минуя кэш (кнопка «обновить» в UI).</summary>
+    public async Task<QDatabaseStructure> RefreshStructure(string slug)
+    {
+        var structure = await ResolveEngine(slug).DatabaseStructure();
+
+        _structureCache[slug] = (structure, DateTime.UtcNow);
+
         return structure;
     }
 

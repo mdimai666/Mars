@@ -29,6 +29,7 @@ public static class DataSourceMapping
           IsKey = entity.IsKey,
           IsLong = entity.IsLong,
           IsUnique = entity.IsUnique,
+          IsNullable = entity.IsNullable,
           ClrDataTypeFullName = entity.DataType.FullName ?? "",
           DataTypeName = entity.DataTypeName,
       };
@@ -39,6 +40,7 @@ public static class DataSourceMapping
           SchemaName = entity.SchemaName,
           TableName = entity.TableName,
           TableOwner = entity.TableOwner,
+          Kind = entity.Kind,
       };
 
     public static IReadOnlyCollection<QTableResponse> ToResponse(this IEnumerable<QTable> list)

@@ -20,23 +20,46 @@ public class DatasourceMySQLDriver : IDatasourceDriver
     public string QuoteIdentifier(string name)
         => "`" + name.Replace("`", "``") + "`";
 
+    /// <summary>Таблицы и вьюхи базы одним запросом.</summary>
+    const string TablesSql = @"
+        SELECT t.TABLE_SCHEMA AS schema_name,
+               t.TABLE_NAME AS table_name,
+               '' AS table_owner,
+               CASE WHEN t.TABLE_TYPE = 'VIEW' THEN 'view' ELSE 'table' END AS kind
+        FROM information_schema.TABLES t
+        WHERE t.TABLE_SCHEMA = @database
+        ORDER BY t.TABLE_NAME";
+
+    /// <summary>Колонки всех таблиц одним запросом, PK — через TABLE_CONSTRAINTS.</summary>
+    const string ColumnsSql = @"
+        SELECT c.TABLE_SCHEMA AS schema_name,
+               c.TABLE_NAME AS table_name,
+               c.COLUMN_NAME AS column_name,
+               c.ORDINAL_POSITION AS column_ordinal,
+               c.DATA_TYPE AS data_type_name,
+               c.CHARACTER_MAXIMUM_LENGTH AS column_size,
+               CASE WHEN c.IS_NULLABLE = 'YES' THEN 1 ELSE 0 END AS is_nullable,
+               CASE WHEN pk.COLUMN_NAME IS NULL THEN 0 ELSE 1 END AS is_key
+        FROM information_schema.COLUMNS c
+        LEFT JOIN (
+            SELECT kcu.TABLE_SCHEMA, kcu.TABLE_NAME, kcu.COLUMN_NAME
+            FROM information_schema.TABLE_CONSTRAINTS tc
+            JOIN information_schema.KEY_COLUMN_USAGE kcu
+              ON kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
+             AND kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA
+            WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+        ) pk ON pk.TABLE_SCHEMA = c.TABLE_SCHEMA
+            AND pk.TABLE_NAME = c.TABLE_NAME
+            AND pk.COLUMN_NAME = c.COLUMN_NAME
+        WHERE c.TABLE_SCHEMA = @database";
+
+    const string ColumnsOrderBySql = " ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION";
+
     public async Task<Dictionary<string, QTableColumn>> Columns(MySqlConnection conn, string tableName)
     {
-        string sql = $"SELECT * FROM {QuoteIdentifier(tableName)}";
+        var metas = await ReadColumnsAsync(conn, tableName);
 
-        await using var cmd = new MySqlCommand(sql, conn);
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        var cols = await reader.GetColumnSchemaAsync();
-
-        Dictionary<string, QTableColumn> dict = [];
-
-        foreach (var col in cols)
-        {
-            dict.Add(col.ColumnName, ConvertQTableColumn(col));
-        }
-
-        return dict;
+        return metas.ToDictionary(c => c.ColumnName, QDatabaseStructureBuilder.ToColumn);
     }
 
     public async Task<Dictionary<string, QTableColumn>> Columns(string tableName)
@@ -51,27 +74,9 @@ public class DatasourceMySQLDriver : IDatasourceDriver
 
     public async Task<List<QTableSchema>> Tables(MySqlConnection conn)
     {
-        string sql = @$" SELECT """" as `schemaname`, TABLE_NAME as `tablename`, """" as `tableowner`
-                        FROM information_schema.tables
-                        WHERE table_schema = '{database}';";
+        var metas = await ReadTablesAsync(conn);
 
-        await using var cmd = new MySqlCommand(sql, conn);
-        using var reader = cmd.ExecuteReader();
-
-        List<QTableSchema> list = [];
-
-        if (reader.HasRows)
-        {
-            while (reader.Read())
-            {
-                //Console.WriteLine(reader.GetString(0));
-                var a = ConvertQTableSchema(reader);
-                list.Add(a);
-            }
-        }
-        reader.Close();
-
-        return list;
+        return metas.Select(QDatabaseStructureBuilder.ToSchema).ToList();
     }
 
     public async Task<List<QTableSchema>> Tables()
@@ -89,28 +94,52 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         await using var conn = new MySqlConnection(_config.ConnectionString);
         await conn.OpenAsync();
 
-        QDatabaseStructure db = new()
+        var tables = await ReadTablesAsync(conn);
+        var columns = await ReadColumnsAsync(conn, null);
+
+        return QDatabaseStructureBuilder.Assemble(conn.Database, tables, columns);
+    }
+
+    async Task<List<QTableMeta>> ReadTablesAsync(MySqlConnection conn)
+    {
+        await using var cmd = new MySqlCommand(TablesSql, conn);
+        cmd.Parameters.AddWithValue("@database", database);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<QTableMeta> list = [];
+
+        while (await reader.ReadAsync())
         {
-            DatabaseName = conn.Database
-        };
-
-        List<QTableSchema> list = await Tables(conn);
-
-        foreach (var table in list)
-        {
-            var columns = await Columns(conn, table.TableName);
-
-            QTable qTable = new()
-            {
-                TableName = table.TableName,
-                TableSchema = table,
-                Columns = columns
-            };
-
-            db.Tables.Add(qTable);
+            list.Add(QDatabaseStructureBuilder.ReadTable(reader));
         }
 
-        return db;
+        return list;
+    }
+
+    async Task<List<QColumnMeta>> ReadColumnsAsync(MySqlConnection conn, string? tableName)
+    {
+        string sql = tableName is null
+            ? ColumnsSql + ColumnsOrderBySql
+            : ColumnsSql + " AND c.TABLE_NAME = @tableName" + ColumnsOrderBySql;
+
+        await using var cmd = new MySqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@database", database);
+        if (tableName is not null)
+        {
+            cmd.Parameters.AddWithValue("@tableName", tableName);
+        }
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<QColumnMeta> list = [];
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(QDatabaseStructureBuilder.ReadColumn(reader));
+        }
+
+        return list;
     }
 
     public async Task<QueryResultDto> Query(SqlRequest request, CancellationToken cancellationToken = default)
@@ -185,39 +214,4 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         }
     }
 
-    public static QTableColumn ConvertQTableColumn(DbColumn column)
-    {
-
-        QTableColumn _this = new()
-        {
-            ColumnName = column.ColumnName,
-            ColumnOrdinal = column.ColumnOrdinal ?? 0,
-            ColumnSize = column.ColumnSize,
-            IsAutoIncrement = column.IsAutoIncrement,
-            IsKey = column.IsKey,
-            IsLong = column.IsLong,
-            IsUnique = column.IsUnique,
-            DataType = column.DataType!,
-            DataTypeName = column.DataTypeName!
-        };
-        return _this;
-
-    }
-
-    public static QTableSchema ConvertQTableSchema(MySqlDataReader reader)
-    {
-        QTableSchema _this = new()
-        {
-            SchemaName = reader.GetString(0),
-            TableName = reader.GetString(1),
-            TableOwner = reader.GetString(2)
-        };
-        //_this.TableSpace = reader.GetString(3);
-        //_this.HasIndexes = reader.GetBoolean(4);
-        //_this.HasRules = reader.GetBoolean(5);
-        //_this.HasTriggers = reader.GetBoolean(6);
-        //_this.RowSecurity = reader.GetBoolean(7);
-
-        return _this;
-    }
 }

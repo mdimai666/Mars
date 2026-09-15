@@ -19,23 +19,55 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
     public string QuoteIdentifier(string name)
         => "\"" + name.Replace("\"", "\"\"") + "\"";
 
+    /// <summary>
+    /// Таблицы, вьюхи и матвьюхи всех пользовательских схем одним запросом.
+    /// </summary>
+    const string TablesSql = @"
+        SELECT n.nspname AS schema_name,
+               c.relname AS table_name,
+               pg_get_userbyid(c.relowner) AS table_owner,
+               CASE c.relkind WHEN 'v' THEN 'view' WHEN 'm' THEN 'matview' ELSE 'table' END AS kind
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relkind IN ('r', 'p', 'v', 'm', 'f')
+          AND n.nspname NOT IN ('pg_catalog', 'information_schema')
+          AND n.nspname NOT LIKE 'pg\_%'
+        ORDER BY n.nspname, c.relname";
+
+    /// <summary>
+    /// Колонки всех таблиц одним запросом: схемы/вьюхи/матвьюхи, PK через pg_index.
+    /// </summary>
+    const string ColumnsSql = @"
+        SELECT n.nspname AS schema_name,
+               c.relname AS table_name,
+               a.attname AS column_name,
+               a.attnum AS column_ordinal,
+               format_type(a.atttypid, a.atttypmod) AS data_type_name,
+               NULL::int AS column_size,
+               NOT a.attnotnull AS is_nullable,
+               (pk.attnum IS NOT NULL) AS is_key
+        FROM pg_attribute a
+        JOIN pg_class c ON c.oid = a.attrelid
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        LEFT JOIN (
+            SELECT i.indrelid AS relid, keys.attnum AS attnum
+            FROM pg_index i
+            CROSS JOIN LATERAL unnest(i.indkey::int2[]) AS keys(attnum)
+            WHERE i.indisprimary
+        ) pk ON pk.relid = c.oid AND pk.attnum = a.attnum
+        WHERE a.attnum > 0
+          AND NOT a.attisdropped
+          AND c.relkind IN ('r', 'p', 'v', 'm', 'f')
+          AND n.nspname NOT IN ('pg_catalog', 'information_schema')
+          AND n.nspname NOT LIKE 'pg\_%'";
+
+    const string ColumnsOrderBySql = " ORDER BY n.nspname, c.relname, a.attnum";
+
     public async Task<Dictionary<string, QTableColumn>> Columns(NpgsqlConnection conn, string tableName)
     {
-        string sql = $"SELECT * FROM {QuoteIdentifier(tableName)}";
+        var metas = await ReadColumnsAsync(conn, tableName);
 
-        await using var cmd = new NpgsqlCommand(sql, conn);
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        var cols = reader.GetColumnSchema();
-
-        Dictionary<string, QTableColumn> dict = [];
-
-        foreach (var col in cols)
-        {
-            dict.Add(col.ColumnName, ConvertQTableColumn(col));
-        }
-
-        return dict;
+        return metas.ToDictionary(c => c.ColumnName, QDatabaseStructureBuilder.ToColumn);
     }
 
     public async Task<Dictionary<string, QTableColumn>> Columns(string tableName)
@@ -50,27 +82,9 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
 
     public async Task<List<QTableSchema>> Tables(NpgsqlConnection conn)
     {
-        string sql = @" SELECT schemaname,tablename,tableowner,tablespace,hasindexes,hasrules,hastriggers,rowsecurity 
-                        FROM pg_catalog.pg_tables 
-                        WHERE schemaname = 'public'";
+        var metas = await ReadTablesAsync(conn);
 
-        await using var cmd = new NpgsqlCommand(sql, conn);
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        List<QTableSchema> list = [];
-
-        if (reader.HasRows)
-        {
-            while (reader.Read())
-            {
-                //Console.WriteLine(reader.GetString(0));
-                var a = ConvertQTableSchema(reader);
-                list.Add(a);
-            }
-        }
-        reader.Close();
-
-        return list;
+        return metas.Select(QDatabaseStructureBuilder.ToSchema).ToList();
     }
 
     public async Task<List<QTableSchema>> Tables()
@@ -88,28 +102,49 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         await using var conn = new NpgsqlConnection(_config.ConnectionString);
         await conn.OpenAsync();
 
-        QDatabaseStructure db = new()
+        var tables = await ReadTablesAsync(conn);
+        var columns = await ReadColumnsAsync(conn, null);
+
+        return QDatabaseStructureBuilder.Assemble(conn.Database, tables, columns);
+    }
+
+    async Task<List<QTableMeta>> ReadTablesAsync(NpgsqlConnection conn)
+    {
+        await using var cmd = new NpgsqlCommand(TablesSql, conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<QTableMeta> list = [];
+
+        while (await reader.ReadAsync())
         {
-            DatabaseName = conn.Database
-        };
-
-        List<QTableSchema> list = await Tables(conn);
-
-        foreach (var table in list)
-        {
-            var columns = await Columns(conn, table.TableName);
-
-            QTable qTable = new()
-            {
-                TableName = table.TableName,
-                TableSchema = table,
-                Columns = columns
-            };
-
-            db.Tables.Add(qTable);
+            list.Add(QDatabaseStructureBuilder.ReadTable(reader));
         }
 
-        return db;
+        return list;
+    }
+
+    async Task<List<QColumnMeta>> ReadColumnsAsync(NpgsqlConnection conn, string? tableName)
+    {
+        string sql = tableName is null
+            ? ColumnsSql + ColumnsOrderBySql
+            : ColumnsSql + " AND c.relname = @tableName" + ColumnsOrderBySql;
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        if (tableName is not null)
+        {
+            cmd.Parameters.AddWithValue("tableName", tableName);
+        }
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<QColumnMeta> list = [];
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(QDatabaseStructureBuilder.ReadColumn(reader));
+        }
+
+        return list;
     }
 
     public async Task<QueryResultDto> Query(SqlRequest request, CancellationToken cancellationToken = default)
@@ -283,40 +318,5 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
             Fields = fields,
             DatabaseDriver = _config.Driver
         };
-    }
-
-    public static QTableColumn ConvertQTableColumn(NpgsqlDbColumn column)
-    {
-        QTableColumn _this = new()
-        {
-            ColumnName = column.ColumnName,
-            ColumnOrdinal = column.ColumnOrdinal ?? 0,
-            ColumnSize = column.ColumnSize,
-            IsAutoIncrement = column.IsAutoIncrement,
-            IsKey = column.IsKey,
-            IsLong = column.IsLong,
-            IsUnique = column.IsUnique,
-            DataType = column.DataType!,
-            DataTypeName = column.DataTypeName!
-        };
-        return _this;
-
-    }
-
-    public static QTableSchema ConvertQTableSchema(NpgsqlDataReader reader)
-    {
-        QTableSchema _this = new()
-        {
-            SchemaName = reader.GetString(0),
-            TableName = reader.GetString(1),
-            TableOwner = reader.GetString(2)
-        };
-        //_this.TableSpace = reader.GetString(3);
-        //_this.HasIndexes = reader.GetBoolean(4);
-        //_this.HasRules = reader.GetBoolean(5);
-        //_this.HasTriggers = reader.GetBoolean(6);
-        //_this.RowSecurity = reader.GetBoolean(7);
-
-        return _this;
     }
 }

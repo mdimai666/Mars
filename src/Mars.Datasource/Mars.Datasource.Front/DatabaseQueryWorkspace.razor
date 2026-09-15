@@ -51,21 +51,35 @@ else
         <section class="d-flex flex-fill" style="height:calc(100% - 42px)">
             <aside class="flex-shrink-0" style="width:200px;">
                 <div class="1card h-100 bg-white custom-scroll1 overflow-scroll">
-                    <div class="card-body p-2 ">
-                        <p class="card-text text-secondary">Tables (@database!.Tables.Count)</p>
+                    <div class="card-body p-2 hstack">
+                        <p class="card-text text-secondary mb-0">Tables (@database!.Tables.Count)</p>
+                        <button class="btn btn-sm btn-light ms-auto" title="Обновить структуру" @onclick=RefreshStructureAsync>
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                     </div>
                     <ul class="list-group ac">
-                        @foreach (var t in database!.Tables)
+                        @foreach (var group in database!.Tables.GroupBy(t => t.TableSchema.SchemaName))
                         {
-                            var table = t;
-                            string _class = table == selTable ? "active" : "";
-                            <li class="list-group-item list-group-item-action tablelist-table @_class px-2 py-1 hstack"
-                                @onclick=@(e => OnClickTable(table))>
-                                <a role="button" class="cursor-default text-black">@t.TableName</a>
-                                <span class="ms-auto tablelist-table__tool">
-                                    <a class="" role="button" @onclick=@(() => ShowRecords(table))>[data]</a>
-                                </span>
-                            </li>
+                            if (hasMultipleSchemas)
+                            {
+                                <li class="list-group-item px-2 py-1 fz14px text-secondary bg-light">@group.Key</li>
+                            }
+                            @foreach (var t in group)
+                            {
+                                var table = t;
+                                string _class = table == selTable ? "active" : "";
+                                <li class="list-group-item list-group-item-action tablelist-table @_class px-2 py-1 hstack"
+                                    @onclick=@(e => OnClickTable(table))>
+                                    <a role="button" class="cursor-default text-black">@t.TableName</a>
+                                    @if (t.TableSchema.IsView)
+                                    {
+                                        <span class="badge bg-secondary fz14px ms-1">@t.TableSchema.Kind</span>
+                                    }
+                                    <span class="ms-auto tablelist-table__tool">
+                                        <a class="" role="button" @onclick=@(() => ShowRecords(table))>[data]</a>
+                                    </span>
+                                </li>
+                            }
                         }
 
                     </ul>
@@ -105,17 +119,25 @@ else
                                                 <div class="p-3">
                                                     <table class="table table-hover table-striped mb-0" style="width:unset;">
 
-                                                        @foreach (var col in selTable.Columns.Values)
+                                                        @foreach (var col in selTable.Columns.Values.OrderBy(c => c.ColumnOrdinal))
                                                         {
                                                             <tr>
                                                                 <td>
                                                                     <div class="py-0 px-2">
+                                                                        @if (col.IsKey == true)
+                                                                        {
+                                                                            <i class="bi bi-key-fill text-warning" title="primary key"></i>
+                                                                        }
                                                                         <b>@col.ColumnName</b>
                                                                     </div>
                                                                 </td>
                                                                 <td>
                                                                     <div class="py-0 px-2">
                                                                         @col.DataTypeName
+                                                                        @if (col.IsNullable == false)
+                                                                        {
+                                                                            <span class="text-secondary fz14px ms-1">not null</span>
+                                                                        }
                                                                     </div>
                                                                 </td>
                                                             </tr>

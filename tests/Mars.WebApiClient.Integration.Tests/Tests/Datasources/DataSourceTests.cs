@@ -34,6 +34,34 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task RefreshStructure_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.RefreshStructure);
+        _ = nameof(IDatasourceService.RefreshStructure);
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Datasource().RefreshStructure("default");
+
+        //Assert
+        result.Tables.Should().NotBeEmpty();
+    }
+
+    [IntegrationFact]
+    public async Task DatabaseStructure_CalledTwice_ReturnsCachedInstance()
+    {
+        //Arrange
+        var first = await _datasourceService.DatabaseStructure("default");
+
+        //Act
+        var second = await _datasourceService.DatabaseStructure("default");
+
+        //Assert
+        second.Should().BeSameAs(first);
+    }
+
+    [IntegrationFact]
     public async Task Columns_Request_Success()
     {
         //Arrange

@@ -13,6 +13,9 @@ public interface IDatasourceServiceClient
     Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName);
     Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
     Task<QDatabaseStructureResponse> DatabaseStructure(string slug);
+
+    /// <summary>Перечитать структуру базы, минуя серверный кэш.</summary>
+    Task<QDatabaseStructureResponse> RefreshStructure(string slug);
     Task<QueryResultDto> Query(string slug, SqlRequest request);
     Task<SqlNonQueryResultActionDto> NonQuery(string slug, SqlRequest request);
     Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);

@@ -68,14 +68,39 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
-        Assert.True(columns.Count > 0);
+        columns.Values.Single(c => c.ColumnName == "id").IsKey.Should().BeTrue();
+        columns.Values.Single(c => c.ColumnName == "title").IsNullable.Should().BeFalse();
 
         var tables = await se.Tables();
-        Assert.True(tables.Count > 0);
+        tables.Should().Contain(t => t.TableName == "todo" && t.Kind == QTableKind.Table);
 
         var structure = await se.DatabaseStructure();
-        Assert.True(structure.Tables.Count > 0);
-        Assert.NotNull(structure.DatabaseName);
+        var todo = structure.Tables.Single(t => t.TableName == "todo");
+        todo.TableSchema.Kind.Should().Be(QTableKind.Table);
+        todo.Columns.Values.Single(c => c.ColumnName == "id").IsKey.Should().BeTrue();
+        structure.DatabaseName.Should().NotBeNullOrEmpty();
+    }
+
+    [IntegrationFact]
+    public async Task DatabaseStructure_CreatedView_AppearsWithViewKind()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+
+        string viewName = $"todo_view_{Guid.NewGuid():N}";
+        await using (var command = new NpgsqlCommand($"CREATE VIEW \"{viewName}\" AS SELECT * FROM todo", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+        var structure = await se.DatabaseStructure();
+
+        var view = structure.Tables.Single(t => t.TableName == viewName);
+        view.TableSchema.Kind.Should().Be(QTableKind.View);
+        view.TableSchema.IsView.Should().BeTrue();
+        view.Columns.Should().NotBeEmpty();
     }
 
     [IntegrationFact]

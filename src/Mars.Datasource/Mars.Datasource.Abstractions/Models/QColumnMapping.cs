@@ -19,6 +19,34 @@ public static class QColumnMapping
         => dataTypeName?.ToLowerInvariant() is "json" or "jsonb";
 
     /// <summary>
+    /// Короткое имя типа для UI: длинные провайдерские имена («timestamp with time zone») не влезают
+    /// в заголовок колонки и раздувают таблицу. Незнакомые имена отдаются как есть (в своём регистре).
+    /// </summary>
+    public static string ShortTypeName(string? dataTypeName)
+    {
+        if (string.IsNullOrWhiteSpace(dataTypeName)) return "";
+
+        var name = dataTypeName.Trim();
+        var isArray = name.EndsWith("[]", StringComparison.Ordinal);
+
+        if (isArray) name = name[..^2].Trim();
+
+        var shortName = name.ToLowerInvariant() switch
+        {
+            "timestamp with time zone" => "timestamptz",
+            "timestamp without time zone" => "timestamp",
+            "time with time zone" => "timetz",
+            "time without time zone" => "time",
+            "character varying" => "varchar",
+            "character" => "char",
+            "double precision" => "float8",
+            _ => name,
+        };
+
+        return isArray ? shortName + "[]" : shortName;
+    }
+
+    /// <summary>
     /// Категория типа по имени типа провайдера: это визуальная группа, а не точная типизация —
     /// у незнакомого типа ClrType отдаёт string, поэтому такой тип показывается как строковый.
     /// </summary>

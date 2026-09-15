@@ -51,7 +51,7 @@ else
             </span>
         </section>
 
-        <FluentMultiSplitter Class="ds-splitter">
+        <FluentMultiSplitter>
             <FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">
                 <div class="ds-pane h-100 d-flex flex-column">
                     <div class="flex-shrink-0 hstack gap-1 p-2">
@@ -153,7 +153,7 @@ else
                                         {
                                             <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
                                         }
-                                        @column.ColumnName <span class="text-secondary">@column.DataTypeName</span>
+                                        @column.ColumnName <span class="text-secondary">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
                                     </span>
                                 }
                             </div>

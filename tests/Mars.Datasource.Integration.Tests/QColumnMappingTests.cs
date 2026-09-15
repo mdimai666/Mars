@@ -70,4 +70,22 @@ public class QColumnMappingTests
     {
         QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Text);
     }
+
+    [Theory]
+    [InlineData("timestamp with time zone", "timestamptz")]
+    [InlineData("TIMESTAMP WITHOUT TIME ZONE", "timestamp")]
+    [InlineData("time with time zone", "timetz")]
+    [InlineData("time without time zone", "time")]
+    [InlineData("character varying", "varchar")]
+    [InlineData("character varying[]", "varchar[]")]
+    [InlineData("double precision", "float8")]
+    [InlineData("uuid", "uuid")]
+    [InlineData("NVARCHAR", "NVARCHAR")]
+    [InlineData(" int4 ", "int4")]
+    [InlineData("", "")]
+    [InlineData(null, "")]
+    public void ShortTypeName_ProviderTypeName_ReturnsShortName(string? dataTypeName, string expected)
+    {
+        QColumnMapping.ShortTypeName(dataTypeName).Should().Be(expected);
+    }
 }

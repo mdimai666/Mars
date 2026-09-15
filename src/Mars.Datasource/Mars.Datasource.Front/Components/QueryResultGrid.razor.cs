@@ -4,6 +4,7 @@ using Mars.Admin.Framework.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
+using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -59,11 +60,11 @@ public partial class QueryResultGrid
     }
 
     /// <summary>
-    /// Класс цвета по категории типа (<see cref="QColumnMapping.Kind"/>) — для значения ячейки и для подписи типа.
+    /// Класс цвета по категории типа — для значения ячейки и для подписи типа.
     /// Строковые без класса: их большинство, и в ячейке это основной текст (цвет по умолчанию), а не подпись.
     /// </summary>
-    static string? KindClass(string? dataTypeName)
-        => QColumnMapping.Kind(dataTypeName) switch
+    static string? KindClass(QColumnKind kind)
+        => kind switch
         {
             QColumnKind.Number => "ds-type-number",
             QColumnKind.Boolean => "ds-type-bool",
@@ -135,6 +136,41 @@ public partial class QueryResultGrid
     bool IsEditing((int Row, string Column) cell)
         => Tab.CanEdit && _editCell == cell;
 
+    /// <summary>Длинное значение правится в модалке: в ячейке (330px) его всё равно не видно.</summary>
+    const int InlineEditMaxLength = 50;
+
+    async Task StartCellEditAsync((int Row, string Column) cell, string? value, QColumnKind kind)
+    {
+        if (!Tab.CanEdit) return;
+
+        if (value is not null && value.Length > InlineEditMaxLength)
+        {
+            await EditLongValueAsync(cell, value, kind);
+            return;
+        }
+
+        StartEdit(cell, value);
+    }
+
+    async Task EditLongValueAsync((int Row, string Column) cell, string value, QColumnKind kind)
+    {
+        var dialog = await _dialogService.ShowDialogAsync<CellValueDialog>(
+            new CellValueDialogContent(value, kind == QColumnKind.Json ? CodeEditor2.Language.json : "plaintext"),
+            new DialogParameters
+            {
+                Title = $"Значение: {cell.Column}",
+                Width = "min(960px, 90vw)",
+                Modal = true,
+                PreventDismissOnOverlayClick = true,
+            });
+
+        var result = await dialog.Result;
+        if (result.Cancelled) return;
+
+        ApplyEdit(cell, result.Data as string);
+        StateHasChanged();
+    }
+
     void StartEdit((int Row, string Column) cell, string? value)
     {
         if (!Tab.CanEdit) return;
@@ -165,19 +201,21 @@ public partial class QueryResultGrid
         if (_editCell is not { } cell) return;
 
         _editCell = null;
+        ApplyEdit(cell, _editValue);
+        StateHasChanged();
+    }
 
-        var original = GetValue(cell.Row, cell.Column);
-
-        if (_editValue == original)
+    /// <summary>Значение ложится в несохранённые правки; равное исходному — снимает правку.</summary>
+    void ApplyEdit((int Row, string Column) cell, string? value)
+    {
+        if (value == GetValue(cell.Row, cell.Column))
         {
             Tab.Changes.Remove(cell);
         }
         else
         {
-            Tab.Changes[cell] = _editValue;
+            Tab.Changes[cell] = value;
         }
-
-        StateHasChanged();
     }
 
     void DiscardChanges()

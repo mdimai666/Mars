@@ -68,6 +68,23 @@ public static class QueryResultMapping
                 : value;
 
     /// <summary>
+    /// Дата и время для показа: без секунд, долей и часового пояса. В самом значении они остаются —
+    /// иначе правка ячейки вернула бы в базу усечённое время, а копирование теряло бы пояс.
+    /// </summary>
+    public static string? DisplayDateTime(string? value)
+    {
+        if (value is null) return null;
+
+        // "2026-09-15T10:30:00.0000000+03:00" → "2026-09-15 10:30"
+        if (value.Length >= 16 && value[4] == '-' && value[10] == 'T') return $"{value[..10]} {value[11..16]}";
+
+        // "10:30:00.0000000" → "10:30"
+        if (value.Length >= 8 && value[2] == ':' && value[5] == ':') return value[..5];
+
+        return value;
+    }
+
+    /// <summary>
     /// Читает строки до <paramref name="maxRows"/> (0 — без ограничения).
     /// Truncated = true означает, что в результате есть ещё строки.
     /// </summary>

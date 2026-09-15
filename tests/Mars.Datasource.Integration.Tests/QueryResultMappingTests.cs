@@ -54,6 +54,19 @@ public class QueryResultMappingTests
             .Should().Be("2026-09-15T10:30:00.0000000Z");
     }
 
+    [Theory]
+    [InlineData("2026-09-15T10:30:00.0000000+03:00", "2026-09-15 10:30")]
+    [InlineData("2026-09-15T10:30:00", "2026-09-15 10:30")]
+    [InlineData("2026-09-15T10:30:59.1234567Z", "2026-09-15 10:30")]
+    [InlineData("2026-09-15", "2026-09-15")]
+    [InlineData("10:30:00.0000000", "10:30")]
+    [InlineData("", "")]
+    [InlineData(null, null)]
+    public void DisplayDateTime_ValueInContractFormat_ReturnsValueWithoutSecondsAndZone(string? value, string? expected)
+    {
+        QueryResultMapping.DisplayDateTime(value).Should().Be(expected);
+    }
+
     [Fact]
     public void Format_Null_ReturnsNull()
     {

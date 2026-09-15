@@ -4,6 +4,7 @@
    Тёмная тема светлее, иначе цвета не читаются. */
 .ds-grid {
     min-height: 0;
+    min-width: 0;
     --ds-type-number: #1a63c9;
     --ds-type-date: #1f7a45;
     --ds-type-bool: #b25b00;
@@ -31,6 +32,7 @@ body.dark .ds-grid {
 .ds-scroll {
     flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
 }
 
 /* Колонки по контенту: min-width:100% растягивал узкие таблицы на всю область. */
@@ -53,6 +55,23 @@ body.dark .ds-grid {
 
 .ds-result-table td {
     cursor: text;
+}
+
+/* Развёрнутый json тоже ограничен: иначе его ключи (flex-shrink:0 у viewer'а) распирают колонку. */
+.ds-result-table details {
+    max-width: 330px;
+    overflow: auto;
+}
+
+/* Значение обычной ячейки: длинный текст обрезается по 330px, иначе одна колонка распирает таблицу
+   (и всю страницу вместе с ней). Полный текст — в редакторе по двойному клику и при копировании. */
+.ds-cell-text {
+    display: inline-block;
+    max-width: 330px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 /* Сжатое значение (guid): середина скрыта, начало и конец видны. Полное значение — в title, редакторе и при копировании выделения. */

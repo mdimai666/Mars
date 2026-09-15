@@ -47,13 +47,15 @@
                     <tr>
                         @foreach (var column in Result.Columns)
                         {
+                            var headerKind = QColumnMapping.Kind(column.DataTypeName);
+
                             <th>
                                 @if (column.IsKey)
                                 {
                                     <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
                                 }
                                 <span class="text-nowrap">@column.Name</span>
-                                <span class="@(KindClass(column.DataTypeName) ?? "ds-type-text") fz14px ms-1">@column.DataTypeName</span>
+                                <span class="@(KindClass(headerKind) ?? "ds-type-text") fz14px ms-1">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
                             </th>
                         }
                     </tr>
@@ -71,11 +73,13 @@
                                 var value = changed ? pending : i < row.Length ? row[i] : null;
                                 var editing = IsEditing(cell);
                                 var mid = MidParts(i, value);
+                                var kind = QColumnMapping.Kind(column.DataTypeName);
                                 var cellClass = changed ? "ds-cell-changed" : "";
-                                var valueClass = KindClass(column.DataTypeName) ?? "";
+                                var valueClass = KindClass(kind) ?? "";
+                                var display = kind == QColumnKind.DateTime ? QueryResultMapping.DisplayDateTime(value) : value;
 
                                 <td class="@cellClass @valueClass"
-                                    @ondblclick="@(() => StartEdit(cell, value))">
+                                    @ondblclick="@(() => StartCellEditAsync(cell, value, kind))">
                                     @if (editing)
                                     {
                                         <input class="form-control form-control-sm" @ref="_editInput"
@@ -96,9 +100,13 @@
                                             <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
                                         </details>
                                     }
+                                    else if (display != value)
+                                    {
+                                        <span class="ds-cell-text" data-full="@value" title="@value">@display</span>
+                                    }
                                     else
                                     {
-                                        <span class="text-nowrap">@value</span>
+                                        <span class="ds-cell-text">@display</span>
                                     }
                                 </td>
                             }

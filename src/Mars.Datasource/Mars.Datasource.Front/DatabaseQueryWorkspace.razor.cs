@@ -74,6 +74,55 @@ public partial class DatabaseQueryWorkspace
     bool hasMultipleSchemas => database is not null
         && database.Tables.Select(t => t.TableSchema.SchemaName).Distinct().Count() > 1;
 
+    /// <summary>Схемы, свёрнутые пользователем: в дереве свёрнуто то, что перечислено здесь.</summary>
+    readonly HashSet<string> _collapsedSchemas = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Источник, для которого уже разложили схемы по умолчанию.</summary>
+    string? _schemaDefaultsFor;
+
+    /// <summary>
+    /// Раскрыта ли схема. При активном фильтре дерево раскрыто целиком: иначе найденная таблица
+    /// осталась бы спрятанной в свёрнутой схеме.
+    /// </summary>
+    bool IsSchemaExpanded(string schemaName)
+        => !string.IsNullOrWhiteSpace(tableFilter) || !_collapsedSchemas.Contains(schemaName);
+
+    void ToggleSchema(string schemaName)
+    {
+        if (!_collapsedSchemas.Remove(schemaName)) _collapsedSchemas.Add(schemaName);
+    }
+
+    /// <summary>
+    /// Схема по умолчанию (`public`, у MsSQL — `dbo`) раскрыта, остальные свёрнуты. Раскладываем так
+    /// один раз на источник: дальше состояние принадлежит пользователю, иначе свёрнутая вручную схема
+    /// разворачивалась бы после каждого обновления структуры. Если схемы по умолчанию нет
+    /// (в MySQL схема — это сама база), дерево остаётся раскрытым, как было.
+    /// </summary>
+    void ApplySchemaDefaults(QDatabaseStructureResponse structure)
+    {
+        if (_schemaDefaultsFor == source?.Slug) return;
+
+        _schemaDefaultsFor = source?.Slug;
+        _collapsedSchemas.Clear();
+
+        var defaultSchema = SqlDialectMapping.Dialect(source?.Driver) == SqlDialect.MsSql ? "dbo" : "public";
+        var schemas = structure.Tables
+            .Select(t => t.TableSchema.SchemaName)
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!schemas.Contains(defaultSchema, StringComparer.OrdinalIgnoreCase)) return;
+
+        foreach (var schema in schemas)
+        {
+            if (!string.Equals(schema, defaultSchema, StringComparison.OrdinalIgnoreCase))
+            {
+                _collapsedSchemas.Add(schema);
+            }
+        }
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -106,6 +155,7 @@ public partial class DatabaseQueryWorkspace
         {
             database = await service.DatabaseStructure(DataSourceConfigSlug);
             listDatasources = await service.ListSelectDatasource();
+            ApplySchemaDefaults(database);
         }
         catch (Exception ex)
         {
@@ -128,6 +178,7 @@ public partial class DatabaseQueryWorkspace
         try
         {
             database = await service.RefreshStructure(DataSourceConfigSlug);
+            ApplySchemaDefaults(database);
         }
         catch (Exception ex)
         {
@@ -359,6 +410,9 @@ public partial class DatabaseQueryWorkspace
 
         // Открыли другой объект — «изменяем вьюху» больше не про него.
         _viewSource = null;
+
+        // Открытый объект должен быть виден в дереве, даже если его схему свернули.
+        _collapsedSchemas.Remove(table.TableSchema.SchemaName);
 
         tab.Table = table;
         tab.KeyColumns = table.Columns.Values

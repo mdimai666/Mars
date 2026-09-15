@@ -47,6 +47,18 @@
     overflow-x: auto;
 }
 
+/* Заголовок схемы в дереве: сворачивается по клику (фон — вместо bootstrap-класса bg-light,
+   чтобы работал hover). */
+.ds-schema {
+    background: var(--bs-tertiary-bg, #f1f3f5);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ds-schema:hover {
+    background: var(--bs-secondary-bg, #e9ecef);
+}
+
 .ds-tab {
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-bottom: none;

@@ -81,19 +81,35 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task SqlQuery_Request_Success()
+    public async Task Query_Request_Success()
     {
         //Arrange
-        _ = nameof(DatasourceController.SqlQuery);
-        _ = nameof(IDatasourceService.SqlQuery);
+        _ = nameof(DatasourceController.Query);
+        _ = nameof(IDatasourceService.Query);
         var client = GetWebApiClient();
 
         //Act
-        var result = await client.Datasource().SqlQuery("default", "SELECT COUNT(id) FROM posts");
+        var result = await client.Datasource().Query("default", new SqlRequest { Sql = "SELECT COUNT(id) FROM posts" });
 
         //Assert
-        result.Ok.Should().BeTrue();
-        result.Data.Should().NotBeNull();
+        result.Ok.Should().BeTrue(result.Message);
+        result.Columns.Should().NotBeEmpty();
+        result.Rows.Should().HaveCount(1);
+    }
+
+    [IntegrationFact]
+    public async Task NonQuery_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.NonQuery);
+        _ = nameof(IDatasourceService.NonQuery);
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Datasource().NonQuery("default", new SqlRequest { Sql = "CREATE TEMP TABLE ds_test (id int)" });
+
+        //Assert
+        result.Ok.Should().BeTrue(result.Message);
     }
 
     [IntegrationFact]

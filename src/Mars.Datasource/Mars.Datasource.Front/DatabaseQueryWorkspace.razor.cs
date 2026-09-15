@@ -40,9 +40,11 @@ public partial class DatabaseQueryWorkspace
 
     QTableResponse? selTable = null;
 
-    string[][]? raw => res?.Data;
+    string?[][]? raw => res?.Rows;
 
-    UserActionResult<string[][]>? res = null;
+    QueryResultDto? res = null;
+
+    const int MaxRows = 500;
 
     bool loadingQuery = false;
 
@@ -118,8 +120,7 @@ public partial class DatabaseQueryWorkspace
                 return;
             }
 
-            //res = await service.SqlQuery($"SELECT * FROM \"{selTable.TableName}\"");
-            res = await service.SqlQuery(DataSourceConfigSlug, sql);
+            res = await service.Query(DataSourceConfigSlug, new SqlRequest { Sql = sql, MaxRows = MaxRows });
 
             loadingQuery = false;
             StateHasChanged();

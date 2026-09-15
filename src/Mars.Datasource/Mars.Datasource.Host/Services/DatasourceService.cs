@@ -145,17 +145,17 @@ internal class DatasourceService : IDatasourceService
         return structure;
     }
 
-    public async Task<SqlQueryResultActionDto> SqlQuery(string slug, string sql)
+    public async Task<QueryResultDto> Query(string slug, SqlRequest request, CancellationToken cancellationToken = default)
     {
         var se = ResolveEngine(slug);
-        var result = await se.SqlQuery(sql);
+        var result = await se.Query(request, cancellationToken);
         return result;
     }
 
-    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string slug, string sql)
+    public async Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default)
     {
         var se = ResolveEngine(slug);
-        var result = await se.SqlNonQuery(sql);
+        var result = await se.NonQuery(sql, parameters, cancellationToken);
         return result;
     }
 
@@ -179,7 +179,7 @@ internal class DatasourceService : IDatasourceService
 
             if (foundQuery is not null)
             {
-                var result = await SqlQuery("default", foundQuery);
+                var result = await Query("default", new SqlRequest { Sql = foundQuery }, cancellationToken);
                 return new UserActionResult<string[][]>
                 {
                     Ok = result.Ok,

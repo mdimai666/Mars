@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Diagnostics;
 using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Microsoft.Data.SqlClient;
@@ -16,9 +17,12 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         database = config.GetDatabaseName();
     }
 
+    public string QuoteIdentifier(string name)
+        => "[" + name.Replace("]", "]]") + "]";
+
     public async Task<Dictionary<string, QTableColumn>> Columns(SqlConnection conn, string tableName)
     {
-        string sql = $"SELECT * FROM \"{tableName}\"";
+        string sql = $"SELECT * FROM {QuoteIdentifier(tableName)}";
 
         await using var cmd = new SqlCommand(sql, conn);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -74,64 +78,58 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         return db;
     }
 
-    public async Task<SqlQueryResultActionDto> SqlQuery(string sql)
+    public async Task<QueryResultDto> Query(SqlRequest request, CancellationToken cancellationToken = default)
     {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        QueryResultDto result = new()
+        {
+            DatabaseDriver = _config.Driver,
+            Command = request.Sql,
+        };
+
         try
         {
             await using var conn = new SqlConnection(_config.ConnectionString);
-            await conn.OpenAsync();
+            await conn.OpenAsync(cancellationToken);
 
-            await using var cmd = new SqlCommand(sql, conn);
-            await using var reader = await cmd.ExecuteReaderAsync();
-
-            List<List<string>> rows = [];
-
-            var columns = await reader.GetColumnSchemaAsync();
-
-            List<string> _cols = [];
-
-            foreach (var col in columns)
+            await using var cmd = new SqlCommand(request.Sql, conn);
+            QueryResultMapping.ApplyParameters(cmd, request.Parameters);
+            if (request.TimeoutSec is int timeoutSec)
             {
-                _cols.Add(col.ColumnName);
+                cmd.CommandTimeout = timeoutSec;
             }
 
-            rows.Add(_cols);
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    List<string> list = [];
-                    //Console.WriteLine(reader.GetString(0));
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        string val = reader.GetValue(i).ToString()!;
+            var columns = await reader.GetColumnSchemaAsync(cancellationToken);
+            result.Columns = columns.Select(c => QueryResultMapping.Column(c)).ToArray();
 
-                        list.Add(val);
-                    }
-                    rows.Add(list);
-                }
-            }
-            reader.Close();
-
-            return Result("success", true, rows.Select(s => s.ToArray()).ToArray());
-
+            (result.Rows, result.Truncated) = await QueryResultMapping.ReadRowsAsync(reader, request.MaxRows, cancellationToken);
+            result.Ok = true;
+            result.Message = "success";
         }
         catch (Exception ex)
         {
-            return Result(ex.Message);
+            result.Ok = false;
+            result.Message = QueryResultMapping.Error(ex);
         }
+
+        stopwatch.Stop();
+        result.ElapsedMs = stopwatch.ElapsedMilliseconds;
+
+        return result;
     }
 
-    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string sql)
+    public async Task<SqlNonQueryResultActionDto> NonQuery(string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default)
     {
         try
         {
             await using var conn = new SqlConnection(_config.ConnectionString);
-            await conn.OpenAsync();
+            await conn.OpenAsync(cancellationToken);
 
             await using var cmd = new SqlCommand(sql, conn);
-            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+            QueryResultMapping.ApplyParameters(cmd, parameters);
+            var rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             return new SqlNonQueryResultActionDto
             {
@@ -146,7 +144,7 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
             return new SqlNonQueryResultActionDto
             {
                 Ok = false,
-                Message = ex.Message,
+                Message = QueryResultMapping.Error(ex),
                 DatabaseDriver = _config.Driver,
             };
         }
@@ -186,17 +184,6 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         var list = await Tables(conn);
 
         return list;
-    }
-
-    SqlQueryResultActionDto Result(string message, bool ok = false, string[][]? data = null)
-    {
-        return new SqlQueryResultActionDto
-        {
-            Ok = ok,
-            Message = message,
-            Data = data,
-            DatabaseDriver = _config.Driver
-        };
     }
 
     public static QTableColumn ConvertQTableColumn(DbColumn column)

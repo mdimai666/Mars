@@ -54,12 +54,16 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
         await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
 
         string query = "SELECT TOP 10 * FROM [todo]";
         var se = new DatasourceMsSQLDriver(Config());
 
-        var result = await se.SqlQuery(query);
-        Assert.True(result.Data.Length > 0);
+        var result = await se.Query(new SqlRequest { Sql = query });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Columns.Select(c => c.Name).Should().Equal("Id", "Title", "Content", "Completed");
+        result.Rows.Should().HaveCount(2);
+        result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
         Assert.True(columns.Count > 0);
@@ -70,6 +74,52 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
         var structure = await se.DatabaseStructure();
         Assert.True(structure.Tables.Count > 0);
         Assert.NotNull(structure.DatabaseName);
+    }
+
+    [IntegrationFact]
+    public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
+    {
+        await using var connection = new SqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMsSQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM [todo]", MaxRows = 1 });
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(1);
+        result.Truncated.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task NonQuery_WithParameters_UpdatesRows()
+    {
+        await using var connection = new SqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMsSQLDriver(Config());
+
+        var result = await se.NonQuery(
+            "UPDATE [todo] SET Title = @title WHERE Title = @from",
+            [
+                new SqlParam { Name = "title", Value = "edited" },
+                new SqlParam { Name = "from", Value = "first" },
+            ]);
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.RowsAffected.Should().Be(1);
+    }
+
+    static async Task SeedTodoAsync(SqlConnection connection)
+    {
+        await using var command = new SqlCommand(
+            "INSERT INTO todo (Title, Content, Completed) VALUES ('first', 'a', 0), ('second', 'b', 1)", connection);
+
+        await command.ExecuteNonQueryAsync();
     }
 
     private static async Task<int> CreateTodoTableAsync(SqlConnection connection)

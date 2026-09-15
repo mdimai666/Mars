@@ -12,8 +12,13 @@ public interface IDatasourceService
     public Task<Dictionary<string, QTableColumn>> Columns(string slug, string tableName);
     public Task<List<QTableSchema>> Tables(string slug);
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
-    public Task<SqlQueryResultActionDto> SqlQuery(string slug, string sql);
-    public Task<SqlNonQueryResultActionDto> SqlNonQuery(string slug, string sql);
+
+    /// <summary>Выполнить запрос с возвратом данных.</summary>
+    public Task<QueryResultDto> Query(string slug, SqlRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Выполнить запрос без возврата данных (INSERT/UPDATE/DELETE/DDL).</summary>
+    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default);
+
     public Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken);
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource();
 

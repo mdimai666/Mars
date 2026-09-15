@@ -1,3 +1,4 @@
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Nodes;
 using Mars.Nodes.Abstractions;
@@ -38,7 +39,7 @@ public class SqlNodeImpl : INodeImplement<SqlNode>
             throw new NotImplementedException();
         }
 
-        var result = await ds.SqlQuery(Node.DatasourceSlug, query);
+        var result = await ds.Query(Node.DatasourceSlug, new SqlRequest { Sql = query });
 
         if (result.Ok)
         {

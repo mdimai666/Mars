@@ -38,11 +38,17 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .AppendQueryParam(new { slug })
                     .GetJsonAsync<QDatabaseStructureResponse>();
 
-    public Task<UserActionResult<string[][]>> SqlQuery(string slug, string sql)
-        => _client.Request($"{_basePath}{_controllerName}", "SqlQuery")
+    public Task<QueryResultDto> Query(string slug, SqlRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "Query")
                     .AppendQueryParam(new { slug })
-                    .PostJsonAsync(new string[] { sql })
-                    .ReceiveJson<UserActionResult<string[][]>>();
+                    .PostJsonAsync(request)
+                    .ReceiveJson<QueryResultDto>();
+
+    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, SqlRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "NonQuery")
+                    .AppendQueryParam(new { slug })
+                    .PostJsonAsync(request)
+                    .ReceiveJson<SqlNonQueryResultActionDto>();
 
     public Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action)
         => _client.Request($"{_basePath}{_controllerName}", "ExecuteAction")

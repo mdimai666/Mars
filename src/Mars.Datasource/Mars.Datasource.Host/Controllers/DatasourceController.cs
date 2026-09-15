@@ -54,9 +54,15 @@ public class DatasourceController : ControllerBase
     }
 
     [HttpPost]
-    public Task<SqlQueryResultActionDto> SqlQuery([FromQuery] string slug, [FromBody] string[] _sql)
+    public Task<QueryResultDto> Query([FromQuery] string slug, [FromBody] SqlRequest request, CancellationToken cancellationToken)
     {
-        return ds.SqlQuery(slug, _sql[0]);
+        return ds.Query(slug, request, cancellationToken);
+    }
+
+    [HttpPost]
+    public Task<SqlNonQueryResultActionDto> NonQuery([FromQuery] string slug, [FromBody] SqlRequest request, CancellationToken cancellationToken)
+    {
+        return ds.NonQuery(slug, request.Sql, request.Parameters, cancellationToken);
     }
 
     [HttpPost]

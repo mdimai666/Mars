@@ -108,25 +108,33 @@
 
 ## 5. Этапы
 
-### Этап 1. Контракт результата (ядро)
+### Этап 1. Контракт результата (ядро) — сделано 2026-09-15
 
-- [ ] Новые модели в `Mars.Datasource.Abstractions/Models/`: `QueryColumn` (`Name`, `DataTypeName`,
+- [x] Новые модели в `Mars.Datasource.Abstractions/Models/`: `QueryColumn` (`Name`, `DataTypeName`,
       `ClrTypeName`, `IsNullable`, `IsJson`, `IsKey`), `QueryResultDto` (`Columns`, `Rows` как
-      `string?[][]`, `Truncated`, `ElapsedMs`, `Command`), `SqlQueryRequest` (`Sql`, `Parameters?`,
-      `MaxRows = 500`, `TimeoutSec?`), `SqlParam` (`Name`, `Value`).
-- [ ] `IDatasourceDriver`: `Query(SqlQueryRequest, CancellationToken)` и
-      `NonQuery(string sql, SqlParam[]?, CancellationToken)`; `QuoteIdentifier(string)`; пометить
-      `SqlQuery`/`SqlNonQuery`/`Columns` как `[Obsolete]`-обёртки над новым API, чтобы мигрировать
-      драйверы по одному.
-- [ ] **Инвариант совместимости:** `QueryResultDto.Data` — `[JsonIgnore]`-проекция
-      (заголовки + строки, `NULL` → `""`), чтобы `SqlNodeImpl` и `MarsSqlTools.FormatRows` не менялись,
-      а по HTTP не уезжал двойной payload. Записать это в гайд при схлопывании.
-- [ ] Лимит: читаем до `MaxRows + 1`, при достижении ставим `Truncated` и прекращаем чтение.
-      Отмена: `CancellationToken` прокинуть до `ExecuteReaderAsync`/`ExecuteNonQueryAsync`.
-- [ ] `SqlNonQuery`-эндпоинт в `DatasourceController` + метод в `IDatasourceServiceClient` /
-      `DatasourceServiceClient` (сейчас — обрыв на обоих уровнях).
-- [ ] Ошибки: сохранить текущий стиль `Ok=false` + `Message` (UI показывает текст), но обрезать
-      многострочные планы запросов и не терять `DatabaseDriver`.
+      `string?[][]`, `Truncated`, `ElapsedMs`, `Command`), `SqlRequest` (`Sql`, `Parameters?`, `MaxRows`,
+      `TimeoutSec?`), `SqlParam` (`Name`, `Value`).
+- [x] Общие преобразования для провайдеров — `Models/QueryResultMapping.cs`: колонка из `DbColumn`,
+      значение в строку (даты/время — инвариантно, чтобы правка ячейки возвращалась без потерь),
+      чтение строк с лимитом, текст ошибки одной строкой, подстановка параметров.
+- [x] `IDatasourceDriver`: `Query(SqlRequest, CancellationToken)`, `NonQuery(sql, parameters, ct)`,
+      `QuoteIdentifier(string)`. Старые `SqlQuery`/`SqlNonQuery` **удалены** (не помечены
+      `[Obsolete]`), `SqlQueryResultActionDto` удалён, `SqlNonQueryResultActionDto` и
+      `SqlQueryJsonResultActionDto` вынесены в отдельные файлы. Все три драйвера мигрированы сразу.
+- [x] **Инвариант совместимости:** `QueryResultDto.Data` — `[JsonIgnore]`-проекция
+      (заголовки + строки, `NULL` → `""`); `SqlNodeImpl` и `MarsSqlTools` ходят в новые методы
+      сервиса, но читают по-прежнему `.Data`. Записать это в гайд при схлопывании.
+- [x] Лимит: читаем до `MaxRows`, при переполнении ставим `Truncated` и прекращаем чтение.
+      **`MaxRows = 0` (по умолчанию) — без ограничения**: так `SqlNode` и поток-потребители не меняют
+      поведение; UI (`DatabaseQueryWorkspace`) передаёт 500. Отмена: `CancellationToken` доходит до
+      `ExecuteReaderAsync`/`ExecuteNonQueryAsync`.
+- [x] Эндпоинты `Query` и `NonQuery` в `DatasourceController` + методы в `IDatasourceServiceClient` /
+      `DatasourceServiceClient` (тело — `SqlRequest`).
+- [x] Ошибки: стиль `Ok=false` + `Message` сохранён, текст обрезается до одной строки (500 символов),
+      `DatabaseDriver` больше не теряется на клиенте.
+- [x] Тесты: на каждом движке — лимит с `Truncated`, `NonQuery` с параметрами, чтение колонок результата;
+      в `Mars.Datasource.Integration.Tests` появилась вставка строк (`SeedTodoAsync`) — раньше тест
+      проверял только строку заголовков. В `WebApiClient.Integration.Tests` — `Query` и `NonQuery`.
 
 ### Этап 2. Баги и UX ошибок
 

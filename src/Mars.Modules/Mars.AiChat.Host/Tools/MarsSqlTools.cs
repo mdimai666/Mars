@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
 
 namespace Mars.AiChat.Host.Tools;
@@ -122,14 +123,14 @@ public class MarsSqlTools
 
             if (isRead)
             {
-                var result = await _datasourceService.SqlQuery(slug, sql);
+                var result = await _datasourceService.Query(slug, new SqlRequest { Sql = sql, MaxRows = MaxRows });
                 if (!result.Ok)
                     return $"Ошибка SQL: {result.Message}";
 
                 return FormatRows(result.Data);
             }
 
-            var nonQuery = await _datasourceService.SqlNonQuery(slug, sql);
+            var nonQuery = await _datasourceService.NonQuery(slug, sql);
             if (!nonQuery.Ok)
                 return $"Ошибка SQL: {nonQuery.Message}";
 

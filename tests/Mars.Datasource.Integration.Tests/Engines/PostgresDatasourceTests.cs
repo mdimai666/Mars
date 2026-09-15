@@ -56,12 +56,16 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
         await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
 
-        string query = "SELECT * FROM \"todo\" LIMIT 10";
+        string query = "SELECT * FROM \"todo\"";
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.SqlQuery(query);
-        Assert.True(result.Data.Length > 0);
+        var result = await se.Query(new SqlRequest { Sql = query });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Columns.Select(c => c.Name).Should().Equal("id", "title", "content", "completed");
+        result.Rows.Should().HaveCount(2);
+        result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
         Assert.True(columns.Count > 0);
@@ -72,6 +76,63 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         var structure = await se.DatabaseStructure();
         Assert.True(structure.Tables.Count > 0);
         Assert.NotNull(structure.DatabaseName);
+    }
+
+    [IntegrationFact]
+    public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM \"todo\"", MaxRows = 1 });
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(1);
+        result.Truncated.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task Query_InvalidSql_ReturnsError()
+    {
+        var se = new DatasourcePostgreSQLDriver(Config());
+
+        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM no_such_table" });
+
+        result.Ok.Should().BeFalse();
+        result.Message.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [IntegrationFact]
+    public async Task NonQuery_WithParameters_UpdatesRows()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourcePostgreSQLDriver(Config());
+
+        var result = await se.NonQuery(
+            "UPDATE \"todo\" SET title = @title WHERE title = @from",
+            [
+                new SqlParam { Name = "title", Value = "edited" },
+                new SqlParam { Name = "from", Value = "first" },
+            ]);
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.RowsAffected.Should().Be(1);
+    }
+
+    static async Task SeedTodoAsync(NpgsqlConnection connection)
+    {
+        await using var command = new NpgsqlCommand(
+            "INSERT INTO todo (title, content, completed) VALUES ('first', 'a', false), ('second', 'b', true)", connection);
+
+        await command.ExecuteNonQueryAsync();
     }
 
     private static async Task<int> CreateTodoTableAsync(NpgsqlConnection connection)

@@ -1,13 +1,5 @@
 namespace Mars.Datasource.Abstractions.Models;
 
-/// <summary>Диалект DDL вьюх: различаются только форма «создать/заменить» и кавычки идентификаторов.</summary>
-public enum ViewDialect
-{
-    Postgres,
-    MsSql,
-    MySql,
-}
-
 /// <summary>Итог сборки DDL: либо готовый SQL для `NonQuery`, либо текст ошибки для пользователя.</summary>
 public record ViewDdlResult
 {
@@ -33,51 +25,27 @@ public static class ViewDdlBuilder
 {
     static readonly string[] QueryKeywords = ["SELECT", "WITH", "VALUES", "TABLE"];
 
-    /// <summary>Диалект по `DatasourceConfig.Driver` (`psql` | `mssql` | `mysql`).</summary>
-    public static ViewDialect Dialect(string? driver) => driver?.Trim().ToLowerInvariant() switch
-    {
-        "mssql" => ViewDialect.MsSql,
-        "mysql" => ViewDialect.MySql,
-        _ => ViewDialect.Postgres,
-    };
-
-    public static ViewDdlResult Create(ViewDialect dialect, string? schemaName, string? viewName, string? body, bool replace)
+    public static ViewDdlResult Create(SqlDialect dialect, string? schemaName, string? viewName, string? body, bool replace)
     {
         if (NameError(viewName) is { } nameError) return ViewDdlResult.Fail(nameError);
 
         var (error, normalized) = Inspect(dialect, body);
         if (error is not null) return ViewDdlResult.Fail(error);
 
-        var target = Target(dialect, schemaName, viewName!.Trim());
+        var target = SqlDialectMapping.Target(dialect, schemaName, viewName!.Trim());
         var keyword = replace
-            ? (dialect == ViewDialect.MsSql ? "CREATE OR ALTER VIEW" : "CREATE OR REPLACE VIEW")
+            ? (dialect == SqlDialect.MsSql ? "CREATE OR ALTER VIEW" : "CREATE OR REPLACE VIEW")
             : "CREATE VIEW";
 
         return ViewDdlResult.Done($"{keyword} {target} AS\n{normalized}");
     }
 
     /// <summary>Обычная вьюха: `DROP VIEW`. Удаление зависимых объектов (`CASCADE`) не подставляем.</summary>
-    public static ViewDdlResult Drop(ViewDialect dialect, string? schemaName, string? viewName)
+    public static ViewDdlResult Drop(SqlDialect dialect, string? schemaName, string? viewName)
     {
         if (NameError(viewName) is { } nameError) return ViewDdlResult.Fail(nameError);
 
-        return ViewDdlResult.Done($"DROP VIEW {Target(dialect, schemaName, viewName!.Trim())}");
-    }
-
-    public static string Quote(ViewDialect dialect, string name) => dialect switch
-    {
-        ViewDialect.MsSql => "[" + name.Replace("]", "]]") + "]",
-        ViewDialect.MySql => "`" + name.Replace("`", "``") + "`",
-        _ => "\"" + name.Replace("\"", "\"\"") + "\"",
-    };
-
-    static string Target(ViewDialect dialect, string? schemaName, string viewName)
-    {
-        var schema = schemaName?.Trim();
-
-        return string.IsNullOrEmpty(schema)
-            ? Quote(dialect, viewName)
-            : $"{Quote(dialect, schema)}.{Quote(dialect, viewName)}";
+        return ViewDdlResult.Done($"DROP VIEW {SqlDialectMapping.Target(dialect, schemaName, viewName!.Trim())}");
     }
 
     static string? NameError(string? viewName)
@@ -90,7 +58,7 @@ public static class ViewDdlBuilder
     }
 
     /// <summary>Пустая строка ошибки — тело в порядке; иначе возвращает причину и нормализованное тело.</summary>
-    static (string? Error, string? Body) Inspect(ViewDialect dialect, string? body)
+    static (string? Error, string? Body) Inspect(SqlDialect dialect, string? body)
     {
         if (string.IsNullOrWhiteSpace(body)) return ("Тело вьюхи не задано", null);
 
@@ -135,7 +103,7 @@ public static class ViewDdlBuilder
     /// Позиции «;» вне литералов, идентификаторов и комментариев. Разбор идёт по правилам диалекта:
     /// если считать иначе, чем движок, проверка и парсер разойдутся на экранировании.
     /// </summary>
-    static IEnumerable<int> Semicolons(ViewDialect dialect, string text)
+    static IEnumerable<int> Semicolons(SqlDialect dialect, string text)
     {
         var index = 0;
 
@@ -159,7 +127,7 @@ public static class ViewDdlBuilder
             if (c is '\'' or '"' or '`')
             {
                 // Обратный слэш экранирует кавычку только в MySQL (Postgres: standard_conforming_strings).
-                index = SkipQuoted(text, index, c, c == '\'' && dialect == ViewDialect.MySql);
+                index = SkipQuoted(text, index, c, c == '\'' && dialect == SqlDialect.MySql);
                 continue;
             }
 

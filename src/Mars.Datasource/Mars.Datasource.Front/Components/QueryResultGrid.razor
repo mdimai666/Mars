@@ -7,7 +7,7 @@
 
 <div class="ds-grid d-flex flex-column h-100" @ref="_root">
     <div class="flex-shrink-0 hstack gap-2 text-secondary fz14px px-1">
-        <span>@Result.Rows.Length rows · @Result.ElapsedMs ms · @Result.DatabaseDriver</span>
+        <span>@RowsSummary · @Result.ElapsedMs ms · @Result.DatabaseDriver</span>
         @if (Result.Truncated)
         {
             <span class="text-warning">показаны первые @Tab.MaxRows — в результате есть ещё строки</span>

@@ -89,7 +89,7 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
         var se = new DatasourceMsSQLDriver(Config());
         var view = $"todo_view_{Guid.NewGuid():N}";
 
-        var create = ViewDdlBuilder.Create(ViewDialect.MsSql, "dbo", view, "SELECT Id, Title FROM todo", replace: false);
+        var create = ViewDdlBuilder.Create(SqlDialect.MsSql, "dbo", view, "SELECT Id, Title FROM todo", replace: false);
         create.Ok.Should().BeTrue(create.Error);
 
         var created = await se.NonQuery(create.Sql!);
@@ -100,12 +100,12 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
         definition.Should().Contain("todo");
 
         // Замена поверх существующей вьюхи проходит через CREATE OR ALTER.
-        var replace = ViewDdlBuilder.Create(ViewDialect.MsSql, "dbo", view, "SELECT Id FROM todo", replace: true);
+        var replace = ViewDdlBuilder.Create(SqlDialect.MsSql, "dbo", view, "SELECT Id FROM todo", replace: true);
         var replaced = await se.NonQuery(replace.Sql!);
         replaced.Ok.Should().BeTrue(replaced.Message);
         (await se.ViewDefinition("dbo", view)).Should().NotContain("Title");
 
-        var drop = ViewDdlBuilder.Drop(ViewDialect.MsSql, "dbo", view);
+        var drop = ViewDdlBuilder.Drop(SqlDialect.MsSql, "dbo", view);
         var dropped = await se.NonQuery(drop.Sql!);
         dropped.Ok.Should().BeTrue(dropped.Message);
 

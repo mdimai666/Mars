@@ -22,6 +22,25 @@ public class QueryTab
     public string? Error { get; set; }
     public int MaxRows { get; set; } = 500;
 
+    /// <summary>Сколько строк показывать при просмотре объекта из дерева (в самом SQL, а не только на сервере).</summary>
+    public int BrowseLimit { get; set; } = 50;
+
+    /// <summary>SQL просмотра, который сгенерировали мы; null — вкладка не про объект из дерева.</summary>
+    public string? BrowseSql { get; set; }
+
+    /// <summary>Общее число строк объекта: известно только для нашего просмотра (см. <see cref="BrowseSql"/>).</summary>
+    public long? Total { get; set; }
+
+    /// <summary>Подпись к количеству строк: «считаем всего…» / «всего не сосчитали».</summary>
+    public string? TotalNote { get; set; }
+
+    /// <summary>Вкладка показывает объект из дерева, и её SQL с тех пор не правили руками.</summary>
+    public bool IsBrowse => BrowseSql is not null && BrowseSql == Sql;
+
+    /// <summary>Есть смысл просить больше строк: упёрлись либо в лимит просмотра, либо в серверный.</summary>
+    public bool CanLoadMore => Result?.Ok == true
+        && (IsBrowse ? Result.Rows.Length >= BrowseLimit : Result.Truncated);
+
     /// <summary>Несохранённые правки ячеек: (индекс строки, колонка) → новое значение.</summary>
     public Dictionary<(int Row, string Column), string?> Changes { get; } = [];
 
@@ -31,6 +50,8 @@ public class QueryTab
     {
         Result = null;
         Error = null;
+        Total = null;
+        TotalNote = null;
         Changes.Clear();
     }
 }

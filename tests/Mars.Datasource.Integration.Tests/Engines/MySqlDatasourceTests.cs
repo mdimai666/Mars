@@ -89,7 +89,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         var se = new DatasourceMySQLDriver(Config());
         var view = $"todo_view_{Guid.NewGuid():N}";
 
-        var create = ViewDdlBuilder.Create(ViewDialect.MySql, connection.Database, view, "SELECT Id, Title FROM todo", replace: false);
+        var create = ViewDdlBuilder.Create(SqlDialect.MySql, connection.Database, view, "SELECT Id, Title FROM todo", replace: false);
         create.Ok.Should().BeTrue(create.Error);
 
         var created = await se.NonQuery(create.Sql!);
@@ -100,12 +100,12 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         definition.Should().Contain("todo");
 
         // Замена поверх существующей вьюхи проходит через CREATE OR REPLACE.
-        var replace = ViewDdlBuilder.Create(ViewDialect.MySql, connection.Database, view, "SELECT Id FROM todo", replace: true);
+        var replace = ViewDdlBuilder.Create(SqlDialect.MySql, connection.Database, view, "SELECT Id FROM todo", replace: true);
         var replaced = await se.NonQuery(replace.Sql!);
         replaced.Ok.Should().BeTrue(replaced.Message);
         (await se.ViewDefinition(connection.Database, view)).Should().NotContain("Title");
 
-        var drop = ViewDdlBuilder.Drop(ViewDialect.MySql, connection.Database, view);
+        var drop = ViewDdlBuilder.Drop(SqlDialect.MySql, connection.Database, view);
         var dropped = await se.NonQuery(drop.Sql!);
         dropped.Ok.Should().BeTrue(dropped.Message);
 

@@ -133,6 +133,23 @@ public partial class QueryResultGrid
         return sampled > 0 && guids == sampled;
     }
 
+    /// <summary>
+    /// «строк: 20 · всего 1234». Общее число есть только у просмотра объекта из дерева
+    /// (`QueryTab.Total`), у произвольного запроса мы не знаем, что считать.
+    /// </summary>
+    string RowsSummary
+    {
+        get
+        {
+            var text = $"строк: {Result.Rows.Length}";
+
+            if (Tab.Total is long total) text += $" из {total}";
+            if (Tab.TotalNote is not null) text += $" ({Tab.TotalNote})";
+
+            return text;
+        }
+    }
+
     bool IsEditing((int Row, string Column) cell)
         => Tab.CanEdit && _editCell == cell;
 

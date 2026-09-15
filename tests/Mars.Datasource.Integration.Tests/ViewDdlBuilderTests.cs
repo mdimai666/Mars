@@ -5,20 +5,8 @@ namespace Mars.Datasource.Integration.Tests;
 
 public class ViewDdlBuilderTests
 {
-    static ViewDdlResult Create(string? body, bool replace = false, ViewDialect dialect = ViewDialect.Postgres, string? schema = "public", string? name = "todo_done")
+    static ViewDdlResult Create(string? body, bool replace = false, SqlDialect dialect = SqlDialect.Postgres, string? schema = "public", string? name = "todo_done")
         => ViewDdlBuilder.Create(dialect, schema, name, body, replace);
-
-    [Theory]
-    [InlineData("psql", ViewDialect.Postgres)]
-    [InlineData("mssql", ViewDialect.MsSql)]
-    [InlineData("mysql", ViewDialect.MySql)]
-    [InlineData("MSSQL", ViewDialect.MsSql)]
-    [InlineData("", ViewDialect.Postgres)]
-    [InlineData(null, ViewDialect.Postgres)]
-    public void Dialect_DriverName_ReturnsDialect(string? driver, ViewDialect expected)
-    {
-        ViewDdlBuilder.Dialect(driver).Should().Be(expected);
-    }
 
     [Fact]
     public void Create_Postgres_GeneratesCreateViewWithQuotedSchema()
@@ -41,7 +29,7 @@ SELECT 1
     [Fact]
     public void Create_Replace_MsSqlUsesOrAlter()
     {
-        var result = Create("SELECT 1", replace: true, dialect: ViewDialect.MsSql, schema: "dbo");
+        var result = Create("SELECT 1", replace: true, dialect: SqlDialect.MsSql, schema: "dbo");
 
         result.Sql.Should().Be("""
 CREATE OR ALTER VIEW [dbo].[todo_done] AS
@@ -52,7 +40,7 @@ SELECT 1
     [Fact]
     public void Create_MsSqlWithoutReplace_GeneratesPlainCreateView()
     {
-        var result = Create("SELECT 1", dialect: ViewDialect.MsSql, schema: "dbo");
+        var result = Create("SELECT 1", dialect: SqlDialect.MsSql, schema: "dbo");
 
         result.Sql.Should().Be("""
 CREATE VIEW [dbo].[todo_done] AS
@@ -63,7 +51,7 @@ SELECT 1
     [Fact]
     public void Create_MySql_QuotesWithBackticks()
     {
-        var result = Create("SELECT 1", replace: true, dialect: ViewDialect.MySql, schema: "shop");
+        var result = Create("SELECT 1", replace: true, dialect: SqlDialect.MySql, schema: "shop");
 
         result.Sql.Should().Be("""
 CREATE OR REPLACE VIEW `shop`.`todo_done` AS
@@ -83,7 +71,7 @@ SELECT 1
     [Fact]
     public void Create_MsSqlNameWithBracket_EscapesBracket()
     {
-        var result = Create("SELECT 1", dialect: ViewDialect.MsSql, schema: null, name: "we]ird");
+        var result = Create("SELECT 1", dialect: SqlDialect.MsSql, schema: null, name: "we]ird");
 
         result.Sql.Should().Be("""
 CREATE VIEW [we]]ird] AS
@@ -145,8 +133,8 @@ SELECT 1 -- keep
     {
         const string body = """SELECT 'a\'; DROP TABLE x'""";
 
-        Create(body, dialect: ViewDialect.MySql).Ok.Should().BeTrue();
-        Create(body, dialect: ViewDialect.Postgres).Error.Should().Contain("лишняя «;»");
+        Create(body, dialect: SqlDialect.MySql).Ok.Should().BeTrue();
+        Create(body, dialect: SqlDialect.Postgres).Error.Should().Contain("лишняя «;»");
     }
 
     [Theory]
@@ -187,11 +175,11 @@ SELECT 1 -- keep
     }
 
     [Theory]
-    [InlineData(ViewDialect.Postgres, "public", "DROP VIEW \"public\".\"todo_done\"")]
-    [InlineData(ViewDialect.MsSql, "dbo", "DROP VIEW [dbo].[todo_done]")]
-    [InlineData(ViewDialect.MySql, "shop", "DROP VIEW `shop`.`todo_done`")]
-    [InlineData(ViewDialect.Postgres, null, "DROP VIEW \"todo_done\"")]
-    public void Drop_Dialect_GeneratesDropView(ViewDialect dialect, string? schema, string expected)
+    [InlineData(SqlDialect.Postgres, "public", "DROP VIEW \"public\".\"todo_done\"")]
+    [InlineData(SqlDialect.MsSql, "dbo", "DROP VIEW [dbo].[todo_done]")]
+    [InlineData(SqlDialect.MySql, "shop", "DROP VIEW `shop`.`todo_done`")]
+    [InlineData(SqlDialect.Postgres, null, "DROP VIEW \"todo_done\"")]
+    public void Drop_Dialect_GeneratesDropView(SqlDialect dialect, string? schema, string expected)
     {
         ViewDdlBuilder.Drop(dialect, schema, "todo_done").Sql.Should().Be(expected);
     }
@@ -199,6 +187,6 @@ SELECT 1 -- keep
     [Fact]
     public void Drop_EmptyName_Rejected()
     {
-        ViewDdlBuilder.Drop(ViewDialect.Postgres, "public", null).Error.Should().Be("Имя вьюхи не задано");
+        ViewDdlBuilder.Drop(SqlDialect.Postgres, "public", null).Error.Should().Be("Имя вьюхи не задано");
     }
 }

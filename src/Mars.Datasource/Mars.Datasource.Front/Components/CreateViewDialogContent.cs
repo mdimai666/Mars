@@ -11,7 +11,7 @@ namespace Mars.Datasource.Front.Components;
 /// у `CodeEditor2` нет события изменения.
 /// </summary>
 public record CreateViewDialogContent(
-    ViewDialect Dialect,
+    SqlDialect Dialect,
     IReadOnlyList<string> Schemas,
     string Body,
     string? Schema = null,

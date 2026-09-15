@@ -113,7 +113,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         var se = new DatasourcePostgreSQLDriver(Config());
         var view = $"todo_view_{Guid.NewGuid():N}";
 
-        var create = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id, title FROM todo", replace: false);
+        var create = ViewDdlBuilder.Create(SqlDialect.Postgres, "public", view, "SELECT id, title FROM todo", replace: false);
         create.Ok.Should().BeTrue(create.Error);
 
         var created = await se.NonQuery(create.Sql!);
@@ -124,20 +124,20 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         definition.Should().Contain("todo");
 
         // Замена поверх существующей вьюхи проходит через OR REPLACE: колонки можно добавлять.
-        var replace = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id, title, content FROM todo", replace: true);
+        var replace = ViewDdlBuilder.Create(SqlDialect.Postgres, "public", view, "SELECT id, title, content FROM todo", replace: true);
         var replaced = await se.NonQuery(replace.Sql!);
         replaced.Ok.Should().BeTrue(replaced.Message);
         (await se.ViewDefinition("public", view)).Should().Contain("content");
 
         // А убрать колонку Postgres через OR REPLACE не даёт — это ожидаемая ошибка движка,
         // а не повод удалять вьюху за спиной пользователя (решение: drop+create не делаем).
-        var shrink = ViewDdlBuilder.Create(ViewDialect.Postgres, "public", view, "SELECT id FROM todo", replace: true);
+        var shrink = ViewDdlBuilder.Create(SqlDialect.Postgres, "public", view, "SELECT id FROM todo", replace: true);
         var shrunk = await se.NonQuery(shrink.Sql!);
         shrunk.Ok.Should().BeFalse();
         shrunk.Message.Should().NotBeNullOrWhiteSpace();
         (await se.ViewDefinition("public", view)).Should().Contain("content");
 
-        var drop = ViewDdlBuilder.Drop(ViewDialect.Postgres, "public", view);
+        var drop = ViewDdlBuilder.Drop(SqlDialect.Postgres, "public", view);
         var dropped = await se.NonQuery(drop.Sql!);
         dropped.Ok.Should().BeTrue(dropped.Message);
 

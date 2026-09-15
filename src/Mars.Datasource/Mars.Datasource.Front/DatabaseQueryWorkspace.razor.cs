@@ -21,6 +21,12 @@ public partial class DatabaseQueryWorkspace
     string? errorMessage;
     string tableFilter = "";
 
+    /// <summary>Сколько строк открывать при клике по объекту: смотрим данные, а не выгружаем таблицу.</summary>
+    const int DefaultBrowseLimit = 50;
+
+    /// <summary>Сколько секунд ждём `COUNT(*)`: отменить запрос из UI пока нельзя, лучше честно сказать «не сосчитали».</summary>
+    const int TotalCountTimeoutSec = 5;
+
     string _slug = DatasourceConfig.DefaultSlug;
 
     [Parameter]
@@ -234,11 +240,14 @@ public partial class DatabaseQueryWorkspace
 
             tab.Result = result;
             tab.Error = result.Ok ? null : result.Message;
+            StartTotalCount(tab, sql, result);
         }
         catch (Exception ex)
         {
             tab.Result = null;
             tab.Error = ex.Message;
+            tab.Total = null;
+            tab.TotalNote = null;
         }
         finally
         {
@@ -247,16 +256,102 @@ public partial class DatabaseQueryWorkspace
         }
     }
 
-    /// <summary>Запросить больше строк: серверный лимит растёт, SQL не меняется.</summary>
+    /// <summary>
+    /// Просим больше строк. У просмотра объекта лимит стоит в самом SQL — растим его и пересобираем запрос;
+    /// у произвольного запроса ограничение серверное, поэтому растём его.
+    /// </summary>
     async Task RunMoreAsync()
     {
         var tab = activeTab;
         if (tab is null) return;
 
-        tab.MaxRows *= 5;
+        if (tab.IsBrowse)
+        {
+            tab.BrowseLimit *= 5;
+            tab.BrowseSql = BuildBrowseSql(tab.Table!, tab.BrowseLimit);
+            tab.Sql = tab.BrowseSql;
+
+            EnsureBrowseCap(tab);
+            _editorNeedsSync = true;
+
+            await SyncEditorAsync();
+        }
+        else
+        {
+            tab.MaxRows *= 5;
+        }
 
         await RunActiveTabAsync();
     }
+
+    /// <summary>
+    /// «Всего N» показываем только для нашего просмотра объекта: у произвольного запроса непонятно,
+    /// что считать. Меньше лимита строк — количество известно и так; ровно лимит — считаем в фоне,
+    /// чтобы не задерживать показ строк.
+    /// </summary>
+    void StartTotalCount(QueryTab tab, string sql, QueryResultDto result)
+    {
+        tab.Total = null;
+        tab.TotalNote = null;
+
+        if (!result.Ok || tab.BrowseSql is null || sql != tab.BrowseSql) return;
+
+        if (result.Rows.Length < tab.BrowseLimit)
+        {
+            tab.Total = result.Rows.Length;
+            return;
+        }
+
+        _ = CountTotalAsync(tab, result);
+    }
+
+    /// <summary>
+    /// `COUNT(*)` по объекту. Ограничен по времени: считать большое число строк можно долго, а отменить
+    /// запрос из UI пока нельзя — лучше честно сказать «не сосчитали», чем держать вкладку занятой.
+    /// </summary>
+    async Task CountTotalAsync(QueryTab tab, QueryResultDto result)
+    {
+        tab.TotalNote = "считаем всего…";
+        StateHasChanged();
+
+        try
+        {
+            var count = await service.Query(DataSourceConfigSlug, new SqlRequest
+            {
+                Sql = BuildCountSql(tab.Table!),
+                MaxRows = 1,
+                TimeoutSec = TotalCountTimeoutSec,
+            });
+
+            // Пока считали, вкладку могли перезапросить: тогда счёт уже не про текущий результат.
+            if (!ReferenceEquals(tab.Result, result)) return;
+
+            if (count.Ok)
+            {
+                tab.Total = ParseTotal(count);
+                tab.TotalNote = null;
+            }
+            else
+            {
+                tab.TotalNote = $"всего не сосчитали за {TotalCountTimeoutSec} с";
+            }
+        }
+        catch (Exception)
+        {
+            // Счёт — только украшение шапки: ошибку самого запроса из-за него не показываем.
+        }
+        finally
+        {
+            if (ReferenceEquals(tab.Result, result)) StateHasChanged();
+        }
+    }
+
+    static long? ParseTotal(QueryResultDto result)
+        => result.Rows.Length > 0
+            && result.Rows[0].Length > 0
+            && long.TryParse(result.Rows[0][0], out var total)
+                ? total
+                : null;
 
     async Task OpenTableAsync(QTableResponse table)
     {
@@ -271,35 +366,42 @@ public partial class DatabaseQueryWorkspace
             .Select(c => c.ColumnName)
             .ToList();
         tab.Title = table.TableName;
-        tab.Sql = BuildBrowseSql(table);
+        tab.BrowseLimit = DefaultBrowseLimit;
+        tab.BrowseSql = BuildBrowseSql(table, tab.BrowseLimit);
+        tab.Sql = tab.BrowseSql;
+        tab.Total = null;
+        tab.TotalNote = null;
         tab.Changes.Clear();
         tab.ShowJson = false;
 
+        EnsureBrowseCap(tab);
         _editorNeedsSync = true;
 
         await SyncEditorAsync();
         await RunActiveTabAsync();
     }
 
-    string BuildBrowseSql(QTableResponse table)
-    {
-        var quote = Quoter();
-        var schema = table.TableSchema.SchemaName;
+    /// <summary>
+    /// Просмотр объекта: лимит строк ставится в сам SQL, поэтому серверный предел должен быть выше —
+    /// иначе «Показать больше» за серверный предел ничего не покажет.
+    /// </summary>
+    void EnsureBrowseCap(QueryTab tab)
+        => tab.MaxRows = Math.Max(tab.MaxRows, tab.BrowseLimit + 1);
 
-        var name = string.IsNullOrEmpty(schema)
-            ? quote(table.TableName)
-            : $"{quote(schema)}.{quote(table.TableName)}";
+    string BuildBrowseSql(QTableResponse table, int limit)
+        => BrowseSqlBuilder.Build(
+            SqlDialectMapping.Dialect(source?.Driver),
+            table.TableSchema.SchemaName,
+            table.TableName,
+            table.Columns.Values
+                .Where(c => c.IsKey == true)
+                .OrderBy(c => c.ColumnOrdinal)
+                .Select(c => c.ColumnName)
+                .ToList(),
+            limit);
 
-        var keys = table.Columns.Values
-            .Where(c => c.IsKey == true)
-            .OrderBy(c => c.ColumnOrdinal)
-            .Select(c => quote(c.ColumnName))
-            .ToList();
-
-        var orderBy = keys.Count == 0 ? "" : $" ORDER BY {string.Join(", ", keys)}";
-
-        return $"SELECT * FROM {name}{orderBy}";
-    }
+    string BuildCountSql(QTableResponse table)
+        => BrowseSqlBuilder.Count(SqlDialectMapping.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
 
     Func<string, string> Quoter()
     {
@@ -327,7 +429,7 @@ public partial class DatabaseQueryWorkspace
     async Task CreateViewAsync()
     {
         var content = new CreateViewDialogContent(
-            ViewDdlBuilder.Dialect(source?.Driver),
+            SqlDialectMapping.Dialect(source?.Driver),
             Schemas(),
             await ReadEditorSqlAsync(),
             _viewSource?.TableSchema.SchemaName ?? activeTab?.Table?.TableSchema.SchemaName,
@@ -385,7 +487,7 @@ public partial class DatabaseQueryWorkspace
     {
         if (ViewObject() is not { } table) return;
 
-        var plan = ViewDdlBuilder.Drop(ViewDdlBuilder.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
+        var plan = ViewDdlBuilder.Drop(SqlDialectMapping.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
 
         if (!plan.Ok)
         {

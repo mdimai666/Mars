@@ -127,7 +127,7 @@ else
                                       OnClick="RunActiveTabAsync">
                             Выполнить
                         </FluentButton>
-                        @if (activeTab?.Result?.Truncated == true)
+                        @if (activeTab?.CanLoadMore == true)
                         {
                             <FluentButton Appearance="Appearance.Neutral" Disabled="@(activeTab?.Loading == true)"
                                           OnClick="RunMoreAsync">

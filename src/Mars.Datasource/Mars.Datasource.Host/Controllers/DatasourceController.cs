@@ -68,7 +68,7 @@ public class DatasourceController : ControllerBase
     [HttpPost]
     public Task<UserActionResult<string[][]>> ExecuteAction([DefaultValue("default")] string slug, DatasourceActionRequest action, CancellationToken cancellationToken)
     {
-        return ds.ExecuteAction(action, cancellationToken);
+        return ds.ExecuteAction(slug, action, cancellationToken);
     }
 
     [HttpGet]

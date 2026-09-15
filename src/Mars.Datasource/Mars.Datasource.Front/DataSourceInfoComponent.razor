@@ -75,21 +75,33 @@
 
 @code {
     [Inject] public IDatasourceServiceClient service { get; set; } = default!;
+
+    /// <summary>Источник, к которому применяются действия. Пока страница утилит работает с основной базой.</summary>
+    [Parameter]
+    public string Slug { get; set; } = DatasourceConfig.DefaultSlug;
+
     bool Busy;
 
     UserActionResult<string[][]>? lastAction = null;
 
-    public async void SendTextAction(string actionName)
+    public async Task SendTextAction(string actionName)
     {
         Busy = true;
         StateHasChanged();
 
-        var res = await service.ExecuteAction("default", new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
-
-        lastAction = res;
-
-        Busy = false;
-        StateHasChanged();
+        try
+        {
+            lastAction = await service.ExecuteAction(Slug, new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
+        }
+        catch (Exception ex)
+        {
+            lastAction = new UserActionResult<string[][]> { Ok = false, Message = ex.Message, Data = [] };
+        }
+        finally
+        {
+            Busy = false;
+            StateHasChanged();
+        }
     }
 
 }

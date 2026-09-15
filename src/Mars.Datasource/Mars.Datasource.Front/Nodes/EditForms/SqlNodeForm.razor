@@ -35,9 +35,13 @@
                     {
                         <li><hr class="dropdown-divider"></li>
                     }
-                    <li><a class="dropdown-item" href="datasource/config"><i class="bi bi-gear"></i> Настроить</a></li>
+                    <li><a class="dropdown-item" href="@datasourceConfigUrl"><i class="bi bi-gear"></i> Настроить</a></li>
                 </ul>
             </div>
+            @if (listError is not null)
+            {
+                <div class="text-danger fz14px">@listError</div>
+            }
         </div>
         <div class="col">
             <label>input source</label>
@@ -87,20 +91,28 @@
 
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
     [Inject] IAIToolAppService _aiTool { get; set; } = default!;
+    [Inject] NavigationManager nav { get; set; } = default!;
 
     CodeEditor2? _editor = default!;
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+    string? listError;
 
-        _ = Task.Run(async () =>
+    string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
         {
             listDatasources = await service.ListSelectDatasource();
-            StateHasChanged();
-        });
+        }
+        catch (Exception ex)
+        {
+            listError = ex.Message;
+        }
     }
 
     public override async Task OnEditSave()

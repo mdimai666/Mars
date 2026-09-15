@@ -32,7 +32,8 @@ public static class MainDatasource
     {
 
         IOptionService optionService = app.ApplicationServices.GetRequiredService<IOptionService>()!;
-        optionService.RegisterOption<DatasourceOption>();
+        IDatasourceService datasourceService = app.ApplicationServices.GetRequiredService<IDatasourceService>();
+        optionService.RegisterOption<DatasourceOption>(datasourceService.InvalidateLocalDictCache);
 
         app.ApplicationServices.GetRequiredService<INodeImplementFactory>().RegisterAssembly(typeof(SqlNodeImpl).Assembly);
         app.ApplicationServices.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);

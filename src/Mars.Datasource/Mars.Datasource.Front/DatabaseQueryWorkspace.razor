@@ -3,8 +3,6 @@
 @using Mars.Datasource
 @using Mars.Datasource.Dto
 @using Mars.Datasource.Front.Services
-@using Mars.Contracts.Common
-@using Mars.WebApiClient.Interfaces
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject NavigationManager nav
@@ -16,6 +14,12 @@
             <span class="visually-hidden">Loading...</span>
         </div>
 
+    </div>
+}
+else if (errorMessage is not null)
+{
+    <div class="p-5">
+        <div class="alert alert-danger">@errorMessage</div>
     </div>
 }
 else
@@ -38,7 +42,7 @@ else
                     {
                         <li><hr class="dropdown-divider"></li>
                     }
-                    <li><a class="dropdown-item" href="datasource/config"><i class="bi bi-gear"></i> Настроить</a></li>
+                    <li><a class="dropdown-item" href="@datasourceConfigUrl"><i class="bi bi-gear"></i> Настроить</a></li>
                 </ul>
             </div>
 
@@ -48,10 +52,10 @@ else
             <aside class="flex-shrink-0" style="width:200px;">
                 <div class="1card h-100 bg-white custom-scroll1 overflow-scroll">
                     <div class="card-body p-2 ">
-                        <p class="card-text text-secondary">Tables (@database.Tables.Count)</p>
+                        <p class="card-text text-secondary">Tables (@database!.Tables.Count)</p>
                     </div>
                     <ul class="list-group ac">
-                        @foreach (var t in database.Tables)
+                        @foreach (var t in database!.Tables)
                         {
                             var table = t;
                             string _class = table == selTable ? "active" : "";
@@ -179,24 +183,44 @@ else
                             }
                             else
                             {
-                                <div class="overflow-scroll 1custom-scroll1 h-100" style="width:calc(100vw - 270px - 20px)">
-                                    <table class="table">
-                                        <tbody>
-                                            @foreach (var row in raw!)
-                                            {
+                                <div class="d-flex flex-column h-100">
+                                    <div class="flex-shrink-0 text-secondary fz14px">
+                                        @res!.Rows.Length rows in @res.ElapsedMs ms · @res.DatabaseDriver
+                                        @if (res.Truncated)
+                                        {
+                                            <span class="text-warning ms-2">показаны первые @MaxRows — в результате есть ещё строки</span>
+                                        }
+                                    </div>
+                                    <div class="overflow-scroll 1custom-scroll1 flex-fill" style="width:calc(100vw - 270px - 20px)">
+                                        <table class="table table-sm">
+                                            <thead>
                                                 <tr>
-                                                    @foreach (var col in row)
+                                                    @foreach (var column in res.Columns)
                                                     {
-                                                        <td>
-                                                            <span class="text-nowrap">
-                                                                @col
-                                                            </span>
-                                                        </td>
+                                                        <th>
+                                                            <span class="text-nowrap">@column.Name</span>
+                                                            <span class="text-secondary fz14px ms-1">@column.DataTypeName</span>
+                                                        </th>
                                                     }
                                                 </tr>
-                                            }
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var row in raw!)
+                                                {
+                                                    <tr>
+                                                        @foreach (var col in row)
+                                                        {
+                                                            <td>
+                                                                <span class="text-nowrap">
+                                                                    @col
+                                                                </span>
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             }
                         </section>
@@ -204,27 +228,5 @@ else
                 </div>
             </div>
         </section>
-
-        @*============*@
-        <div class="offcanvas offcanvas-bottom 1acrylic" data-bs-scroll="false" data-bs-backdrop="true" style="height:70vh" id="node-editor-offcanvas">
-            <div class="offcanvas-header">
-                <h3 class="offcanvas-title">Heading</h3>
-
-                <div class="__right">
-
-                    <button class="btn btn-primary">
-                        Deploay and Inject last
-                    </button>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-
-                </div>
-
-            </div>
-            <div class="offcanvas-body">
-                <p>Some text lorem ipsum.</p>
-                <button class="btn btn-secondary" type="button">A Button</button>
-            </div>
-        </div>
-        @*============*@
     </div>
 }

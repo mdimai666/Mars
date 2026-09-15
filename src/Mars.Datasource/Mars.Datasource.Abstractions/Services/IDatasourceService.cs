@@ -19,7 +19,7 @@ public interface IDatasourceService
     /// <summary>Выполнить запрос без возврата данных (INSERT/UPDATE/DELETE/DDL).</summary>
     public Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default);
 
-    public Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken);
+    public Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action, CancellationToken cancellationToken);
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource();
 
 }

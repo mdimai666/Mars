@@ -27,6 +27,10 @@
                                     <FormItem2 For="()=>config.Slug">
                                         <FluentTextField @bind-Value=@config.Slug />
                                     </FormItem2>
+                                    @if (SlugError(config) is string slugError)
+                                    {
+                                        <div class="text-danger fz14px">@slugError</div>
+                                    }
                                 </div>
                                 <div class="col col-lg-6">
                                     <div class="">
@@ -109,15 +113,19 @@
         opt.Configs.Remove(cfg);
     }
 
-    void DriverChanged(DatasourceConfig config, string value)
+    string? SlugError(DatasourceConfig config)
     {
-        config.Driver = value;
-        AfterChangeDriverSuggestConnectionString(config);
+        var error = DatasourceConfig.ValidateSlug(config.Slug);
+        if (error is not null) return error;
+
+        var duplicate = opt.Configs.Any(c => !ReferenceEquals(c, config)
+            && string.Equals(c.Slug, config.Slug, StringComparison.OrdinalIgnoreCase));
+
+        return duplicate ? "Slug уже занят другим источником" : null;
     }
 
     void AfterChangeDriverSuggestConnectionString(DatasourceConfig cfg)
     {
-        Console.WriteLine("Zee");
         if (string.IsNullOrEmpty(cfg.ConnectionString) || cfg.IsDefaultString())
         {
             cfg.ConnectionString = cfg.GetDefaultConnectionString();

@@ -136,25 +136,42 @@
       в `Mars.Datasource.Integration.Tests` появилась вставка строк (`SeedTodoAsync`) — раньше тест
       проверял только строку заголовков. В `WebApiClient.Integration.Tests` — `Query` и `NonQuery`.
 
-### Этап 2. Баги и UX ошибок
+### Этап 2. Баги и UX ошибок — сделано 2026-09-15
 
-- [ ] `PartDataSourceActions.razor`: абсолютный `slug=@Config.Slug`, кнопка неактивна при пустом slug
-      (правка бага №1 из раздела 3).
-- [ ] Абсолютные ссылки от `nav.BaseUri` вместо относительных (`DatabaseQueryWorkspace.razor:41`,
-      `SqlNodeForm.razor:38`).
-- [ ] `ExecuteAction` по slug: pg-запросы только для psql-источника, `BackupAsSQLFile` — только psql
-      (backup-драйвер постресовый) с внятным отказом для mssql/mysql; CLI `ds backup|restore` оставить
-      на `DefaultConfig` (slug в CLI не заводить).
-- [ ] Валидация slug при сохранении опции (`Components/EditDatasourceOptions.razor`) и защитно в
-      `DatasourceService`: формат `^[a-z0-9][a-z0-9_-]{1,31}$`, уникальность регистронезависимо,
-      `default` зарезервирован, `ToDictionary(StringComparer.OrdinalIgnoreCase)`.
-- [ ] `async void` → `async Task`, `StateHasChanged` через `InvokeAsync`, try/catch + видимая ошибка
-      вместо падения (`DatabaseQueryWorkspace`, `DataSourceInfoComponent`, `PartDataSourceActions`,
-      `SqlNodeForm`).
-- [ ] `RegisterOption<DatasourceOption>` с `onChangeHook` → `InvalidateLocalDictCache`
-      (`MainDatasource.cs:35`).
-- [ ] Подтверждение опасных операций в редакторе (`DROP/TRUNCATE/ALTER/DELETE без WHERE`).
-- [ ] Чистка: удалить `EnginesTests.cs`, переименовать дубль-расширение в `Mars.Datasource.Front`.
+- [x] `PartDataSourceActions.razor`: `Query tool` ведёт на `slug=@Config.Slug` через `nav.NavigateTo`
+      (было хардкод `slug=mssql`, из-за чего страница падала на чужом slug), кнопка заблокирована
+      при невалидном slug, под ней текст ошибки.
+- [x] Абсолютные ссылки от `nav.BaseUri` вместо относительных (`DatabaseQueryWorkspace`,
+      `SqlNodeForm`): свойства `datasourceConfigUrl`.
+- [x] `ExecuteAction` принимает slug: pg-«полезные» запросы и `BackupAsSQLFile` доступны только
+      для psql-источника (иначе внятный отказ), backup идёт по выбранному источнику, а не по `default`.
+      CLI `ds backup|restore` оставлен на `DefaultConfig`.
+- [x] Slug: правила в `DatasourceConfig.ValidateSlug` (2–32, `[a-z0-9_-]`, `default` зарезервирован),
+      инлайн-ошибка в `EditDatasourceOptions` (включая дубль, регистронезависимо). В `DatasourceService`
+      битые и повторяющиеся slug **пропускаются** при построении словаря — раньше `ToDictionary` падал
+      и «ломались» сразу все источники.
+- [x] `async void` убран везде (`DatabaseQueryWorkspace`, `DataSourceInfoComponent`,
+      `PartDataSourceActions`, `SqlNodeForm`), `StateHasChanged` больше не зовётся из `Task.Run`,
+      добавлены try/catch + видимые ошибки (в рабочей области — вместо падения показывается alert).
+- [x] `RegisterOption<DatasourceOption>` с `onChangeHook` → `InvalidateLocalDictCache`
+      (`MainDatasource.cs`).
+- [x] Подтверждение опасного SQL: `SqlSafety.IsDestructive` + диалог `DeleteConfirmationDialog`
+      (FluentUI `ShowConfirmationAsync` живёт только на конкретном `DialogService`, поэтому взят
+      репозиторный путь). Дополнительно к плану: подтверждения требует не только `DELETE` без `WHERE`,
+      но и `UPDATE` без `WHERE`.
+- [x] Чистка: `EnginesTests.cs` удалён; дубль-класс `WebApiClientDatasourceClientExtensions`
+      переименован в `WebApiClientDockerClientExtensions` — это была опечатка в `Mars.Docker.Front`,
+      из-за неё любой потребитель обоих модулей получал CS0104.
+- [x] Сверх плана (найдено по ходу): `DatasourceConfig.GetDatabaseName()` больше не падает на пустой
+      строке подключения; убрана мусорная ведущая `"` в дефолтной строке MSSQL; удалён отладочный
+      `Console.WriteLine("Zee")` и мёртвый `DriverChanged`; в результате запроса появились заголовки
+      колонок и строка «rows / ms / truncated» (раньше таблица выводилась и вовсе без заголовков),
+      удалён нерабочий offcanvas-блок из разметки рабочей области.
+- [x] Тесты: `SqlSafetyTests` (опасные/безопасные операторы, комментарии, `FirstWord`) и
+      `DatasourceConfigTests` (правила slug, устойчивость `GetDatabaseName`). `SqlSafety` переехал в
+      `Mars.Datasource.Abstractions`, чтобы покрываться тестами без ссылки на Razor-библиотеку.
+- [ ] Отмены запроса из UI пока нет: нужен `CancellationToken` в методах клиента и кнопка в новой
+      рабочей области (Этап 5). Отмена по разрыву HTTP-соединения уже работает — токен доходит до БД.
 
 ### Этап 3. Схема БД
 

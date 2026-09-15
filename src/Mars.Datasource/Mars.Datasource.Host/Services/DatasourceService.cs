@@ -51,7 +51,18 @@ internal class DatasourceService : IDatasourceService
     public void InvalidateLocalDictCache(DatasourceOption opt)
     {
         _optionValue = opt;
-        _configsCache = opt.Configs.ToDictionary(s => s.Slug, s => s);
+
+        // Битые и повторяющиеся slug пропускаем: раньше ToDictionary падал и «ломались» все источники сразу.
+        Dictionary<string, DatasourceConfig> configs = new(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var config in opt.Configs)
+        {
+            if (DatasourceConfig.ValidateSlug(config.Slug) is not null) continue;
+
+            configs.TryAdd(config.Slug, config);
+        }
+
+        _configsCache = configs;
     }
 
     void AutoUpdateConfig()
@@ -69,19 +80,22 @@ internal class DatasourceService : IDatasourceService
         InvalidateLocalDictCache(freshOptionValue);
     }
 
-    IDatasourceDriver ResolveEngine(string slug)
+    DatasourceConfig GetConfig(string slug)
     {
-        if (slug == "default")
+        if (string.Equals(slug, DatasourceConfig.DefaultSlug, StringComparison.OrdinalIgnoreCase))
         {
-            return ResolveEngine(_defaultConfig);
+            return _defaultConfig;
         }
 
         if (configs.TryGetValue(slug, out var config))
         {
-            return ResolveEngine(config);
+            return config;
         }
-        throw new ArgumentNullException("slug not found in DataSource configs");
+
+        throw new ArgumentException($"Источник данных \"{slug}\" не найден в настройках");
     }
+
+    IDatasourceDriver ResolveEngine(string slug) => ResolveEngine(GetConfig(slug));
 
     IDatasourceDriver ResolveEngine(DatasourceConfig config)
     {
@@ -159,7 +173,7 @@ internal class DatasourceService : IDatasourceService
         return result;
     }
 
-    public async Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken)
+    public async Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action, CancellationToken cancellationToken)
     {
         try
         {
@@ -179,7 +193,14 @@ internal class DatasourceService : IDatasourceService
 
             if (foundQuery is not null)
             {
-                var result = await Query("default", new SqlRequest { Sql = foundQuery }, cancellationToken);
+                var config = GetConfig(slug);
+
+                if (config.Driver != "psql")
+                {
+                    return Fail($"Действие \"{action.ActionId}\" доступно только для PostgreSQL, а источник \"{config.Slug}\" — {config.Driver}");
+                }
+
+                var result = await Query(slug, new SqlRequest { Sql = foundQuery }, cancellationToken);
                 return new UserActionResult<string[][]>
                 {
                     Ok = result.Ok,
@@ -199,11 +220,18 @@ internal class DatasourceService : IDatasourceService
             }
             else if (action.ActionId == "BackupAsSQLFile")
             {
+                var config = GetConfig(slug);
+
+                if (config.Driver != "psql")
+                {
+                    return Fail($"Резервная копия доступна только для PostgreSQL, а источник \"{config.Slug}\" — {config.Driver}");
+                }
+
                 string dateTimeFormat = "yyyy-MM-ddTHH-mm-ss";
-                string templateFilename = string.Format("{0}_{1}.sql", DefaultConfig.GetDatabaseName(), DateTime.Now.ToString(dateTimeFormat));
+                string templateFilename = string.Format("{0}_{1}.sql", config.GetDatabaseName(), DateTime.Now.ToString(dateTimeFormat));
                 string filePath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", templateFilename);
 
-                await _databaseBackupService.Backup(_defaultConfig, new Mars.Datasource.Abstractions.Models.BackupSettings
+                await _databaseBackupService.Backup(config, new Mars.Datasource.Abstractions.Models.BackupSettings
                 {
                     DumpMode = DumpMode.SchemaAndData,
                     Mode = BackupOutputMode.PlainSql,
@@ -214,12 +242,7 @@ internal class DatasourceService : IDatasourceService
             }
             else
             {
-                return new UserActionResult<string[][]>
-                {
-                    Message = $"Action \"{action.ActionId}\" not found",
-                    Ok = false,
-                    Data = []
-                };
+                return Fail($"Action \"{action.ActionId}\" not found");
             }
         }
         catch (Exception ex)
@@ -233,6 +256,13 @@ internal class DatasourceService : IDatasourceService
             };
         }
     }
+
+    static UserActionResult<string[][]> Fail(string message) => new()
+    {
+        Ok = false,
+        Message = message,
+        Data = [],
+    };
 
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource()
     {

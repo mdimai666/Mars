@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace Mars.Datasource.Abstractions.Models;
 
@@ -24,23 +25,48 @@ public class DatasourceConfig
 
     public static List<string> DriverList = ["psql", "mssql", "mysql"];
 
-    //[Display(Name = "Database")]
-    //public string Database { get; set; } = "";
+    /// <summary>Slug основной базы Mars — зарезервирован, в опции его задать нельзя.</summary>
+    public const string DefaultSlug = "default";
 
     public string Label => string.IsNullOrEmpty(Title) ? Slug : Title;
 
-    Dictionary<string, string> ConnStringParts() => ConnectionString.Split(';')
-            .Select(t => t.Split(new char[] { '=' }, 2))
-            .ToDictionary(t => t[0].Trim(), t => t[1].Trim(), StringComparer.InvariantCultureIgnoreCase);
+    /// <summary>
+    /// Правила slug. Возвращает текст ошибки или null. Дубли по slug проверяет тот, у кого есть весь список.
+    /// </summary>
+    public static string? ValidateSlug(string? slug)
+    {
+        if (string.IsNullOrWhiteSpace(slug)) return "Slug не может быть пустым";
+        if (slug.Equals(DefaultSlug, StringComparison.OrdinalIgnoreCase)) return $"Slug \"{DefaultSlug}\" зарезервирован";
+        if (slug.Length is < 2 or > 32) return "Slug: от 2 до 32 символов";
+        if (!Regex.IsMatch(slug, "^[a-z0-9][a-z0-9_-]*$")) return "Slug: строчные латинские буквы, цифры, дефис и подчёркивание";
 
-    public string GetDatabaseName() => ConnStringParts()["database"];
+        return null;
+    }
+
+    Dictionary<string, string> ConnStringParts()
+    {
+        Dictionary<string, string> parts = new(StringComparer.InvariantCultureIgnoreCase);
+
+        foreach (var pair in ConnectionString.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kv = pair.Split('=', 2);
+            if (kv.Length != 2) continue;
+
+            parts[kv[0].Trim()] = kv[1].Trim();
+        }
+
+        return parts;
+    }
+
+    public string GetDatabaseName()
+        => ConnStringParts().TryGetValue("database", out var name) ? name : "";
 
     public string GetDefaultConnectionString()
     {
         return Driver switch
         {
             "psql" => "Host=127.0.0.1;Database=database;Username=postgres;Password=123456;Port=5432",
-            "mssql" => "\"Server=.\\\\SQLEXPRESS;Database=database;User ID=sa;Password=123456;Trusted_Connection=True;TrustServerCertificate=True",
+            "mssql" => "Server=.\\SQLEXPRESS;Database=database;User ID=sa;Password=123456;Trusted_Connection=True;TrustServerCertificate=True",
             "mysql" => "server=127.0.0.1;database=database;uid=user;pwd=123456;port=3306;Connection Timeout=2;persistsecurityinfo=True;SslMode=none;AllowZeroDateTime=True",
             _ => ""
         };

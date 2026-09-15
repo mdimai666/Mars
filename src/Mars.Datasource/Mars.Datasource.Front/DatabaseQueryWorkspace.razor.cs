@@ -1,42 +1,41 @@
-using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Services;
-using Mars.Contracts.Common;
 using Mars.Core.Extensions;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
-using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Datasource.Front;
 
 public partial class DatabaseQueryWorkspace
 {
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
-    [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IAIToolAppService _aiTool { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
 
     bool Busy;
 
-    string _dataSourceConfigSlug = "default";
+    string _dataSourceConfigSlug = DatasourceConfig.DefaultSlug;
 
     [Parameter]
     public string DataSourceConfigSlug
     {
-        get => _dataSourceConfigSlug ?? "default";
+        get => string.IsNullOrWhiteSpace(_dataSourceConfigSlug) ? DatasourceConfig.DefaultSlug : _dataSourceConfigSlug;
         set
         {
             if (_dataSourceConfigSlug != value)
             {
                 _dataSourceConfigSlug = value;
-                Load();
+                _ = LoadAsync();
             }
         }
     }
 
-    QDatabaseStructureResponse database = null!;
+    QDatabaseStructureResponse? database;
 
     QTableResponse? selTable = null;
 
@@ -48,40 +47,48 @@ public partial class DatabaseQueryWorkspace
 
     bool loadingQuery = false;
 
+    string? errorMessage;
+
     CodeEditor2? _editor = default!;
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = [];
 
     string thisurl = "";
 
+    /// <summary>Абсолютный адрес от base path: относительный ломается на вложенных маршрутах.</summary>
+    string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
+
     protected override void OnInitialized()
     {
-        //Console.WriteLine(">>>I: " + DataSourceConfigSlug);
         base.OnInitialized();
         thisurl = new Uri(nav.Uri).LocalPath;
-        Load();
+        _ = LoadAsync();
     }
 
-    async void Load()
+    async Task LoadAsync()
     {
-        //Console.WriteLine(">>>L: " + DataSourceConfigSlug);
-
         Busy = true;
+        errorMessage = null;
         StateHasChanged();
 
-        database = await service.DatabaseStructure(DataSourceConfigSlug);
-
-        _ = Task.Run(async () =>
+        try
         {
+            database = await service.DatabaseStructure(DataSourceConfigSlug);
             listDatasources = await service.ListSelectDatasource();
+        }
+        catch (Exception ex)
+        {
+            database = null;
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            Busy = false;
             StateHasChanged();
-        });
-
-        Busy = false;
-        StateHasChanged();
+        }
     }
 
-    async void OnClickTable(QTableResponse table)
+    async Task OnClickTable(QTableResponse table)
     {
         selTable = table;
 
@@ -101,54 +108,64 @@ public partial class DatabaseQueryWorkspace
         return $"SELECT * FROM {q}{tableName}{q}\nLIMIT 20";
     }
 
-    async void ClickQuery()
+    async Task ClickQuery()
     {
-        if (selTable is not null)
-        {
-            loadingQuery = true;
-            StateHasChanged();
+        if (selTable is null) return;
 
+        loadingQuery = true;
+        StateHasChanged();
+
+        try
+        {
             _ = WaitHelper.WaitForNotNull(() => _editor, 2000);
 
             string sql = await _editor!.GetValue();
 
-            if (string.IsNullOrEmpty(sql))
+            if (string.IsNullOrWhiteSpace(sql))
             {
                 _ = _messageService.Error("SQL query is empty!");
-                loadingQuery = false;
-                StateHasChanged();
+                return;
+            }
+
+            if (SqlSafety.IsDestructive(sql) && !await ConfirmDestructiveAsync(sql))
+            {
                 return;
             }
 
             res = await service.Query(DataSourceConfigSlug, new SqlRequest { Sql = sql, MaxRows = MaxRows });
-
+        }
+        catch (Exception ex)
+        {
+            res = new QueryResultDto { Ok = false, Message = ex.Message };
+        }
+        finally
+        {
             loadingQuery = false;
             StateHasChanged();
         }
     }
 
-    async void ShowRecords(QTableResponse table)
+    async Task<bool> ConfirmDestructiveAsync(string sql)
+    {
+        var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
+            (MarkupString)$"Запрос <b>{SqlSafety.FirstWord(sql)}</b> изменяет данные или структуру базы. Выполнить?",
+            new DialogParameters
+            {
+                Title = "Подтверждение запроса",
+                Modal = true,
+                PreventDismissOnOverlayClick = false,
+            });
+
+        var result = await dialog.Result;
+
+        return !result.Cancelled;
+    }
+
+    async Task ShowRecords(QTableResponse table)
     {
         selTable = table;
         await Task.Delay(100);
 
-        ClickQuery();
+        await ClickQuery();
     }
-
-    //=================
-    //private MonacoEditor? _editor { get; set; }
-
-    //private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
-    //{
-
-    //    return new StandaloneEditorConstructionOptions
-    //        {
-
-    //            AutomaticLayout = true,
-    //            Language = "sql",
-    //            Value = "SELECT * from posts",
-
-    //        };
-    //}
-
 }

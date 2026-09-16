@@ -86,3 +86,19 @@ export function f_editor_doaction(action_id) {
     let editor = monaco.editor.getEditors()[0].getAction(action_id);
     editor.run();
 }
+
+export function mvi_getCaret(el) {
+    return el?.selectionStart ?? 0;
+}
+
+export function mvi_setCaret(el, pos) {
+    if (!el) return;
+
+    el.focus();
+    let p = Math.max(0, Math.min(pos, el.value?.length ?? 0));
+    el.setSelectionRange(p, p);
+}
+
+export function mvi_syncScroll(input, highlight) {
+    if (input && highlight) highlight.scrollLeft = input.scrollLeft;
+}

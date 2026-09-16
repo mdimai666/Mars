@@ -1,0 +1,387 @@
+@using System.Text.RegularExpressions
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="mars-value-input @(IsExpression ? "mvi-expr" : "mvi-const") @(AnyPopupOpen ? "is-popup-open" : null)">
+    <span class="mvi-tag">@ModeLabel</span>
+
+    <div class="mvi-field">
+        <pre @ref="_highlight" class="mvi-highlight" aria-hidden="true">@Highlight</pre>
+        <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
+               value="@Value" placeholder="@Placeholder"
+               @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
+    </div>
+
+    <div class="mvi-actions">
+        <button type="button" class="mvi-btn" tabindex="-1" title="Pick from context"
+                @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
+        @if (IsExpression)
+        {
+            <button type="button" class="mvi-btn" tabindex="-1" title="Operations"
+                    @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
+        }
+    </div>
+
+    <span class="mvi-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+    @if (_pickerOpen)
+    {
+        <div class="mvi-popup mvi-popup-tree">
+            @foreach (var row in TreeRows())
+            {
+                <div class="mvi-row" style="padding-left:@(6 + row.Depth * 12)px" @key="row.Node.Path"
+                     @onmousedown:preventDefault="true" @onclick="() => OnTreeRowClick(row)">
+                    <span class="mvi-bullet">@(row.Branch ? (IsCollapsed(row.Node.Path) ? "▸" : "▾") : "·")</span>
+                    <span class="mvi-name">@row.Node.Name</span>
+                    @if (row.Node.Type is not null)
+                    {
+                        <span class="mvi-type">@row.Node.Type</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @if (_suggestOpen && _suggestions.Count > 0)
+    {
+        <div class="mvi-popup mvi-popup-suggest">
+            @for (var i = 0; i < _suggestions.Count; i++)
+            {
+                var item = _suggestions[i];
+                var active = i == _activeIndex;
+                <div class="mvi-row @(active ? "is-active" : null)" @key="item.Path"
+                     @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
+                    <span class="mvi-name">@item.Path</span>
+                    <span class="mvi-type">@item.Type</span>
+                </div>
+            }
+        </div>
+    }
+
+    @if (_opsOpen)
+    {
+        <div class="mvi-popup mvi-popup-ops">
+            @foreach (var group in OpsGroups)
+            {
+                <div class="mvi-group" @key="group.Title">@group.Title</div>
+                @foreach (var op in group.Items)
+                {
+                    <div class="mvi-row" @key="op" @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
+                        <span class="mvi-name">@op</span>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    // Список корней дублирует InputValueResolver.RootPathRegex: пока поле живёт без ссылки
+    // на проект выражений, при появлении провайдера подсказок корни должны прийти из одного места.
+    static readonly Regex TokenRegex = new(
+        "(\"(?:[^\"\\\\]|\\\\.)*\")|(@)|(\\b(?:msg|GlobalContext|FlowContext|VarNode)(?:\\.[A-Za-z_][A-Za-z0-9_]*)+)|(\\b\\d+(?:\\.\\d+)?)|([+\\-*/%(),.:<>=?!]+)",
+        RegexOptions.Compiled);
+
+    static readonly Regex TokenBeforeCaretRegex = new(
+        @"(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_.]*)$", RegexOptions.Compiled);
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "value";
+
+    [Parameter]
+    public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
+
+    ElementReference _input;
+    ElementReference _highlight;
+    string _prefix = "";
+    bool _suggestOpen;
+    bool _pickerOpen;
+    bool _opsOpen;
+    bool _forceSuggest;
+    int _activeIndex;
+    int? _pendingCaret;
+    List<ValueFieldInfo> _suggestions = [];
+    readonly HashSet<string> _collapsed = [];
+    IReadOnlyCollection<ValueFieldInfo>? _candidatesSource;
+    FieldTreeNode? _tree;
+
+    NodeFormEditorJsInterop? _js;
+    NodeFormEditorJsInterop Js => _js ??= new NodeFormEditorJsInterop(JS);
+
+    bool IsExpression => Value?.StartsWith('@') ?? false;
+    string ModeLabel => IsExpression ? "@ expr" : "str";
+    bool AnyPopupOpen => _suggestOpen || _pickerOpen || _opsOpen;
+    IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? MarsValueInputMocks.Fields;
+    static IReadOnlyList<ValueOpGroup> OpsGroups => MarsValueInputMocks.Operations;
+
+    protected override void OnParametersSet()
+    {
+        if (_tree is null || !ReferenceEquals(_candidatesSource, Candidates))
+        {
+            _candidatesSource = Candidates;
+            _tree = BuildTree(EffectiveCandidates);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingCaret is int pos)
+        {
+            _pendingCaret = null;
+            await Js.ValueInput_SetCaret(_input, pos);
+        }
+
+        await Js.ValueInput_SyncScroll(_input, _highlight);
+    }
+
+    RenderFragment Highlight => builder =>
+    {
+        var value = Value ?? "";
+
+        if (!IsExpression)
+        {
+            builder.AddContent(0, value);
+            return;
+        }
+
+        var pos = 0;
+        foreach (Match match in TokenRegex.Matches(value))
+        {
+            if (match.Index > pos)
+                builder.AddContent(1, value[pos..match.Index]);
+
+            builder.OpenElement(2, "span");
+            builder.AddAttribute(3, "class", TokenCss(match));
+            builder.AddContent(4, match.Value);
+            builder.CloseElement();
+
+            pos = match.Index + match.Length;
+        }
+
+        if (pos < value.Length)
+            builder.AddContent(5, value[pos..]);
+    };
+
+    static string TokenCss(Match match) => match.Groups[1].Success ? "tk-str"
+        : match.Groups[2].Success ? "tk-at"
+        : match.Groups[3].Success ? "tk-path"
+        : match.Groups[4].Success ? "tk-num"
+        : "tk-op";
+
+    async Task OnInput(ChangeEventArgs e)
+    {
+        await SetValue(e.Value?.ToString() ?? "");
+        await RefreshPrefixAsync();
+        UpdateSuggestions();
+    }
+
+    async Task OnCaretMove()
+    {
+        await RefreshPrefixAsync();
+        UpdateSuggestions();
+    }
+
+    async Task OnKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or " ")
+            return;
+
+        await OnCaretMove();
+    }
+
+    async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            ClosePopups();
+            return;
+        }
+
+        if (e.CtrlKey && e.Code == "Space")
+        {
+            _forceSuggest = true;
+            await RefreshPrefixAsync();
+            UpdateSuggestions();
+            return;
+        }
+
+        if (!_suggestOpen)
+            return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                _activeIndex = Math.Min(_activeIndex + 1, _suggestions.Count - 1);
+                break;
+            case "ArrowUp":
+                _activeIndex = Math.Max(_activeIndex - 1, 0);
+                break;
+            case "Tab" when _suggestions.Count > 0:
+                await InsertSuggestion(_suggestions[Math.Clamp(_activeIndex, 0, _suggestions.Count - 1)].Path);
+                break;
+            case " ":
+                _suggestOpen = false;
+                break;
+        }
+    }
+
+    async Task OnTreeRowClick((FieldTreeNode Node, int Depth, bool Branch) row)
+    {
+        if (row.Branch)
+        {
+            if (!_collapsed.Remove(row.Node.Path))
+                _collapsed.Add(row.Node.Path);
+            return;
+        }
+
+        await InsertText(row.Node.Path, replacePrefix: false);
+    }
+
+    void TogglePicker()
+    {
+        _pickerOpen = !_pickerOpen;
+        _suggestOpen = false;
+        _opsOpen = false;
+    }
+
+    void ToggleOps()
+    {
+        _opsOpen = !_opsOpen;
+        _pickerOpen = false;
+        _suggestOpen = false;
+    }
+
+    void ClosePopups()
+    {
+        _suggestOpen = false;
+        _pickerOpen = false;
+        _opsOpen = false;
+        _forceSuggest = false;
+    }
+
+    void UpdateSuggestions()
+    {
+        _activeIndex = 0;
+        _suggestOpen = IsExpression && (_forceSuggest || _prefix.Contains('.'));
+
+        _suggestions = !_suggestOpen
+            ? []
+            : [.. EffectiveCandidates
+                .Where(c => c.Path.StartsWith(_prefix, StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(c.Path, _prefix, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(c => c.Path, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    async Task InsertSuggestion(string path) => await InsertText(path, replacePrefix: true);
+
+    async Task InsertSnippet(string text) => await InsertText(text, replacePrefix: false);
+
+    async Task InsertText(string text, bool replacePrefix)
+    {
+        var value = Value ?? "";
+        var caret = Math.Clamp(await Js.ValueInput_GetCaret(_input), 0, value.Length);
+        var start = replacePrefix ? Math.Max(0, caret - _prefix.Length) : caret;
+
+        if (!value.StartsWith('@'))
+        {
+            value = "@" + value;
+            start++;
+            caret++;
+        }
+
+        await SetValue(value[..start] + text + value[caret..]);
+
+        ClosePopups();
+        _pendingCaret = start + text.Length;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task RefreshPrefixAsync()
+    {
+        var value = Value ?? "";
+        var caret = Math.Clamp(await Js.ValueInput_GetCaret(_input), 0, value.Length);
+        var match = TokenBeforeCaretRegex.Match(value[..caret]);
+        _prefix = match.Success ? match.Groups[1].Value : "";
+    }
+
+    async Task SetValue(string value)
+    {
+        if (value == Value)
+            return;
+
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    bool IsCollapsed(string path) => _collapsed.Contains(path);
+
+    IEnumerable<(FieldTreeNode Node, int Depth, bool Branch)> TreeRows()
+    {
+        if (_tree is null)
+            yield break;
+
+        foreach (var (node, depth) in Walk(_tree, 0))
+            yield return (node, depth, node.Children.Count > 0);
+    }
+
+    IEnumerable<(FieldTreeNode Node, int Depth)> Walk(FieldTreeNode node, int depth)
+    {
+        foreach (var child in node.Children)
+        {
+            yield return (child, depth);
+
+            if (child.Children.Count > 0 && !_collapsed.Contains(child.Path))
+                foreach (var nested in Walk(child, depth + 1))
+                    yield return nested;
+        }
+    }
+
+    static FieldTreeNode BuildTree(IEnumerable<ValueFieldInfo> fields)
+    {
+        var root = new FieldTreeNode();
+
+        foreach (var field in fields)
+        {
+            var parts = field.Path.Split('.');
+            var current = root;
+
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var node = current.Children.FirstOrDefault(c => c.Name == parts[i]);
+                if (node is null)
+                {
+                    node = new FieldTreeNode { Name = parts[i], Path = string.Join('.', parts[..(i + 1)]) };
+                    current.Children.Add(node);
+                }
+
+                if (i == parts.Length - 1)
+                    node.Type = field.Type;
+
+                current = node;
+            }
+        }
+
+        return root;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_js is not null)
+            await _js.DisposeAsync();
+    }
+
+    sealed class FieldTreeNode
+    {
+        public string Name { get; init; } = "";
+        public string Path { get; init; } = "";
+        public string? Type { get; set; }
+        public List<FieldTreeNode> Children { get; } = [];
+    }
+}

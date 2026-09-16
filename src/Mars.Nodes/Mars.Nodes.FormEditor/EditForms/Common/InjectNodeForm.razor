@@ -15,6 +15,10 @@
             <b>@InjectNode.PayloadKey</b> becomes <code>msg.Payload</code>, any other key becomes <code>msg.&lt;key&gt;</code>
         </div>
 
+        <FormItem2 For="()=>Email">
+            <MarsValueInput @bind-Value=Email />
+        </FormItem2>
+
         <FluentSortableList Id="injectFields" Handle="true" Items="Node.Fields" OnUpdate="@SortList" Context="item">
             <ItemTemplate>
                 <div class="sortable-grab">
@@ -79,4 +83,5 @@
 
     void DeleteItem(InjectNodeField item) => Node.Fields = Node.Fields.Where(s => s != item).ToArray();
 
+    public string Email { get; set; } = "";
 }

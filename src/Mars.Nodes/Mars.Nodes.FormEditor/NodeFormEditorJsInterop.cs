@@ -1,4 +1,5 @@
 using System.Drawing;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Mars.Nodes.FormEditor;
@@ -50,5 +51,23 @@ public class NodeFormEditorJsInterop : IAsyncDisposable
     {
         var module = await moduleTask.Value;
         await module.InvokeVoidAsync("f_editor_doaction", actionId);
+    }
+
+    public async ValueTask<int> ValueInput_GetCaret(ElementReference element)
+    {
+        var module = await moduleTask.Value;
+        return await module.InvokeAsync<int>("mvi_getCaret", element);
+    }
+
+    public async ValueTask ValueInput_SetCaret(ElementReference element, int position)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_setCaret", element, position);
+    }
+
+    public async ValueTask ValueInput_SyncScroll(ElementReference input, ElementReference highlight)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_syncScroll", input, highlight);
     }
 }

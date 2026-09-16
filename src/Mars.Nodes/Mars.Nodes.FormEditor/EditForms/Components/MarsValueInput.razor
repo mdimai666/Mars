@@ -2,6 +2,7 @@
 @using System.Text.RegularExpressions
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
+@inject IServiceProvider Services
 @implements IAsyncDisposable
 
 <div @ref="_root" class="@RootClass" @attributes="RootAttributes">
@@ -9,7 +10,7 @@
         <span class="mvi-tag">@ModeLabel</span>
 
         <div class="mvi-field">
-            <pre @ref="_highlight" class="mvi-highlight" aria-hidden="true">@Highlight</pre>
+            <pre class="mvi-highlight" aria-hidden="true">@Highlight</pre>
             <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
                    role="combobox" aria-autocomplete="list"
                    aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
@@ -189,7 +190,6 @@
     ElementReference _root;
     ElementReference _body;
     ElementReference _input;
-    ElementReference _highlight;
     ElementReference _popup;
     readonly string _uid = Guid.NewGuid().ToString("N")[..6];
     string _prefix = "";
@@ -210,7 +210,18 @@
     DotNetObjectReference<MarsValueInput>? _selfRef;
 
     NodeFormEditorJsInterop? _js;
-    NodeFormEditorJsInterop Js => _js ??= new NodeFormEditorJsInterop(JS);
+    bool _ownsJs;
+    string? _popupKey;
+    NodeFormEditorJsInterop Js => _js ??= ResolveJs();
+
+    NodeFormEditorJsInterop ResolveJs()
+    {
+        if (Services.GetService(typeof(NodeFormEditorJsInterop)) is NodeFormEditorJsInterop shared)
+            return shared;
+
+        _ownsJs = true;
+        return new NodeFormEditorJsInterop(JS);
+    }
 
     string ListId => $"mvi-list-{_uid}";
     string ErrorId => $"mvi-err-{_uid}";
@@ -318,21 +329,26 @@
         if (firstRender)
         {
             _selfRef = DotNetObjectReference.Create(this);
-            await Js.ValueInput_OutsideClick(_root, _selfRef, nameof(OnOutsideClick));
-            await Js.ValueInput_OnPaste(_input, _selfRef, nameof(OnPasteText));
+            await Js.ValueInput_Bind(_root, _input, _selfRef, nameof(OnOutsideClick), nameof(OnPasteText));
         }
 
-        if (PopupVisible)
-            await Js.ValueInput_PopupOpen(_popup, _body, _dateOpen ? "left" : "right");
+        var popupKey = PopupVisible ? PopupKind : null;
+        if (popupKey != _popupKey)
+        {
+            _popupKey = popupKey;
+
+            if (popupKey is not null)
+                await Js.ValueInput_PopupOpen(_popup, _body, _dateOpen ? "left" : "right");
+        }
 
         if (_pendingCaret is int pos)
         {
             _pendingCaret = null;
             await Js.ValueInput_SetCaret(_input, pos);
         }
-
-        await Js.ValueInput_SyncScroll(_input, _highlight);
     }
+
+    string? PopupKind => _pickerOpen ? "picker" : _opsOpen ? "ops" : _suggestOpen ? "suggest" : _dateOpen ? "date" : null;
 
     [JSInvokable]
     public void OnOutsideClick()
@@ -400,22 +416,28 @@
         _opsOpen = false;
         _dateOpen = false;
 
-        await RefreshPrefixAsync();
-        UpdateSuggestions();
-    }
-
-    async Task OnCaretMove()
-    {
-        if (Disabled)
+        if (!IsExpression && !_suggestOpen)
             return;
 
         await RefreshPrefixAsync();
         UpdateSuggestions();
     }
 
+    async Task OnCaretMove()
+    {
+        if (Disabled || !IsExpression && !_suggestOpen)
+            return;
+
+        await RefreshPrefixAsync();
+        UpdateSuggestions();
+    }
+
+    static readonly string[] CaretMoveKeys =
+        ["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
+
     async Task OnKeyUp(KeyboardEventArgs e)
     {
-        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or "Enter" or " " or "F4")
+        if (Array.IndexOf(CaretMoveKeys, e.Key) < 0)
             return;
 
         await OnCaretMove();
@@ -815,7 +837,8 @@
             {
             }
 
-            await _js.DisposeAsync();
+            if (_ownsJs)
+                await _js.DisposeAsync();
         }
 
         _selfRef?.Dispose();

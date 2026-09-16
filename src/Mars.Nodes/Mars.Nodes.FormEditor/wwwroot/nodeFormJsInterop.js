@@ -99,9 +99,22 @@ export function mvi_setCaret(el, pos) {
     el.setSelectionRange(p, p);
 }
 
-export function mvi_syncScroll(input, highlight) {
-    if (input instanceof HTMLElement && highlight instanceof HTMLElement)
-        highlight.scrollLeft = input.scrollLeft;
+function mvi_bindScroll(input) {
+    if (!(input instanceof HTMLElement) || input.__mviScroll) return;
+
+    const handler = () => {
+        const highlight = input.parentElement?.querySelector('.mvi-highlight');
+        if (highlight) highlight.scrollLeft = input.scrollLeft;
+    };
+
+    input.__mviScroll = handler;
+    input.addEventListener('scroll', handler);
+}
+
+export function mvi_bind(root, input, dotNetRef, outsideMethod, pasteMethod) {
+    mvi_outsideClick(root, dotNetRef, outsideMethod);
+    mvi_onPaste(input, dotNetRef, pasteMethod);
+    mvi_bindScroll(input);
 }
 
 const mviAnchors = new Map();
@@ -112,7 +125,7 @@ function mviPlace(anchor) {
 
     const { popup, align } = entry;
     if (!popup.isConnected) {
-        mviAnchors.delete(anchor);
+        mviForget(anchor);
         return;
     }
 
@@ -136,20 +149,35 @@ function mviPlace(anchor) {
     popup.style.left = `${Math.round(left)}px`;
 }
 
+function mviForget(anchor) {
+    const entry = mviAnchors.get(anchor);
+    if (!entry) return;
+
+    entry.observer?.disconnect();
+    mviAnchors.delete(anchor);
+}
+
 export function mvi_popupOpen(popup, anchor, align) {
     if (!(popup instanceof HTMLElement) || !(anchor instanceof HTMLElement)) return;
 
     if (!popup.matches(':popover-open')) popup.showPopover();
 
-    mviAnchors.set(anchor, { popup, align });
+    mviForget(anchor);
+
+    const observer = new ResizeObserver(() => mviPlace(anchor));
+    observer.observe(popup);
+
+    mviAnchors.set(anchor, { popup, align, observer });
     mviPlace(anchor);
 }
 
-export function mvi_outsideClick(root, dotNetRef, method) {
+function mvi_outsideClick(root, dotNetRef, method) {
     if (!root || root.__mviOutside) return;
 
     const handler = (e) => {
         if (root.contains(e.target)) return;
+
+        if (!root.querySelector('[popover]:popover-open')) return;
 
         dotNetRef.invokeMethodAsync(method);
     };
@@ -158,7 +186,7 @@ export function mvi_outsideClick(root, dotNetRef, method) {
     document.addEventListener('pointerdown', handler, true);
 }
 
-export function mvi_onPaste(el, dotNetRef, method) {
+function mvi_onPaste(el, dotNetRef, method) {
     if (!el || el.__mviPaste) return;
 
     const handler = (e) => {
@@ -183,7 +211,12 @@ export function mvi_dispose(root, input, anchor) {
         input.__mviPaste = null;
     }
 
-    if (anchor) mviAnchors.delete(anchor);
+    if (input?.__mviScroll) {
+        input.removeEventListener('scroll', input.__mviScroll);
+        input.__mviScroll = null;
+    }
+
+    if (anchor) mviForget(anchor);
 }
 
 document.addEventListener('scroll', () => mviAnchors.forEach((_, anchor) => mviPlace(anchor)), true);

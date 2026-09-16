@@ -65,28 +65,17 @@ public class NodeFormEditorJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("mvi_setCaret", element, position);
     }
 
-    public async ValueTask ValueInput_SyncScroll(ElementReference input, ElementReference highlight)
+    public async ValueTask ValueInput_Bind(ElementReference root, ElementReference input, object dotNetRef,
+                                          string outsideClickMethod, string pasteMethod)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("mvi_syncScroll", input, highlight);
+        await module.InvokeVoidAsync("mvi_bind", root, input, dotNetRef, outsideClickMethod, pasteMethod);
     }
 
     public async ValueTask ValueInput_PopupOpen(ElementReference popup, ElementReference anchor, string align)
     {
         var module = await moduleTask.Value;
         await module.InvokeVoidAsync("mvi_popupOpen", popup, anchor, align);
-    }
-
-    public async ValueTask ValueInput_OutsideClick(ElementReference root, object dotNetRef, string methodName)
-    {
-        var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("mvi_outsideClick", root, dotNetRef, methodName);
-    }
-
-    public async ValueTask ValueInput_OnPaste(ElementReference element, object dotNetRef, string methodName)
-    {
-        var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("mvi_onPaste", element, dotNetRef, methodName);
     }
 
     public async ValueTask ValueInput_Dispose(ElementReference root, ElementReference input, ElementReference anchor)

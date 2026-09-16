@@ -31,6 +31,7 @@ public static class MainNodeWorkspace
         if (!services.Any(d => d.ServiceType == typeof(HotKeys))) services.AddHotKeys2();
 
         services.AddScoped<NodeWorkspaceJsInterop>();
+        services.AddScoped<NodeFormEditorJsInterop>();
 
         return services;
     }

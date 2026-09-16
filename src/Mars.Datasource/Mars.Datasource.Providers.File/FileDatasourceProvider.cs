@@ -7,28 +7,32 @@ using Mars.Datasource.Contracts.Models;
 namespace Mars.Datasource.Providers.File;
 
 /// <summary>
-/// Файл источника как таблица: CSV и листы XLSX из <c>data/datasource/&lt;slug&gt;/files/</c>.
-/// Запрос — предикат Dynamic LINQ (<c>val.num(age) &gt; 30</c>), пустой запрос отдаёт все строки.
+/// Файлы источника как таблицы: CSV и листы XLSX из медиа-хранилища Mars или с диска хоста.
+/// Запрос — предикат Dynamic LINQ (<c>Val.Num(age) &gt; 30</c>), пустой запрос отдаёт все строки.
 /// </summary>
 public class FileDatasourceProvider : IDatasourceProvider
 {
     /// <summary>Файл читается целиком в память, поэтому у выборки есть жёсткий предел.</summary>
     public const int MaxSourceRows = 100_000;
 
+    /// <summary>Разделитель листа в идентификаторе объекта: <c>книга.xlsx#Лист1</c>.
+    /// В пути файла он практически не встречается, а ':' занят диском в Windows-путях.</summary>
+    public const char SheetSeparator = '#';
+
     readonly DatasourceConfig _config;
-    readonly IDatasourceStore _store;
+    readonly IDatasourceFileSource _files;
     readonly IReadOnlyList<ITabularFileReader> _readers;
     readonly FileSourceSettings _settings;
 
-    public FileDatasourceProvider(DatasourceConfig config, IDatasourceStore store)
-        : this(config, store, [new CsvTabularFileReader(), new XlsxTabularFileReader()])
+    public FileDatasourceProvider(DatasourceConfig config, IDatasourceFileSource files)
+        : this(config, files, [new CsvTabularFileReader(), new XlsxTabularFileReader()])
     {
     }
 
-    public FileDatasourceProvider(DatasourceConfig config, IDatasourceStore store, IReadOnlyList<ITabularFileReader> readers)
+    public FileDatasourceProvider(DatasourceConfig config, IDatasourceFileSource files, IReadOnlyList<ITabularFileReader> readers)
     {
         _config = config;
-        _store = store;
+        _files = files;
         _readers = readers;
         _settings = FileSourceSettings.From(config);
     }
@@ -39,25 +43,24 @@ public class FileDatasourceProvider : IDatasourceProvider
         CanBrowse = true,
     };
 
-    string ProviderName => DatasourceKind.File;
-
     public Task<DatasourceCatalog> Catalog(CancellationToken cancellationToken = default)
     {
         DatasourceCatalogGroup group = new() { Name = "" };
 
-        foreach (var fileName in _store.ListDataFiles(_config.Slug))
+        foreach (var reference in _settings.Files)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (Reader(fileName) is not { } reader) continue;
+            if (Reader(reference) is not { } reader) continue;
 
-            using var stream = _store.OpenDataFile(_config.Slug, fileName);
+            using var stream = _files.OpenRead(reference);
 
             var sheets = reader.Read(stream, SampleOptions());
+            var singleSheet = sheets.Count == 1;
 
-            for (var index = 0; index < sheets.Count; index++)
+            foreach (var sheet in sheets)
             {
-                group.Objects.Add(ToObject(fileName, sheets[index], sheets.Count == 1));
+                group.Objects.Add(ToObject(reference, sheet, singleSheet));
             }
         }
 
@@ -78,7 +81,7 @@ public class FileDatasourceProvider : IDatasourceProvider
 
         QueryResultDto result = new()
         {
-            DatabaseDriver = ProviderName,
+            DatabaseDriver = DatasourceKind.File,
             Command = request.Query,
         };
 
@@ -124,7 +127,7 @@ public class FileDatasourceProvider : IDatasourceProvider
         {
             Ok = false,
             Message = "Файловый источник доступен только для чтения",
-            DatabaseDriver = ProviderName,
+            DatabaseDriver = DatasourceKind.File,
         });
 
     TabularReadOptions SampleOptions() => new()
@@ -136,17 +139,17 @@ public class FileDatasourceProvider : IDatasourceProvider
 
     TabularSheet Read(string? objectId, int maxRows, CancellationToken cancellationToken)
     {
-        var (fileName, sheetName) = SplitObjectId(ResolveObjectId(objectId));
+        var (reference, sheetName) = SplitObjectId(ResolveObjectId(objectId));
 
-        if (!_store.DataFileExists(_config.Slug, fileName))
+        if (!_files.Exists(reference))
         {
-            throw new FileNotFoundException($"Файл источника \"{fileName}\" не найден", fileName);
+            throw new FileNotFoundException($"Файл источника \"{reference}\" не найден", reference);
         }
 
-        var reader = Reader(fileName)
-            ?? throw new NotSupportedException($"Формат файла \"{fileName}\" не поддерживается: нужны csv или xlsx");
+        var reader = Reader(reference)
+            ?? throw new NotSupportedException($"Формат файла \"{reference}\" не поддерживается: нужны csv или xlsx");
 
-        using var stream = _store.OpenDataFile(_config.Slug, fileName);
+        using var stream = _files.OpenRead(reference);
 
         var sheets = reader.Read(stream, new TabularReadOptions
         {
@@ -160,48 +163,54 @@ public class FileDatasourceProvider : IDatasourceProvider
 
         return sheets.FirstOrDefault()
             ?? throw new InvalidOperationException(sheetName is null
-                ? $"В файле \"{fileName}\" нет данных"
-                : $"Лист \"{sheetName}\" не найден в файле \"{fileName}\"");
+                ? $"В файле \"{reference}\" нет данных"
+                : $"Лист \"{sheetName}\" не найден в файле \"{reference}\"");
     }
 
     string ResolveObjectId(string? objectId)
     {
         if (!string.IsNullOrWhiteSpace(objectId)) return objectId.Trim();
 
-        if (!string.IsNullOrWhiteSpace(_settings.File)) return _settings.File;
-
-        var files = _store.ListDataFiles(_config.Slug).ToList();
-
-        return files.Count switch
+        return _settings.Files.Count switch
         {
-            1 => files[0],
-            0 => throw new InvalidOperationException($"В источнике \"{_config.Slug}\" нет файлов данных"),
+            1 => _settings.Files[0],
+            0 => throw new InvalidOperationException($"В настройках источника \"{_config.Slug}\" не указано ни одного файла"),
             _ => throw new InvalidOperationException($"Укажите объект: в источнике \"{_config.Slug}\" несколько файлов"),
         };
     }
 
-    /// <summary>Идентификатор объекта — имя файла, у книги с несколькими листами — <c>книга.xlsx:Лист</c>.</summary>
-    static (string FileName, string? Sheet) SplitObjectId(string objectId)
+    /// <summary>
+    /// Идентификатор объекта — ссылка на файл, у книги с несколькими листами — <c>ссылка#Лист</c>.
+    /// Если после разделителя файла нет, '#' считается частью пути.
+    /// </summary>
+    (string Reference, string? Sheet) SplitObjectId(string objectId)
     {
-        var separator = objectId.IndexOf(':');
+        var separator = objectId.LastIndexOf(SheetSeparator);
 
-        return separator < 0
+        if (separator < 0) return (objectId, null);
+
+        var reference = objectId[..separator];
+        var sheet = objectId[(separator + 1)..];
+
+        return !_files.Exists(reference) && _files.Exists(objectId)
             ? (objectId, null)
-            : (objectId[..separator], objectId[(separator + 1)..]);
+            : (reference, string.IsNullOrWhiteSpace(sheet) ? null : sheet);
     }
 
-    ITabularFileReader? Reader(string fileName)
-        => _readers.FirstOrDefault(reader => reader.CanRead(fileName));
+    ITabularFileReader? Reader(string reference)
+        => _readers.FirstOrDefault(reader => reader.CanRead(reference));
 
-    DatasourceCatalogObject ToObject(string fileName, TabularSheet sheet, bool singleSheet)
+    DatasourceCatalogObject ToObject(string reference, TabularSheet sheet, bool singleSheet)
     {
-        var id = singleSheet || string.IsNullOrEmpty(sheet.Name) ? fileName : $"{fileName}:{sheet.Name}";
+        var fileName = Path.GetFileName(reference.Replace('\\', '/'));
+        var hasSheetName = !singleSheet && !string.IsNullOrEmpty(sheet.Name);
+        var id = hasSheetName ? $"{reference}{SheetSeparator}{sheet.Name}" : reference;
         var columns = Columns(sheet).ToList();
 
         return new DatasourceCatalogObject
         {
             Id = id,
-            Name = id,
+            Name = hasSheetName ? $"{fileName} · {sheet.Name}" : fileName,
             ObjectType = DatasourceObjectType.File,
             DefaultLanguage = DatasourceLanguage.Linq,
             Columns = columns.Select((column, index) => new DatasourceCatalogColumn

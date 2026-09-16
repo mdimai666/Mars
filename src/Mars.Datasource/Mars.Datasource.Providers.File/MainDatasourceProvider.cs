@@ -20,11 +20,11 @@ public static class MainDatasourceProvider
 
 class FileDatasourceProviderFactory : IDatasourceProviderFactory
 {
-    readonly IDatasourceStore _store;
+    readonly IDatasourceFileSource _files;
 
-    public FileDatasourceProviderFactory(IDatasourceStore store)
+    public FileDatasourceProviderFactory(IDatasourceFileSource files)
     {
-        _store = store;
+        _files = files;
     }
 
     public string Kind => DatasourceKind.File;
@@ -37,5 +37,5 @@ class FileDatasourceProviderFactory : IDatasourceProviderFactory
 
     public string HelpLink => "https://mdimai666.github.io/Mars/";
 
-    public IDatasourceProvider Create(DatasourceConfig config) => new FileDatasourceProvider(config, _store);
+    public IDatasourceProvider Create(DatasourceConfig config) => new FileDatasourceProvider(config, _files);
 }

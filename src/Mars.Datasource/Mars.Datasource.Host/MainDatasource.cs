@@ -21,7 +21,7 @@ public static class MainDatasource
     public static IServiceCollection AddDatasourceHost(this IServiceCollection services)
     {
         services.AddSingleton<IDatasourceProviderRegistry, DatasourceProviderRegistry>();
-        services.AddSingleton<IDatasourceStore, DatasourceStore>();
+        services.AddSingleton<IDatasourceFileSource, DatasourceFileSource>();
         services.AddSingleton<IDatasourceService, DatasourceService>();
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
         services.AddScoped<IDatasourceAIToolSchemaProviderHandler, DatasourceAIToolSchemaProviderHandler>();

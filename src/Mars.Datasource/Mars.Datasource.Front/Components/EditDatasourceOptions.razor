@@ -39,6 +39,7 @@
                                         <label>Тип источника</label>
                                         <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Kind"
                                                                                                OptionText=@KindLabel
+                                                                                               OptionValue=@(kind => kind)
                                                                                                Items="Kinds"
                                                                                                @bind-Value:after=@(()=>AfterChangeKind(config))
                                                                                                Style="width: 250px;">
@@ -83,23 +84,22 @@
                                 @if (IsFileKind(config.Kind))
                                 {
                                     <div class="col-12 mt-3">
+                                        <label class="fz14px">Файлы (по одному в строке)</label>
+                                        <FluentTextArea Class="w-100" Rows="3"
+                                                        Value="@FilesText(config)"
+                                                        ValueChanged="@(value => SetFiles(config, value))" />
                                         <div class="fz14px text-secondary">
-                                            Файлы источника лежат в <code>data/datasource/@config.Slug/files/</code>
+                                            Путь в медиа-хранилище (<code>2026/09/sales.csv</code>) или абсолютный путь на хосте
+                                            (<code>C:\data\sales.xlsx</code>). У книги каждый лист — отдельный объект.
                                         </div>
                                         <div class="row mt-2">
-                                            <div class="col-12 col-lg-6">
-                                                <label class="fz14px">Файл по умолчанию</label>
-                                                <FluentTextField Class="w-100" placeholder="sales.csv"
-                                                                 Value="@Setting(config, DatasourceSettings.File)"
-                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.File, value))" />
-                                            </div>
-                                            <div class="col-12 col-lg-3">
+                                            <div class="col-12 col-lg-4">
                                                 <label class="fz14px">Разделитель CSV</label>
                                                 <FluentTextField Class="w-100" placeholder="авто"
                                                                  Value="@Setting(config, DatasourceSettings.Delimiter)"
                                                                  ValueChanged="@(value => SetSetting(config, DatasourceSettings.Delimiter, value))" />
                                             </div>
-                                            <div class="col-12 col-lg-3 d-flex align-items-end">
+                                            <div class="col-12 col-lg-8 d-flex align-items-end">
                                                 <FluentCheckbox Label="первая строка — заголовки"
                                                                 Value="@HasHeaders(config)"
                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.HasHeaders, value ? "" : "false"))" />
@@ -175,10 +175,30 @@
         try
         {
             drivers = await datasourceService.Drivers();
+            RepairUnknownKinds();
         }
         catch
         {
             // Список провайдеров — подсказка в форме: без него редактор остаётся рабочим.
+        }
+    }
+
+    /// <summary>
+    /// Тип источника должен быть из списка подключённых провайдеров: сохранённое значение могло
+    /// устареть или записаться подписью вместо ключа — тогда форма прячет поля, а сервер не находит провайдера.
+    /// </summary>
+    void RepairUnknownKinds()
+    {
+        var known = Kinds.ToList();
+
+        if (known.Count == 0) return;
+
+        foreach (var config in opt.Configs)
+        {
+            if (known.Contains(config.Kind, StringComparer.OrdinalIgnoreCase)) continue;
+
+            config.Kind = known.Contains(DatasourceKind.Sql, StringComparer.OrdinalIgnoreCase) ? DatasourceKind.Sql : known[0];
+            AfterChangeKind(config);
         }
     }
 
@@ -224,6 +244,13 @@
 
     static bool HasHeaders(DatasourceConfig config)
         => !string.Equals(Setting(config, DatasourceSettings.HasHeaders), "false", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>В настройке файлы лежат через ';', в форме удобнее по одному в строке.</summary>
+    static string FilesText(DatasourceConfig config)
+        => string.Join("\n", DatasourceSettings.ParseFiles(Setting(config, DatasourceSettings.Files)));
+
+    static void SetFiles(DatasourceConfig config, string? value)
+        => SetSetting(config, DatasourceSettings.Files, string.Join(";", DatasourceSettings.ParseFiles(value)));
 
     /// <summary>Сменили тип источника — драйвер и строка подключения от прошлого типа уже не подходят.</summary>
     void AfterChangeKind(DatasourceConfig config)

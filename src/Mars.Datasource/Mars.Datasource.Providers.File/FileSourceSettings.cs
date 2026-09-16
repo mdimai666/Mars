@@ -5,12 +5,12 @@ namespace Mars.Datasource.Providers.File;
 /// <summary>Настройки файлового источника из <see cref="DatasourceConfig.Settings"/>.</summary>
 public class FileSourceSettings
 {
-    public const string FileKey = DatasourceSettings.File;
+    public const string FilesKey = DatasourceSettings.Files;
     public const string HasHeadersKey = DatasourceSettings.HasHeaders;
     public const string DelimiterKey = DatasourceSettings.Delimiter;
 
-    /// <summary>Файл по умолчанию, когда запрос не указал объект; пусто — единственный файл источника.</summary>
-    public string File { get; init; } = "";
+    /// <summary>Файлы источника: путь в медиа-хранилище Mars или абсолютный путь на хосте.</summary>
+    public IReadOnlyList<string> Files { get; init; } = [];
 
     public bool HasHeaders { get; init; } = true;
 
@@ -23,7 +23,7 @@ public class FileSourceSettings
 
         return new FileSourceSettings
         {
-            File = Get(settings, FileKey),
+            Files = DatasourceSettings.ParseFiles(Get(settings, FilesKey)),
             HasHeaders = !string.Equals(Get(settings, HasHeadersKey), "false", StringComparison.OrdinalIgnoreCase),
             Delimiter = NullIfEmpty(Get(settings, DelimiterKey)),
         };

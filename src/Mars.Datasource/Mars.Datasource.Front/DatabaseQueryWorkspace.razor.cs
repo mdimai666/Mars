@@ -288,7 +288,7 @@ public partial class DatabaseQueryWorkspace
 
         try
         {
-            var result = await service.Query(DataSourceConfigSlug, new SqlRequest { Sql = sql, MaxRows = tab.MaxRows });
+            var result = await service.Query(DataSourceConfigSlug, new DatasourceRequest { Query = sql, MaxRows = tab.MaxRows });
 
             tab.Result = result;
             tab.Error = result.Ok ? null : result.Message;
@@ -368,9 +368,9 @@ public partial class DatabaseQueryWorkspace
 
         try
         {
-            var count = await service.Query(DataSourceConfigSlug, new SqlRequest
+            var count = await service.Query(DataSourceConfigSlug, new DatasourceRequest
             {
-                Sql = BuildCountSql(tab.Table!),
+                Query = BuildCountSql(tab.Table!),
                 MaxRows = 1,
                 TimeoutSec = TotalCountTimeoutSec,
             });
@@ -569,7 +569,7 @@ public partial class DatabaseQueryWorkspace
     /// </summary>
     async Task<bool> ExecuteViewDdlAsync(string sql, string success)
     {
-        var response = await service.NonQuery(DataSourceConfigSlug, new SqlRequest { Sql = sql });
+        var response = await service.NonQuery(DataSourceConfigSlug, new DatasourceRequest { Query = sql });
 
         if (!response.Ok)
         {

@@ -9,6 +9,7 @@
         <ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.File\Mars.Datasource.Providers.File.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Providers.MsSQL\Mars.Datasource.Providers.MsSQL.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Providers.MySQL\Mars.Datasource.Providers.MySQL.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Providers.PostgreSQL\Mars.Datasource.Providers.PostgreSQL.csproj" />

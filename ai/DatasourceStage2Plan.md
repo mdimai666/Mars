@@ -5,7 +5,10 @@
 Этот план — про не-SQL источники. Ветка `ai/datasource-rework-stage2` (от `ai/datasource-rework`).
 По закрытии обеих инициатив схлопнуть в один `ai/DatasourceGuide.md` ([PlanLifecycleGuide.md](./PlanLifecycleGuide.md)).
 
-Статус 2026-09-16: план согласовывается, код не начат.
+Статус 2026-09-16: **этап A (каркас kind'ов, серверная часть) и этап B (file-провайдер) сделаны**,
+фронт к ним — следующий шаг (A6/A7 и B5 одним заходом, когда есть два типа источников). Проверено:
+`dotnet build Mars.slnx` — 0 ошибок/0 предупреждений; `Mars.Datasource.Integration.Tests` 289/289;
+`Mars.WebApiClient.Integration.Tests` (Datasource) 14/14.
 
 ## 1. Направление
 
@@ -123,48 +126,74 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
 
 ## 5. Этапы
 
-### Этап A. Каркас kind'ов (ядро)
+### Этап A. Каркас kind'ов (ядро) — сделано 2026-09-16 (кроме фронта)
 
-- [ ] A1. `DatasourceConfig`: `Kind` (default `sql`), `Settings` (`Dictionary<string,string>`);
+- [x] A1. `DatasourceConfig`: `Kind` (default `sql`), `Settings` (`Dictionary<string,string>`);
       `ConnectionString` остаётся полем sql-kind'а, `Driver` — внутри kind'а. Миграция старых
-      конфигов без кода: `DatasourceOption` → `INormalizableAfterReadValue` (пустой `Kind` → `sql`),
-      хуки уже вызывает `OptionService`.
-- [ ] A2. `Contracts`: `DatasourceRequest { ObjectId?, Language, Query?, Parameters, MaxRows,
-      TimeoutSec }` вместо `SqlRequest` (wire ломаем, решение 8); `Language = sql | linq | csharp |
-      graphql | http | none`; каталог `QCatalog/QGroup/QObject/QParameter`; `QueryResultDto` +
-      `Json` (`JsonNode`) + `ResultShape (Table|Document|Both)`; `DatasourceDriverResponse` + `Kind`.
-      **Инвариант:** `[JsonIgnore]`-проекция `QueryResultDto.Data` остаётся — её читают
-      `SqlNodeImpl.cs:44` и `MarsSqlTools.FormatRows`.
-- [ ] A3. `Abstractions`: `IDatasourceProvider { Kind, Capabilities, Catalog(ct), Execute(req,ct),
-      Discover(settings,ct) }` + `IDatasourceProviderFactory { Kind, Driver, DisplayName, HelpLink,
-      Create(config) }`; `Capabilities` (`CanSql/CanBrowse/CanEdit/CanExecute/ReadOnly`);
-      `SqlDatasourceProvider` — адаптер поверх существующих `IDatasourceDriverFactory`
-      (три драйвера не трогаем).
-- [ ] A4. `IDatasourceDocumentStore` (Abstractions, без `IFileStorage`) + реализация в Host поверх
-      keyed `"data"`: `Read/WriteDocument(slug)`, `Read/WriteCatalog(slug)`, пути
-      `datasource/<slug>/…`.
-- [ ] A5. Host: `DatasourceService` резолвит по `(Kind, Driver)`; кэш структуры обобщается до кэша
-      каталога; контроллер — `Catalog(slug)`, `Document(slug)` (get/put), `Execute(slug, request)`.
-- [ ] A6. Front: оболочка (дерево каталога вместо «только таблицы», результат, вкладки, строка
-      состояния) + реестр редакторов kind'а (`IDatasourceEditorLocator` по образцу
-      `INodeFormsLocator`) + `<DynamicComponent>`; sql-kind — текущий Monaco+грид без изменений.
-- [ ] A7. Форма настроек источника: поля из `Settings` по описанию провайдера (генерическая форма),
-      для сложного — своя Razor-форма через `IOptionsFormsLocator`.
-- [ ] A8. Тесты: реестр провайдеров и резолв по `(kind,driver)`, нормализация `Kind`,
-      `InMemoryFileStorage`-хранилище документа/каталога, wire-контракт новых эндпоинтов.
+      конфигов: `DatasourceConfig.Normalize()` (пустой `Kind` → `sql`, sql без драйвера → `psql`),
+      вызывает `DatasourceService.InvalidateLocalDictCache`. `[Required]` на `ConnectionString`
+      пока оставлен — снимем вместе с формой настроек (A7), когда появятся не-sql источники в UI.
+- [x] A2. `Contracts`: `DatasourceRequest { ObjectId?, Language, Query, Parameters, MaxRows,
+      TimeoutSec }` вместо `SqlRequest`, `DatasourceParam` вместо `SqlParam`,
+      `Language = sql | linq`; каталог `DatasourceCatalog/DatasourceCatalogGroup/
+      DatasourceCatalogObject/DatasourceCatalogColumn/DatasourceOperationParameter` +
+      `DatasourceCapabilities` + `DatasourceKind`/`DatasourceObjectType`/`DatasourceParameterIn`;
+      `DatasourceDriverResponse` += `Kind`, `DisplayName`; `ConnectionStringTestDto` += `Kind`,
+      `Settings`. **Инвариант:** `[JsonIgnore]`-проекция `QueryResultDto.Data` осталась — её читают
+      `SqlNodeImpl` и `MarsSqlTools.FormatRows`. `Json`/`ResultShape` не добавляли: документных
+      ответов пока нет, появятся в этапе C.
+- [x] A3. `Abstractions`: `IDatasourceProvider { Capabilities, Catalog, Query, Modify }` +
+      `ISqlDatasourceProvider { Driver }` + `IDatasourceProviderFactory { Kind, Driver, DisplayName,
+      DefaultConnectionString, HelpLink, Create }` + `IDatasourceProviderRegistry`;
+      `SqlDatasourceProvider`/`SqlDatasourceProviderFactory` — адаптер поверх существующих
+      `IDatasourceDriverFactory` (три драйвера не изменились, кроме переименования `SqlRequest`).
+      `Discover` отдельным интерфейсом не заводили — появится в этапе C, когда будет кому.
+- [x] A4. Хранилище: `IDatasourceStore` (Abstractions, без `IFileStorage`) + `DatasourceStore`
+      (Host) поверх keyed `"data"` `IFileStorage`, путь `datasource/<slug>/files/<имя>`;
+      имена файлов проверяются на `..` и абсолютность. Документ запросов и каталог discovery —
+      методы добавятся в этапе C.
+- [x] A5. Host: `DatasourceProviderRegistry` (sql-движки оборачиваются, остальные — свои фабрики),
+      `DatasourceService` резолвит провайдера по `(Kind, Driver)`, `Catalog(slug)` с кэшем 30 с
+      (сбрасывается вместе с кэшем структуры при смене опции и после DDL), `TestConnection`
+      проверяет источник построением каталога (работает для любого kind'а), `GET api/Datasource/Catalog`.
+- [ ] A6. Front: оболочка (дерево из каталога вместо «только таблицы»), редактор по kind'у через
+      реестр (`IDatasourceEditorLocator` по образцу `INodeFormsLocator`) + `<DynamicComponent>`;
+      sql-kind — текущий Monaco+грид без изменений. **Делаем вместе с B5**: обобщать дерево
+      имеет смысл, когда есть второй тип источников.
+- [ ] A7. Форма настроек источника: выбор `Kind`, драйверы/поля, отфильтрованные по kind'у.
+- [x] A8. Тесты: `DatasourceProviderRegistryTests` (9 — резолв по kind/driver, неизвестный kind,
+      чужой драйвер, единственный вариант типа, список вариантов, отказ `ResolveSql`, `Describe`),
+      `CatalogMappingTests` (8 — группы по схемам, id `schema.table`, пустая схема, kind объекта,
+      колонки по ordinal с PK/JSON/размером, capabilities, `Kind` из конфига),
+      `DatasourceConfigTests` += `Normalize` (5), HTTP-контракт: `Catalog_Request_Success`,
+      `Catalog_CalledTwice_ReturnsCachedInstance`, обновлён `Drivers_Request_Success`.
 
-### Этап B. file-kind (первым)
+### Этап B. file-kind — провайдер сделан 2026-09-16, фронт (B5) нет
 
-- [ ] B1. `Mars.Datasource.Providers.File`: CSV (`Microsoft.VisualBasic.FileIO.TextFieldParser` —
-      разделитель/кавычки/BOM/пустые значения) + XLSX (`XLWorkbook(stream)`, листы → объекты каталога).
-- [ ] B2. Файл источника — из `data/datasource/<slug>/files/…` (загрузка через админку позже);
-      в `Settings` — имя файла, лист, «первая строка = заголовки».
-- [ ] B3. Запрос `Language=linq` через Dynamic LINQ: фильтр/сортировка/проекция над строками;
-      вывод типов колонок → `QColumnKind` (уже есть, используется гридом).
-- [ ] B4. `MaxRows`/`Truncated` и отмена — те же, что для sql (общий `QueryResultDto`).
-- [ ] B5. Front: Monaco `csharp` (или `plaintext`) вместо SQL, грид/ json-viewer без изменений,
-      правка ячеек — по решению (есть PK-понятие только у sql; для файла — «read-only» в первом проходе).
-- [ ] B6. Тесты: парсинг CSV/XLSX (юнит, файлы-фикстуры), LINQ-запрос, лимит строк, HTTP-контракт.
+- [x] B1. `Mars.Datasource.Providers.File`: CSV встроенным `Microsoft.VisualBasic.FileIO.TextFieldParser`
+      (кавычки, разделитель внутри значений, BOM, автоопределение разделителя `,`/`;`/tab/`|` по
+      первой строке вне кавычек, явный разделитель из настроек) + XLSX через `XLWorkbook(stream)`
+      (листы → объекты каталога, значение ячейки — инвариантным текстом: `35`, `true`,
+      `2024-03-01`, `2024-03-01T10:20:30`, пустая ячейка → null).
+- [x] B2. Файлы источника — `data/datasource/<slug>/files/…` через `IDatasourceStore`; в `Settings`:
+      `file` (объект по умолчанию), `hasHeaders` (default true), `delimiter`. Загрузка файлов через
+      админку — позже (открытый вопрос 3).
+- [x] B3. Запрос: `Language=linq`, текст = **предикат `Where`** (пустой — все строки), Dynamic LINQ
+      со своим `ParsingConfig` (`FileQueryConfig`) и функциями приведения `Val.Num/Dec/Str/Date/Flag/Id`;
+      вывод типов колонок — `FileTypeInference` (имена типов `bigint`/`double precision`/`boolean`/
+      `timestamp`/`uuid`/`text`, то есть понятные `QColumnMapping` → подсветка типов и короткое имя
+      в гриде работают для файлов без отдельных правил).
+- [x] B4. `MaxRows`/`Truncated` — те же, что для sql; жёсткий предел чтения `MaxSourceRows = 100_000`
+      (файл читается в память целиком). `Modify` — внятный отказ «только для чтения».
+- [ ] B5. Front: Monaco `csharp` вместо SQL, дерево из каталога, грид без изменений, правка ячеек
+      выключена (нет PK). Вместе с A6/A7.
+- [x] B6. Тесты (`tests/Mars.Datasource.Integration.Tests/FileProviders/`): `CsvTabularFileReaderTests`
+      (10 — кавычки/пустые, автоопределение `;`, явный `tab`, без заголовков, BOM, дубли заголовков,
+      лимит, пустой поток, лишние поля, `CanRead`), `XlsxTabularFileReaderTests` (7 — все листы,
+      выбор листа по имени и номеру, типы ячеек, лимит, без заголовков, пустой лист, `CanRead`),
+      `ValFunctionTests` + `FileTypeInferenceTests` (18), `FileDatasourceProviderTests` (16 — каталог,
+      вывод типов, пустой источник, запросы, предикаты, лимит, битый предикат, выбор объекта,
+      xlsx-лист, отказы, capabilities, DI-регистрация).
 
 ### Этап C. rest-kind (WordPress)
 
@@ -205,6 +234,28 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 
 ## 7. Грабли и инварианты
 
+- **Dynamic LINQ: текст запроса к файлу — предикат `Where`, не цепочка.** `rows.Where("…")` в
+  тексте не разбирается: `No generic method 'Where' on type 'System.Linq.Queryable' is compatible…`
+  (парсер берёт стандартный `Queryable.Where`, а не строковую перегрузку Dynamic LINQ). При этом
+  `rows.OrderBy("…")` и `rows.Select("new (…)")` в цепочке работают. Поэтому сортировка/проекция —
+  не текстом запроса, а отдельными средствами (клик по заголовку грида, поля запроса позже).
+- **`[DynamicLinqType]` ненадёжен**: дефолтный провайдер типов сканирует уже загруженные сборки и
+  кэширует результат на первом разборе, поэтому `Val` из сборки провайдера находится через раз.
+  Симптом: вместо «неизвестный тип» — `No property or field 'age' exists in type 'Char'` (имя
+  приняли за член строки). Лечится явной регистрацией: `FileQueryConfig` держит свой `ParsingConfig`
+  с `DefaultDynamicLinqCustomTypeProvider(config, [typeof(Val)], true)`.
+- **Свои типы Dynamic LINQ разбирает с учётом регистра**: `Val.Num(age)` работает, `val.num(age)` —
+  нет (и ошибка при этом про другое место). В доках и подсказках писать точный регистр.
+- **`Convert.ToInt64(col)` в предикате падает на пустой ячейке** (`FormatException: The input string
+  '' was not in a correct format`) — поэтому свои `Val.*`, которые на непарсимом и пустом дают null.
+- **Реестр провайдеров: единственный вариант типа источника → драйвер в конфиге игнорируется.**
+  У `DatasourceConfig.Driver` дефолт `"psql"`, и он остался бы в настройках file/rest-источника,
+  созданных через `new DatasourceConfig()`; строгое сопоставление ломало бы их.
+- **Пин `System.IO.Packaging` в csproj файлового провайдера**: ClosedXML тянет уязвимый 6.0.0
+  (NU1903), как и в `Mars.Excel.Host`. Пакет `System.Linq.Dynamic.Core` уже был запинен в
+  `Directory.Packages.props:119` (лежал без использования).
+- **Namespace тестов `…Integration.Tests.File` затеняет `System.IO.File`** во всём проекте
+  (`File.WriteAllText` начинает искаться в нашем namespace) — папка и namespace зовутся `FileProviders`.
 - **Большое — в `/data`**, в опциях — только маленькие конфиги и ссылки (инвариант концепта).
 - Опция = один JSON-ряд на тип: любое разрастание `DatasourceConfig` бьёт по каждому сохранению
   настроек и по загрузке админки.
@@ -245,7 +296,10 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 
 1. Ре-импорт каталога: merge/replace и показ диффа — в первом проходе rest-kind или позже.
 2. Концепт «большое в `/data`» — внести в `ai/ProjectStructureGuide.md` отдельной правкой?
-3. Загрузка файлов источника через админку (медиа-пайплайн vs своя загрузка в `data/…/files`).
-4. Dynamic LINQ над строками: проверить первым же тестом, как обращаться к колонке
-   (`it["col"]` / `it.col` на `ExpandoObject`) — от этого зависит форма строки в file-kind.
+3. Загрузка файлов источника через админку (медиа-пайплайн vs своя загрузка в `data/…/files`) —
+   сейчас файлы кладутся в папку вручную.
+4. Сортировка/проекция для file-kind: раз предикатом `Where` цепочку не выразить (грабли),
+   делаем ли клик по заголовку грида серверным `OrderBy` для всех kind'ов.
 5. Подсветка `.http` своим monarch — когда (после прототипа).
+6. `[Required]` на `DatasourceConfig.ConnectionString` — снять при переделке формы настроек (A7):
+   для file/rest-источников строки подключения нет.

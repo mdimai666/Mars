@@ -5,7 +5,7 @@ namespace Mars.Datasource.Abstractions.Models;
 public class SqlUpdatePlan
 {
     public string Sql { get; set; } = "";
-    public List<SqlParam> Parameters { get; set; } = [];
+    public List<DatasourceParam> Parameters { get; set; } = [];
 }
 
 /// <summary>
@@ -29,7 +29,7 @@ public static class RowUpdateBuilder
         if (changes.Count == 0) return null;
         if (keyColumns.Count == 0) return null;
 
-        List<SqlParam> parameters = [];
+        List<DatasourceParam> parameters = [];
         List<string> sets = [];
         List<string> conditions = [];
         var index = 0;
@@ -39,7 +39,7 @@ public static class RowUpdateBuilder
             index++;
             var name = $"p{index}";
             sets.Add($"{quoteIdentifier(change.Key)} = @{name}");
-            parameters.Add(new SqlParam { Name = name, Value = change.Value });
+            parameters.Add(new DatasourceParam { Name = name, Value = change.Value });
         }
 
         foreach (var keyColumn in keyColumns)
@@ -49,7 +49,7 @@ public static class RowUpdateBuilder
             index++;
             var name = $"p{index}";
             conditions.Add($"{quoteIdentifier(keyColumn)} = @{name}");
-            parameters.Add(new SqlParam { Name = name, Value = keyValue });
+            parameters.Add(new DatasourceParam { Name = name, Value = keyValue });
         }
 
         var target = string.IsNullOrEmpty(schemaName)

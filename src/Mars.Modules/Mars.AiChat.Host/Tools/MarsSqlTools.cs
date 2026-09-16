@@ -124,7 +124,7 @@ public class MarsSqlTools
 
             if (isRead)
             {
-                var result = await _datasourceService.Query(slug, new SqlRequest { Sql = sql, MaxRows = MaxRows });
+                var result = await _datasourceService.Query(slug, new DatasourceRequest { Query = sql, MaxRows = MaxRows });
                 if (!result.Ok)
                     return $"Ошибка SQL: {result.Message}";
 

@@ -9,13 +9,13 @@ public interface IDatasourceDriver
     public string QuoteIdentifier(string name);
 
     /// <summary>Выполнить запрос с возвратом данных.</summary>
-    public Task<QueryResultDto> Query(SqlRequest request, CancellationToken cancellationToken = default);
+    public Task<QueryResultDto> Query(DatasourceRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Выполнить запрос без возврата данных (INSERT/UPDATE/DELETE/DDL)
     /// и вернуть число затронутых строк.
     /// </summary>
-    public Task<SqlNonQueryResultActionDto> NonQuery(string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default);
+    public Task<SqlNonQueryResultActionDto> NonQuery(string sql, IReadOnlyList<DatasourceParam>? parameters = null, CancellationToken cancellationToken = default);
 
     public Task<Dictionary<string, QTableColumn>> Columns(string tableName);
     public Task<List<QTableSchema>> Tables();

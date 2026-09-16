@@ -53,13 +53,18 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .AppendQueryParam(new { slug, schema, name })
                     .GetJsonAsync<ViewDefinitionResponse>();
 
-    public Task<QueryResultDto> Query(string slug, SqlRequest request)
+    public Task<DatasourceCatalog> Catalog(string slug)
+        => _client.Request($"{_basePath}{_controllerName}", "Catalog")
+                    .AppendQueryParam(new { slug })
+                    .GetJsonAsync<DatasourceCatalog>();
+
+    public Task<QueryResultDto> Query(string slug, DatasourceRequest request)
         => _client.Request($"{_basePath}{_controllerName}", "Query")
                     .AppendQueryParam(new { slug })
                     .PostJsonAsync(request)
                     .ReceiveJson<QueryResultDto>();
 
-    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, SqlRequest request)
+    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, DatasourceRequest request)
         => _client.Request($"{_basePath}{_controllerName}", "NonQuery")
                     .AppendQueryParam(new { slug })
                     .PostJsonAsync(request)

@@ -1,5 +1,6 @@
 using System.Text;
 using Mars.CommandLine.Abstractions;
+using Mars.Datasource.Abstractions.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Contracts.Models;
@@ -19,6 +20,8 @@ public static class MainDatasource
 {
     public static IServiceCollection AddDatasourceHost(this IServiceCollection services)
     {
+        services.AddSingleton<IDatasourceProviderRegistry, DatasourceProviderRegistry>();
+        services.AddSingleton<IDatasourceStore, DatasourceStore>();
         services.AddSingleton<IDatasourceService, DatasourceService>();
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
         services.AddScoped<IDatasourceAIToolSchemaProviderHandler, DatasourceAIToolSchemaProviderHandler>();

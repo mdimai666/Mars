@@ -126,7 +126,7 @@ public static class QueryResultMapping
     /// Подставить параметры. <paramref name="configure"/> нужен провайдерам, которым мало
     /// значения-строки: например Postgres выводит тип параметра из контекста только для unknown.
     /// </summary>
-    public static void ApplyParameters(DbCommand command, IReadOnlyList<SqlParam>? parameters, Action<DbParameter>? configure = null)
+    public static void ApplyParameters(DbCommand command, IReadOnlyList<DatasourceParam>? parameters, Action<DbParameter>? configure = null)
     {
         if (parameters is null) return;
 
@@ -138,7 +138,7 @@ public static class QueryResultMapping
         }
     }
 
-    static DbParameter CreateParameter(DbCommand command, SqlParam parameter)
+    static DbParameter CreateParameter(DbCommand command, DatasourceParam parameter)
     {
         var dbParameter = command.CreateParameter();
         dbParameter.ParameterName = parameter.Name;

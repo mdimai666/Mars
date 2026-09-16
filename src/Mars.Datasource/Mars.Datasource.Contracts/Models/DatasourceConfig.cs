@@ -20,6 +20,14 @@ public class DatasourceConfig
     [Display(Name = "Driver")]
     public string Driver { get; set; } = "psql";
 
+    /// <summary>Тип источника: sql-база, файл, REST API. Определяет провайдера и язык запроса.</summary>
+    [Display(Name = "Kind")]
+    public string Kind { get; set; } = DatasourceKind.Sql;
+
+    /// <summary>Настройки провайдера помимо строки подключения: адрес API, файл, лист, тип discovery.</summary>
+    [Display(Name = "Settings")]
+    public Dictionary<string, string> Settings { get; set; } = [];
+
     [Display(Name = "Disabled")]
     public bool Disabled { get; set; }
 
@@ -27,6 +35,17 @@ public class DatasourceConfig
     public const string DefaultSlug = "default";
 
     public string Label => string.IsNullOrEmpty(Title) ? Slug : Title;
+
+    /// <summary>
+    /// Доводит конфиг до полного вида: старые сохранённые настройки не несут <see cref="Kind"/>,
+    /// а у sql-источника без движка раньше подразумевался psql.
+    /// </summary>
+    public void Normalize()
+    {
+        if (string.IsNullOrWhiteSpace(Kind)) Kind = DatasourceKind.Sql;
+
+        if (Kind == DatasourceKind.Sql && string.IsNullOrWhiteSpace(Driver)) Driver = "psql";
+    }
 
     /// <summary>
     /// Правила slug. Возвращает текст ошибки или null. Дубли по slug проверяет тот, у кого есть весь список.

@@ -46,4 +46,39 @@ public class DatasourceConfigTests
 
         config.GetDatabaseName().Should().Be("wordpress");
     }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Normalize_LegacyConfigWithoutKind_BecomesSqlWithDriver(string? kind)
+    {
+        var config = new DatasourceConfig { Kind = kind!, Driver = "mysql" };
+
+        config.Normalize();
+
+        config.Kind.Should().Be(DatasourceKind.Sql);
+        config.Driver.Should().Be("mysql");
+    }
+
+    [Fact]
+    public void Normalize_SqlWithoutDriver_FallsBackToPsql()
+    {
+        var config = new DatasourceConfig { Kind = DatasourceKind.Sql, Driver = "" };
+
+        config.Normalize();
+
+        config.Driver.Should().Be("psql");
+    }
+
+    [Fact]
+    public void Normalize_NonSqlKind_KeepsDriverUntouched()
+    {
+        var config = new DatasourceConfig { Kind = DatasourceKind.File, Driver = "" };
+
+        config.Normalize();
+
+        config.Kind.Should().Be(DatasourceKind.File);
+        config.Driver.Should().BeEmpty();
+    }
 }

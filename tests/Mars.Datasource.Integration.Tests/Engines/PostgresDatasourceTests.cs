@@ -62,7 +62,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         string query = "SELECT * FROM \"todo\"";
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = query });
+        var result = await se.Query(new DatasourceRequest { Query = query });
         result.Ok.Should().BeTrue(result.Message);
         result.Columns.Select(c => c.Name).Should().Equal("id", "title", "content", "completed");
         result.Rows.Should().HaveCount(2);
@@ -164,7 +164,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
 
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM todo_json" });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM todo_json" });
         result.Ok.Should().BeTrue(result.Message);
         result.Columns.Single(c => c.Name == "data").IsJson.Should().BeTrue();
         result.Columns.Single(c => c.Name == "id").IsJson.Should().BeFalse();
@@ -183,7 +183,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
 
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT id, title FROM todo ORDER BY title" });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT id, title FROM todo ORDER BY title" });
         result.Ok.Should().BeTrue(result.Message);
 
         var idIndex = Array.FindIndex(result.Columns, c => c.Name == "id");
@@ -204,7 +204,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         nonQuery.Ok.Should().BeTrue(nonQuery.Message);
         nonQuery.RowsAffected.Should().Be(1);
 
-        var after = await se.Query(new SqlRequest { Sql = "SELECT title FROM todo WHERE title = 'edited'" });
+        var after = await se.Query(new DatasourceRequest { Query = "SELECT title FROM todo WHERE title = 'edited'" });
         after.Rows.Should().HaveCount(1);
     }
 
@@ -218,7 +218,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
 
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM \"todo\"", MaxRows = 1 });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM \"todo\"", MaxRows = 1 });
 
         result.Ok.Should().BeTrue(result.Message);
         result.Rows.Should().HaveCount(1);
@@ -230,7 +230,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     {
         var se = new DatasourcePostgreSQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM no_such_table" });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM no_such_table" });
 
         result.Ok.Should().BeFalse();
         result.Message.Should().NotBeNullOrWhiteSpace();
@@ -249,8 +249,8 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
         var result = await se.NonQuery(
             "UPDATE \"todo\" SET title = @title WHERE title = @from",
             [
-                new SqlParam { Name = "title", Value = "edited" },
-                new SqlParam { Name = "from", Value = "first" },
+                new DatasourceParam { Name = "title", Value = "edited" },
+                new DatasourceParam { Name = "from", Value = "first" },
             ]);
 
         result.Ok.Should().BeTrue(result.Message);

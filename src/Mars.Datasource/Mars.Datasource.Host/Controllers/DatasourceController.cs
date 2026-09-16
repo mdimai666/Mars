@@ -54,6 +54,13 @@ public class DatasourceController : ControllerBase
         return (await ds.DatabaseStructure(slug)).ToResponse();
     }
 
+    /// <summary>Каталог объектов источника: дерево для любого типа источника, не только для баз данных.</summary>
+    [HttpGet]
+    public async Task<DatasourceCatalog> Catalog(string slug)
+    {
+        return await ds.Catalog(slug);
+    }
+
     [HttpGet]
     public async Task<ViewDefinitionResponse> ViewDefinition([DefaultValue("default")] string slug, string? schema, string name)
     {
@@ -67,15 +74,15 @@ public class DatasourceController : ControllerBase
     }
 
     [HttpPost]
-    public Task<QueryResultDto> Query([FromQuery] string slug, [FromBody] SqlRequest request, CancellationToken cancellationToken)
+    public Task<QueryResultDto> Query([FromQuery] string slug, [FromBody] DatasourceRequest request, CancellationToken cancellationToken)
     {
         return ds.Query(slug, request, cancellationToken);
     }
 
     [HttpPost]
-    public Task<SqlNonQueryResultActionDto> NonQuery([FromQuery] string slug, [FromBody] SqlRequest request, CancellationToken cancellationToken)
+    public Task<SqlNonQueryResultActionDto> NonQuery([FromQuery] string slug, [FromBody] DatasourceRequest request, CancellationToken cancellationToken)
     {
-        return ds.NonQuery(slug, request.Sql, request.Parameters, cancellationToken);
+        return ds.NonQuery(slug, request.Query, request.Parameters, cancellationToken);
     }
 
     [HttpPost]

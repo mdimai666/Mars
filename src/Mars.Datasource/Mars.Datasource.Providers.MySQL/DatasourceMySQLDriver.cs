@@ -162,13 +162,13 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         return list;
     }
 
-    public async Task<QueryResultDto> Query(SqlRequest request, CancellationToken cancellationToken = default)
+    public async Task<QueryResultDto> Query(DatasourceRequest request, CancellationToken cancellationToken = default)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         QueryResultDto result = new()
         {
             DatabaseDriver = _config.Driver,
-            Command = request.Sql,
+            Command = request.Query,
         };
 
         try
@@ -176,7 +176,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
             await using var conn = new MySqlConnection(_config.ConnectionString);
             await conn.OpenAsync(cancellationToken);
 
-            await using var cmd = new MySqlCommand(request.Sql, conn);
+            await using var cmd = new MySqlCommand(request.Query, conn);
             QueryResultMapping.ApplyParameters(cmd, request.Parameters);
             if (request.TimeoutSec is int timeoutSec)
             {
@@ -204,7 +204,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         return result;
     }
 
-    public async Task<SqlNonQueryResultActionDto> NonQuery(string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default)
+    public async Task<SqlNonQueryResultActionDto> NonQuery(string sql, IReadOnlyList<DatasourceParam>? parameters = null, CancellationToken cancellationToken = default)
     {
         try
         {

@@ -266,7 +266,7 @@ public partial class QueryResultGrid
 
         foreach (var plan in plans)
         {
-            var response = await service.NonQuery(Slug, new SqlRequest { Sql = plan.Sql, Parameters = plan.Parameters });
+            var response = await service.NonQuery(Slug, new DatasourceRequest { Query = plan.Sql, Parameters = plan.Parameters });
 
             if (!response.Ok)
             {

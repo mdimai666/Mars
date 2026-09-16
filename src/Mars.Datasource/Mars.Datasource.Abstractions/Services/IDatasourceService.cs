@@ -9,7 +9,7 @@ public interface IDatasourceService
 {
     public DatasourceConfig DefaultConfig { get; }
 
-    /// <summary>Зарегистрированные провайдеры: ключ, подсказка строки подключения, ссылка на док.</summary>
+    /// <summary>Зарегистрированные провайдеры: тип источника, ключ драйвера, подсказка строки подключения, ссылка на док.</summary>
     public IReadOnlyCollection<DatasourceDriverResponse> Drivers();
 
     public void InvalidateLocalDictCache(DatasourceOption opt);
@@ -18,6 +18,9 @@ public interface IDatasourceService
     public Task<List<QTableSchema>> Tables(string slug);
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
 
+    /// <summary>Каталог объектов источника: общий вид дерева для любого типа источника.</summary>
+    public Task<DatasourceCatalog> Catalog(string slug);
+
     /// <summary>Определение вьюхи (текст запроса), null — объекта нет или это не вьюха.</summary>
     public Task<string?> ViewDefinition(string slug, string? schemaName, string tableName);
 
@@ -25,10 +28,10 @@ public interface IDatasourceService
     public Task<QDatabaseStructure> RefreshStructure(string slug);
 
     /// <summary>Выполнить запрос с возвратом данных.</summary>
-    public Task<QueryResultDto> Query(string slug, SqlRequest request, CancellationToken cancellationToken = default);
+    public Task<QueryResultDto> Query(string slug, DatasourceRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>Выполнить запрос без возврата данных (INSERT/UPDATE/DELETE/DDL).</summary>
-    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default);
+    public Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<DatasourceParam>? parameters = null, CancellationToken cancellationToken = default);
 
     public Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action, CancellationToken cancellationToken);
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource();

@@ -18,8 +18,8 @@ internal class DatasourceService : IDatasourceService
     private readonly IOptionService _optionService;
     private readonly IDatabaseBackupService _databaseBackupService;
 
-    /// <summary>Провайдеры по ключу источника: ядро модуля их не создаёт, их регистрирует корень композиции.</summary>
-    readonly Dictionary<string, IDatasourceDriverFactory> _drivers;
+    /// <summary>Провайдеры по типу источника и драйверу: ядро модуля их не создаёт, их регистрирует корень композиции.</summary>
+    readonly IDatasourceProviderRegistry _registry;
 
     string _connectionString;
     DatasourceConfig _defaultConfig;
@@ -30,6 +30,10 @@ internal class DatasourceService : IDatasourceService
 
     /// <summary>Структура базы стоит десятков запросов к каталогу — держим её недолго в памяти.</summary>
     readonly ConcurrentDictionary<string, (QDatabaseStructure Structure, DateTime At)> _structureCache = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Каталог — то же самое для дерева объектов: у не-sql источников он дороже структуры базы.</summary>
+    readonly ConcurrentDictionary<string, (DatasourceCatalog Catalog, DateTime At)> _catalogCache = new(StringComparer.OrdinalIgnoreCase);
+
     static readonly TimeSpan StructureCacheTtl = TimeSpan.FromSeconds(30);
 
     /// <summary>Первый оператор, после которого кэш структуры уже неактуален.</summary>
@@ -45,7 +49,7 @@ internal class DatasourceService : IDatasourceService
     }
 
     public DatasourceService(IConfiguration configuration, IOptionService optionService, IDatabaseBackupService databaseBackupService,
-        IEnumerable<IDatasourceDriverFactory> drivers)
+        IDatasourceProviderRegistry registry)
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
@@ -58,19 +62,10 @@ internal class DatasourceService : IDatasourceService
         };
         _optionService = optionService;
         _databaseBackupService = databaseBackupService;
-        _drivers = drivers.ToDictionary(d => d.Driver, StringComparer.OrdinalIgnoreCase);
+        _registry = registry;
     }
 
-    public IReadOnlyCollection<DatasourceDriverResponse> Drivers()
-        => _drivers.Values
-            .Select(d => new DatasourceDriverResponse
-            {
-                Driver = d.Driver,
-                DefaultConnectionString = d.DefaultConnectionString,
-                HelpLink = d.HelpLink,
-            })
-            .OrderBy(d => d.Driver, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+    public IReadOnlyCollection<DatasourceDriverResponse> Drivers() => _registry.Describe();
 
     public void InvalidateLocalDictCache(DatasourceOption opt)
     {
@@ -81,6 +76,8 @@ internal class DatasourceService : IDatasourceService
 
         foreach (var config in opt.Configs)
         {
+            config.Normalize();
+
             if (DatasourceConfig.ValidateSlug(config.Slug) is not null) continue;
 
             configs.TryAdd(config.Slug, config);
@@ -90,6 +87,7 @@ internal class DatasourceService : IDatasourceService
 
         // Сменились настройки источников — структура могла измениться.
         _structureCache.Clear();
+        _catalogCache.Clear();
     }
 
     void AutoUpdateConfig()
@@ -122,33 +120,31 @@ internal class DatasourceService : IDatasourceService
         throw new ArgumentException($"Источник данных \"{slug}\" не найден в настройках");
     }
 
-    IDatasourceDriver ResolveEngine(string slug) => ResolveEngine(GetConfig(slug));
-
-    IDatasourceDriver ResolveEngine(DatasourceConfig config)
-    {
-        if (_drivers.TryGetValue(config.Driver, out var factory)) return factory.Create(config);
-
-        throw new NotSupportedException($"Провайдер источников \"{config.Driver}\" не подключён");
-    }
+    IDatasourceDriver ResolveEngine(string slug) => _registry.ResolveSql(GetConfig(slug)).Driver;
 
     public async Task<UserActionResult> TestConnection(ConnectionStringTestDto dto)
     {
         var tmpConfig = new DatasourceConfig()
         {
+            Kind = dto.Kind,
             ConnectionString = dto.ConnectionString,
             Driver = dto.Driver,
+            Settings = dto.Settings,
             Title = "TestConnection " + dto.Driver,
-            Slug = "test_" + dto.Driver,
+            Slug = "test_" + (string.IsNullOrWhiteSpace(dto.Driver) ? dto.Kind : dto.Driver),
         };
+
+        tmpConfig.Normalize();
 
         try
         {
-            var se = ResolveEngine(tmpConfig);
-            var tables = await se.Tables();
+            var catalog = await _registry.Resolve(tmpConfig).Catalog();
+            var objects = catalog.Groups.Sum(group => group.Objects.Count);
+
             return new UserActionResult()
             {
                 Ok = true,
-                Message = $"Test success: {tables.Count} tables"
+                Message = $"Test success: {objects} objects"
             };
         }
         catch (Exception ex)
@@ -197,26 +193,43 @@ internal class DatasourceService : IDatasourceService
         var structure = await ResolveEngine(slug).DatabaseStructure();
 
         _structureCache[slug] = (structure, DateTime.UtcNow);
+        _catalogCache.TryRemove(slug, out _);
 
         return structure;
     }
 
-    public async Task<QueryResultDto> Query(string slug, SqlRequest request, CancellationToken cancellationToken = default)
+    public async Task<DatasourceCatalog> Catalog(string slug)
     {
-        var se = ResolveEngine(slug);
-        var result = await se.Query(request, cancellationToken);
+        if (_catalogCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < StructureCacheTtl)
+        {
+            return cached.Catalog;
+        }
+
+        var catalog = await _registry.Resolve(GetConfig(slug)).Catalog();
+
+        _catalogCache[slug] = (catalog, DateTime.UtcNow);
+
+        return catalog;
+    }
+
+    public async Task<QueryResultDto> Query(string slug, DatasourceRequest request, CancellationToken cancellationToken = default)
+    {
+        var provider = _registry.Resolve(GetConfig(slug));
+        var result = await provider.Query(request, cancellationToken);
         return result;
     }
 
-    public async Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<SqlParam>? parameters = null, CancellationToken cancellationToken = default)
+    public async Task<SqlNonQueryResultActionDto> NonQuery(string slug, string sql, IReadOnlyList<DatasourceParam>? parameters = null, CancellationToken cancellationToken = default)
     {
-        var se = ResolveEngine(slug);
-        var result = await se.NonQuery(sql, parameters, cancellationToken);
+        var provider = _registry.Resolve(GetConfig(slug));
+        var request = new DatasourceRequest { Language = DatasourceLanguage.Sql, Query = sql, Parameters = parameters?.ToList() };
+        var result = await provider.Modify(request, cancellationToken);
 
         // DDL мог поменять состав объектов: без сброса дерево до TTL показывало бы старое.
         if (result.Ok && DdlKeywords.Contains(SqlSafety.FirstWord(sql)))
         {
             _structureCache.TryRemove(slug, out _);
+            _catalogCache.TryRemove(slug, out _);
         }
 
         return result;
@@ -244,12 +257,12 @@ internal class DatasourceService : IDatasourceService
             {
                 var config = GetConfig(slug);
 
-                if (config.Driver != "psql")
+                if (!IsPostgres(config))
                 {
-                    return Fail($"Действие \"{action.ActionId}\" доступно только для PostgreSQL, а источник \"{config.Slug}\" — {config.Driver}");
+                    return Fail($"Действие \"{action.ActionId}\" доступно только для PostgreSQL, а источник \"{config.Slug}\" — {ProviderName(config)}");
                 }
 
-                var result = await Query(slug, new SqlRequest { Sql = foundQuery }, cancellationToken);
+                var result = await Query(slug, new DatasourceRequest { Query = foundQuery }, cancellationToken);
                 return new UserActionResult<string[][]>
                 {
                     Ok = result.Ok,
@@ -271,9 +284,9 @@ internal class DatasourceService : IDatasourceService
             {
                 var config = GetConfig(slug);
 
-                if (config.Driver != "psql")
+                if (!IsPostgres(config))
                 {
-                    return Fail($"Резервная копия доступна только для PostgreSQL, а источник \"{config.Slug}\" — {config.Driver}");
+                    return Fail($"Резервная копия доступна только для PostgreSQL, а источник \"{config.Slug}\" — {ProviderName(config)}");
                 }
 
                 string dateTimeFormat = "yyyy-MM-ddTHH-mm-ss";
@@ -312,6 +325,13 @@ internal class DatasourceService : IDatasourceService
         Message = message,
         Data = [],
     };
+
+    static bool IsPostgres(DatasourceConfig config)
+        => string.Equals(config.Kind, DatasourceKind.Sql, StringComparison.OrdinalIgnoreCase)
+           && string.Equals(config.Driver, "psql", StringComparison.OrdinalIgnoreCase);
+
+    static string ProviderName(DatasourceConfig config)
+        => string.Equals(config.Kind, DatasourceKind.Sql, StringComparison.OrdinalIgnoreCase) ? config.Driver : config.Kind;
 
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource()
     {

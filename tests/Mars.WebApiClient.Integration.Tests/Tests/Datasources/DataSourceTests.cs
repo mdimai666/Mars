@@ -46,8 +46,12 @@ public class DataSourceTests : BaseWebApiClientTests
         var result = await client.Datasource().Drivers();
 
         //Assert
-        result.Select(d => d.Driver).Should().BeEquivalentTo(["psql", "mssql", "mysql"]);
-        result.Should().OnlyContain(d => d.DefaultConnectionString != "" && d.HelpLink != "");
+        result.Where(d => d.Kind == DatasourceKind.Sql).Select(d => d.Driver).Should().BeEquivalentTo(["psql", "mssql", "mysql"]);
+        result.Where(d => d.Kind == DatasourceKind.Sql)
+            .Should().OnlyContain(d => d.DefaultConnectionString != "" && d.HelpLink != "");
+
+        // Файловый провайдер подключается тем же реестром: у него нет ни движка, ни строки подключения.
+        result.Should().Contain(d => d.Kind == DatasourceKind.File && d.Driver == "");
     }
 
     [IntegrationFact]
@@ -79,6 +83,45 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task Catalog_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.Catalog);
+        _ = nameof(IDatasourceService.Catalog);
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Datasource().Catalog("default");
+
+        //Assert
+        result.Kind.Should().Be(DatasourceKind.Sql);
+        result.Groups.Should().NotBeEmpty();
+        result.Groups.SelectMany(g => g.Objects).Should().NotBeEmpty();
+        result.Capabilities.CanQuery.Should().BeTrue();
+        result.Capabilities.CanManageViews.Should().BeTrue();
+
+        var posts = result.Groups.SelectMany(g => g.Objects).FirstOrDefault(o => o.Name == "posts");
+        posts.Should().NotBeNull();
+        posts!.Id.Should().Be("public.posts");
+        posts.DefaultLanguage.Should().Be(DatasourceLanguage.Sql);
+        posts.Columns.Should().NotBeEmpty();
+        posts.Columns.Should().Contain(c => c.IsKey);
+    }
+
+    [IntegrationFact]
+    public async Task Catalog_CalledTwice_ReturnsCachedInstance()
+    {
+        //Arrange
+        var first = await _datasourceService.Catalog("default");
+
+        //Act
+        var second = await _datasourceService.Catalog("default");
+
+        //Assert
+        second.Should().BeSameAs(first);
+    }
+
+    [IntegrationFact]
     public async Task Columns_Request_Success()
     {
         //Arrange
@@ -103,7 +146,7 @@ public class DataSourceTests : BaseWebApiClientTests
         var client = GetWebApiClient();
         var view = $"ds_test_view_{Guid.NewGuid():N}";
 
-        var created = await client.Datasource().NonQuery("default", new SqlRequest { Sql = $"CREATE VIEW \"{view}\" AS SELECT 1 AS id" });
+        var created = await client.Datasource().NonQuery("default", new DatasourceRequest { Query = $"CREATE VIEW \"{view}\" AS SELECT 1 AS id" });
         created.Ok.Should().BeTrue(created.Message);
 
         try
@@ -116,7 +159,7 @@ public class DataSourceTests : BaseWebApiClientTests
         }
         finally
         {
-            await client.Datasource().NonQuery("default", new SqlRequest { Sql = $"DROP VIEW \"{view}\"" });
+            await client.Datasource().NonQuery("default", new DatasourceRequest { Query = $"DROP VIEW \"{view}\"" });
         }
     }
 
@@ -160,7 +203,7 @@ public class DataSourceTests : BaseWebApiClientTests
         var client = GetWebApiClient();
 
         //Act
-        var result = await client.Datasource().Query("default", new SqlRequest { Sql = "SELECT COUNT(id) FROM posts" });
+        var result = await client.Datasource().Query("default", new DatasourceRequest { Query = "SELECT COUNT(id) FROM posts" });
 
         //Assert
         result.Ok.Should().BeTrue(result.Message);
@@ -177,7 +220,7 @@ public class DataSourceTests : BaseWebApiClientTests
         var client = GetWebApiClient();
 
         //Act
-        var result = await client.Datasource().NonQuery("default", new SqlRequest { Sql = "CREATE TEMP TABLE ds_test (id int)" });
+        var result = await client.Datasource().NonQuery("default", new DatasourceRequest { Query = "CREATE TEMP TABLE ds_test (id int)" });
 
         //Assert
         result.Ok.Should().BeTrue(result.Message);

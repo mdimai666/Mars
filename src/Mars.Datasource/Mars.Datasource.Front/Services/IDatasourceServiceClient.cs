@@ -17,13 +17,16 @@ public interface IDatasourceServiceClient
     Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
     Task<QDatabaseStructureResponse> DatabaseStructure(string slug);
 
+    /// <summary>Каталог объектов источника — дерево для любого типа источника.</summary>
+    Task<DatasourceCatalog> Catalog(string slug);
+
     /// <summary>Перечитать структуру базы, минуя серверный кэш.</summary>
     Task<QDatabaseStructureResponse> RefreshStructure(string slug);
 
     /// <summary>Определение вьюхи; пустой `Sql` — движок текст не отдал.</summary>
     Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name);
-    Task<QueryResultDto> Query(string slug, SqlRequest request);
-    Task<SqlNonQueryResultActionDto> NonQuery(string slug, SqlRequest request);
+    Task<QueryResultDto> Query(string slug, DatasourceRequest request);
+    Task<SqlNonQueryResultActionDto> NonQuery(string slug, DatasourceRequest request);
     Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);
     Task<IReadOnlyCollection<SelectDatasourceDto>> ListSelectDatasource();
 

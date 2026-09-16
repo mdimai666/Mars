@@ -54,6 +54,7 @@
     <Project Path="src/Mars.Datasource/Mars.Datasource.Contracts/Mars.Datasource.Contracts.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Front/Mars.Datasource.Front.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host/Mars.Datasource.Host.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.File/Mars.Datasource.Providers.File.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.MsSQL/Mars.Datasource.Providers.MsSQL.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.MySQL/Mars.Datasource.Providers.MySQL.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.PostgreSQL/Mars.Datasource.Providers.PostgreSQL.csproj" />

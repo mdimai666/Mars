@@ -60,7 +60,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         string query = "SELECT * FROM `todo` LIMIT 10";
         var se = new DatasourceMySQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = query });
+        var result = await se.Query(new DatasourceRequest { Query = query });
         result.Ok.Should().BeTrue(result.Message);
         result.Columns.Select(c => c.Name).Should().Equal("Id", "Title", "Content", "Completed");
         result.Rows.Should().HaveCount(2);
@@ -131,7 +131,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
 
         var se = new DatasourceMySQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM `todo_json`" });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM `todo_json`" });
         result.Ok.Should().BeTrue(result.Message);
         result.Columns.Single(c => c.Name == "Data").IsJson.Should().BeTrue();
 
@@ -172,7 +172,7 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
 
         var se = new DatasourceMySQLDriver(Config());
 
-        var result = await se.Query(new SqlRequest { Sql = "SELECT * FROM `todo`", MaxRows = 1 });
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM `todo`", MaxRows = 1 });
 
         result.Ok.Should().BeTrue(result.Message);
         result.Rows.Should().HaveCount(1);
@@ -192,8 +192,8 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         var result = await se.NonQuery(
             "UPDATE `todo` SET Title = @title WHERE Title = @from",
             [
-                new SqlParam { Name = "title", Value = "edited" },
-                new SqlParam { Name = "from", Value = "first" },
+                new DatasourceParam { Name = "title", Value = "edited" },
+                new DatasourceParam { Name = "from", Value = "first" },
             ]);
 
         result.Ok.Should().BeTrue(result.Message);

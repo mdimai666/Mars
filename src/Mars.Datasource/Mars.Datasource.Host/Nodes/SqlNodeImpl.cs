@@ -40,7 +40,7 @@ public class SqlNodeImpl : INodeImplement<SqlNode>
             throw new NotImplementedException();
         }
 
-        var result = await ds.Query(Node.DatasourceSlug, new SqlRequest { Sql = query });
+        var result = await ds.Query(Node.DatasourceSlug, new DatasourceRequest { Query = query });
 
         if (result.Ok)
         {

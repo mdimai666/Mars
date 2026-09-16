@@ -1,5 +1,6 @@
 using Mars.Datasource.Front;
 using Mars.Datasource.Host;
+using Mars.Datasource.Providers.File;
 using Mars.Datasource.Providers.MsSQL;
 using Mars.Datasource.Providers.MySQL;
 using Mars.Datasource.Providers.PostgreSQL;
@@ -20,7 +21,8 @@ public static class MainDatasource
                    .AddDatasourceWorkspace()
                    .AddDatasourcePostgreSql()
                    .AddDatasourceMsSql()
-                   .AddDatasourceMySql();
+                   .AddDatasourceMySql()
+                   .AddDatasourceFile();
 
     public static IApplicationBuilder UseDatasource(this IApplicationBuilder app)
     {

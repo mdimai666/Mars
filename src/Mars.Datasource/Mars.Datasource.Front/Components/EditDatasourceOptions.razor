@@ -35,29 +35,78 @@
                                     }
                                 </div>
                                 <div class="col col-lg-6">
-                                    <div class="">
-                                        <label>Driver</label>
-                                        <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Driver"
-                                                                                               OptionText=@(s=>s.ToString())
-                                                                                               Items="DriverKeys"
-                                                                                               @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
+                                    <div>
+                                        <label>Тип источника</label>
+                                        <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Kind"
+                                                                                               OptionText=@KindLabel
+                                                                                               Items="Kinds"
+                                                                                               @bind-Value:after=@(()=>AfterChangeKind(config))
                                                                                                Style="width: 250px;">
 
                                         </Microsoft.FluentUI.AspNetCore.Components.FluentSelect>
                                     </div>
                                 </div>
-                                <div class="col-12 mt-3">
-                                    <div class="d-flex gap-5 fz14px">
-                                        <label>ConnectionString</label>
-                                        @if (HelpLink(config.Driver) is string helpLink)
+                                @if (HasDrivers(config.Kind))
+                                {
+                                    <div class="col col-lg-6 mt-3">
+                                        <div>
+                                            <label>Driver</label>
+                                            <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Driver"
+                                                                                                   OptionText=@(s=>s.ToString())
+                                                                                                   Items="DriverKeys(config.Kind)"
+                                                                                                   @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
+                                                                                                   Style="width: 250px;">
+
+                                            </Microsoft.FluentUI.AspNetCore.Components.FluentSelect>
+                                        </div>
+                                    </div>
+                                }
+                                @if (UsesConnectionString(config.Kind))
+                                {
+                                    <div class="col-12 mt-3">
+                                        <div class="d-flex gap-5 fz14px">
+                                            <label>ConnectionString</label>
+                                            @if (HelpLink(config) is string helpLink)
+                                            {
+                                                <a href="@helpLink" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                            }
+                                        </div>
+                                        <div class="mt-2">
+                                            <FluentTextArea @bind-Value=@config.ConnectionString Rows="2" Class="w-100" />
+                                        </div>
+                                        @if (SettingsError(config) is string connectionError)
                                         {
-                                            <a href="@helpLink" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                            <div class="text-danger fz14px">@connectionError</div>
                                         }
                                     </div>
-                                    <div class="mt-2">
-                                        <FluentTextArea @bind-Value=@config.ConnectionString Rows="2" Class="w-100" />
+                                }
+                                @if (IsFileKind(config.Kind))
+                                {
+                                    <div class="col-12 mt-3">
+                                        <div class="fz14px text-secondary">
+                                            Файлы источника лежат в <code>data/datasource/@config.Slug/files/</code>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12 col-lg-6">
+                                                <label class="fz14px">Файл по умолчанию</label>
+                                                <FluentTextField Class="w-100" placeholder="sales.csv"
+                                                                 Value="@Setting(config, DatasourceSettings.File)"
+                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.File, value))" />
+                                            </div>
+                                            <div class="col-12 col-lg-3">
+                                                <label class="fz14px">Разделитель CSV</label>
+                                                <FluentTextField Class="w-100" placeholder="авто"
+                                                                 Value="@Setting(config, DatasourceSettings.Delimiter)"
+                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.Delimiter, value))" />
+                                            </div>
+                                            <div class="col-12 col-lg-3 d-flex align-items-end">
+                                                <FluentCheckbox Label="первая строка — заголовки"
+                                                                Value="@HasHeaders(config)"
+                                                                ValueChanged="@(value => SetSetting(config, DatasourceSettings.HasHeaders, value ? "" : "false"))" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                }
 
                             </div>
 
@@ -86,10 +135,35 @@
 @code {
     [CascadingParameter] public DatasourceOption opt { get; set; } = default!;
 
-    /// <summary>Провайдеры приходят от сервера: движок можно подключить, не правя ядро модуля.</summary>
+    /// <summary>Провайдеры приходят от сервера: тип источника и движок можно подключить, не правя ядро модуля.</summary>
     IReadOnlyCollection<DatasourceDriverResponse> drivers = [];
 
-    IEnumerable<string> DriverKeys => drivers.Select(d => d.Driver);
+    IEnumerable<string> Kinds => drivers
+        .Select(d => d.Kind)
+        .Where(kind => !string.IsNullOrEmpty(kind))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(kind => kind, StringComparer.OrdinalIgnoreCase);
+
+    IEnumerable<DatasourceDriverResponse> DriversFor(string kind)
+        => drivers.Where(d => string.Equals(d.Kind, kind, StringComparison.OrdinalIgnoreCase));
+
+    IEnumerable<string> DriverKeys(string kind)
+        => DriversFor(kind).Select(d => d.Driver).Where(driver => !string.IsNullOrEmpty(driver));
+
+    /// <summary>У типа источника без вариантов (file) драйвера в форме нет.</summary>
+    bool HasDrivers(string kind) => DriverKeys(kind).Any();
+
+    /// <summary>Строка подключения показывается только тем типам, чей провайдер дал подсказку для неё.</summary>
+    bool UsesConnectionString(string kind) => DriversFor(kind).Any(d => !string.IsNullOrEmpty(d.DefaultConnectionString));
+
+    bool IsFileKind(string kind) => string.Equals(kind, DatasourceKind.File, StringComparison.OrdinalIgnoreCase);
+
+    static string KindLabel(string kind) => kind switch
+    {
+        DatasourceKind.Sql => "SQL — база данных",
+        DatasourceKind.File => "Файлы — CSV, XLSX",
+        _ => kind,
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,7 +178,7 @@
         }
         catch
         {
-            // Список движков — подсказка в форме: без него редактор остаётся рабочим.
+            // Список провайдеров — подсказка в форме: без него редактор остаётся рабочим.
         }
     }
 
@@ -119,8 +193,8 @@
         opt.Configs.Remove(cfg);
     }
 
-    string? HelpLink(string driver)
-        => drivers.FirstOrDefault(d => string.Equals(d.Driver, driver, StringComparison.OrdinalIgnoreCase))?.HelpLink;
+    string? HelpLink(DatasourceConfig config)
+        => DriversFor(config.Kind).FirstOrDefault(d => string.Equals(d.Driver, config.Driver, StringComparison.OrdinalIgnoreCase))?.HelpLink;
 
     string? SlugError(DatasourceConfig config)
     {
@@ -133,11 +207,43 @@
         return duplicate ? "Slug уже занят другим источником" : null;
     }
 
+    string? SettingsError(DatasourceConfig config)
+        => UsesConnectionString(config.Kind) && string.IsNullOrWhiteSpace(config.ConnectionString)
+            ? "Укажите строку подключения"
+            : null;
+
+    static string Setting(DatasourceConfig config, string key)
+        => config.Settings.TryGetValue(key, out var value) ? value : "";
+
+    /// <summary>Пустое значение в словарь не пишем: настройка без значения означает «по умолчанию».</summary>
+    static void SetSetting(DatasourceConfig config, string key, string? value)
+    {
+        if (string.IsNullOrEmpty(value)) config.Settings.Remove(key);
+        else config.Settings[key] = value;
+    }
+
+    static bool HasHeaders(DatasourceConfig config)
+        => !string.Equals(Setting(config, DatasourceSettings.HasHeaders), "false", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Сменили тип источника — драйвер и строка подключения от прошлого типа уже не подходят.</summary>
+    void AfterChangeKind(DatasourceConfig config)
+    {
+        var available = DriverKeys(config.Kind).ToList();
+
+        if (!available.Contains(config.Driver, StringComparer.OrdinalIgnoreCase))
+        {
+            config.Driver = available.FirstOrDefault() ?? "";
+        }
+
+        if (UsesConnectionString(config.Kind)) AfterChangeDriverSuggestConnectionString(config);
+        else config.ConnectionString = "";
+    }
+
     void AfterChangeDriverSuggestConnectionString(DatasourceConfig cfg)
     {
         if (string.IsNullOrEmpty(cfg.ConnectionString) || cfg.IsDefaultString())
         {
-            cfg.ConnectionString = drivers
+            cfg.ConnectionString = DriversFor(cfg.Kind)
                 .FirstOrDefault(d => string.Equals(d.Driver, cfg.Driver, StringComparison.OrdinalIgnoreCase))
                 ?.DefaultConnectionString ?? cfg.ConnectionString;
         }

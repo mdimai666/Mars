@@ -5,9 +5,9 @@ namespace Mars.Datasource.Providers.File;
 /// <summary>Настройки файлового источника из <see cref="DatasourceConfig.Settings"/>.</summary>
 public class FileSourceSettings
 {
-    public const string FileKey = "file";
-    public const string HasHeadersKey = "hasHeaders";
-    public const string DelimiterKey = "delimiter";
+    public const string FileKey = DatasourceSettings.File;
+    public const string HasHeadersKey = DatasourceSettings.HasHeaders;
+    public const string DelimiterKey = DatasourceSettings.Delimiter;
 
     /// <summary>Файл по умолчанию, когда запрос не указал объект; пусто — единственный файл источника.</summary>
     public string File { get; init; } = "";

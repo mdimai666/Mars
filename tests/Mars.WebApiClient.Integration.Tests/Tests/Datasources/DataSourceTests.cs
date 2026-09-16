@@ -122,6 +122,26 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task RefreshCatalog_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.RefreshCatalog);
+        _ = nameof(IDatasourceService.RefreshCatalog);
+        var client = GetWebApiClient();
+
+        var cached = await _datasourceService.Catalog("default");
+
+        //Act
+        var refreshed = await client.Datasource().RefreshCatalog("default");
+
+        //Assert
+        refreshed.Groups.Should().NotBeEmpty();
+        refreshed.Should().NotBeSameAs(cached);
+        // Кэш заменён: следующий вызов сервиса отдаёт перечитанный каталог, а не старый.
+        (await _datasourceService.Catalog("default")).Should().NotBeSameAs(cached);
+    }
+
+    [IntegrationFact]
     public async Task Columns_Request_Success()
     {
         //Arrange

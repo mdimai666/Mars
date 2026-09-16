@@ -44,7 +44,14 @@
 
         try
         {
-            var conn = new ConnectionStringTestDto { Driver = Config.Driver, ConnectionString = Config.ConnectionString };
+            var conn = new ConnectionStringTestDto
+            {
+                Kind = Config.Kind,
+                Driver = Config.Driver,
+                ConnectionString = Config.ConnectionString,
+                Settings = Config.Settings,
+            };
+
             var res = await datasourceService.TestConnection(conn);
 
             if (res.Ok)

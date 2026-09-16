@@ -58,6 +58,11 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .AppendQueryParam(new { slug })
                     .GetJsonAsync<DatasourceCatalog>();
 
+    public Task<DatasourceCatalog> RefreshCatalog(string slug)
+        => _client.Request($"{_basePath}{_controllerName}", "RefreshCatalog")
+                    .AppendQueryParam(new { slug })
+                    .GetJsonAsync<DatasourceCatalog>();
+
     public Task<QueryResultDto> Query(string slug, DatasourceRequest request)
         => _client.Request($"{_basePath}{_controllerName}", "Query")
                     .AppendQueryParam(new { slug })

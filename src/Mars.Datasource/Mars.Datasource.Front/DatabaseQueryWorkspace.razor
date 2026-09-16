@@ -1,4 +1,5 @@
 @using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Models
 @using Mars.Datasource.Front.Components
 @using Mars.Datasource.Front.Services
 @using MarsCodeEditor2
@@ -11,7 +12,7 @@
         <div class="alert alert-danger">@errorMessage</div>
     </div>
 }
-else if (database is null)
+else if (catalog is null)
 {
     <div class="p-5 main-fill xcenter">
         <div class="spinner-border text-primary" role="status">
@@ -42,10 +43,10 @@ else
                 </ul>
             </div>
             <span class="ms-auto text-secondary fz14px">
-                @database.DatabaseName · объектов: @database.Tables.Count
-                @if (source is not null)
+                @catalog.SourceName · объектов: @objectCount
+                @if (!string.IsNullOrEmpty(SourceLabel))
                 {
-                    <span>· @source.Driver</span>
+                    <span>· @SourceLabel</span>
                 }
             </span>
         </section>
@@ -54,11 +55,14 @@ else
             <FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">
                 <div class="ds-pane h-100 d-flex flex-column">
                     <div class="flex-shrink-0 hstack gap-1 p-2">
-                        <input class="form-control form-control-sm" placeholder="таблица…" @bind="tableFilter" @bind:event="oninput" />
-                        <button class="btn btn-sm btn-light text-nowrap" title="Новая вьюха" disabled="@Busy" @onclick="CreateViewAsync">
-                            <i class="bi bi-plus-lg"></i> вьюха
-                        </button>
-                        <button class="btn btn-sm btn-light" title="Обновить структуру" disabled="@Busy" @onclick="RefreshStructureAsync">
+                        <input class="form-control form-control-sm" placeholder="объект…" @bind="tableFilter" @bind:event="oninput" />
+                        @if (CanManageViews)
+                        {
+                            <button class="btn btn-sm btn-light text-nowrap" title="Новая вьюха" disabled="@Busy" @onclick="CreateViewAsync">
+                                <i class="bi bi-plus-lg"></i> вьюха
+                            </button>
+                        }
+                        <button class="btn btn-sm btn-light" title="Обновить" disabled="@Busy" @onclick="RefreshCatalogAsync">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
                     </div>
@@ -74,28 +78,28 @@ else
                         else
                         {
                             <ul class="list-group list-group-flush">
-                                @foreach (var group in filteredTables.GroupBy(t => t.TableSchema.SchemaName))
+                                @foreach (var group in filteredGroups)
                                 {
-                                    if (hasMultipleSchemas)
+                                    if (hasMultipleGroups)
                                     {
                                         <li class="list-group-item px-2 py-1 fz14px text-secondary ds-schema"
-                                            @onclick="() => ToggleSchema(group.Key)">
-                                            <i class="bi @(IsSchemaExpanded(group.Key) ? "bi-chevron-down" : "bi-chevron-right") me-1"></i>
-                                            <span>@group.Key</span>
+                                            @onclick="() => ToggleSchema(group.Name)">
+                                            <i class="bi @(IsSchemaExpanded(group.Name) ? "bi-chevron-down" : "bi-chevron-right") me-1"></i>
+                                            <span>@group.Name</span>
                                         </li>
                                     }
-                                    @if (!hasMultipleSchemas || IsSchemaExpanded(group.Key))
+                                    @if (!hasMultipleGroups || IsSchemaExpanded(group.Name))
                                     {
-                                        @foreach (var item in group)
+                                        @foreach (var item in group.Objects)
                                         {
-                                            var table = item;
-                                            <li class="list-group-item list-group-item-action px-2 py-1 hstack @(table == activeTab?.Table ? "active" : "")"
-                                                title="@table.TableSchema.Kind"
-                                                @onclick="() => OpenTableAsync(table)">
-                                                <span class="text-nowrap">@table.TableName</span>
-                                                @if (table.TableSchema.IsView)
+                                            var entry = new CatalogEntry(group.Name, item);
+                                            <li class="list-group-item list-group-item-action px-2 py-1 hstack @(item == activeTab?.Object ? "active" : "")"
+                                                title="@item.ObjectType"
+                                                @onclick="() => OpenObjectAsync(entry)">
+                                                <span class="text-nowrap">@item.Name</span>
+                                                @if (item.ObjectType is DatasourceObjectType.View or DatasourceObjectType.MaterializedView)
                                                 {
-                                                    <span class="badge bg-secondary fz14px ms-1">@table.TableSchema.Kind</span>
+                                                    <span class="badge bg-secondary fz14px ms-1">@item.ObjectType</span>
                                                 }
                                             </li>
                                         }
@@ -140,13 +144,16 @@ else
                                 Показать больше
                             </FluentButton>
                         }
-                        <FluentButton Appearance="Appearance.Stealth"
-                                      OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
-                            AI help
-                        </FluentButton>
-                        @if (activeTab?.Table is { } opened)
+                        @if (IsSql)
                         {
-                            @if (opened.TableSchema.Kind == QTableKind.View)
+                            <FluentButton Appearance="Appearance.Stealth"
+                                          OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
+                                AI help
+                            </FluentButton>
+                        }
+                        @if (activeTab is { Object: { } opened } current)
+                        {
+                            @if (CanManageViews && opened.ObjectType == DatasourceObjectType.View)
                             {
                                 <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
                                     определение
@@ -155,23 +162,23 @@ else
                                     удалить
                                 </FluentButton>
                             }
-                            <span class="ms-auto text-secondary fz14px">@opened.TableSchema.SchemaName.@opened.TableName</span>
+                            <span class="ms-auto text-secondary fz14px">@DisplayName(new CatalogEntry(current.Schema, opened))</span>
                         }
                     </div>
 
-                    @if (activeTab?.Table is { } current)
+                    @if (activeTab?.Object is { } currentObject)
                     {
                         <details class="flex-shrink-0 px-2 fz14px">
-                            <summary class="text-secondary">структура: @current.Columns.Count колонок</summary>
+                            <summary class="text-secondary">структура: @currentObject.Columns.Count колонок</summary>
                             <div class="overflow-scroll pt-1" style="max-height:120px">
-                                @foreach (var column in current.Columns.Values.OrderBy(c => c.ColumnOrdinal))
+                                @foreach (var column in currentObject.Columns.OrderBy(c => c.Ordinal))
                                 {
                                     <span class="badge bg-light text-dark border me-1 mb-1">
-                                        @if (column.IsKey == true)
+                                        @if (column.IsKey)
                                         {
                                             <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
                                         }
-                                        @column.ColumnName <span class="text-secondary">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
+                                        @column.Name <span class="text-secondary">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
                                     </span>
                                 }
                             </div>
@@ -179,7 +186,7 @@ else
                     }
 
                     <div class="ds-editor px-2">
-                        <CodeEditor2 @ref="_editor" Lang=@CodeEditor2.Language.sql Value="" OnInit="OnEditorInitAsync"
+                        <CodeEditor2 @ref="_editor" @key="EditorLang" Lang=@EditorLang Value="" OnInit="OnEditorInitAsync"
                                      ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
                     </div>
 
@@ -201,9 +208,19 @@ else
                             <QueryResultGrid Result="result" Tab="activeTab" Slug="@DataSourceConfigSlug"
                                              Source="source" OnSaved="RunActiveTabAsync" />
                         }
+                        else if (IsSql)
+                        {
+                            <div class="text-secondary p-2">Выберите объект слева или напишите запрос и нажмите «Выполнить».</div>
+                        }
                         else
                         {
-                            <div class="text-secondary p-2">Выберите таблицу слева или напишите запрос и нажмите «Выполнить».</div>
+                            <div class="text-secondary p-2">
+                                <div>Выберите файл слева — откроются его строки.</div>
+                                <div class="fz14px mt-1">
+                                    Условие фильтра (Dynamic LINQ): <code>Val.Num(age) &gt; 30</code>, <code>name == "ann"</code>,
+                                    <code>Val.Date(created) &gt; Val.Date("2020-01-01")</code>. Пустое условие — все строки.
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>

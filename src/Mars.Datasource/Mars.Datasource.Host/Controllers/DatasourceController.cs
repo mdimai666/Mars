@@ -61,6 +61,13 @@ public class DatasourceController : ControllerBase
         return await ds.Catalog(slug);
     }
 
+    /// <summary>Перечитать каталог, минуя серверный кэш (кнопка «обновить» в дереве).</summary>
+    [HttpGet]
+    public async Task<DatasourceCatalog> RefreshCatalog(string slug)
+    {
+        return await ds.RefreshCatalog(slug);
+    }
+
     [HttpGet]
     public async Task<ViewDefinitionResponse> ViewDefinition([DefaultValue("default")] string slug, string? schema, string name)
     {

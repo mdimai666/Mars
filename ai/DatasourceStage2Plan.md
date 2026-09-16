@@ -5,10 +5,12 @@
 Этот план — про не-SQL источники. Ветка `ai/datasource-rework-stage2` (от `ai/datasource-rework`).
 По закрытии обеих инициатив схлопнуть в один `ai/DatasourceGuide.md` ([PlanLifecycleGuide.md](./PlanLifecycleGuide.md)).
 
-Статус 2026-09-16: **этап A (каркас kind'ов, серверная часть) и этап B (file-провайдер) сделаны**,
-фронт к ним — следующий шаг (A6/A7 и B5 одним заходом, когда есть два типа источников). Проверено:
-`dotnet build Mars.slnx` — 0 ошибок/0 предупреждений; `Mars.Datasource.Integration.Tests` 289/289;
-`Mars.WebApiClient.Integration.Tests` (Datasource) 14/14.
+Статус 2026-09-16: **этапы A (каркас kind'ов) и B (file-источник) сделаны целиком, включая фронт**;
+этап C (rest) не начат. Проверено: `dotnet build Mars.slnx` — 0 ошибок/0 предупреждений;
+`Mars.Datasource.Integration.Tests` 289/289; `Mars.WebApiClient.Integration.Tests` (Datasource) 15/15.
+**Глазами в браузере не проверял** (браузер открываю только по команде): посмотреть стоит дерево
+из каталога на sql-источнике (сворачивание схем, бейджи вьюх, «структура» над редактором), правку
+ячейки и «Показать больше», форму настроек с выбором типа источника и file-источник целиком.
 
 ## 1. Направление
 
@@ -156,19 +158,36 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
       `DatasourceService` резолвит провайдера по `(Kind, Driver)`, `Catalog(slug)` с кэшем 30 с
       (сбрасывается вместе с кэшем структуры при смене опции и после DDL), `TestConnection`
       проверяет источник построением каталога (работает для любого kind'а), `GET api/Datasource/Catalog`.
-- [ ] A6. Front: оболочка (дерево из каталога вместо «только таблицы»), редактор по kind'у через
-      реестр (`IDatasourceEditorLocator` по образцу `INodeFormsLocator`) + `<DynamicComponent>`;
-      sql-kind — текущий Monaco+грид без изменений. **Делаем вместе с B5**: обобщать дерево
-      имеет смысл, когда есть второй тип источников.
-- [ ] A7. Форма настроек источника: выбор `Kind`, драйверы/поля, отфильтрованные по kind'у.
-- [x] A8. Тесты: `DatasourceProviderRegistryTests` (9 — резолв по kind/driver, неизвестный kind,
-      чужой драйвер, единственный вариант типа, список вариантов, отказ `ResolveSql`, `Describe`),
-      `CatalogMappingTests` (8 — группы по схемам, id `schema.table`, пустая схема, kind объекта,
-      колонки по ordinal с PK/JSON/размером, capabilities, `Kind` из конфига),
-      `DatasourceConfigTests` += `Normalize` (5), HTTP-контракт: `Catalog_Request_Success`,
-      `Catalog_CalledTwice_ReturnsCachedInstance`, обновлён `Drivers_Request_Success`.
+- [x] A6. Front: рабочая область переведена на каталог — `DatasourceCatalog` вместо
+      `QDatabaseStructureResponse`, в дереве группы (схемы) и объекты любого типа, `QueryTab.Table`
+      → `QueryTab.Object` + `QueryTab.Schema` + `QueryTab.Language`/`SourceWritable`, открытие объекта
+      (`OpenObjectAsync(CatalogEntry)`) для sql собирает browse-SQL как раньше, для остальных —
+      пустой текст и объект в запросе. Язык Monaco — по типу источника (`sql` / `csharp`),
+      компонент пересоздаётся по `@key`, `_editorReady` при этом сбрасывается (грабля CodeEditor2).
+      Kind-зависимое в UI: «＋ вьюха» и кнопки вьюхи — только при `CanManageViews`, «AI help» —
+      только для sql, «всего N» (`COUNT`) — только для sql, подтверждение `SqlSafety` — только для sql,
+      подсказка под редактором своя для файла (примеры `Val.*`). Кнопка «обновить» зовёт
+      `RefreshCatalog` (новый эндпоинт + метод клиента) — работает для любого типа источника.
+      Реестр редакторов kind'а (`IDatasourceEditorLocator`) не понадобился: отличия оказались
+      в языке Monaco и наборе кнопок, а не в отдельном компоненте. Вернёмся к нему, когда появится
+      rest-источник с формой параметров.
+- [x] A7. Форма настроек: выбор типа источника (`Kind`) с подписями, драйверы фильтруются по kind'у
+      (у file их нет — поле скрыто), `ConnectionString` показывается только тем kind'ам, чей провайдер
+      дал подсказку строки подключения, у file — свои поля (`file`, `delimiter`, «первая строка —
+      заголовки») с записью в `Settings` (пустое значение из словаря удаляется = «по умолчанию»),
+      смена kind'а чинит драйвер и строку подключения, инлайн-ошибка «Укажите строку подключения».
+      `[Required]` с `ConnectionString` снят — он не может быть kind-зависимым.
+      Ключи настроек — в `Contracts` (`DatasourceSettings`), чтобы форма и провайдер не расходились.
+      `PartDataSourceActions` передаёт в `TestConnection` kind и settings (иначе файл проверялся бы как sql).
+- [x] A8. Тесты: `DatasourceProviderRegistryTests` (10 — резолв по kind/driver, неизвестный kind,
+      чужой драйвер, единственный вариант типа, устаревший драйвер у типа без вариантов, список
+      вариантов, отказ `ResolveSql`, `Describe`), `CatalogMappingTests` (8 — группы по схемам,
+      id `schema.table`, пустая схема, kind объекта, колонки по ordinal с PK/JSON/размером,
+      capabilities, `Kind` из конфига), `DatasourceConfigTests` += `Normalize` (5), HTTP-контракт:
+      `Catalog_Request_Success`, `Catalog_CalledTwice_ReturnsCachedInstance`,
+      `RefreshCatalog_Request_Success`, обновлён `Drivers_Request_Success` (теперь ждёт и file).
 
-### Этап B. file-kind — провайдер сделан 2026-09-16, фронт (B5) нет
+### Этап B. file-kind — сделано 2026-09-16
 
 - [x] B1. `Mars.Datasource.Providers.File`: CSV встроенным `Microsoft.VisualBasic.FileIO.TextFieldParser`
       (кавычки, разделитель внутри значений, BOM, автоопределение разделителя `,`/`;`/tab/`|` по
@@ -185,8 +204,11 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
       в гриде работают для файлов без отдельных правил).
 - [x] B4. `MaxRows`/`Truncated` — те же, что для sql; жёсткий предел чтения `MaxSourceRows = 100_000`
       (файл читается в память целиком). `Modify` — внятный отказ «только для чтения».
-- [ ] B5. Front: Monaco `csharp` вместо SQL, дерево из каталога, грид без изменений, правка ячеек
-      выключена (нет PK). Вместе с A6/A7.
+- [x] B5. Front: Monaco `csharp` для linq-запроса, дерево из каталога (группа у файла одна и без
+      имени, поэтому заголовков групп нет), грид без изменений, правка ячеек выключена —
+      `QueryTab.CanEdit` требует `SourceWritable`, а вместо «нет первичного ключа» показывает
+      «источник только для чтения» (`QueryTab.EditDisabledReason`). Просмотр файла = 50 строк
+      через `MaxRows`, «Показать больше» растит его ×5 (browse-SQL у файла нет).
 - [x] B6. Тесты (`tests/Mars.Datasource.Integration.Tests/FileProviders/`): `CsvTabularFileReaderTests`
       (10 — кавычки/пустые, автоопределение `;`, явный `tab`, без заголовков, BOM, дубли заголовков,
       лимит, пустой поток, лишние поля, `CanRead`), `XlsxTabularFileReaderTests` (7 — все листы,
@@ -276,6 +298,12 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 - `CodeEditor2`: дефолтный `ContainerCssStyle` = `80vh` — при встраивании переопределять на
   `height:100%`; `SetValue/GetValue` до создания JS-редактора падают.
 - После правок js/css bump `MarsAppVersion` (`Directory.Build.props`).
+- Страница `/datasource/actions` (`DataSourceInfoComponent`) показывает pg-кнопки для источника
+  любого типа: сервер отвечает внятной ошибкой «доступно только для PostgreSQL, а источник … — file».
+  Скрывать кнопки по kind'у не стали — компонент не знает тип источника, а ошибка безопасна.
+- Файлы источника пока кладутся вручную в `data/datasource/<slug>/files/` — загрузки через админку нет.
+- `Tables`/`Columns`/`DatabaseStructure`/`RefreshStructure` остались (их пользуют AiChat-схема и тесты),
+  фронт рабочей области ходит только в `Catalog`/`RefreshCatalog`.
 
 ## 8. Отклонено (с причинами)
 
@@ -297,9 +325,10 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 1. Ре-импорт каталога: merge/replace и показ диффа — в первом проходе rest-kind или позже.
 2. Концепт «большое в `/data`» — внести в `ai/ProjectStructureGuide.md` отдельной правкой?
 3. Загрузка файлов источника через админку (медиа-пайплайн vs своя загрузка в `data/…/files`) —
-   сейчас файлы кладутся в папку вручную.
+   сейчас файлы кладутся в папку вручную, без UI это kind не потрогать.
 4. Сортировка/проекция для file-kind: раз предикатом `Where` цепочку не выразить (грабли),
    делаем ли клик по заголовку грида серверным `OrderBy` для всех kind'ов.
 5. Подсветка `.http` своим monarch — когда (после прототипа).
-6. `[Required]` на `DatasourceConfig.ConnectionString` — снять при переделке формы настроек (A7):
-   для file/rest-источников строки подключения нет.
+6. `SqlNode` показывает все источники, включая file: запрос с `Language=sql` к файлу даст ошибку
+   разбора предиката. Чинится в шаге про ноды (решение 15 — ноды пока не трогаем): нужен `Kind`
+   в `SelectDatasourceDto` и фильтр в форме узла.

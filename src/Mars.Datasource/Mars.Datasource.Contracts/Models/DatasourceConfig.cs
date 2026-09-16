@@ -13,8 +13,8 @@ public class DatasourceConfig
     [Required]
     public string Slug { get; set; } = "";
 
+    /// <summary>Строка подключения sql-источника; у остальных типов источника пуста — их настройки в <see cref="Settings"/>.</summary>
     [Display(Name = "ConnectionString")]
-    [Required]
     public string ConnectionString { get; set; } = "";
 
     [Display(Name = "Driver")]

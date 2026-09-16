@@ -205,6 +205,11 @@ internal class DatasourceService : IDatasourceService
             return cached.Catalog;
         }
 
+        return await RefreshCatalog(slug);
+    }
+
+    public async Task<DatasourceCatalog> RefreshCatalog(string slug)
+    {
         var catalog = await _registry.Resolve(GetConfig(slug)).Catalog();
 
         _catalogCache[slug] = (catalog, DateTime.UtcNow);

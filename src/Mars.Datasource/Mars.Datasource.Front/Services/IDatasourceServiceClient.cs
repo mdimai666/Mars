@@ -20,6 +20,9 @@ public interface IDatasourceServiceClient
     /// <summary>Каталог объектов источника — дерево для любого типа источника.</summary>
     Task<DatasourceCatalog> Catalog(string slug);
 
+    /// <summary>Перечитать каталог источника, минуя серверный кэш.</summary>
+    Task<DatasourceCatalog> RefreshCatalog(string slug);
+
     /// <summary>Перечитать структуру базы, минуя серверный кэш.</summary>
     Task<QDatabaseStructureResponse> RefreshStructure(string slug);
 

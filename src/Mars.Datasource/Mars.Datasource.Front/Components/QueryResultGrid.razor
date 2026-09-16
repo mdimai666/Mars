@@ -11,9 +11,9 @@
         {
             <span class="text-warning">показаны первые @Tab.MaxRows — в результате есть ещё строки</span>
         }
-        @if (Tab.Table is not null && !Tab.CanEdit)
+        @if (Tab.EditDisabledReason is string editDisabled)
         {
-            <span class="text-secondary">правка недоступна: у таблицы нет первичного ключа</span>
+            <span class="text-secondary">@editDisabled</span>
         }
         else if (Tab.CanEdit)
         {

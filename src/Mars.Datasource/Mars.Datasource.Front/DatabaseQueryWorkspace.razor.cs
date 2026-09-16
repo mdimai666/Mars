@@ -44,7 +44,7 @@ public partial class DatabaseQueryWorkspace
         }
     }
 
-    QDatabaseStructureResponse? database;
+    DatasourceCatalog? catalog;
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = [];
 
     List<QueryTab> tabs = [];
@@ -62,28 +62,65 @@ public partial class DatabaseQueryWorkspace
 
     bool _editorNeedsSync;
 
+    /// <summary>Язык, под который создан текущий JS-редактор: при смене язык меняется и компонент (по `@key`).</summary>
+    string? _editorLang;
+
     string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
 
-    IEnumerable<QTableResponse> filteredTables => database is null
-        ? []
-        : (string.IsNullOrWhiteSpace(tableFilter)
-            ? database.Tables
-            : database.Tables.Where(t => t.TableName.Contains(tableFilter, StringComparison.OrdinalIgnoreCase)))
-          .OrderBy(t => t.TableSchema.SchemaName)
-          .ThenBy(t => t.TableName);
+    bool IsSql => string.Equals(catalog?.Kind, DatasourceKind.Sql, StringComparison.OrdinalIgnoreCase);
 
-    bool hasMultipleSchemas => database is not null
-        && database.Tables.Select(t => t.TableSchema.SchemaName).Distinct().Count() > 1;
+    bool CanManageViews => catalog?.Capabilities.CanManageViews == true;
 
-    /// <summary>Схемы, свёрнутые пользователем: в дереве свёрнуто то, что перечислено здесь.</summary>
+    int objectCount => catalog?.Groups.Sum(group => group.Objects.Count) ?? 0;
+
+    /// <summary>Язык запроса по умолчанию для источника: у sql это SQL, у остальных пока Dynamic LINQ.</summary>
+    string DefaultLanguage => IsSql ? DatasourceLanguage.Sql : DatasourceLanguage.Linq;
+
+    /// <summary>Язык подсветки редактора: SQL у базы, C# у запроса на Dynamic LINQ.</summary>
+    string EditorLang => DefaultLanguage == DatasourceLanguage.Linq ? CodeEditor2.Language.csharp : CodeEditor2.Language.sql;
+
+    /// <summary>Подпись источника в шапке: тип, а у sql ещё и движок.</summary>
+    string SourceLabel => catalog is null
+        ? ""
+        : IsSql && source is not null ? $"{catalog.Kind} · {source.Driver}" : catalog.Kind;
+
+    /// <summary>Объект каталога вместе с его группой: у sql группа — схема, она нужна для SQL и DDL вьюх.</summary>
+    record CatalogEntry(string Group, DatasourceCatalogObject Object);
+
+    IEnumerable<DatasourceCatalogGroup> filteredGroups
+    {
+        get
+        {
+            if (catalog is null) yield break;
+
+            foreach (var group in catalog.Groups.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase))
+            {
+                var objects = Filtered(group);
+
+                if (objects.Count == 0) continue;
+
+                yield return new DatasourceCatalogGroup { Name = group.Name, Objects = objects };
+            }
+        }
+    }
+
+    List<DatasourceCatalogObject> Filtered(DatasourceCatalogGroup group)
+        => string.IsNullOrWhiteSpace(tableFilter)
+            ? group.Objects
+            : group.Objects.Where(o => o.Name.Contains(tableFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    bool hasMultipleGroups => catalog is not null
+        && catalog.Groups.Count(group => group.Objects.Count > 0) > 1;
+
+    /// <summary>Группы, свёрнутые пользователем: в дереве свёрнуто то, что перечислено здесь.</summary>
     readonly HashSet<string> _collapsedSchemas = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Источник, для которого уже разложили схемы по умолчанию.</summary>
+    /// <summary>Источник, для которого уже разложили группы по умолчанию.</summary>
     string? _schemaDefaultsFor;
 
     /// <summary>
-    /// Раскрыта ли схема. При активном фильтре дерево раскрыто целиком: иначе найденная таблица
-    /// осталась бы спрятанной в свёрнутой схеме.
+    /// Раскрыта ли группа. При активном фильтре дерево раскрыто целиком: иначе найденный объект
+    /// остался бы спрятанным в свёрнутой группе.
     /// </summary>
     bool IsSchemaExpanded(string schemaName)
         => !string.IsNullOrWhiteSpace(tableFilter) || !_collapsedSchemas.Contains(schemaName);
@@ -94,12 +131,12 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>
-    /// Схема по умолчанию (`public`, у MsSQL — `dbo`) раскрыта, остальные свёрнуты. Раскладываем так
-    /// один раз на источник: дальше состояние принадлежит пользователю, иначе свёрнутая вручную схема
-    /// разворачивалась бы после каждого обновления структуры. Если схемы по умолчанию нет
-    /// (в MySQL схема — это сама база), дерево остаётся раскрытым, как было.
+    /// Группа по умолчанию (`public`, у MsSQL — `dbo`) раскрыта, остальные свёрнуты. Раскладываем так
+    /// один раз на источник: дальше состояние принадлежит пользователю, иначе свёрнутая вручную группа
+    /// разворачивалась бы после каждого обновления. Если группы по умолчанию нет (в MySQL схема — это
+    /// сама база, у файла группа одна и без имени), дерево остаётся раскрытым.
     /// </summary>
-    void ApplySchemaDefaults(QDatabaseStructureResponse structure)
+    void ApplySchemaDefaults(DatasourceCatalog structure)
     {
         if (_schemaDefaultsFor == source?.Slug) return;
 
@@ -107,10 +144,9 @@ public partial class DatabaseQueryWorkspace
         _collapsedSchemas.Clear();
 
         var defaultSchema = SqlDialectMapping.Dialect(source?.Driver) == SqlDialect.MsSql ? "dbo" : "public";
-        var schemas = structure.Tables
-            .Select(t => t.TableSchema.SchemaName)
-            .Where(s => !string.IsNullOrEmpty(s))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+        var schemas = structure.Groups
+            .Select(group => group.Name)
+            .Where(name => !string.IsNullOrEmpty(name))
             .ToList();
 
         if (!schemas.Contains(defaultSchema, StringComparer.OrdinalIgnoreCase)) return;
@@ -154,13 +190,14 @@ public partial class DatabaseQueryWorkspace
 
         try
         {
-            database = await service.DatabaseStructure(DataSourceConfigSlug);
+            catalog = await service.Catalog(DataSourceConfigSlug);
             listDatasources = await service.ListSelectDatasource();
-            ApplySchemaDefaults(database);
+            ApplySchemaDefaults(catalog);
+            ApplySourceLanguage();
         }
         catch (Exception ex)
         {
-            database = null;
+            catalog = null;
             errorMessage = ex.Message;
         }
         finally
@@ -170,7 +207,27 @@ public partial class DatabaseQueryWorkspace
         }
     }
 
-    async Task RefreshStructureAsync()
+    /// <summary>
+    /// Язык запроса принадлежит источнику: вкладки без открытого объекта получают язык источника,
+    /// а при смене языка редактор пересоздаётся — Monaco задаёт язык модели при создании.
+    /// </summary>
+    void ApplySourceLanguage()
+    {
+        foreach (var tab in tabs)
+        {
+            if (tab.Object is null) tab.Language = DefaultLanguage;
+        }
+
+        if (_editorLang is not null && _editorLang != EditorLang)
+        {
+            _editorReady = false;
+            _editorNeedsSync = true;
+        }
+
+        _editorLang = EditorLang;
+    }
+
+    async Task RefreshCatalogAsync()
     {
         Busy = true;
         errorMessage = null;
@@ -178,8 +235,8 @@ public partial class DatabaseQueryWorkspace
 
         try
         {
-            database = await service.RefreshStructure(DataSourceConfigSlug);
-            ApplySchemaDefaults(database);
+            catalog = await service.RefreshCatalog(DataSourceConfigSlug);
+            ApplySchemaDefaults(catalog);
         }
         catch (Exception ex)
         {
@@ -196,7 +253,7 @@ public partial class DatabaseQueryWorkspace
 
     QueryTab AddTab()
     {
-        var tab = new QueryTab { Title = $"query {tabs.Count + 1}" };
+        var tab = new QueryTab { Title = $"query {tabs.Count + 1}", Language = DefaultLanguage };
 
         tabs.Add(tab);
         activeTabId = tab.Id;
@@ -211,7 +268,7 @@ public partial class DatabaseQueryWorkspace
     {
         if (tab == activeTab) return;
 
-        await RememberEditorSqlAsync();
+        await RememberEditorTextAsync();
 
         activeTabId = tab.Id;
         _editorNeedsSync = true;
@@ -221,7 +278,7 @@ public partial class DatabaseQueryWorkspace
 
     async Task CloseTabAsync(QueryTab tab)
     {
-        await RememberEditorSqlAsync();
+        await RememberEditorTextAsync();
 
         tabs.Remove(tab);
 
@@ -238,13 +295,13 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>Текст редактора принадлежит активной вкладке: перед переключением забираем его.</summary>
-    async Task RememberEditorSqlAsync()
+    async Task RememberEditorTextAsync()
     {
         var tab = activeTab;
         if (!_editorReady || tab is null || _editor is null) return;
 
-        var sql = await _editor.GetValue();
-        if (!string.IsNullOrWhiteSpace(sql)) tab.Sql = sql;
+        var text = await _editor.GetValue();
+        if (!string.IsNullOrWhiteSpace(text)) tab.Text = text;
     }
 
     async Task SyncEditorAsync()
@@ -252,12 +309,12 @@ public partial class DatabaseQueryWorkspace
         if (!_editorReady || _editor is null || activeTab is null) return;
 
         _editorNeedsSync = false;
-        await _editor.SetValue(activeTab.Sql);
+        await _editor.SetValue(activeTab.Text);
     }
 
-    async Task<string> ReadEditorSqlAsync()
+    async Task<string> ReadEditorTextAsync()
     {
-        if (!_editorReady || _editor is null) return activeTab?.Sql ?? "";
+        if (!_editorReady || _editor is null) return activeTab?.Text ?? "";
 
         return await _editor.GetValue();
     }
@@ -269,18 +326,22 @@ public partial class DatabaseQueryWorkspace
         var tab = activeTab;
         if (tab is null || tab.Loading) return;
 
-        string sql = await ReadEditorSqlAsync();
+        string text = await ReadEditorTextAsync();
 
-        if (string.IsNullOrWhiteSpace(sql))
+        if (string.IsNullOrWhiteSpace(text))
         {
-            _ = _messageService.Error("SQL-запрос пуст");
-            return;
+            // У sql пустой запрос выполнять нечего; у файла пустое условие означает «все строки объекта».
+            if (IsSql || tab.Object is null)
+            {
+                _ = _messageService.Error(IsSql ? "SQL-запрос пуст" : "Выберите объект слева или напишите условие");
+                return;
+            }
         }
 
-        if (SqlSafety.IsDestructive(sql) && !await ConfirmDestructiveAsync(sql)) return;
+        if (IsSql && SqlSafety.IsDestructive(text) && !await ConfirmDestructiveAsync(text)) return;
 
-        tab.Sql = sql;
-        tab.Title = tab.Table?.TableName ?? tab.Title;
+        tab.Text = text;
+        tab.Title = tab.Object?.Name ?? tab.Title;
         tab.Loading = true;
         tab.Error = null;
 
@@ -288,11 +349,26 @@ public partial class DatabaseQueryWorkspace
 
         try
         {
-            var result = await service.Query(DataSourceConfigSlug, new DatasourceRequest { Query = sql, MaxRows = tab.MaxRows });
+            var result = await service.Query(DataSourceConfigSlug, new DatasourceRequest
+            {
+                ObjectId = tab.Object?.Id,
+                Language = tab.Language,
+                Query = text,
+                MaxRows = tab.MaxRows,
+            });
 
             tab.Result = result;
             tab.Error = result.Ok ? null : result.Message;
-            StartTotalCount(tab, sql, result);
+
+            if (IsSql)
+            {
+                StartTotalCount(tab, text, result);
+            }
+            else
+            {
+                tab.Total = null;
+                tab.TotalNote = null;
+            }
         }
         catch (Exception ex)
         {
@@ -309,8 +385,8 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>
-    /// Просим больше строк. У просмотра объекта лимит стоит в самом SQL — растим его и пересобираем запрос;
-    /// у произвольного запроса ограничение серверное, поэтому растём его.
+    /// Просим больше строк. У просмотра sql-объекта лимит стоит в самом SQL — растим его и пересобираем
+    /// запрос; у остальных случаев ограничение серверное, поэтому растём его.
     /// </summary>
     async Task RunMoreAsync()
     {
@@ -320,8 +396,8 @@ public partial class DatabaseQueryWorkspace
         if (tab.IsBrowse)
         {
             tab.BrowseLimit *= 5;
-            tab.BrowseSql = BuildBrowseSql(tab.Table!, tab.BrowseLimit);
-            tab.Sql = tab.BrowseSql;
+            tab.BrowseSql = BuildBrowseSql(new CatalogEntry(tab.Schema, tab.Object!), tab.BrowseLimit);
+            tab.Text = tab.BrowseSql;
 
             EnsureBrowseCap(tab);
             _editorNeedsSync = true;
@@ -337,9 +413,9 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>
-    /// «Всего N» показываем только для нашего просмотра объекта: у произвольного запроса непонятно,
-    /// что считать. Меньше лимита строк — количество известно и так; ровно лимит — считаем в фоне,
-    /// чтобы не задерживать показ строк.
+    /// «Всего N» показываем только для нашего просмотра sql-объекта: у произвольного запроса непонятно,
+    /// что считать, а у не-sql источника `COUNT` нечем взять. Меньше лимита строк — количество известно
+    /// и так; ровно лимит — считаем в фоне, чтобы не задерживать показ строк.
     /// </summary>
     void StartTotalCount(QueryTab tab, string sql, QueryResultDto result)
     {
@@ -370,7 +446,7 @@ public partial class DatabaseQueryWorkspace
         {
             var count = await service.Query(DataSourceConfigSlug, new DatasourceRequest
             {
-                Query = BuildCountSql(tab.Table!),
+                Query = BuildCountSql(tab),
                 MaxRows = 1,
                 TimeoutSec = TotalCountTimeoutSec,
             });
@@ -405,31 +481,42 @@ public partial class DatabaseQueryWorkspace
                 ? total
                 : null;
 
-    async Task OpenTableAsync(QTableResponse table)
+    async Task OpenObjectAsync(CatalogEntry entry)
     {
         var tab = activeTab ?? AddTab();
 
         // Открыли другой объект — «изменяем вьюху» больше не про него.
         _viewSource = null;
 
-        // Открытый объект должен быть виден в дереве, даже если его схему свернули.
-        _collapsedSchemas.Remove(table.TableSchema.SchemaName);
+        // Открытый объект должен быть виден в дереве, даже если его группу свернули.
+        _collapsedSchemas.Remove(entry.Group);
 
-        tab.Table = table;
-        tab.KeyColumns = table.Columns.Values
-            .Where(c => c.IsKey == true)
-            .Select(c => c.ColumnName)
-            .ToList();
-        tab.Title = table.TableName;
+        tab.Object = entry.Object;
+        tab.Schema = entry.Group;
+        tab.Language = string.IsNullOrWhiteSpace(entry.Object.DefaultLanguage) ? DefaultLanguage : entry.Object.DefaultLanguage;
+        tab.SourceWritable = catalog?.Capabilities.CanWrite == true;
+        tab.KeyColumns = entry.Object.Columns.Where(c => c.IsKey).Select(c => c.Name).ToList();
+        tab.Title = entry.Object.Name;
         tab.BrowseLimit = DefaultBrowseLimit;
-        tab.BrowseSql = BuildBrowseSql(table, tab.BrowseLimit);
-        tab.Sql = tab.BrowseSql;
         tab.Total = null;
         tab.TotalNote = null;
         tab.Changes.Clear();
         tab.ShowJson = false;
 
-        EnsureBrowseCap(tab);
+        if (IsSql)
+        {
+            tab.BrowseSql = BuildBrowseSql(entry, tab.BrowseLimit);
+            tab.Text = tab.BrowseSql;
+            EnsureBrowseCap(tab);
+        }
+        else
+        {
+            // У не-sql источника текст запроса — условие фильтра, а сам объект уходит в запросе.
+            tab.BrowseSql = null;
+            tab.Text = "";
+            tab.MaxRows = DefaultBrowseLimit;
+        }
+
         _editorNeedsSync = true;
 
         await SyncEditorAsync();
@@ -437,33 +524,26 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>
-    /// Просмотр объекта: лимит строк ставится в сам SQL, поэтому серверный предел должен быть выше —
+    /// Просмотр sql-объекта: лимит строк ставится в сам SQL, поэтому серверный предел должен быть выше —
     /// иначе «Показать больше» за серверный предел ничего не покажет.
     /// </summary>
     void EnsureBrowseCap(QueryTab tab)
         => tab.MaxRows = Math.Max(tab.MaxRows, tab.BrowseLimit + 1);
 
-    string BuildBrowseSql(QTableResponse table, int limit)
+    string BuildBrowseSql(CatalogEntry entry, int limit)
         => BrowseSqlBuilder.Build(
             SqlDialectMapping.Dialect(source?.Driver),
-            table.TableSchema.SchemaName,
-            table.TableName,
-            table.Columns.Values
-                .Where(c => c.IsKey == true)
-                .OrderBy(c => c.ColumnOrdinal)
-                .Select(c => c.ColumnName)
+            entry.Group,
+            entry.Object.Name,
+            entry.Object.Columns
+                .Where(c => c.IsKey)
+                .OrderBy(c => c.Ordinal)
+                .Select(c => c.Name)
                 .ToList(),
             limit);
 
-    string BuildCountSql(QTableResponse table)
-        => BrowseSqlBuilder.Count(SqlDialectMapping.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
-
-    Func<string, string> Quoter()
-    {
-        var dialect = SqlDialectMapping.Dialect(source?.Driver);
-
-        return name => SqlDialectMapping.Quote(dialect, name);
-    }
+    string BuildCountSql(QueryTab tab)
+        => BrowseSqlBuilder.Count(SqlDialectMapping.Dialect(source?.Driver), tab.Schema, tab.Object!.Name);
 
     //=== вьюхи ================================================================
 
@@ -471,23 +551,25 @@ public partial class DatabaseQueryWorkspace
     /// Вьюха, определение которой загружено в редактор: диалог вьюхи предзаполняется ею
     /// (сценарий «изменить существующую»).
     /// </summary>
-    QTableResponse? _viewSource;
+    CatalogEntry? _viewSource;
 
     /// <summary>
     /// Активный объект, если это обычная вьюха. Матвьюхи — вне этой фазы: у них другой DDL,
     /// и кнопки, которые на них падают, показывать не стоит.
     /// </summary>
-    QTableResponse? ViewObject()
-        => activeTab?.Table is { } table && table.TableSchema.Kind == QTableKind.View ? table : null;
+    CatalogEntry? ViewObject()
+        => activeTab is { Object: { ObjectType: DatasourceObjectType.View } } tab
+            ? new CatalogEntry(tab.Schema, tab.Object)
+            : null;
 
     async Task CreateViewAsync()
     {
         var content = new CreateViewDialogContent(
             SqlDialectMapping.Dialect(source?.Driver),
             Schemas(),
-            await ReadEditorSqlAsync(),
-            _viewSource?.TableSchema.SchemaName ?? activeTab?.Table?.TableSchema.SchemaName,
-            _viewSource?.TableName,
+            await ReadEditorTextAsync(),
+            _viewSource?.Group ?? activeTab?.Schema,
+            _viewSource?.Object.Name,
             _viewSource is not null);
 
         var dialog = await _dialogService.ShowDialogAsync<CreateViewDialog>(content, new DialogParameters
@@ -509,15 +591,15 @@ public partial class DatabaseQueryWorkspace
 
     async Task ShowViewDefinitionAsync()
     {
-        if (ViewObject() is not { } table) return;
+        if (ViewObject() is not { } entry) return;
 
-        var response = await service.ViewDefinition(DataSourceConfigSlug, table.TableSchema.SchemaName, table.TableName);
+        var response = await service.ViewDefinition(DataSourceConfigSlug, entry.Group, entry.Object.Name);
 
         var dialog = await _dialogService.ShowDialogAsync<ViewDefinitionDialog>(
-            new ViewDefinitionDialogContent(DisplayName(table), response.Sql),
+            new ViewDefinitionDialogContent(DisplayName(entry), response.Sql),
             new DialogParameters
             {
-                Title = $"Определение: {DisplayName(table)}",
+                Title = $"Определение: {DisplayName(entry)}",
                 Width = "min(900px, 95vw)",
                 Modal = true,
                 PreventDismissOnOverlayClick = true,
@@ -527,11 +609,11 @@ public partial class DatabaseQueryWorkspace
 
         if (result.Cancelled || result.Data is not string definition || string.IsNullOrWhiteSpace(definition)) return;
 
-        _viewSource = table;
+        _viewSource = entry;
 
         if (activeTab is not { } tab) return;
 
-        tab.Sql = definition;
+        tab.Text = definition;
         _editorNeedsSync = true;
 
         StateHasChanged();
@@ -539,9 +621,9 @@ public partial class DatabaseQueryWorkspace
 
     async Task DropViewAsync()
     {
-        if (ViewObject() is not { } table) return;
+        if (ViewObject() is not { } entry) return;
 
-        var plan = ViewDdlBuilder.Drop(SqlDialectMapping.Dialect(source?.Driver), table.TableSchema.SchemaName, table.TableName);
+        var plan = ViewDdlBuilder.Drop(SqlDialectMapping.Dialect(source?.Driver), entry.Group, entry.Object.Name);
 
         if (!plan.Ok)
         {
@@ -550,7 +632,7 @@ public partial class DatabaseQueryWorkspace
         }
 
         var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Удалить вьюху <b>{DisplayName(table)}</b>?<br/><code>{plan.Sql}</code>",
+            (MarkupString)$"Удалить вьюху <b>{DisplayName(entry)}</b>?<br/><code>{plan.Sql}</code>",
             new DialogParameters
             {
                 Title = "Удаление вьюхи",
@@ -564,7 +646,7 @@ public partial class DatabaseQueryWorkspace
     }
 
     /// <summary>
-    /// Выполнить собранный DDL вьюхи и перечитать структуру. Кэш структуры сбрасывает сервер:
+    /// Выполнить собранный DDL вьюхи и перечитать каталог. Кэш сбрасывает сервер:
     /// `NonQuery` видит DDL (`CREATE`/`DROP`) и снимает его сам.
     /// </summary>
     async Task<bool> ExecuteViewDdlAsync(string sql, string success)
@@ -580,45 +662,45 @@ public partial class DatabaseQueryWorkspace
         _ = _messageService.Success(success);
         _viewSource = null;
 
-        var current = activeTab?.Table;
+        var current = activeTab?.Object is { } opened ? new CatalogEntry(activeTab!.Schema, opened) : null;
 
         await LoadAsync();
 
         if (activeTab is not { } tab || current is null) return true;
 
-        // После DROP объекта в перечитанной структуре уже нет — вкладка перестаёт быть вьюхой.
-        tab.Table = FindObject(current.TableSchema.SchemaName, current.TableName);
+        // После DROP объекта в перечитанном каталоге его уже нет — вкладка перестаёт быть вьюхой.
+        tab.Object = FindObject(current.Group, current.Object.Name)?.Object;
 
         return true;
     }
 
-    async Task OpenObjectAsync(string schemaName, string viewName)
+    async Task OpenObjectAsync(string schemaName, string objectName)
     {
-        if (FindObject(schemaName, viewName) is { } table)
+        if (FindObject(schemaName, objectName) is { } entry)
         {
-            await OpenTableAsync(table);
+            await OpenObjectAsync(entry);
         }
     }
 
-    QTableResponse? FindObject(string schemaName, string tableName)
-        => database?.Tables.FirstOrDefault(t =>
-            t.TableName == tableName && t.TableSchema.SchemaName == schemaName);
+    CatalogEntry? FindObject(string schemaName, string objectName)
+        => catalog?.Groups
+            .Where(group => string.Equals(group.Name, schemaName, StringComparison.Ordinal))
+            .SelectMany(group => group.Objects.Select(obj => new CatalogEntry(group.Name, obj)))
+            .FirstOrDefault(entry => string.Equals(entry.Object.Name, objectName, StringComparison.Ordinal));
 
-    /// <summary>Схемы для выбора в диалоге вьюхи — из уже загруженной структуры.</summary>
+    /// <summary>Группы для выбора в диалоге вьюхи — из уже загруженного каталога.</summary>
     List<string> Schemas()
-        => database is null
+        => catalog is null
             ? []
-            : database.Tables
-                .Select(t => t.TableSchema.SchemaName)
-                .Where(s => !string.IsNullOrEmpty(s))
+            : catalog.Groups
+                .Select(group => group.Name)
+                .Where(name => !string.IsNullOrEmpty(name))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-    static string DisplayName(QTableResponse table)
-        => string.IsNullOrEmpty(table.TableSchema.SchemaName)
-            ? table.TableName
-            : $"{table.TableSchema.SchemaName}.{table.TableName}";
+    static string DisplayName(CatalogEntry entry)
+        => string.IsNullOrEmpty(entry.Group) ? entry.Object.Name : $"{entry.Group}.{entry.Object.Name}";
 
     async Task<bool> ConfirmDestructiveAsync(string sql)
     {

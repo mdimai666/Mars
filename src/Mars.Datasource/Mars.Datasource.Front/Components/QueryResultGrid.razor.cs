@@ -285,7 +285,7 @@ public partial class QueryResultGrid
 
     List<SqlUpdatePlan> BuildPlans()
     {
-        if (Tab.Table is null) return [];
+        if (Tab.Object is null) return [];
 
         var quote = Quoter();
         List<SqlUpdatePlan> plans = [];
@@ -305,8 +305,8 @@ public partial class QueryResultGrid
             var changes = rowGroup.ToDictionary(c => c.Key.Column, c => c.Value);
 
             var plan = RowUpdateBuilder.Build(
-                Tab.Table.TableSchema.SchemaName,
-                Tab.Table.TableName,
+                Tab.Schema,
+                Tab.Object.Name,
                 quote,
                 Tab.KeyColumns,
                 keyValues,

@@ -21,6 +21,9 @@ public interface IDatasourceService
     /// <summary>Каталог объектов источника: общий вид дерева для любого типа источника.</summary>
     public Task<DatasourceCatalog> Catalog(string slug);
 
+    /// <summary>Перечитать каталог источника, минуя кэш.</summary>
+    public Task<DatasourceCatalog> RefreshCatalog(string slug);
+
     /// <summary>Определение вьюхи (текст запроса), null — объекта нет или это не вьюха.</summary>
     public Task<string?> ViewDefinition(string slug, string? schemaName, string tableName);
 

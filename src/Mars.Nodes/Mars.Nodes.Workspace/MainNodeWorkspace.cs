@@ -9,6 +9,7 @@ using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Locators;
 using Mars.Nodes.Workspace.Services;
+using Mars.Nodes.Workspace.Services.ValueFields;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.HotKeys2;
@@ -32,6 +33,13 @@ public static class MainNodeWorkspace
 
         services.AddScoped<NodeWorkspaceJsInterop>();
         services.AddScoped<NodeFormEditorJsInterop>();
+
+        services.AddScoped<IHostValueHints, HostValueHints>();
+        services.AddScoped<IValueRootProvider, MsgValueRootProvider>();
+        services.AddScoped<IValueRootProvider, FlowContextValueRootProvider>();
+        services.AddScoped<IValueRootProvider, GlobalContextValueRootProvider>();
+        services.AddScoped<IValueRootProvider, VarNodeValueRootProvider>();
+        services.AddScoped<IValueFieldProvider, ValueFieldProvider>();
 
         return services;
     }

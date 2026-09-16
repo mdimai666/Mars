@@ -35,6 +35,9 @@ public class VarNode : Node, IValidatableObject
 
     public const string TimestampTypeName = "timestamp";
 
+    /// <summary>Type name for values whose type is unknown — used by output specs, not stored as a VarType.</summary>
+    public const string ObjectTypeName = "object";
+
     internal static readonly Dictionary<string, Type> _typesDict = new()
     {
         ["int"] = typeof(int),
@@ -60,6 +63,21 @@ public class VarNode : Node, IValidatableObject
         [typeof(string[])] = "string[]",
     };
 
+    static readonly Dictionary<Type, string> _namesDict = BuildNamesDict();
+
+    static Dictionary<Type, string> BuildNamesDict()
+    {
+        var dict = new Dictionary<Type, string>();
+
+        foreach (var (name, type) in _typesDict)
+        {
+            if (name == TimestampTypeName) continue;
+            dict.TryAdd(type, name);
+        }
+
+        return dict;
+    }
+
     public static Type ResolveClrType(string varType)
     {
         if (_typesDict.TryGetValue(varType, out var _type)) return _type;
@@ -67,6 +85,18 @@ public class VarNode : Node, IValidatableObject
         var (t, arr) = ParseVarTypeString(varType);
         if (!arr) return _typesDict[t];
         return _typesDict[t].MakeArrayType();
+    }
+
+    public static string GetVarTypeName(Type? type)
+    {
+        if (type is null) return ObjectTypeName;
+
+        type = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (type.IsArray && type.GetElementType() is { } element)
+            return $"{GetVarTypeName(element)}[]";
+
+        return _namesDict.TryGetValue(type, out var name) ? name : ObjectTypeName;
     }
 
     public static object ResolveDefault(string varType)

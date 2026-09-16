@@ -1,5 +1,7 @@
 @using System.Globalization
+@using System.Linq.Expressions
 @using System.Text.RegularExpressions
+@using Mars.Nodes.Front.Abstractions.Services
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 @inject IServiceProvider Services
@@ -110,7 +112,7 @@
                          aria-selected="@selected" @key="item.Path"
                          @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
                         <span class="mvi-name">@item.Path</span>
-                        <span class="mvi-type">@item.Type</span>
+                        <span class="mvi-type">@item.VarType</span>
                     </div>
                 }
             </div>
@@ -184,6 +186,13 @@
     [Parameter]
     public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
 
+    /// <summary>Модель-член, в который пишет поле: по нему подсказки берутся из контейнера и адресуется поле.</summary>
+    [Parameter]
+    public Expression<Func<object?>>? For { get; set; }
+
+    [CascadingParameter]
+    public NodeEditContainer1? NodeEditContainer { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -206,6 +215,8 @@
     List<ValueFieldInfo> _suggestions = [];
     readonly HashSet<string> _collapsed = [];
     IReadOnlyCollection<ValueFieldInfo>? _candidatesSource;
+    IReadOnlyCollection<ValueFieldInfo>? _hostFields;
+    string? _hostFieldsKey;
     FieldTreeNode? _tree;
     DotNetObjectReference<MarsValueInput>? _selfRef;
 
@@ -257,7 +268,15 @@
         _ => VarType,
     };
 
-    IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? MarsValueInputMocks.Fields;
+    IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? _hostFields ?? [];
+
+    string? FieldName => For?.Body switch
+    {
+        MemberExpression member => member.Member.Name,
+        UnaryExpression { Operand: MemberExpression member } => member.Member.Name,
+        _ => null
+    };
+
     static IReadOnlyList<ValueOpGroup> OpsGroups => MarsValueInputMocks.Operations;
     static int OpsItemCount => MarsValueInputMocks.Operations.Sum(g => g.Items.Count);
 
@@ -317,10 +336,24 @@
 
     protected override void OnParametersSet()
     {
-        if (_tree is null || !ReferenceEquals(_candidatesSource, Candidates))
+        if (Candidates is null)
         {
-            _candidatesSource = Candidates;
-            _tree = BuildTree(EffectiveCandidates);
+            var node = NodeEditContainer?.Node;
+            var key = node is null ? null : $"{node.Id}|{FieldName}";
+
+            if (_hostFieldsKey != key)
+            {
+                _hostFieldsKey = key;
+                _hostFields = node is null ? null : NodeEditContainer!.GetValueFields(FieldName);
+            }
+        }
+
+        var source = EffectiveCandidates;
+
+        if (_tree is null || !ReferenceEquals(_candidatesSource, source))
+        {
+            _candidatesSource = source;
+            _tree = BuildTree(source);
         }
     }
 
@@ -814,7 +847,7 @@
                 }
 
                 if (i == parts.Length - 1)
-                    node.Type = field.Type;
+                    node.Type = field.VarType;
 
                 current = node;
             }

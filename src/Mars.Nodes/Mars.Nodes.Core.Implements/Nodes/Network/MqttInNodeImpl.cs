@@ -9,6 +9,8 @@ using MQTTnet;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;
 
+[NodeOutputValueSpec(typeof(string))]
+[NodeOutputValueSpec(typeof(MqttNodeMessagePaylad), Name = nameof(MqttNodeMessagePaylad))]
 public class MqttInNodeImpl : INodeImplement<MqttInNode>
 {
     public MqttInNode Node { get; }

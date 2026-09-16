@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes.Common;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/InjectNode/InjectNode{.lang}.md")]
 [Display(GroupName = "common")]
-public class InjectNode : Node, IValidatableObject
+public class InjectNode : Node, IValidatableObject, INodeOutputValueSpec
 {
     public override string TypeId => "core.InjectNode";
 
@@ -77,6 +77,17 @@ public class InjectNode : Node, IValidatableObject
         if (field == null) _fields = [.. _fields, new() { Key = PayloadKey, Value = payload, VarType = "string" }];
         else { field.Value = payload; field.VarType = "string"; }
         return this;
+    }
+
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        foreach (var field in Fields)
+        {
+            if (string.IsNullOrWhiteSpace(field.Key)) continue;
+
+            yield return new OutputValueSpec(field.Key,
+                string.IsNullOrWhiteSpace(field.VarType) ? VarNode.ObjectTypeName : field.VarType);
+        }
     }
 }
 

@@ -256,8 +256,37 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return new()
         {
             Nodes = Nodes.Values.Select(s => s.Node).ToArray(),
-            InlineFunctionNodeSchemas = _runtime.NodeImplementFactory.InlineFunctionNodeList.ToSchema()
+            InlineFunctionNodeSchemas = _runtime.NodeImplementFactory.InlineFunctionNodeList.ToSchema(),
+            OutputValueSpecs = CollectOutputValueSpecs(),
+            GlobalVariableNames = [.. _runtime.GlobalContext.Keys]
         };
+    }
+
+    Dictionary<string, OutputValueSpec[]> CollectOutputValueSpecs()
+    {
+        var result = new Dictionary<string, OutputValueSpec[]>();
+        var typeIds = _nodesLocator.Dict.Values.ToDictionary(item => item.NodeType, item => item.DefaultInstance.TypeId);
+
+        foreach (var item in _nodesLocator.Dict.Values)
+            AddOutputValueSpecs(result, item.DefaultInstance.TypeId, NodeOutputValueSpecReader.ReadStatics(item.NodeType));
+
+        foreach (var item in _runtime.NodeImplementFactory.Dict.Values)
+        {
+            if (!typeIds.TryGetValue(item.NodeBaseType, out var typeId)) continue;
+
+            AddOutputValueSpecs(result, typeId, NodeOutputValueSpecReader.ReadStatics(item.NodeImplementType));
+        }
+
+        return result;
+    }
+
+    static void AddOutputValueSpecs(Dictionary<string, OutputValueSpec[]> result, string typeId,
+                                    IReadOnlyList<OutputValueSpec> specs)
+    {
+        if (specs.Count == 0) return;
+
+        var merged = result.TryGetValue(typeId, out var existing) ? existing.Concat(specs) : specs;
+        result[typeId] = [.. merged.DistinctBy(spec => spec.Path)];
     }
 
     public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null, bool throwOnError = false)

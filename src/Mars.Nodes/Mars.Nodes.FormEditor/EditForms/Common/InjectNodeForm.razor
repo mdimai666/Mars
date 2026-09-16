@@ -16,23 +16,23 @@
         </div>
 
         <FormItem2 For="()=>Email">
-            <MarsValueInput @bind-Value=Email />
+            <MarsValueInput @bind-Value=Email For="() => Email" />
         </FormItem2>
 
         <FormItem2 For="()=>Count">
-            <MarsValueInput @bind-Value=Count VarType="int" />
+            <MarsValueInput @bind-Value=Count VarType="int" For="() => Count" />
         </FormItem2>
 
         <FormItem2 For="()=>DueDate">
-            <MarsValueInput @bind-Value=DueDate VarType="DateTime" />
+            <MarsValueInput @bind-Value=DueDate VarType="DateTime" For="() => DueDate" />
         </FormItem2>
 
         <FormItem2 For="()=>ReadOnlyValue">
-            <MarsValueInput @bind-Value=ReadOnlyValue VarType="double" ReadOnly="true" />
+            <MarsValueInput @bind-Value=ReadOnlyValue VarType="double" ReadOnly="true" For="() => ReadOnlyValue" />
         </FormItem2>
 
         <FormItem2 For="()=>DisabledValue">
-            <MarsValueInput @bind-Value=DisabledValue Disabled="true" />
+            <MarsValueInput @bind-Value=DisabledValue Disabled="true" For="() => DisabledValue" />
         </FormItem2>
 
         <FluentSortableList Id="injectFields" Handle="true" Items="Node.Fields" OnUpdate="@SortList" Context="item">

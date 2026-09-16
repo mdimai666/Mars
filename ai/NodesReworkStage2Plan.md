@@ -1,6 +1,6 @@
 # План: этап 2 — контракты выходов нод и провайдер подсказок в поле значения
 
-> **Статус: дизайн согласован 2026-09-17 (включая форму контракта — `Spec`), не в работе.**
+> **Статус: фазы A и B сделаны 2026-09-17 (`NodeOutputValueSpec` + провайдер подсказок), в работе — C.**
 > Задача-источник: запрос пользователя «как будем делать провайдера подсказок?» (2026-09-17).
 > Продолжение [NodesReworkPlan.md](./NodesReworkPlan.md): этапы 1–2 того плана (список полей в `InjectNode`,
 > ось «источник значения»: `ValueKind`, `InputValueResolver`, `FieldPathPicker`, `ValueSourceEditor`) выполнены,
@@ -107,40 +107,59 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 Пилот (2026-09-17): размечаем только `InjectNode`, `SwitchNode`, `MqttInNodeImpl`; остальные ноды — когда
 заработает провайдер.
 
-- [ ] `INodeOutputValueSpec` + `OutputValueSpec` + `NodeOutputValueSpecAttribute` (имя слота опционально) —
+- [x] `INodeOutputValueSpec` + `OutputValueSpec` + `NodeOutputValueSpecAttribute` (имя слота опционально) —
       в `Mars.Nodes.Core` плоско, рядом с `NodeOutput.cs`.
-- [ ] `NodeOutputValueSpecReader` (`Read(node)` / `ReadStatics(type)`, кэш статики, `Fallback`) и
+- [x] `NodeOutputValueSpecReader` (`Read(node)` / `ReadStatics(type)`, кэш статики, `Fallback`) и
       `OutputValueSpecExpander` (тип → плоские пути: вложенность, массивы, обрез по глубине, циклы, скип-лист).
-- [ ] Публичный маппер `ClrType → VarType` (`VarNode.GetVarTypeName`) + `VarNode.ObjectTypeName`.
-- [ ] Пилот, динамика: `InjectNode` — интерфейс, спек собирается из `Fields` (`Key` + `VarType`).
-- [ ] Пилот, статика: `MqttInNodeImpl` — `[NodeOutputValueSpec(typeof(string))]` (его `Payload` — строка).
-- [ ] Пилот, транзит: `SwitchNode` не объявляет ничего (`SwitchNodeImpl` в msg ничего не пишет, его условия —
+- [x] Публичный маппер `ClrType → VarType` (`VarNode.GetVarTypeName`) + `VarNode.ObjectTypeName`.
+- [x] Пилот, динамика: `InjectNode` — интерфейс, спек собирается из `Fields` (`Key` + `VarType`).
+- [x] Пилот, статика: `MqttInNodeImpl` — `[NodeOutputValueSpec(typeof(string))]` (его `Payload` — строка).
+- [x] Пилот, транзит: `SwitchNode` не объявляет ничего (`SwitchNodeImpl` в msg ничего не пишет, его условия —
       это порты), тест фиксирует пустой спек.
 - [ ] Не в пилоте, позже: `TemplateNode` (`Node.Property`), `ForeachNodeImpl` (`Set(cycle)`),
       `HttpRequestNodeImpl` (`Set(requestInfo)`, слот через `Name`), `CounterNode`, `QueueNode`, `DirReadNode`,
       `HtmlParseNode`.
-- [ ] Тесты: ридер (интерфейс / атрибут / пусто / несколько атрибутов / слот `Name`), разворот типа
+- [x] Тесты: ридер (интерфейс / атрибут / пусто / несколько атрибутов / слот `Name`), разворот типа
       (вложенность, массивы, глубина, цикл, скип-лист), маппер имён.
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (481 / 0 / 0).
 
-## Фаза B — провайдер подсказок на клиенте (без значений)
+## Фаза B — провайдер подсказок на клиенте (без значений) — сделано 2026-09-17
 
-- [ ] Контракт провайдера — в `Mars.Nodes.Front.Abstractions` (форма уже инжектит оттуда `INodeServiceClient`):
-      `IValueFieldProvider`, `ValueFieldInfo(Path, Type, Source, Value?)`,
-      `ValueFieldRequest(NodeId, FlowId, Root, Prefix, ExpectedType)`.
-- [ ] Композит провайдеров: выбор по `Root` (`msg` / `flow` / `global` / `var`), дедуп по `Path`, стабильная
-      сортировка.
-- [ ] Провайдер `var`: из графа (`INodeEditorApi.AllNodes` / `GetFlowNodes`), тип из `VarType`.
-- [ ] Провайдеры `flow` / `global`: **только имена** переменных, собранные из графа (кто их пишет —
-      `VariableSetNodeImpl` и подобные); значения не читаем. Обновление списка — позже по SignalR.
-- [ ] Провайдер `msg`: накопление по проводам вверх от ноды (по каждому пути побеждает ближайшее объявление;
-      `Payload : object` — только если `Payload` не объявил никто) + кандидаты из собственных свойств ноды
-      (см. `HttpRequestNode.Url`/`UrlKind` в разделе дополнений).
-- [ ] Прокинуть `Candidates` в `InjectNodeForm.razor`, убрать зависимость компонента от моков
-      (`MarsValueInputMocks.cs` остаётся только для операций `ƒ`).
-- [ ] Тесты провайдеров — юнит, без Blazor.
+- [x] Контракт провайдера — в `Mars.Nodes.Front.Abstractions/Services/IValueFieldProvider.cs`:
+      `IValueFieldProvider`, `IValueRootProvider` (+ `Order`), `ValueFieldInfo(Path, VarType, Source, Value?)`,
+      `ValueFieldContext(Nodes, EditedNode)`. **Граф передаётся параметром**, а не инжектится: `INodeEditorApi`
+      не в DI (создаётся вручную в `NodeEditor1`, компонентам приходит cascading), иначе провайдер был бы
+      нетестируемым.
+- [x] Композит `ValueFieldProvider` (Workspace): порядок по `Order` (msg 0, FlowContext 10, GlobalContext 20,
+      VarNode 30), дедуп по `Path` — ближайший/первый побеждает.
+- [x] Провайдер `VarNode`: из графа, тип из `VarType`.
+- [x] Провайдеры `FlowContext` / `GlobalContext`: имена из `VariableSetNode.Setters[].ValuePath` + живые имена
+      global из `Load` (`IHostValueHints`); значения не читаем.
+- [x] Провайдер `msg`: обход проводов вверх от редактируемой ноды, фильтр по порту выхода
+      (`OutputPort` / `AllOutputPorts`), ближайшее объявление побеждает по каждому пути, `Fallback` только если
+      `Payload` не объявлен; статика из специй хоста, если своя сборка типа ничего не объявила.
+- [x] Подсказки тянет сам `MarsValueInput`: `[CascadingParameter] NodeEditContainer1` (контейнер отдаёт себя
+      через `CascadingValue Value="this"`) + `For="() => X"` (как у `FormItem2`, тип `Expression<Func<object?>>`) —
+      адрес поля. Параметр `Candidates` остался для переопределения. Компонент зовёт
+      `NodeEditContainer1.GetValueFields(fieldName)` → `IValueFieldProvider` (резолв через `IServiceProvider`;
+      пусто, если провайдера нет — хост без NodeWorkspace, напр. пререндер). Формы больше ничего не знают:
+      `InjectNodeForm.razor` и `EvalNodeForm.razor` (там `InputTextArea` заменён на `MarsValueInput`) просто
+      ставят `For`. Из `MarsValueInputMocks.cs` удалены `Fields`, тип `ValueFieldInfo` переехал в
+      `Front.Abstractions` (моки остались только для операций `ƒ`).
+- [x] `For` → `ValueFieldContext.FieldName` (имя члена модели), чтобы провайдер знал, куда пишет поле.
+- [x] `Load()` расширен: `NodesDataResponse.OutputValueSpecs` (по `TypeId`) + `GlobalVariableNames`;
+      сборка на хосте — `NodeService.CollectOutputValueSpecs` (модели из `INodesLocator` + impl'ы из
+      `INodeImplementFactory.Dict`, маппинг impl → `NodeBaseType` → `TypeId`); клиент заполняет
+      `IHostValueHints` в `Mars.Admin/Builder/NodeViews/NodeRedPage.razor.cs` и
+      `devstands/StandNodesApp/StandNodesApp.Client/Pages/NodeRedPageContent.razor.cs`.
+- [x] Тесты: `tests/Mars.Nodes.Tests/ValueFields/ValueFieldProviderTests.cs` (13) — сбор полей вверх,
+      транзит, fallback, ближайший побеждает, порты, специи хоста, цикл, источник, три корня, композит.
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (497 / 0 / 0).
+- [ ] Осталось из фазы B: кандидаты из собственных свойств ноды (`HttpRequest.Url`/`UrlKind`) — см. дополнения.
 
 **Бюджет интеропа (инвариант):** данные тянем при открытии попапа и по кнопке refresh, фильтрация —
 локальная. Набор текста не должен порождать обращений к провайдеру (см. `perf [nodes] value input interop budget`).
+Специи и имена global приходят одним ответом `Load()`, провайдер считается в браузере без обращений к серверу.
 
 ## Фаза C — DebugMode, значения и INPUT-панель
 
@@ -168,8 +187,9 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
   один источник и генерацию регекса из него.
 - Значения в подсказках — это пользовательские данные в UI: обрезка обязательна (и по длине строки, и по
   глубине/числу элементов JSON).
-- Типы в `MarsValueInputMocks.cs` прописаны руками; маппер `ClrType → отображаемое имя` появляется только
-  в фазе A (`VarNode.GetVarTypeName`) — до него компонент ест строки из моков.
+- `MarsValueInputMocks.cs` держит только операции `ƒ`; `ValueFieldInfo` теперь в
+  `Mars.Nodes.Front.Abstractions/Services/IValueFieldProvider.cs`, моковых полей нет — пустой `Candidates`
+  даёт пустой пикер, а не фальшивые подсказки.
 - Атрибутов выхода может быть несколько — провайдер не должен рассчитывать на единственный выход.
 - Объём данных: сообщение может быть на мегабайты — лимиты нужны и на серверной стороне, и в DTO.
 - `NodeOutput` в репо занято: это **порт/провод** (`Mars.Nodes.Core/NodeOutput.cs`, `Node.Outputs` + `Wires`),
@@ -211,12 +231,32 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 
+- **Разворачивать `object`-поля в подсказках глубже.** Сейчас часть путей останавливается на `object`:
+  свойства с типом `object`/интерфейс/абстрактный класс не разворачиваются (`OutputValueSpecExpander.NoExpansionTypes`),
+  примитивы вне `VarNode._typesDict` (`uint`, `short`, `byte`, `char`) дают `object`, enum — тоже `object`.
+  `Dictionary`/`JsonElement`/`DynamicJson` статически не развернуть принципиально (ключи неизвестны — придут
+  только debug-значениями). Доделать: разворачивать `object`/интерфейсы по фактическим свойствам, расширить
+  словарь имён, enum → `string`/`int`, и **учитывать атрибуты сериализации**: `[JsonIgnore]` /
+  `JsonIgnoreCondition` не предлагать, `[JsonPropertyName]`/`[Display(Name)]` — для подписи.
+  Грабля: `DynamicNodeMsgWrapper` читает значения обычной рефлексией (`GetProperties`), поэтому `[JsonIgnore]`-свойство
+  у CLR-объекта в выражении всё равно доступно — надо решить, что важнее: совпадение с JSON-формой значения
+  или с рантаймом выражения.
+
 - **`HttpRequestNode.Url`**: в Node-RED URL берётся не из `payload`, а из свойства/поля ноды. Первичное
   предположение: наша нода тоже берёт `Url` из своего свойства, если в поле значения не указано иное.
   Обыграть в провайдере: для таких нод в кандидатах должны быть **собственные свойства ноды**
   (`Mars.Nodes.Core/Nodes/Network/HttpRequestNode.cs` — `Url`, `UrlKind`, `Method`, `Headers`), а не только
   `msg.*`; источник поля значения по умолчанию — свойство ноды.
+  **Проверено 2026-09-17:** в выражениях доступны только корни `msg` / `GlobalContext` / `FlowContext` /
+  `VarNode` (`InputValueResolver.RootPathRegex`, `CreateInterpreter`) плюс `env(...)` — корня для свойств ноды
+  нет, значит «свойство ноды» не может быть путём-кандидатом. Это решение про *дефолт значения поля*
+  (const-режим читает свойство ноды) и, возможно, про новую ось — не про список подсказок. `For` даёт имя
+  поля (`ValueFieldContext.FieldName`) — хук для этого решения уже есть.
 - **JSON-редактор для поля значения**: добавить в `MarsValueInput` режим редактирования JSON-значения.
   Прецедент в репо — `Mars.Nodes.FormEditor/EditForms/Network/EndpointNodeForm.razor` (поле `JsonSchema` через
   `MarsCodeEditor2`/`MarsEditors`, `editor.GetValue()`); поле значения должно ходить в те же компоненты.
+- **`EvalNode.ValueKind` не синхронизирован с осью `@`**: в `EvalNodeForm.razor` поле биндится на `Node.Input`
+  как есть, режим ноды (`ValueKind`, по умолчанию `Expression`) остаётся её собственным — если решим жить по
+  конвенции «символ в начале строки задаёт интерпретацию», это надо согласовать для `EvalNode` отдельно
+  (`src/Mars.Nodes/Mars.Nodes.Core/Nodes/Functions/EvalNode.cs`).
 

@@ -13,6 +13,8 @@ public partial class NodeRedPage
 {
     [Inject] INodeServiceClient service { get; set; } = default!;
 
+    [Inject] IHostValueHints HostHints { get; set; } = default!;
+
     [Inject] ClientHub hub { get; set; } = default!;
 
     NodeEditor1? _editor1 = default!;
@@ -100,6 +102,9 @@ public partial class NodeRedPage
             }
             _nodes = recivedNodes.Values.ToDictionary(s => s.Id);
             _inlineFunctionNodeSchemas = data.InlineFunctionNodeSchemas.ToDictionary(s => s.TypeId, s => s.ToModel());
+
+            HostHints.SetOutputSpecs(data.OutputValueSpecs);
+            HostHints.SetGlobalVariableNames(data.GlobalVariableNames);
         }
         catch (Exception ex)
         {

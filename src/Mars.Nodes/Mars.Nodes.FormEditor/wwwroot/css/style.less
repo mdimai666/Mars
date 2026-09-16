@@ -171,6 +171,7 @@
     --mvi-path: #0a6f86;
     --mvi-num: #a35a00;
     --mvi-str: #6f35a8;
+    --mvi-danger: #b3261e;
 }
 
 .mvi-tokens-dark() {
@@ -185,43 +186,83 @@
     --mvi-path: #5fd7e8;
     --mvi-num: #e0a24a;
     --mvi-str: #c08ff0;
+    --mvi-danger: #ff7a6b;
 }
 
 .mars-value-input {
     .mvi-tokens();
 
-    position: relative;
-    display: inline-flex;
-    align-items: stretch;
-    flex: 1 1 auto;
+    --mvi-width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    width: var(--mvi-width);
+    max-width: 100%;
+    flex: 0 1 auto;
     min-width: 0;
-    min-height: 30px;
-    border-top: 1px solid var(--mvi-line-soft);
-    border-bottom: 1px solid var(--mvi-line-soft);
-    background: var(--mvi-bg);
     color: var(--mvi-fg);
     font-family: 'Cascadia Mono', 'Consolas', 'SFMono-Regular', monospace;
     font-size: 13px;
     line-height: 28px;
 
-    &:focus-within {
+    .mvi-body {
+        position: relative;
+        display: inline-flex;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 30px;
+        border-top: 1px solid var(--mvi-line-soft);
+        border-bottom: 1px solid var(--mvi-line-soft);
+        background: var(--mvi-bg);
+    }
+
+    &:focus-within .mvi-body {
         border-top-color: var(--mvi-accent);
         border-bottom-color: var(--mvi-accent);
         box-shadow: inset 2px 0 0 0 var(--mvi-accent);
-
-        .mvi-corners i {
-            border-color: var(--mvi-accent);
-        }
     }
 
-    &.is-popup-open {
+    &:focus-within .mvi-corners i {
+        border-color: var(--mvi-accent);
+    }
+
+    &.is-popup-open .mvi-body {
         z-index: 1061;
+    }
+
+    &.mvi-invalid .mvi-body {
+        border-top-color: var(--mvi-danger);
+        border-bottom-color: var(--mvi-danger);
+        box-shadow: inset 2px 0 0 0 var(--mvi-danger);
+    }
+
+    &.mvi-invalid .mvi-corners i {
+        border-color: var(--mvi-danger);
+    }
+
+    &.mvi-invalid .mvi-tag {
+        background: var(--mvi-danger);
+        color: #fff;
+    }
+
+    &.mvi-invalid .mvi-input {
+        caret-color: var(--mvi-danger);
+    }
+
+    .mvi-error {
+        padding-top: 3px;
+        color: var(--mvi-danger);
+        font-size: 11px;
+        letter-spacing: .3px;
     }
 
     .mvi-tag {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         align-self: stretch;
+        min-width: 36px;
         padding: 0 9px 0 7px;
         background: var(--mvi-line);
         color: #f2f6f9;
@@ -392,6 +433,89 @@
     .mvi-popup-ops {
         left: auto;
         right: 0;
+    }
+
+    .mvi-popup-date {
+        min-width: 232px;
+        padding: 6px;
+    }
+
+    .mvi-date-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--mvi-line-soft);
+    }
+
+    .mvi-date-title {
+        font-size: 11px;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .mvi-date-nav {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid var(--mvi-line-soft);
+        background: transparent;
+        color: var(--mvi-dim);
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--mvi-accent);
+            color: var(--mvi-accent);
+        }
+    }
+
+    .mvi-date-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        padding-top: 5px;
+    }
+
+    .mvi-date-dow {
+        padding: 2px 0;
+        color: var(--mvi-dim);
+        font-size: 10px;
+        letter-spacing: .5px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .mvi-date-cell {
+        height: 24px;
+        padding: 0;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--mvi-fg);
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--mvi-accent);
+            color: var(--mvi-accent);
+        }
+
+        &.is-other {
+            color: var(--mvi-dim);
+        }
+
+        &.is-today {
+            border-color: var(--mvi-line-soft);
+        }
+
+        &.is-selected {
+            background: var(--mvi-accent);
+            border-color: var(--mvi-accent);
+            color: var(--mvi-accent-ink);
+        }
     }
 
     .mvi-row {

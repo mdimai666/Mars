@@ -1,78 +1,116 @@
+@using System.Globalization
 @using System.Text.RegularExpressions
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-<div class="mars-value-input @(IsExpression ? "mvi-expr" : "mvi-const") @(AnyPopupOpen ? "is-popup-open" : null)">
-    <span class="mvi-tag">@ModeLabel</span>
+<div class="@RootClass" @attributes="RootAttributes">
+    <div class="mvi-body @(AnyPopupOpen ? "is-popup-open" : null)">
+        <span class="mvi-tag">@ModeLabel</span>
 
-    <div class="mvi-field">
-        <pre @ref="_highlight" class="mvi-highlight" aria-hidden="true">@Highlight</pre>
-        <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
-               value="@Value" placeholder="@Placeholder"
-               @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
-    </div>
+        <div class="mvi-field">
+            <pre @ref="_highlight" class="mvi-highlight" aria-hidden="true">@Highlight</pre>
+            <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
+                   value="@Value" placeholder="@EffectivePlaceholder"
+                   @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
+        </div>
 
-    <div class="mvi-actions">
-        <button type="button" class="mvi-btn" tabindex="-1" title="Pick from context"
-                @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
-        @if (IsExpression)
+        <div class="mvi-actions">
+            @if (ShowDatePicker)
+            {
+                <button type="button" class="mvi-btn" tabindex="-1" title="Pick date"
+                        @onmousedown:preventDefault="true" @onclick="ToggleDate">▦</button>
+            }
+            <button type="button" class="mvi-btn" tabindex="-1" title="Pick from context"
+                    @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
+            @if (IsExpression)
+            {
+                <button type="button" class="mvi-btn" tabindex="-1" title="Operations"
+                        @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
+            }
+        </div>
+
+        <span class="mvi-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+        @if (_pickerOpen)
         {
-            <button type="button" class="mvi-btn" tabindex="-1" title="Operations"
-                    @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
+            <div class="mvi-popup mvi-popup-tree">
+                @foreach (var row in TreeRows())
+                {
+                    <div class="mvi-row" style="padding-left:@(6 + row.Depth * 12)px" @key="row.Node.Path"
+                         @onmousedown:preventDefault="true" @onclick="() => OnTreeRowClick(row)">
+                        <span class="mvi-bullet">@(row.Branch ? (IsCollapsed(row.Node.Path) ? "▸" : "▾") : "·")</span>
+                        <span class="mvi-name">@row.Node.Name</span>
+                        @if (row.Node.Type is not null)
+                        {
+                            <span class="mvi-type">@row.Node.Type</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_dateOpen)
+        {
+            <div class="mvi-popup mvi-popup-date">
+                <div class="mvi-date-head">
+                    <button type="button" class="mvi-date-nav" tabindex="-1"
+                            @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(-1)">‹</button>
+                    <span class="mvi-date-title">@_cursor.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</span>
+                    <button type="button" class="mvi-date-nav" tabindex="-1"
+                            @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(1)">›</button>
+                </div>
+                <div class="mvi-date-grid">
+                    @foreach (var label in WeekDayLabels)
+                    {
+                        <span class="mvi-date-dow" @key="label">@label</span>
+                    }
+                    @foreach (var cell in MonthCells())
+                    {
+                        <button type="button" @key="cell.Date"
+                                class="mvi-date-cell @(cell.Other ? "is-other" : null) @(cell.Today ? "is-today" : null) @(cell.Selected ? "is-selected" : null)"
+                                tabindex="-1" @onmousedown:preventDefault="true" @onclick="() => PickDate(cell.Date)">@cell.Date.Day</button>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (_suggestOpen && _suggestions.Count > 0)
+        {
+            <div class="mvi-popup mvi-popup-suggest">
+                @for (var i = 0; i < _suggestions.Count; i++)
+                {
+                    var item = _suggestions[i];
+                    var active = i == _activeIndex;
+                    <div class="mvi-row @(active ? "is-active" : null)" @key="item.Path"
+                         @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
+                        <span class="mvi-name">@item.Path</span>
+                        <span class="mvi-type">@item.Type</span>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_opsOpen)
+        {
+            <div class="mvi-popup mvi-popup-ops">
+                @foreach (var group in OpsGroups)
+                {
+                    <div class="mvi-group" @key="group.Title">@group.Title</div>
+                    @foreach (var op in group.Items)
+                    {
+                        <div class="mvi-row" @key="op" @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
+                            <span class="mvi-name">@op</span>
+                        </div>
+                    }
+                }
+            </div>
         }
     </div>
 
-    <span class="mvi-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-
-    @if (_pickerOpen)
+    @if (ValidationMessage is string message)
     {
-        <div class="mvi-popup mvi-popup-tree">
-            @foreach (var row in TreeRows())
-            {
-                <div class="mvi-row" style="padding-left:@(6 + row.Depth * 12)px" @key="row.Node.Path"
-                     @onmousedown:preventDefault="true" @onclick="() => OnTreeRowClick(row)">
-                    <span class="mvi-bullet">@(row.Branch ? (IsCollapsed(row.Node.Path) ? "▸" : "▾") : "·")</span>
-                    <span class="mvi-name">@row.Node.Name</span>
-                    @if (row.Node.Type is not null)
-                    {
-                        <span class="mvi-type">@row.Node.Type</span>
-                    }
-                </div>
-            }
-        </div>
-    }
-
-    @if (_suggestOpen && _suggestions.Count > 0)
-    {
-        <div class="mvi-popup mvi-popup-suggest">
-            @for (var i = 0; i < _suggestions.Count; i++)
-            {
-                var item = _suggestions[i];
-                var active = i == _activeIndex;
-                <div class="mvi-row @(active ? "is-active" : null)" @key="item.Path"
-                     @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
-                    <span class="mvi-name">@item.Path</span>
-                    <span class="mvi-type">@item.Type</span>
-                </div>
-            }
-        </div>
-    }
-
-    @if (_opsOpen)
-    {
-        <div class="mvi-popup mvi-popup-ops">
-            @foreach (var group in OpsGroups)
-            {
-                <div class="mvi-group" @key="group.Title">@group.Title</div>
-                @foreach (var op in group.Items)
-                {
-                    <div class="mvi-row" @key="op" @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
-                        <span class="mvi-name">@op</span>
-                    </div>
-                }
-            }
-        </div>
+        <div class="mvi-error">@message</div>
     }
 </div>
 
@@ -86,6 +124,8 @@
     static readonly Regex TokenBeforeCaretRegex = new(
         @"(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_.]*)$", RegexOptions.Compiled);
 
+    static readonly string[] WeekDayLabels = ["mo", "tu", "we", "th", "fr", "sa", "su"];
+
     [Parameter]
     public string Value { get; set; } = "";
 
@@ -93,10 +133,16 @@
     public EventCallback<string> ValueChanged { get; set; }
 
     [Parameter]
-    public string Placeholder { get; set; } = "value";
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public string VarType { get; set; } = "string";
 
     [Parameter]
     public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     ElementReference _input;
     ElementReference _highlight;
@@ -104,9 +150,11 @@
     bool _suggestOpen;
     bool _pickerOpen;
     bool _opsOpen;
+    bool _dateOpen;
     bool _forceSuggest;
     int _activeIndex;
     int? _pendingCaret;
+    DateTime _cursor = DateTime.Today;
     List<ValueFieldInfo> _suggestions = [];
     readonly HashSet<string> _collapsed = [];
     IReadOnlyCollection<ValueFieldInfo>? _candidatesSource;
@@ -116,10 +164,73 @@
     NodeFormEditorJsInterop Js => _js ??= new NodeFormEditorJsInterop(JS);
 
     bool IsExpression => Value?.StartsWith('@') ?? false;
-    string ModeLabel => IsExpression ? "@ expr" : "str";
-    bool AnyPopupOpen => _suggestOpen || _pickerOpen || _opsOpen;
+    string ModeLabel => IsExpression ? "@" : TypeLabel;
+    string TypeLabel => VarType switch
+    {
+        "string" => "str",
+        "DateTime" => "date",
+        VarNode.TimestampTypeName => "ts",
+        _ => VarType,
+    };
+    string EffectivePlaceholder => Placeholder ?? VarType switch
+    {
+        VarNode.TimestampTypeName => "empty = now (unix millis)",
+        "DateTime" => "yyyy-MM-dd",
+        _ => VarType,
+    };
+    bool AnyPopupOpen => _suggestOpen || _pickerOpen || _opsOpen || _dateOpen;
+    bool ShowDatePicker => VarType == "DateTime" && !IsExpression;
+    bool IsInvalid => ValidationMessage is not null;
     IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? MarsValueInputMocks.Fields;
     static IReadOnlyList<ValueOpGroup> OpsGroups => MarsValueInputMocks.Operations;
+
+    string RootClass
+    {
+        get
+        {
+            var css = IsExpression ? "mars-value-input mvi-expr" : "mars-value-input mvi-const";
+
+            if (IsInvalid)
+                css += " mvi-invalid";
+
+            return ExtraClass is string extra ? $"{css} {extra}" : css;
+        }
+    }
+
+    string? ExtraClass => AdditionalAttributes?.TryGetValue("class", out var value) == true
+        ? value?.ToString()
+        : null;
+
+    IReadOnlyDictionary<string, object>? RootAttributes =>
+        AdditionalAttributes is null || !AdditionalAttributes.ContainsKey("class")
+            ? AdditionalAttributes
+            : AdditionalAttributes.Where(a => a.Key != "class").ToDictionary(a => a.Key, a => a.Value);
+
+    string? ValidationMessage => ValidateConst(Value ?? "");
+
+    string? ValidateConst(string value)
+    {
+        if (IsExpression || value.Length == 0 || VarType == "string")
+            return null;
+
+        if (VarType == VarNode.TimestampTypeName)
+            return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)
+                ? null
+                : $"Empty or unix millis expected, got '{value}'";
+
+        var valid = VarType switch
+        {
+            "int" or "long" => long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _),
+            "float" or "double" => double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _),
+            "decimal" => decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out _),
+            "bool" => bool.TryParse(value, out _),
+            "DateTime" => DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out _),
+            "Guid" => Guid.TryParse(value, out _),
+            _ => true,
+        };
+
+        return valid ? null : $"Not a valid {VarType}: '{value}'";
+    }
 
     protected override void OnParametersSet()
     {
@@ -190,7 +301,7 @@
 
     async Task OnKeyUp(KeyboardEventArgs e)
     {
-        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or " ")
+        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or "Enter" or " ")
             return;
 
         await OnCaretMove();
@@ -223,7 +334,7 @@
             case "ArrowUp":
                 _activeIndex = Math.Max(_activeIndex - 1, 0);
                 break;
-            case "Tab" when _suggestions.Count > 0:
+            case "Tab" or "Enter" when _suggestions.Count > 0:
                 await InsertSuggestion(_suggestions[Math.Clamp(_activeIndex, 0, _suggestions.Count - 1)].Path);
                 break;
             case " ":
@@ -249,13 +360,54 @@
         _pickerOpen = !_pickerOpen;
         _suggestOpen = false;
         _opsOpen = false;
+        _dateOpen = false;
     }
 
     void ToggleOps()
     {
         _opsOpen = !_opsOpen;
         _pickerOpen = false;
+        _dateOpen = false;
         _suggestOpen = false;
+    }
+
+    void ToggleDate()
+    {
+        _dateOpen = !_dateOpen;
+        _pickerOpen = false;
+        _suggestOpen = false;
+        _opsOpen = false;
+
+        if (_dateOpen && TryGetDate(out var current))
+            _cursor = new DateTime(current.Year, current.Month, 1);
+    }
+
+    void ShiftMonth(int delta) => _cursor = _cursor.AddMonths(delta);
+
+    async Task PickDate(DateTime date)
+    {
+        var text = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        _dateOpen = false;
+        await SetValue(text);
+
+        _pendingCaret = text.Length;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    bool TryGetDate(out DateTime date) =>
+        DateTime.TryParse(Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+
+    IEnumerable<(DateTime Date, bool Other, bool Today, bool Selected)> MonthCells()
+    {
+        var first = new DateTime(_cursor.Year, _cursor.Month, 1);
+        var start = first.AddDays(-(((int)first.DayOfWeek + 6) % 7));
+        var selected = TryGetDate(out var current) ? current.Date : (DateTime?)null;
+
+        for (var i = 0; i < 42; i++)
+        {
+            var date = start.AddDays(i);
+            yield return (date, date.Month != first.Month, date == DateTime.Today, date == selected);
+        }
     }
 
     void ClosePopups()
@@ -263,6 +415,7 @@
         _suggestOpen = false;
         _pickerOpen = false;
         _opsOpen = false;
+        _dateOpen = false;
         _forceSuggest = false;
     }
 

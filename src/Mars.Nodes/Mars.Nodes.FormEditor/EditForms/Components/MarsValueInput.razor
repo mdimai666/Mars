@@ -4,40 +4,58 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-<div class="@RootClass" @attributes="RootAttributes">
-    <div class="mvi-body @(AnyPopupOpen ? "is-popup-open" : null)">
+<div @ref="_root" class="@RootClass" @attributes="RootAttributes">
+    <div @ref="_body" class="mvi-body">
         <span class="mvi-tag">@ModeLabel</span>
 
         <div class="mvi-field">
             <pre @ref="_highlight" class="mvi-highlight" aria-hidden="true">@Highlight</pre>
             <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
+                   role="combobox" aria-autocomplete="list"
+                   aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
+                   aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
+                   aria-describedby="@(IsInvalid ? ErrorId : null)"
+                   disabled="@Disabled" readonly="@ReadOnly"
                    value="@Value" placeholder="@EffectivePlaceholder"
                    @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
         </div>
 
-        <div class="mvi-actions">
-            @if (ShowDatePicker)
-            {
-                <button type="button" class="mvi-btn" tabindex="-1" title="Pick date"
-                        @onmousedown:preventDefault="true" @onclick="ToggleDate">▦</button>
-            }
-            <button type="button" class="mvi-btn" tabindex="-1" title="Pick from context"
-                    @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
-            @if (IsExpression)
-            {
-                <button type="button" class="mvi-btn" tabindex="-1" title="Operations"
-                        @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
-            }
-        </div>
+        @if (CanEdit)
+        {
+            <div class="mvi-actions">
+                @if (ShowDatePicker)
+                {
+                    <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaDate"
+                            aria-label="Pick date (F4)"
+                            @onmousedown:preventDefault="true" @onclick="ToggleDate">▦</button>
+                }
+                <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaPicker"
+                        aria-label="Pick from context (Alt+Down)"
+                        @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
+                @if (IsExpression)
+                {
+                    <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaOps"
+                            aria-label="Operations (Alt+Up)"
+                            @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
+                }
+            </div>
+        }
 
         <span class="mvi-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 
         @if (_pickerOpen)
         {
-            <div class="mvi-popup mvi-popup-tree">
-                @foreach (var row in TreeRows())
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-tree"
+                 role="listbox" aria-label="Available fields">
+                @{ var rows = TreeRows().ToList(); }
+                @for (var i = 0; i < rows.Count; i++)
                 {
-                    <div class="mvi-row" style="padding-left:@(6 + row.Depth * 12)px" @key="row.Node.Path"
+                    var index = i;
+                    var row = rows[index];
+                    var active = index == _activeIndex;
+                    var selected = active ? "true" : "false";
+                    <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(index)" role="option"
+                         aria-selected="@selected" style="padding-left:@(6 + row.Depth * 12)px"
                          @onmousedown:preventDefault="true" @onclick="() => OnTreeRowClick(row)">
                         <span class="mvi-bullet">@(row.Branch ? (IsCollapsed(row.Node.Path) ? "▸" : "▾") : "·")</span>
                         <span class="mvi-name">@row.Node.Name</span>
@@ -52,12 +70,12 @@
 
         @if (_dateOpen)
         {
-            <div class="mvi-popup mvi-popup-date">
+            <div @ref="_popup" popover="manual" class="mvi-popup mvi-popup-date" role="group" aria-label="Calendar">
                 <div class="mvi-date-head">
-                    <button type="button" class="mvi-date-nav" tabindex="-1"
+                    <button type="button" class="mvi-date-nav" tabindex="-1" aria-label="Previous month"
                             @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(-1)">‹</button>
                     <span class="mvi-date-title">@_cursor.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</span>
-                    <button type="button" class="mvi-date-nav" tabindex="-1"
+                    <button type="button" class="mvi-date-nav" tabindex="-1" aria-label="Next month"
                             @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(1)">›</button>
                 </div>
                 <div class="mvi-date-grid">
@@ -67,9 +85,12 @@
                     }
                     @foreach (var cell in MonthCells())
                     {
+                        var current = cell.Today ? "date" : null;
                         <button type="button" @key="cell.Date"
-                                class="mvi-date-cell @(cell.Other ? "is-other" : null) @(cell.Today ? "is-today" : null) @(cell.Selected ? "is-selected" : null)"
-                                tabindex="-1" @onmousedown:preventDefault="true" @onclick="() => PickDate(cell.Date)">@cell.Date.Day</button>
+                                class="mvi-date-cell @(cell.Other ? "is-other" : null) @(cell.Today ? "is-today" : null) @(cell.Selected ? "is-selected" : null) @(cell.Focused ? "is-focus" : null)"
+                                tabindex="-1" aria-current="@current"
+                                aria-label="@cell.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture)"
+                                @onmousedown:preventDefault="true" @onclick="() => PickDate(cell.Date)">@cell.Date.Day</button>
                     }
                 </div>
             </div>
@@ -77,12 +98,15 @@
 
         @if (_suggestOpen && _suggestions.Count > 0)
         {
-            <div class="mvi-popup mvi-popup-suggest">
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-suggest"
+                 role="listbox" aria-label="Suggestions">
                 @for (var i = 0; i < _suggestions.Count; i++)
                 {
                     var item = _suggestions[i];
                     var active = i == _activeIndex;
-                    <div class="mvi-row @(active ? "is-active" : null)" @key="item.Path"
+                    var selected = active ? "true" : "false";
+                    <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(i)" role="option"
+                         aria-selected="@selected" @key="item.Path"
                          @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
                         <span class="mvi-name">@item.Path</span>
                         <span class="mvi-type">@item.Type</span>
@@ -93,13 +117,22 @@
 
         @if (_opsOpen)
         {
-            <div class="mvi-popup mvi-popup-ops">
-                @foreach (var group in OpsGroups)
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-ops"
+                 role="listbox" aria-label="Operations">
+                @foreach (var row in OpsRows())
                 {
-                    <div class="mvi-group" @key="group.Title">@group.Title</div>
-                    @foreach (var op in group.Items)
+                    if (row.Group is not null)
                     {
-                        <div class="mvi-row" @key="op" @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
+                        <div class="mvi-group" @key="row.Group">@row.Group</div>
+                    }
+                    else
+                    {
+                        var active = row.Index == _activeIndex;
+                        var selected = active ? "true" : "false";
+                        var op = row.Op!;
+                        <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(row.Index)" role="option"
+                             aria-selected="@selected" @key="op"
+                             @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
                             <span class="mvi-name">@op</span>
                         </div>
                     }
@@ -110,7 +143,7 @@
 
     @if (ValidationMessage is string message)
     {
-        <div class="mvi-error">@message</div>
+        <div id="@ErrorId" class="mvi-error" role="alert">@message</div>
     }
 </div>
 
@@ -123,6 +156,9 @@
 
     static readonly Regex TokenBeforeCaretRegex = new(
         @"(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_.]*)$", RegexOptions.Compiled);
+
+    static readonly Regex PathLikeRegex = new(
+        @"^\s*(msg|GlobalContext|FlowContext|VarNode)\s*\.", RegexOptions.Compiled);
 
     static readonly string[] WeekDayLabels = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
@@ -139,32 +175,62 @@
     public string VarType { get; set; } = "string";
 
     [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter]
     public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    ElementReference _root;
+    ElementReference _body;
     ElementReference _input;
     ElementReference _highlight;
+    ElementReference _popup;
+    readonly string _uid = Guid.NewGuid().ToString("N")[..6];
     string _prefix = "";
     bool _suggestOpen;
     bool _pickerOpen;
     bool _opsOpen;
     bool _dateOpen;
     bool _forceSuggest;
+    bool _disposed;
     int _activeIndex;
     int? _pendingCaret;
     DateTime _cursor = DateTime.Today;
+    DateTime _focusDay = DateTime.Today;
     List<ValueFieldInfo> _suggestions = [];
     readonly HashSet<string> _collapsed = [];
     IReadOnlyCollection<ValueFieldInfo>? _candidatesSource;
     FieldTreeNode? _tree;
+    DotNetObjectReference<MarsValueInput>? _selfRef;
 
     NodeFormEditorJsInterop? _js;
     NodeFormEditorJsInterop Js => _js ??= new NodeFormEditorJsInterop(JS);
 
+    string ListId => $"mvi-list-{_uid}";
+    string ErrorId => $"mvi-err-{_uid}";
+
     bool IsExpression => Value?.StartsWith('@') ?? false;
+    bool CanEdit => !Disabled && !ReadOnly;
+    bool ListOpen => _pickerOpen || _opsOpen || _suggestOpen;
+    bool AnyPopupOpen => ListOpen || _dateOpen;
+    bool PopupVisible => _pickerOpen || _dateOpen || _opsOpen || _suggestOpen && _suggestions.Count > 0;
+    bool ShowDatePicker => VarType == "DateTime" && !IsExpression;
+    bool IsInvalid => ValidationMessage is not null;
+    string AriaExpanded => PopupVisible ? "true" : "false";
+    string AriaInvalid => IsInvalid ? "true" : "false";
+    string AriaDate => _dateOpen ? "true" : "false";
+    string AriaPicker => _pickerOpen ? "true" : "false";
+    string AriaOps => _opsOpen ? "true" : "false";
+    string? ActiveOptionId => ListOpen && _activeIndex >= 0 ? OptionId(_activeIndex) : null;
+
     string ModeLabel => IsExpression ? "@" : TypeLabel;
+
     string TypeLabel => VarType switch
     {
         "string" => "str",
@@ -172,23 +238,29 @@
         VarNode.TimestampTypeName => "ts",
         _ => VarType,
     };
+
     string EffectivePlaceholder => Placeholder ?? VarType switch
     {
         VarNode.TimestampTypeName => "empty = now (unix millis)",
         "DateTime" => "yyyy-MM-dd",
         _ => VarType,
     };
-    bool AnyPopupOpen => _suggestOpen || _pickerOpen || _opsOpen || _dateOpen;
-    bool ShowDatePicker => VarType == "DateTime" && !IsExpression;
-    bool IsInvalid => ValidationMessage is not null;
+
     IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? MarsValueInputMocks.Fields;
     static IReadOnlyList<ValueOpGroup> OpsGroups => MarsValueInputMocks.Operations;
+    static int OpsItemCount => MarsValueInputMocks.Operations.Sum(g => g.Items.Count);
 
     string RootClass
     {
         get
         {
             var css = IsExpression ? "mars-value-input mvi-expr" : "mars-value-input mvi-const";
+
+            if (Disabled)
+                css += " mvi-disabled";
+
+            if (ReadOnly)
+                css += " mvi-readonly";
 
             if (IsInvalid)
                 css += " mvi-invalid";
@@ -243,6 +315,16 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            _selfRef = DotNetObjectReference.Create(this);
+            await Js.ValueInput_OutsideClick(_root, _selfRef, nameof(OnOutsideClick));
+            await Js.ValueInput_OnPaste(_input, _selfRef, nameof(OnPasteText));
+        }
+
+        if (PopupVisible)
+            await Js.ValueInput_PopupOpen(_popup, _body, _dateOpen ? "left" : "right");
+
         if (_pendingCaret is int pos)
         {
             _pendingCaret = null;
@@ -250,6 +332,25 @@
         }
 
         await Js.ValueInput_SyncScroll(_input, _highlight);
+    }
+
+    [JSInvokable]
+    public void OnOutsideClick()
+    {
+        if (!AnyPopupOpen)
+            return;
+
+        ClosePopups();
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnPasteText(string text)
+    {
+        if (!CanEdit || _disposed || string.IsNullOrEmpty(text))
+            return;
+
+        await InsertText(text, replacePrefix: false);
     }
 
     RenderFragment Highlight => builder =>
@@ -286,22 +387,35 @@
         : match.Groups[4].Success ? "tk-num"
         : "tk-op";
 
+    string OptionId(int index) => $"mvi-opt-{_uid}-{index}";
+
     async Task OnInput(ChangeEventArgs e)
     {
+        if (!CanEdit)
+            return;
+
         await SetValue(e.Value?.ToString() ?? "");
+
+        _pickerOpen = false;
+        _opsOpen = false;
+        _dateOpen = false;
+
         await RefreshPrefixAsync();
         UpdateSuggestions();
     }
 
     async Task OnCaretMove()
     {
+        if (Disabled)
+            return;
+
         await RefreshPrefixAsync();
         UpdateSuggestions();
     }
 
     async Task OnKeyUp(KeyboardEventArgs e)
     {
-        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or "Enter" or " ")
+        if (e.Key is "Escape" or "ArrowDown" or "ArrowUp" or "Tab" or "Enter" or " " or "F4")
             return;
 
         await OnCaretMove();
@@ -309,6 +423,9 @@
 
     async Task OnKeyDown(KeyboardEventArgs e)
     {
+        if (Disabled)
+            return;
+
         if (e.Key == "Escape")
         {
             ClosePopups();
@@ -317,29 +434,119 @@
 
         if (e.CtrlKey && e.Code == "Space")
         {
+            if (!CanEdit)
+                return;
+
             _forceSuggest = true;
             await RefreshPrefixAsync();
             UpdateSuggestions();
             return;
         }
 
-        if (!_suggestOpen)
+        if (e.AltKey && e.Key == "ArrowDown")
+        {
+            if (CanEdit)
+                TogglePicker();
+
+            return;
+        }
+
+        if (e.AltKey && e.Key == "ArrowUp")
+        {
+            if (CanEdit && IsExpression)
+                ToggleOps();
+
+            return;
+        }
+
+        if (e.Key == "F4")
+        {
+            if (CanEdit && ShowDatePicker)
+                ToggleDate();
+
+            return;
+        }
+
+        if (_dateOpen)
+        {
+            switch (e.Key)
+            {
+                case "ArrowLeft":
+                    MoveFocusDay(-1);
+                    return;
+                case "ArrowRight":
+                    MoveFocusDay(1);
+                    return;
+                case "ArrowUp":
+                    MoveFocusDay(-7);
+                    return;
+                case "ArrowDown":
+                    MoveFocusDay(7);
+                    return;
+                case "Enter" or " ":
+                    await PickDate(_focusDay);
+                    return;
+            }
+        }
+
+        if (!ListOpen)
             return;
 
         switch (e.Key)
         {
             case "ArrowDown":
-                _activeIndex = Math.Min(_activeIndex + 1, _suggestions.Count - 1);
+                MoveActive(1);
                 break;
             case "ArrowUp":
-                _activeIndex = Math.Max(_activeIndex - 1, 0);
+                MoveActive(-1);
                 break;
-            case "Tab" or "Enter" when _suggestions.Count > 0:
-                await InsertSuggestion(_suggestions[Math.Clamp(_activeIndex, 0, _suggestions.Count - 1)].Path);
+            case "Tab" or "Enter":
+                await ActivateActive();
                 break;
             case " ":
-                _suggestOpen = false;
+                ClosePopups();
                 break;
+        }
+    }
+
+    void MoveActive(int delta)
+    {
+        var count = _suggestOpen ? _suggestions.Count
+            : _pickerOpen ? TreeRows().Count()
+            : _opsOpen ? OpsItemCount
+            : 0;
+
+        if (count == 0)
+            return;
+
+        _activeIndex = Math.Clamp(_activeIndex + delta, 0, count - 1);
+    }
+
+    async Task ActivateActive()
+    {
+        if (_suggestOpen && _suggestions.Count > 0)
+        {
+            await InsertSuggestion(_suggestions[Math.Clamp(_activeIndex, 0, _suggestions.Count - 1)].Path);
+            return;
+        }
+
+        if (_pickerOpen)
+        {
+            var rows = TreeRows().ToList();
+            if (rows.Count == 0)
+                return;
+
+            await OnTreeRowClick(rows[Math.Clamp(_activeIndex, 0, rows.Count - 1)]);
+            return;
+        }
+
+        if (_opsOpen)
+        {
+            var items = OpsRows().Where(r => r.Op is not null).Select(r => r.Op!).ToList();
+            if (items.Count == 0)
+                return;
+
+            await InsertSnippet(items[Math.Clamp(_activeIndex, 0, items.Count - 1)]);
         }
     }
 
@@ -349,6 +556,7 @@
         {
             if (!_collapsed.Remove(row.Node.Path))
                 _collapsed.Add(row.Node.Path);
+
             return;
         }
 
@@ -357,32 +565,52 @@
 
     void TogglePicker()
     {
+        if (!CanEdit)
+            return;
+
         _pickerOpen = !_pickerOpen;
         _suggestOpen = false;
         _opsOpen = false;
         _dateOpen = false;
+        _activeIndex = 0;
     }
 
     void ToggleOps()
     {
+        if (!CanEdit)
+            return;
+
         _opsOpen = !_opsOpen;
         _pickerOpen = false;
         _dateOpen = false;
         _suggestOpen = false;
+        _activeIndex = 0;
     }
 
     void ToggleDate()
     {
+        if (!CanEdit)
+            return;
+
         _dateOpen = !_dateOpen;
         _pickerOpen = false;
         _suggestOpen = false;
         _opsOpen = false;
 
-        if (_dateOpen && TryGetDate(out var current))
-            _cursor = new DateTime(current.Year, current.Month, 1);
+        if (_dateOpen)
+        {
+            _focusDay = TryGetDate(out var current) ? current.Date : DateTime.Today;
+            _cursor = new DateTime(_focusDay.Year, _focusDay.Month, 1);
+        }
     }
 
     void ShiftMonth(int delta) => _cursor = _cursor.AddMonths(delta);
+
+    void MoveFocusDay(int days)
+    {
+        _focusDay = _focusDay.AddDays(days);
+        _cursor = new DateTime(_focusDay.Year, _focusDay.Month, 1);
+    }
 
     async Task PickDate(DateTime date)
     {
@@ -397,7 +625,7 @@
     bool TryGetDate(out DateTime date) =>
         DateTime.TryParse(Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
 
-    IEnumerable<(DateTime Date, bool Other, bool Today, bool Selected)> MonthCells()
+    IEnumerable<(DateTime Date, bool Other, bool Today, bool Selected, bool Focused)> MonthCells()
     {
         var first = new DateTime(_cursor.Year, _cursor.Month, 1);
         var start = first.AddDays(-(((int)first.DayOfWeek + 6) % 7));
@@ -406,7 +634,7 @@
         for (var i = 0; i < 42; i++)
         {
             var date = start.AddDays(i);
-            yield return (date, date.Month != first.Month, date == DateTime.Today, date == selected);
+            yield return (date, date.Month != first.Month, date == DateTime.Today, date == selected, date == _focusDay.Date);
         }
     }
 
@@ -422,6 +650,14 @@
     void UpdateSuggestions()
     {
         _activeIndex = 0;
+
+        if (!CanEdit)
+        {
+            _suggestOpen = false;
+            _suggestions = [];
+            return;
+        }
+
         _suggestOpen = IsExpression && (_forceSuggest || _prefix.Contains('.'));
 
         _suggestions = !_suggestOpen
@@ -438,29 +674,57 @@
 
     async Task InsertText(string text, bool replacePrefix)
     {
-        var value = Value ?? "";
-        var caret = Math.Clamp(await Js.ValueInput_GetCaret(_input), 0, value.Length);
-        var start = replacePrefix ? Math.Max(0, caret - _prefix.Length) : caret;
+        if (!CanEdit)
+            return;
 
-        if (!value.StartsWith('@'))
+        var value = Value ?? "";
+        var (start, end) = await GetSelectionAsync();
+        start = Math.Clamp(start, 0, value.Length);
+        end = Math.Clamp(end, start, value.Length);
+
+        var paste = text;
+        if (IsPathLike(text))
         {
-            value = "@" + value;
-            start++;
-            caret++;
+            paste = text.StartsWith('@') ? text[1..].Trim() : text.Trim();
+
+            if (!value.StartsWith('@'))
+            {
+                value = "@" + value;
+                start++;
+                end++;
+            }
         }
 
-        await SetValue(value[..start] + text + value[caret..]);
+        if (end > start)
+            replacePrefix = false;
+        else if (replacePrefix)
+            start = Math.Max(0, end - _prefix.Length);
+
+        var caret = start + paste.Length;
+        await SetValue(value[..start] + paste + value[end..]);
 
         ClosePopups();
-        _pendingCaret = start + text.Length;
+        _pendingCaret = caret;
         await InvokeAsync(StateHasChanged);
+    }
+
+    static bool IsPathLike(string text) =>
+        text.StartsWith('@') || PathLikeRegex.IsMatch(text);
+
+    async Task<(int Start, int End)> GetSelectionAsync()
+    {
+        if (Disabled)
+            return (0, 0);
+
+        var range = await Js.ValueInput_GetSelection(_input);
+        return (range.Start, range.End);
     }
 
     async Task RefreshPrefixAsync()
     {
         var value = Value ?? "";
-        var caret = Math.Clamp(await Js.ValueInput_GetCaret(_input), 0, value.Length);
-        var match = TokenBeforeCaretRegex.Match(value[..caret]);
+        var (_, end) = await GetSelectionAsync();
+        var match = TokenBeforeCaretRegex.Match(value[..Math.Clamp(end, 0, value.Length)]);
         _prefix = match.Success ? match.Groups[1].Value : "";
     }
 
@@ -496,6 +760,19 @@
         }
     }
 
+    IEnumerable<OpRow> OpsRows()
+    {
+        var index = 0;
+
+        foreach (var group in OpsGroups)
+        {
+            yield return new OpRow(group.Title, null, -1);
+
+            foreach (var op in group.Items)
+                yield return new OpRow(null, op, index++);
+        }
+    }
+
     static FieldTreeNode BuildTree(IEnumerable<ValueFieldInfo> fields)
     {
         var root = new FieldTreeNode();
@@ -526,8 +803,22 @@
 
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
+
         if (_js is not null)
+        {
+            try
+            {
+                await _js.ValueInput_Dispose(_root, _input, _body);
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+
             await _js.DisposeAsync();
+        }
+
+        _selfRef?.Dispose();
     }
 
     sealed class FieldTreeNode
@@ -537,4 +828,6 @@
         public string? Type { get; set; }
         public List<FieldTreeNode> Children { get; } = [];
     }
+
+    sealed record OpRow(string? Group, string? Op, int Index);
 }

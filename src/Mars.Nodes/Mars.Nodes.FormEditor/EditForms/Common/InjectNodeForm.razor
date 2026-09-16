@@ -27,6 +27,14 @@
             <MarsValueInput @bind-Value=DueDate VarType="DateTime" />
         </FormItem2>
 
+        <FormItem2 For="()=>ReadOnlyValue">
+            <MarsValueInput @bind-Value=ReadOnlyValue VarType="double" ReadOnly="true" />
+        </FormItem2>
+
+        <FormItem2 For="()=>DisabledValue">
+            <MarsValueInput @bind-Value=DisabledValue Disabled="true" />
+        </FormItem2>
+
         <FluentSortableList Id="injectFields" Handle="true" Items="Node.Fields" OnUpdate="@SortList" Context="item">
             <ItemTemplate>
                 <div class="sortable-grab">
@@ -96,4 +104,8 @@
     public string Count { get; set; } = "42";
 
     public string DueDate { get; set; } = "2026-09-16";
+
+    public string ReadOnlyValue { get; set; } = "3.14";
+
+    public string DisabledValue { get; set; } = "issued by scheduler";
 }

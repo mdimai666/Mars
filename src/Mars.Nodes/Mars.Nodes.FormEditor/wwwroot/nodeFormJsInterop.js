@@ -87,12 +87,12 @@ export function f_editor_doaction(action_id) {
     editor.run();
 }
 
-export function mvi_getCaret(el) {
-    return el?.selectionStart ?? 0;
+export function mvi_getSelection(el) {
+    return { start: el?.selectionStart ?? 0, end: el?.selectionEnd ?? 0 };
 }
 
 export function mvi_setCaret(el, pos) {
-    if (!el) return;
+    if (!(el instanceof HTMLElement)) return;
 
     el.focus();
     let p = Math.max(0, Math.min(pos, el.value?.length ?? 0));
@@ -100,5 +100,91 @@ export function mvi_setCaret(el, pos) {
 }
 
 export function mvi_syncScroll(input, highlight) {
-    if (input && highlight) highlight.scrollLeft = input.scrollLeft;
+    if (input instanceof HTMLElement && highlight instanceof HTMLElement)
+        highlight.scrollLeft = input.scrollLeft;
 }
+
+const mviAnchors = new Map();
+
+function mviPlace(anchor) {
+    const entry = mviAnchors.get(anchor);
+    if (!entry) return;
+
+    const { popup, align } = entry;
+    if (!popup.isConnected) {
+        mviAnchors.delete(anchor);
+        return;
+    }
+
+    if (!popup.matches(':popover-open')) return;
+
+    const a = anchor.getBoundingClientRect();
+    const p = popup.getBoundingClientRect();
+    const margin = 5;
+
+    let top = a.bottom + margin;
+    if (top + p.height > window.innerHeight - 4)
+        top = Math.max(4, a.top - p.height - margin);
+
+    let left = align === 'right' ? a.right - p.width : a.left;
+    if (left + p.width > window.innerWidth - 4)
+        left = window.innerWidth - 4 - p.width;
+    if (left < 4)
+        left = 4;
+
+    popup.style.top = `${Math.round(top)}px`;
+    popup.style.left = `${Math.round(left)}px`;
+}
+
+export function mvi_popupOpen(popup, anchor, align) {
+    if (!(popup instanceof HTMLElement) || !(anchor instanceof HTMLElement)) return;
+
+    if (!popup.matches(':popover-open')) popup.showPopover();
+
+    mviAnchors.set(anchor, { popup, align });
+    mviPlace(anchor);
+}
+
+export function mvi_outsideClick(root, dotNetRef, method) {
+    if (!root || root.__mviOutside) return;
+
+    const handler = (e) => {
+        if (root.contains(e.target)) return;
+
+        dotNetRef.invokeMethodAsync(method);
+    };
+
+    root.__mviOutside = handler;
+    document.addEventListener('pointerdown', handler, true);
+}
+
+export function mvi_onPaste(el, dotNetRef, method) {
+    if (!el || el.__mviPaste) return;
+
+    const handler = (e) => {
+        const text = (e.clipboardData || window.clipboardData)?.getData('text') ?? '';
+
+        e.preventDefault();
+        dotNetRef.invokeMethodAsync(method, text);
+    };
+
+    el.__mviPaste = handler;
+    el.addEventListener('paste', handler);
+}
+
+export function mvi_dispose(root, input, anchor) {
+    if (root?.__mviOutside) {
+        document.removeEventListener('pointerdown', root.__mviOutside, true);
+        root.__mviOutside = null;
+    }
+
+    if (input?.__mviPaste) {
+        input.removeEventListener('paste', input.__mviPaste);
+        input.__mviPaste = null;
+    }
+
+    if (anchor) mviAnchors.delete(anchor);
+}
+
+document.addEventListener('scroll', () => mviAnchors.forEach((_, anchor) => mviPlace(anchor)), true);
+window.addEventListener('resize', () => mviAnchors.forEach((_, anchor) => mviPlace(anchor)));

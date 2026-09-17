@@ -73,7 +73,7 @@ public partial class QueryResultGrid
     async Task EditLongValueAsync(CellEditRequest request, string value)
     {
         var dialog = await _dialogService.ShowDialogAsync<CellValueDialog>(
-            new CellValueDialogContent(value, request.Kind == QColumnKind.Json ? CodeEditor2.Language.json : "plaintext"),
+            new CellValueDialogContent(value, request.Kind == FieldKind.Json ? CodeEditor2.Language.json : "plaintext"),
             new DialogParameters
             {
                 Title = $"Значение: {request.Column}",

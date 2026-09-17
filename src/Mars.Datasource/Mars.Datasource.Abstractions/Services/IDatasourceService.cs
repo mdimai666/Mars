@@ -14,9 +14,6 @@ public interface IDatasourceService
 
     public void InvalidateLocalDictCache(DatasourceOption opt);
     public Task<UserActionResult> TestConnection(ConnectionStringTestDto dto);
-    public Task<Dictionary<string, QTableColumn>> Columns(string slug, string tableName);
-    public Task<List<QTableSchema>> Tables(string slug);
-    public Task<QDatabaseStructure> DatabaseStructure(string slug);
 
     /// <summary>Каталог объектов источника: общий вид дерева для любого типа источника.</summary>
     public Task<DatasourceCatalog> Catalog(string slug);
@@ -26,9 +23,6 @@ public interface IDatasourceService
 
     /// <summary>Определение вьюхи (текст запроса), null — объекта нет или это не вьюха.</summary>
     public Task<string?> ViewDefinition(string slug, string? schemaName, string tableName);
-
-    /// <summary>Перечитать структуру базы, минуя кэш.</summary>
-    public Task<QDatabaseStructure> RefreshStructure(string slug);
 
     /// <summary>Документ запросов источника (rest): `.http` с операциями пользователя; пусто — документа нет.</summary>
     public Task<string> RequestsDocument(string slug);

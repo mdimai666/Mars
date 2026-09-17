@@ -17,7 +17,7 @@ public static class QueryResultMapping
             ClrTypeName = column.DataType?.FullName ?? "",
             IsNullable = column.AllowDBNull ?? true,
             IsKey = isKey,
-            IsJson = QColumnMapping.IsJson(column.DataTypeName),
+            IsJson = FieldTypeMapping.IsJson(column.DataTypeName),
         };
 
     /// <summary>

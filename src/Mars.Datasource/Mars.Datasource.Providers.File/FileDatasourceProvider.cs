@@ -236,7 +236,7 @@ public class FileDatasourceProvider : IDatasourceProvider
             {
                 Name = column,
                 DataTypeName = typeName,
-                ClrTypeName = QColumnMapping.ClrType(typeName).FullName ?? typeof(string).FullName!,
+                ClrTypeName = FieldTypeMapping.ClrType(typeName).FullName ?? typeof(string).FullName!,
                 IsNullable = true,
             };
         }

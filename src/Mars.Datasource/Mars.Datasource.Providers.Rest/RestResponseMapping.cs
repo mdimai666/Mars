@@ -138,9 +138,9 @@ public static class RestResponseMapping
         {
             Name = name,
             DataTypeName = typeName,
-            ClrTypeName = QColumnMapping.ClrType(typeName).FullName ?? typeof(string).FullName!,
+            ClrTypeName = FieldTypeMapping.ClrType(typeName).FullName ?? typeof(string).FullName!,
             IsNullable = true,
-            IsJson = QColumnMapping.IsJson(typeName),
+            IsJson = FieldTypeMapping.IsJson(typeName),
         };
     }
 
@@ -184,7 +184,7 @@ public static class RestResponseMapping
 }
 
 /// <summary>
-/// Тип колонки по JSON-значениям. Имена — из числа понятных <c>QColumnMapping</c>, поэтому
+/// Тип колонки по JSON-значениям. Имена — из числа понятных <c>FieldTypeMapping</c>, поэтому
 /// короткое имя типа и подсветка значений в гриде работают без отдельных правил для rest.
 /// </summary>
 public static class JsonTypeInference

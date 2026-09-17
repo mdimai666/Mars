@@ -23,7 +23,6 @@ public class SqlToolset : IAiToolset
     public IReadOnlyList<AIFunction> Build(AiToolsetContext ctx) =>
     [
         AIFunctionFactory.Create(_sqlTools.ListDataSources),
-        AIFunctionFactory.Create(_sqlTools.GetDatabaseSchema),
         AIFunctionFactory.Create(_sqlTools.ExecuteSql),
     ];
 }

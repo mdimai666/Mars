@@ -72,9 +72,9 @@ public static class QDatabaseStructureBuilder
         ColumnSize = meta.ColumnSize,
         IsNullable = meta.IsNullable,
         IsKey = meta.IsKey,
-        IsJson = QColumnMapping.IsJson(meta.DataTypeName),
+        IsJson = FieldTypeMapping.IsJson(meta.DataTypeName),
         DataTypeName = meta.DataTypeName,
-        DataType = QColumnMapping.ClrType(meta.DataTypeName),
+        DataType = FieldTypeMapping.ClrType(meta.DataTypeName),
     };
 
     public static QDatabaseStructure Assemble(string databaseName, IEnumerable<QTableMeta> tables, IEnumerable<QColumnMeta> columns)

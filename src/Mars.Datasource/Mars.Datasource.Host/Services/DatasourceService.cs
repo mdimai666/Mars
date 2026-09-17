@@ -31,15 +31,12 @@ internal class DatasourceService : IDatasourceService
 
     Dictionary<string, DatasourceConfig>? _configsCache;
 
-    /// <summary>Структура базы стоит десятков запросов к каталогу — держим её недолго в памяти.</summary>
-    readonly ConcurrentDictionary<string, (QDatabaseStructure Structure, DateTime At)> _structureCache = new(StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>Каталог — то же самое для дерева объектов: у не-sql источников он дороже структуры базы.</summary>
+    /// <summary>Каталог — дерево объектов источника: у не-sql источников он дороже структуры базы.</summary>
     readonly ConcurrentDictionary<string, (DatasourceCatalog Catalog, DateTime At)> _catalogCache = new(StringComparer.OrdinalIgnoreCase);
 
-    static readonly TimeSpan StructureCacheTtl = TimeSpan.FromSeconds(30);
+    static readonly TimeSpan CatalogCacheTtl = TimeSpan.FromSeconds(30);
 
-    /// <summary>Первый оператор, после которого кэш структуры уже неактуален.</summary>
+    /// <summary>Первый оператор, после которого кэш каталога уже неактуален.</summary>
     static readonly string[] DdlKeywords = ["CREATE", "ALTER", "DROP", "REFRESH", "TRUNCATE"];
 
     Dictionary<string, DatasourceConfig> configs
@@ -89,8 +86,7 @@ internal class DatasourceService : IDatasourceService
 
         _configsCache = configs;
 
-        // Сменились настройки источников — структура могла измениться.
-        _structureCache.Clear();
+        // Сменились настройки источников — каталог мог измениться.
         _catalogCache.Clear();
     }
 
@@ -167,50 +163,15 @@ internal class DatasourceService : IDatasourceService
 
     }
 
-    public async Task<Dictionary<string, QTableColumn>> Columns(string slug, string tableName)
-    {
-        var se = ResolveEngine(slug);
-        var columns = await se.Columns(tableName);
-        return columns;
-    }
-
-    public async Task<List<QTableSchema>> Tables(string slug)
-    {
-        var se = ResolveEngine(slug);
-        var tables = await se.Tables();
-        return tables;
-    }
-
     public async Task<string?> ViewDefinition(string slug, string? schemaName, string tableName)
     {
         var se = ResolveEngine(slug);
         return await se.ViewDefinition(schemaName ?? "", tableName);
     }
 
-    public async Task<QDatabaseStructure> DatabaseStructure(string slug)
-    {
-        if (_structureCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < StructureCacheTtl)
-        {
-            return cached.Structure;
-        }
-
-        return await RefreshStructure(slug);
-    }
-
-    /// <summary>Перечитать структуру у базы, минуя кэш (кнопка «обновить» в UI).</summary>
-    public async Task<QDatabaseStructure> RefreshStructure(string slug)
-    {
-        var structure = await ResolveEngine(slug).DatabaseStructure();
-
-        _structureCache[slug] = (structure, DateTime.UtcNow);
-        _catalogCache.TryRemove(slug, out _);
-
-        return structure;
-    }
-
     public async Task<DatasourceCatalog> Catalog(string slug)
     {
-        if (_catalogCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < StructureCacheTtl)
+        if (_catalogCache.TryGetValue(slug, out var cached) && DateTime.UtcNow - cached.At < CatalogCacheTtl)
         {
             return cached.Catalog;
         }
@@ -267,7 +228,6 @@ internal class DatasourceService : IDatasourceService
         // DDL мог поменять состав объектов: без сброса дерево до TTL показывало бы старое.
         if (result.Ok && DdlKeywords.Contains(SqlSafety.FirstWord(sql)))
         {
-            _structureCache.TryRemove(slug, out _);
             _catalogCache.TryRemove(slug, out _);
         }
 

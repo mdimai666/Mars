@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.Net.Mime;
 using Mars.Contracts.Common;
-using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Contracts.Dto;
-using Mars.Datasource.Abstractions.Mappings;
 using Mars.Datasource.Contracts.Models;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
@@ -34,24 +32,6 @@ public class DatasourceController : ControllerBase
     public Task<UserActionResult> TestConnection(ConnectionStringTestDto dto)
     {
         return ds.TestConnection(dto);
-    }
-
-    [HttpGet]
-    public async Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName)
-    {
-        return (await ds.Columns(slug, tableName)).ToResponse();
-    }
-
-    [HttpGet]
-    public async Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug)
-    {
-        return (await ds.Tables(slug)).ToResponse();
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<QDatabaseStructureResponse>> DatabaseStructure(string slug)
-    {
-        return (await ds.DatabaseStructure(slug)).ToResponse();
     }
 
     /// <summary>Каталог объектов источника: дерево для любого типа источника, не только для баз данных.</summary>
@@ -86,12 +66,6 @@ public class DatasourceController : ControllerBase
     public async Task<ViewDefinitionResponse> ViewDefinition([DefaultValue("default")] string slug, string? schema, string name)
     {
         return new ViewDefinitionResponse { Sql = await ds.ViewDefinition(slug, schema, name) ?? "" };
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<QDatabaseStructureResponse>> RefreshStructure(string slug)
-    {
-        return (await ds.RefreshStructure(slug)).ToResponse();
     }
 
     [HttpPost]

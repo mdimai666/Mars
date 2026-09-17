@@ -53,60 +53,6 @@ public class MarsSqlTools
         }
     }
 
-    [Description("Структура базы данных: таблицы и их колонки. " +
-                 "Для больших баз передай tablesFilter — подстроку для фильтрации имён таблиц.")]
-    public async Task<string> GetDatabaseSchema(
-        [Description("Slug базы из результата list_data_sources, например 'default'")] string slug,
-        [Description("Фильтр таблиц: подстрока в имени таблицы/схемы. Пустая строка — все таблицы.")] string tablesFilter = "")
-    {
-        try
-        {
-            var structure = await _datasourceService.DatabaseStructure(slug);
-
-            var tables = structure.Tables
-                .Where(t => string.IsNullOrWhiteSpace(tablesFilter)
-                            || t.TableName.Contains(tablesFilter, StringComparison.OrdinalIgnoreCase)
-                            || (t.TableSchema?.SchemaName.Contains(tablesFilter, StringComparison.OrdinalIgnoreCase) ?? false))
-                .OrderBy(t => t.TableSchema?.SchemaName ?? "")
-                .ThenBy(t => t.TableName);
-
-            var sb = new StringBuilder();
-            sb.Append("База: ").Append(structure.DatabaseName).AppendLine(". Таблицы и колонки:");
-
-            var shown = 0;
-            foreach (var table in tables)
-            {
-                var name = string.IsNullOrEmpty(table.TableSchema?.SchemaName)
-                    ? table.TableName
-                    : $"{table.TableSchema.SchemaName}.{table.TableName}";
-
-                var columns = table.Columns is null
-                    ? ""
-                    : string.Join(", ", table.Columns.Values.OrderBy(c => c.ColumnOrdinal).Select(c => c.ColumnName));
-
-                var line = $"{name}: {columns}";
-                if (sb.Length + line.Length > MaxResultChars)
-                {
-                    sb.AppendLine("…");
-                    sb.AppendLine("Схема сокращена: уточни фильтр tablesFilter (например, имя нужной таблицы), чтобы увидеть остальные таблицы.");
-                    break;
-                }
-
-                sb.AppendLine(line);
-                shown++;
-            }
-
-            if (shown == 0)
-                return $"В базе '{slug}' не найдено таблиц по фильтру '{tablesFilter}'.";
-
-            return sb.ToString();
-        }
-        catch (Exception ex)
-        {
-            return $"Не удалось получить структуру базы '{slug}': {ex.GetBaseException().Message}";
-        }
-    }
-
     [Description("Выполнить один SQL-запрос к базе. Для SELECT возвращает строки как JSON (не более 50 строк — добавляй LIMIT), " +
                  "для INSERT/UPDATE/DELETE/DDL — число затронутых строк. " +
                  "Перед записывающим запросом (INSERT/UPDATE/DELETE/DROP/TRUNCATE/ALTER) обязательно покажи точный SQL пользователю " +

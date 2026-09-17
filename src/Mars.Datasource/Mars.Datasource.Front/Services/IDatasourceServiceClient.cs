@@ -13,18 +13,12 @@ public interface IDatasourceServiceClient
 
     /// <summary>Подключённые провайдеры источников (список движков для формы настроек).</summary>
     Task<IReadOnlyCollection<DatasourceDriverResponse>> Drivers();
-    Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName);
-    Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
-    Task<QDatabaseStructureResponse> DatabaseStructure(string slug);
 
     /// <summary>Каталог объектов источника — дерево для любого типа источника.</summary>
     Task<DatasourceCatalog> Catalog(string slug);
 
     /// <summary>Перечитать каталог источника, минуя серверный кэш.</summary>
     Task<DatasourceCatalog> RefreshCatalog(string slug);
-
-    /// <summary>Перечитать структуру базы, минуя серверный кэш.</summary>
-    Task<QDatabaseStructureResponse> RefreshStructure(string slug);
 
     /// <summary>Определение вьюхи; пустой `Sql` — движок текст не отдал.</summary>
     Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name);

@@ -9,7 +9,7 @@
             <tr>
                 @foreach (var column in Result.Columns)
                 {
-                    var headerKind = QColumnMapping.Kind(column.DataTypeName);
+                    var headerKind = FieldTypeMapping.Kind(column.DataTypeName);
 
                     <th>
                         @if (column.IsKey)
@@ -17,7 +17,7 @@
                             <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
                         }
                         <span class="text-nowrap">@column.Name</span>
-                        <span class="@(KindClass(headerKind) ?? "ds-type-text") fz14px ms-1">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
+                        <span class="@(KindClass(headerKind) ?? "ds-type-text") fz14px ms-1">@FieldTypeMapping.ShortTypeName(column.DataTypeName)</span>
                     </th>
                 }
             </tr>
@@ -36,10 +36,10 @@
                         var value = changed ? pending : i < row.Length ? row[i] : null;
                         var editing = IsEditing(cell);
                         var mid = MidParts(i, value);
-                        var kind = QColumnMapping.Kind(column.DataTypeName);
+                        var kind = FieldTypeMapping.Kind(column.DataTypeName);
                         var cellClass = changed ? "ds-cell-changed" : "";
                         var valueClass = KindClass(kind) ?? "";
-                        var display = kind == QColumnKind.DateTime ? QueryResultMapping.DisplayDateTime(value) : value;
+                        var display = kind == FieldKind.DateTime ? QueryResultMapping.DisplayDateTime(value) : value;
 
                         <td class="@cellClass @valueClass"
                             @ondblclick="@(() => OnStartEdit.InvokeAsync(new CellEditRequest(rowIndex, column.Name, value, kind)))">

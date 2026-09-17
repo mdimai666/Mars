@@ -1,7 +1,7 @@
 namespace Mars.Datasource.Abstractions.Models;
 
-/// <summary>Категория типа колонки: типы одной категории в UI показываются одним цветом.</summary>
-public enum QColumnKind
+/// <summary>Категория типа поля: типы одной категории в UI показываются одним цветом.</summary>
+public enum FieldKind
 {
     /// <summary>Строки — сюда же попадают незнакомые провайдерские типы (значение у нас всё равно строка).</summary>
     Text,
@@ -12,8 +12,11 @@ public enum QColumnKind
     Guid,
 }
 
-/// <summary>Преобразование имени типа провайдера в CLR-тип и признак JSON.</summary>
-public static class QColumnMapping
+/// <summary>
+/// Преобразование имени типа провайдера в CLR-тип и признак JSON. Работает для любого типа источника
+/// (колонка таблицы, поле JSON, столбец файла) — это общий словарь, а не часть SQL-мира.
+/// </summary>
+public static class FieldTypeMapping
 {
     public static bool IsJson(string? dataTypeName)
         => dataTypeName?.ToLowerInvariant() is "json" or "jsonb";
@@ -50,28 +53,28 @@ public static class QColumnMapping
     /// Категория типа по имени типа провайдера: это визуальная группа, а не точная типизация —
     /// у незнакомого типа ClrType отдаёт string, поэтому такой тип показывается как строковый.
     /// </summary>
-    public static QColumnKind Kind(string? dataTypeName)
+    public static FieldKind Kind(string? dataTypeName)
     {
-        if (IsJson(dataTypeName)) return QColumnKind.Json;
+        if (IsJson(dataTypeName)) return FieldKind.Json;
 
         var type = ClrType(dataTypeName);
 
-        if (type == typeof(string) || type == typeof(byte[])) return QColumnKind.Text;
-        if (type == typeof(Guid)) return QColumnKind.Guid;
-        if (type == typeof(bool)) return QColumnKind.Boolean;
+        if (type == typeof(string) || type == typeof(byte[])) return FieldKind.Text;
+        if (type == typeof(Guid)) return FieldKind.Guid;
+        if (type == typeof(bool)) return FieldKind.Boolean;
 
         if (type == typeof(DateTime) || type == typeof(DateTimeOffset) || type == typeof(DateOnly) || type == typeof(TimeOnly))
         {
-            return QColumnKind.DateTime;
+            return FieldKind.DateTime;
         }
 
         if (type == typeof(short) || type == typeof(int) || type == typeof(long)
             || type == typeof(decimal) || type == typeof(float) || type == typeof(double))
         {
-            return QColumnKind.Number;
+            return FieldKind.Number;
         }
 
-        return QColumnKind.Text;
+        return FieldKind.Text;
     }
 
     public static Type ClrType(string? dataTypeName)

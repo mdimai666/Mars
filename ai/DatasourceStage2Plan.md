@@ -344,6 +344,48 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 Правило размера: компонент целиком (`.razor` + `.razor.cs`) — не больше ~400–500 строк, каждый
 новый файл после разреза — ориентировочно ≤250 строк.
 
+**Статус 2026-09-18: E1–E5 сделаны; E7 закрыт частично; E6 не делали.**
+Фактическая раскладка (все компоненты ≤500 строк, было 1016+327 / 432 / 409+118):
+`Front/QueryPage.razor(.cs)` — диспетчер по `Kind` (в `SelectDatasourceDto` добавлено поле `Kind`);
+`Front/Workspaces/QueryWorkspaceBase.cs` — общая машинерия (каталог, вкладки, редактор, запуск
+запроса с хуками `AllowsEmptyQuery`/`ConfirmRunAsync`/`AfterResult`); `Front/Workspaces/Sql/
+SqlQueryWorkspace.razor(.cs)` (142+340) — дерево схем/таблиц, browse-SQL, «всего N», вьюхи, правка
+ячеек; `Front/Workspaces/Objects/ObjectsQueryWorkspace.razor(.cs)` (149+266) — файл и REST, документ
+`.http`, форма параметров; `Front/Workspaces/WorkspaceTreeState.cs` — фильтр, свёрнутые группы,
+вычисления дерева; `Front/Workspaces/Shared/` — `DatasourceHeader`, `ObjectsTree`,
+`ObjectStructurePanel`, `OperationParametersPanel`, `ObjectsHint`; `Front/Components/ResultTable
+.razor(.cs)` — рендер строк/ячеек (правка осталась в `QueryResultGrid`); `Components/RestSourceForm`,
+`Components/FileSourceForm` + `Services/DatasourceSettingsEditor` (хелперы настроек и подписи).
+Отклонения от замысла: вместо `SqlResultGrid`/`RestResultView` — один `ResultTable` + один
+`QueryResultGrid` (правка гейтится `Tab.CanEdit`) — меньше копипасты; правила дерева уехали
+в `WorkspaceTreeState`, а не в страницы.
+
+Сделано по E7: снесены `IDatasourceService.{Columns,Tables,DatabaseStructure,RefreshStructure}`,
+эндпоинты `DatasourceController.{Columns,Tables,DatabaseStructure,RefreshStructure}`, методы клиента,
+DTO `QTableResponse`/`QTableColumnResponse`/`QTableSchemaResponse`/`QDatabaseStructureResponse`,
+`Mappings/DataSourceMapping`, кэш структуры в `DatasourceService`; `IDatasourceAIToolSchemaProviderHandler`
+вычищен от мёртвого кода; AiChat-инструмент схемы убран из `SqlToolset` и `MarsSqlTools` (глушение —
+вернуть его на каталог в конце инициативы); `QColumnMapping`/`QColumnKind` → `FieldTypeMapping`/
+`FieldKind` (единственная протечка SQL-лексики в общий мир), тест — `FieldTypeMappingTests`.
+
+**Осталось по E7:** `QueryColumn` → `DatasourceField`, `QueryResultDto.Columns` → `.Fields`,
+`DatasourceCatalogColumn` → `DatasourceCatalogField`, `QueryResultDto.DatabaseDriver` → `.SourceDriver`
+(17 файлов в `src` + `tests`: `Contracts/Models/{QueryResultDto,DatasourceCatalogColumn,
+DatasourceCatalogObject,SqlNonQueryResultActionDto,SqlQueryJsonResultActionDto}.cs`,
+`Abstractions/Models/{CatalogMapping,QueryResultMapping}.cs`, три sql-драйвера,
+`Providers.Rest/{RestDatasourceProvider,RestResponseMapping}.cs`, `Providers.File/FileDatasourceProvider.cs`,
+`Front/Components/QueryResultGrid.razor`, тесты `FileDatasourceProviderTests`, `RestDatasourceProviderTests`,
+`RestResponseMappingTests`). `IDatasourceDriver.Tables()/Columns()` оставлены сознательно — это
+внутренний интерфейс sql-мира, им пользуются тесты движков.
+
+**Не делали (E6):** диалект `SqlDialectMapping.Dialect(source?.Driver)` в SQL-странице вычисляется
+в нескольких местах; спиннеры и вывод ошибок в страницах — свои (не переведены на `SharedLoader2`/
+`ExceptionMessage`).
+
+Проверки после работы: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Datasource.Integration.Tests` —
+455/455. **UI в браузере не проверяли** (sql / file / rest: дерево, вкладки, выполнение, документ
+`.http`, форма параметров, правка ячейки) — это следующий шаг.
+
 - [ ] E1. Диспетчер `Front/QueryPage.razor(.cs)` (~120): читает опцию и `Kind`, грузит каталог,
       показывает полосу ошибки и «Повторить» при пустом каталоге, дальше отдаёт работу странице.
       Роут `/datasource/query?slug=` не меняется — точка входа остаётся одна

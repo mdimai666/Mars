@@ -1,7 +1,7 @@
 namespace Mars.Datasource.Providers.File;
 
 /// <summary>
-/// Тип колонки файла по значениям. Имена — из числа понятных <c>QColumnMapping</c>
+/// Тип колонки файла по значениям. Имена — из числа понятных <c>FieldTypeMapping</c>
 /// (bigint / double precision / boolean / timestamp / uuid / text), поэтому короткое имя типа
 /// и подсветка значений в гриде работают для файлов без отдельных правил.
 /// </summary>

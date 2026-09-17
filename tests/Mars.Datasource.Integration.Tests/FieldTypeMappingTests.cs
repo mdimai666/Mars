@@ -3,7 +3,7 @@ using Mars.Datasource.Abstractions.Models;
 
 namespace Mars.Datasource.Integration.Tests;
 
-public class QColumnMappingTests
+public class FieldTypeMappingTests
 {
     [Theory]
     [InlineData("smallint")]
@@ -15,7 +15,7 @@ public class QColumnMappingTests
     [InlineData("double precision")]
     public void Kind_NumericType_ReturnsNumber(string dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Number);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.Number);
     }
 
     [Theory]
@@ -24,7 +24,7 @@ public class QColumnMappingTests
     [InlineData("bit")]
     public void Kind_BooleanType_ReturnsBoolean(string dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Boolean);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.Boolean);
     }
 
     [Theory]
@@ -37,7 +37,7 @@ public class QColumnMappingTests
     [InlineData("datetimeoffset")]
     public void Kind_DateTimeType_ReturnsDateTime(string dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.DateTime);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.DateTime);
     }
 
     [Theory]
@@ -45,7 +45,7 @@ public class QColumnMappingTests
     [InlineData("UNIQUEIDENTIFIER")]
     public void Kind_GuidType_ReturnsGuid(string dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Guid);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.Guid);
     }
 
     [Theory]
@@ -54,7 +54,7 @@ public class QColumnMappingTests
     [InlineData("JSON")]
     public void Kind_JsonType_ReturnsJson(string dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Json);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.Json);
     }
 
     [Theory]
@@ -68,7 +68,7 @@ public class QColumnMappingTests
     [InlineData(null)]
     public void Kind_TextOrUnknownType_ReturnsText(string? dataTypeName)
     {
-        QColumnMapping.Kind(dataTypeName).Should().Be(QColumnKind.Text);
+        FieldTypeMapping.Kind(dataTypeName).Should().Be(FieldKind.Text);
     }
 
     [Theory]
@@ -86,6 +86,6 @@ public class QColumnMappingTests
     [InlineData(null, "")]
     public void ShortTypeName_ProviderTypeName_ReturnsShortName(string? dataTypeName, string expected)
     {
-        QColumnMapping.ShortTypeName(dataTypeName).Should().Be(expected);
+        FieldTypeMapping.ShortTypeName(dataTypeName).Should().Be(expected);
     }
 }

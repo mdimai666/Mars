@@ -20,21 +20,6 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DatabaseStructure_Request_Success()
-    {
-        //Arrange
-        _ = nameof(DatasourceController.DatabaseStructure);
-        _ = nameof(IDatasourceService.DatabaseStructure);
-        var client = GetWebApiClient();
-
-        //Act
-        var result = await client.Datasource().DatabaseStructure("default");
-
-        //Assert
-        result.Should().NotBeNull();
-    }
-
-    [IntegrationFact]
     public async Task Drivers_Request_Success()
     {
         //Arrange
@@ -123,34 +108,6 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task RefreshStructure_Request_Success()
-    {
-        //Arrange
-        _ = nameof(DatasourceController.RefreshStructure);
-        _ = nameof(IDatasourceService.RefreshStructure);
-        var client = GetWebApiClient();
-
-        //Act
-        var result = await client.Datasource().RefreshStructure("default");
-
-        //Assert
-        result.Tables.Should().NotBeEmpty();
-    }
-
-    [IntegrationFact]
-    public async Task DatabaseStructure_CalledTwice_ReturnsCachedInstance()
-    {
-        //Arrange
-        var first = await _datasourceService.DatabaseStructure("default");
-
-        //Act
-        var second = await _datasourceService.DatabaseStructure("default");
-
-        //Assert
-        second.Should().BeSameAs(first);
-    }
-
-    [IntegrationFact]
     public async Task Catalog_Request_Success()
     {
         //Arrange
@@ -210,22 +167,6 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Columns_Request_Success()
-    {
-        //Arrange
-        _ = nameof(DatasourceController.Columns);
-        _ = nameof(IDatasourceService.Columns);
-        var client = GetWebApiClient();
-        var tables = await _datasourceService.Tables("default");
-
-        //Act
-        var result = await client.Datasource().Columns("default", tables.First().TableName);
-
-        //Assert
-        result.Should().NotBeNull();
-    }
-
-    [IntegrationFact]
     public async Task ViewDefinition_Request_Success()
     {
         //Arrange
@@ -249,21 +190,6 @@ public class DataSourceTests : BaseWebApiClientTests
         {
             await client.Datasource().NonQuery("default", new DatasourceRequest { Query = $"DROP VIEW \"{view}\"" });
         }
-    }
-
-    [IntegrationFact]
-    public async Task Tables_Request_Success()
-    {
-        //Arrange
-        _ = nameof(DatasourceController.Tables);
-        _ = nameof(IDatasourceService.Tables);
-        var client = GetWebApiClient();
-
-        //Act
-        var result = await client.Datasource().Tables("default");
-
-        //Assert
-        result.Should().NotBeNull();
     }
 
     [IntegrationFact]

@@ -9,7 +9,7 @@ namespace Mars.Datasource.Front.Components;
 /// <summary>
 /// Просьба открыть правку ячейки: грид решает, править её инлайном или в модалке длинного значения.
 /// </summary>
-public record CellEditRequest(int RowIndex, string Column, string? Value, QColumnKind Kind);
+public record CellEditRequest(int RowIndex, string Column, string? Value, FieldKind Kind);
 
 /// <summary>
 /// Таблица результата: строки, ячейки, раскраска по типу, сжатие guid и json-значения.
@@ -61,13 +61,13 @@ public partial class ResultTable : ComponentBase
     /// Класс цвета по категории типа — для значения ячейки и для подписи типа.
     /// Строковые без класса: их большинство, и в ячейке это основной текст (цвет по умолчанию), а не подпись.
     /// </summary>
-    static string? KindClass(QColumnKind kind)
+    static string? KindClass(FieldKind kind)
         => kind switch
         {
-            QColumnKind.Number => "ds-type-number",
-            QColumnKind.Boolean => "ds-type-bool",
-            QColumnKind.DateTime => "ds-type-date",
-            QColumnKind.Json => "ds-type-json",
+            FieldKind.Number => "ds-type-number",
+            FieldKind.Boolean => "ds-type-bool",
+            FieldKind.DateTime => "ds-type-date",
+            FieldKind.Json => "ds-type-json",
             _ => null,
         };
 
@@ -100,7 +100,7 @@ public partial class ResultTable : ComponentBase
 
         for (var i = 0; i < flags.Length; i++)
         {
-            flags[i] = QColumnMapping.Kind(Result.Columns[i].DataTypeName) == QColumnKind.Guid
+            flags[i] = FieldTypeMapping.Kind(Result.Columns[i].DataTypeName) == FieldKind.Guid
                 || LooksLikeGuidColumn(i);
         }
 

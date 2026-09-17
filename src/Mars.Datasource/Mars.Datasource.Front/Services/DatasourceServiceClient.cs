@@ -27,27 +27,6 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Drivers")
                     .GetJsonAsync<IReadOnlyCollection<DatasourceDriverResponse>>();
 
-    public Task<IReadOnlyDictionary<string, QTableColumnResponse>> Columns(string slug, string tableName)
-        => _client.Request($"{_basePath}{_controllerName}", "Columns")
-                    .AppendQueryParam(new { slug, tableName })
-                    .GetJsonAsync<IReadOnlyDictionary<string, QTableColumnResponse>>();
-
-    public Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug)
-        => _client.Request($"{_basePath}{_controllerName}", "Tables")
-                    .AppendQueryParam(new { slug })
-                    .GetJsonAsync<IReadOnlyCollection<QTableSchemaResponse>>();
-
-    public Task<QDatabaseStructureResponse> DatabaseStructure(string slug)
-        => _client.Request($"{_basePath}{_controllerName}", "DatabaseStructure")
-                    .AppendQueryParam(new { slug })
-                    .GetJsonAsync<QDatabaseStructureResponse>();
-
-    public Task<QDatabaseStructureResponse> RefreshStructure(string slug)
-        => _client.Request($"{_basePath}{_controllerName}", "RefreshStructure")
-                    .AppendQueryParam(new { slug })
-                    .PostAsync()
-                    .ReceiveJson<QDatabaseStructureResponse>();
-
     public Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name)
         => _client.Request($"{_basePath}{_controllerName}", "ViewDefinition")
                     .AppendQueryParam(new { slug, schema, name })

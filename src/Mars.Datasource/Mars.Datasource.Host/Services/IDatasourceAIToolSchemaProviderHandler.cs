@@ -1,6 +1,5 @@
 using System.Text;
 using Mars.Data.Contexts;
-using Mars.Datasource.Abstractions.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Datasource.Host.Services;
@@ -12,41 +11,15 @@ public interface IDatasourceAIToolSchemaProviderHandler
 
 internal class DatasourceAIToolSchemaProviderHandler : IDatasourceAIToolSchemaProviderHandler
 {
-    private readonly IDatasourceService _datasourceService;
     private readonly MarsDbContext _marsDbContext;
 
-    public DatasourceAIToolSchemaProviderHandler(IDatasourceService datasourceService, MarsDbContext marsDbContext)
+    public DatasourceAIToolSchemaProviderHandler(MarsDbContext marsDbContext)
     {
-        _datasourceService = datasourceService;
         _marsDbContext = marsDbContext;
     }
 
     public Task<string> Handle()
     {
-        //var structure = await _datasourceService.DatabaseStructure(_datasourceService.DefaultConfig.Slug);
-
-        //var sb = new StringBuilder();
-
-        //sb.AppendLine($"Database: {structure.DatabaseName}");
-        //sb.AppendLine();
-
-        //foreach (var table in structure.Tables)
-        //{
-        //    var schema = table.TableSchema.SchemaName;
-        //    var tableName = table.TableName;
-        //    sb.AppendLine($"Table {schema}.{tableName} (");
-
-        //    var columns = table.Columns.Values
-        //        .OrderBy(c => c.ColumnOrdinal)
-        //        .Select(c => $"  {c.ColumnName} {c.DataTypeName}{(c.IsKey == true ? " PRIMARY KEY" : "")}");
-
-        //    sb.AppendLine(string.Join(",\n", columns));
-        //    sb.AppendLine(");");
-        //    sb.AppendLine();
-        //}
-
-        //return sb.ToString();
-
         var model = _marsDbContext.Model;
         var sb = new StringBuilder();
 

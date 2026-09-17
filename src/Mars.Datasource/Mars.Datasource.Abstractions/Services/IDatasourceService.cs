@@ -30,6 +30,12 @@ public interface IDatasourceService
     /// <summary>Перечитать структуру базы, минуя кэш.</summary>
     public Task<QDatabaseStructure> RefreshStructure(string slug);
 
+    /// <summary>Документ запросов источника (rest): `.http` с операциями пользователя; пусто — документа нет.</summary>
+    public Task<string> RequestsDocument(string slug);
+
+    /// <summary>Сохранить документ запросов источника; дерево объектов после этого покажет новые запросы.</summary>
+    public Task<UserActionResult> SaveRequestsDocument(string slug, string content);
+
     /// <summary>Выполнить запрос с возвратом данных.</summary>
     public Task<QueryResultDto> Query(string slug, DatasourceRequest request, CancellationToken cancellationToken = default);
 

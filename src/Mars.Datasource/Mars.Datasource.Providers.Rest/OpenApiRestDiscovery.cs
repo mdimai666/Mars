@@ -49,6 +49,9 @@ public class OpenApiRestDiscovery : IRestCatalogDiscovery
     {
         Dictionary<string, DatasourceCatalogGroup> groups = new(StringComparer.OrdinalIgnoreCase);
 
+        // У API, описанного в подкаталоге (server = https://api.example.org/v1), пути заданы от корня сайта
+        var prefix = ServerPrefix(document);
+
         foreach (var (path, item) in document.Paths ?? new OpenApiPaths())
         {
             foreach (var (method, operation) in item.Operations)
@@ -61,7 +64,7 @@ public class OpenApiRestDiscovery : IRestCatalogDiscovery
                     groups[name] = group;
                 }
 
-                group.Objects.Add(RestCatalogOperation.Operation(method.Method, path, Parameters(operation)));
+                group.Objects.Add(RestCatalogOperation.Operation(method.Method, prefix + path, Parameters(operation)));
             }
         }
 
@@ -73,6 +76,17 @@ public class OpenApiRestDiscovery : IRestCatalogDiscovery
                 Objects = group.Objects.OrderBy(obj => obj.Id, StringComparer.OrdinalIgnoreCase).ToList(),
             })
             .ToList();
+    }
+
+    /// <summary>
+    /// Базовый путь первого server документа: пути операций в OpenAPI заданы от корня этого адреса,
+    /// а не от адреса сайта (<c>https://api.example.org/v1</c> → префикс <c>/v1</c>).
+    /// </summary>
+    static string ServerPrefix(OpenApiDocument document)
+    {
+        var url = document.Servers?.FirstOrDefault()?.Url;
+
+        return url is { Length: > 0 } ? RestRoutePrefix.FromAddress(url) : "";
     }
 
     static string GroupName(string path, OpenApiOperation operation)
@@ -97,7 +111,8 @@ public class OpenApiRestDiscovery : IRestCatalogDiscovery
                 Required = parameter.Required,
                 Default = Text(parameter.Schema?.Default),
                 Enum = Enum(parameter.Schema),
-                Description = parameter.Description,
+                // Описание бывает и у параметра, и у его схемы — в swagger чаще у схемы
+                Description = parameter.Description ?? parameter.Schema?.Description,
             })
             .ToList();
 

@@ -65,6 +65,12 @@ else
                         <button class="btn btn-sm btn-light" title="Обновить" disabled="@Busy" @onclick="RefreshCatalogAsync">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
+                        @if (IsRest)
+                        {
+                            <button class="btn btn-sm btn-light text-nowrap" title="Документ запросов: весь requests.http" disabled="@Busy" @onclick="OpenDocumentAsync">
+                                <i class="bi bi-file-earmark-text"></i> .http
+                            </button>
+                        }
                     </div>
                     <div class="flex-fill overflow-scroll">
                         @if (Busy)
@@ -135,8 +141,23 @@ else
                     <div class="flex-shrink-0 hstack gap-2 px-2 py-2">
                         <FluentButton Appearance="Appearance.Accent" Disabled="@(activeTab?.Loading == true)"
                                       OnClick="RunActiveTabAsync">
-                            Выполнить
+                            @(activeTab?.IsDocument == true ? "Выполнить блок" : "Выполнить")
                         </FluentButton>
+                        @if (activeTab?.IsDocument == true)
+                        {
+                            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="SaveDocumentAsync"
+                                          Title="Записать документ на сервер (Ctrl+S)">
+                                Сохранить
+                            </FluentButton>
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="DuplicateDocumentBlockAsync"
+                                          Title="Скопировать блок под курсором">
+                                дубль
+                            </FluentButton>
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="RemoveDocumentBlockAsync"
+                                          Title="Убрать блок под курсором из документа">
+                                удалить блок
+                            </FluentButton>
+                        }
                         @if (activeTab?.CanLoadMore == true)
                         {
                             <FluentButton Appearance="Appearance.Neutral" Disabled="@(activeTab?.Loading == true)"
@@ -227,6 +248,7 @@ else
 
                     <div class="ds-editor px-2">
                         <CodeEditor2 @ref="_editor" @key="EditorLang" Lang=@EditorLang Value="" OnInit="OnEditorInitAsync"
+                                     OnSave="OnEditorSaveAsync"
                                      ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
                     </div>
 
@@ -255,11 +277,15 @@ else
                         else if (IsRest)
                         {
                             <div class="text-secondary p-2">
-                                <div>Выберите операцию слева — в редакторе появится заготовка запроса.</div>
+                                <div>
+                                    Кнопка «.http» открывает документ запросов: все запросы лежат в нём плашмя,
+                                    а дерево слева — переход к нужному. «Выполнить блок» выполняет запрос под курсором.
+                                </div>
                                 <div class="fz14px mt-1">
-                                    Синтаксис <code>.http</code>: <code>GET {{baseUrl}}/wp/v2/posts?per_page=10</code>,
+                                    Синтаксис <code>.http</code>: <code>GET {{baseUrl}}/wp-json/wp/v2/posts?per_page=10</code>,
                                     заголовки через строку, тело после пустой строки, разделитель запросов <code>###</code>,
                                     имя запроса <code># @@name posts</code>, переменные <code>@@var = 1</code> и <code>{{var}}</code>.
+                                    Ctrl+S сохраняет документ на сервер.
                                 </div>
                             </div>
                         }

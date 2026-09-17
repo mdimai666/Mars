@@ -91,6 +91,38 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task Requests_Request_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.Requests);
+        _ = nameof(IDatasourceService.RequestsDocument);
+        var client = GetWebApiClient();
+
+        //Act
+        var result = await client.Datasource().Requests("default");
+
+        //Assert
+        result.Should().NotBeNull();
+    }
+
+    [IntegrationFact]
+    public async Task Requests_SaveAndRead_Success()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.SaveRequests);
+        _ = nameof(IDatasourceService.SaveRequestsDocument);
+        var client = GetWebApiClient();
+        var content = "###\n# @name smoke\nGET {{baseUrl}}/wp-json/wp/v2/posts\n";
+
+        //Act
+        var saved = await client.Datasource().SaveRequests("default", content);
+
+        //Assert
+        saved.Ok.Should().BeTrue(saved.Message);
+        (await client.Datasource().Requests("default")).Should().Be(content);
+    }
+
+    [IntegrationFact]
     public async Task RefreshStructure_Request_Success()
     {
         //Arrange

@@ -32,7 +32,7 @@ public static partial class HttpDocumentParser
 
             if (trimmed.StartsWith(Separator, StringComparison.Ordinal))
             {
-                Add(document, block);
+                Add(document, block, index);
 
                 block = new Block
                 {
@@ -47,6 +47,7 @@ public static partial class HttpDocumentParser
             if (block?.RequestLine is not null)
             {
                 block.Lines.Add(line);
+                block.LastLine = number;
                 continue;
             }
 
@@ -75,9 +76,10 @@ public static partial class HttpDocumentParser
             block.RequestLine = number;
             block.Request = trimmed;
             block.RawRequest = line;
+            block.LastLine = number;
         }
 
-        Add(document, block);
+        Add(document, block, lines.Length);
 
         return document;
     }
@@ -110,6 +112,7 @@ public static partial class HttpDocumentParser
             Body = request.Body is null ? null : Expand(request.Body, variables, 0),
             Variables = request.Variables,
             Line = request.Line,
+            EndLine = request.EndLine,
             Raw = request.Raw,
         };
     }
@@ -146,7 +149,7 @@ public static partial class HttpDocumentParser
         _ => throw new HttpDocumentException($"Неизвестная системная переменная \"{name}\""),
     };
 
-    static void Add(HttpDocument document, Block? block)
+    static void Add(HttpDocument document, Block? block, int endLine)
     {
         if (block is null) return;
 
@@ -192,6 +195,8 @@ public static partial class HttpDocumentParser
             Body = string.IsNullOrWhiteSpace(body) ? null : body,
             Variables = block.Variables,
             Line = block.Line,
+            // Границы блока нужны редактору: дерево переходит к запросу, «выполнить» берёт блок под курсором
+            EndLine = Math.Min(Math.Max(block.Line, block.LastLine), Math.Max(endLine, block.Line)),
             Raw = string.Join('\n', new[] { block.RawRequest }.Concat(block.Lines)).TrimEnd(),
         });
     }
@@ -264,6 +269,10 @@ public static partial class HttpDocumentParser
     {
         public string Label { get; init; } = "";
         public int Line { get; init; }
+
+        /// <summary>Последняя строка блока — по ней редактор понимает его границы.</summary>
+        public int LastLine { get; set; }
+
         public string? Name { get; set; }
         public string? Request { get; set; }
         public string RawRequest { get; set; } = "";

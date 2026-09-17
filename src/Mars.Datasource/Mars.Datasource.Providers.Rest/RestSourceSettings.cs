@@ -40,20 +40,36 @@ public class RestSourceSettings
         };
     }
 
-    /// <summary>Складывает адрес API и путь операции; абсолютный путь возвращает как есть.</summary>
+    /// <summary>
+    /// Складывает адрес API и путь операции, не удваивая общий префикс:
+    /// <c>http://site/wp-json</c> и <c>/wp-json/wp/v2/posts</c> дают <c>http://site/wp-json/wp/v2/posts</c>.
+    /// </summary>
     public static string Combine(string baseUrl, string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return baseUrl;
-        if (Uri.TryCreate(path, UriKind.Absolute, out _)) return path;
-        if (string.IsNullOrWhiteSpace(baseUrl)) return path;
 
-        // Адресом бывает переменная документа ({{baseUrl}}) — её как URI не собрать, просто склеиваем.
-        if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out _))
+        var root = baseUrl.TrimEnd('/');
+
+        // Абсолютный путь означает, что адрес источника уже подставлен в него ({{baseUrl}} в документе).
+        if (Uri.TryCreate(path, UriKind.Absolute, out _))
         {
-            return baseUrl.TrimEnd('/') + "/" + path.TrimStart('/');
+            if (root.Length == 0 || !path.StartsWith(root + "/", StringComparison.OrdinalIgnoreCase)) return path;
+
+            return root + "/" + TrimSharedSegment(root, path[(root.Length + 1)..]);
         }
 
-        return new Uri(new Uri(baseUrl.TrimEnd('/') + "/"), path.TrimStart('/')).OriginalString;
+        return root.Length == 0 ? path : root + "/" + TrimSharedSegment(root, path.TrimStart('/'));
+    }
+
+    /// <summary>Убирает из пути первый сегмент, если адрес источника заканчивается на такой же.</summary>
+    static string TrimSharedSegment(string root, string relative)
+    {
+        var separator = relative.IndexOf('/');
+        var first = separator < 0 ? relative : relative[..separator];
+
+        if (first.Length == 0 || !root.EndsWith("/" + first, StringComparison.OrdinalIgnoreCase)) return relative;
+
+        return separator < 0 ? "" : relative[(separator + 1)..];
     }
 
     /// <summary>Пустой способ сбора каталога — WordPress: это самый частый rest-источник Mars.</summary>

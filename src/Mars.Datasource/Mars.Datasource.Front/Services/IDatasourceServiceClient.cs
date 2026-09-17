@@ -28,6 +28,12 @@ public interface IDatasourceServiceClient
 
     /// <summary>Определение вьюхи; пустой `Sql` — движок текст не отдал.</summary>
     Task<ViewDefinitionResponse> ViewDefinition(string slug, string? schema, string name);
+
+    /// <summary>Документ запросов источника (rest): `.http` с запросами пользователя.</summary>
+    Task<string> Requests(string slug);
+
+    /// <summary>Сохранить документ запросов источника.</summary>
+    Task<UserActionResult> SaveRequests(string slug, string content);
     Task<QueryResultDto> Query(string slug, DatasourceRequest request);
     Task<SqlNonQueryResultActionDto> NonQuery(string slug, DatasourceRequest request);
     Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);

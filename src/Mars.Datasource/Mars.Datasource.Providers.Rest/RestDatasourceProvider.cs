@@ -183,6 +183,9 @@ public class RestDatasourceProvider : IDatasourceDiscoverableProvider
                     ObjectType = DatasourceObjectType.Operation,
                     DefaultLanguage = DatasourceLanguage.Http,
                     DefaultQuery = request.Raw,
+                    // Границы блока: дерево переходит к запросу в редакторе, не переписывая документ
+                    Line = request.Line,
+                    EndLine = request.EndLine,
                 });
             }
         }

@@ -21,6 +21,9 @@ internal class DatasourceService : IDatasourceService
     /// <summary>Провайдеры по типу источника и драйверу: ядро модуля их не создаёт, их регистрирует корень композиции.</summary>
     readonly IDatasourceProviderRegistry _registry;
 
+    /// <summary>Служебные тела источника (документ запросов) в data-корне.</summary>
+    readonly IDatasourceStore _store;
+
     string _connectionString;
     DatasourceConfig _defaultConfig;
     DatasourceOption? _optionValue;
@@ -49,7 +52,7 @@ internal class DatasourceService : IDatasourceService
     }
 
     public DatasourceService(IConfiguration configuration, IOptionService optionService, IDatabaseBackupService databaseBackupService,
-        IDatasourceProviderRegistry registry)
+        IDatasourceProviderRegistry registry, IDatasourceStore store)
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
@@ -63,6 +66,7 @@ internal class DatasourceService : IDatasourceService
         _optionService = optionService;
         _databaseBackupService = databaseBackupService;
         _registry = registry;
+        _store = store;
     }
 
     public IReadOnlyCollection<DatasourceDriverResponse> Drivers() => _registry.Describe();
@@ -226,6 +230,25 @@ internal class DatasourceService : IDatasourceService
         _catalogCache[slug] = (catalog, DateTime.UtcNow);
 
         return catalog;
+    }
+
+    /// <summary>Документ запросов источника: `.http` с запросами пользователя (один документ на источник).</summary>
+    public async Task<string> RequestsDocument(string slug)
+        => await _store.ReadTextAsync(GetConfig(slug).Slug, DatasourceSettings.RequestsDocument) ?? "";
+
+    /// <summary>
+    /// Сохранить документ запросов. Дерево строится из документа, поэтому кэш каталога сбрасываем —
+    /// следующий запрос дерева покажет изменённые запросы.
+    /// </summary>
+    public async Task<UserActionResult> SaveRequestsDocument(string slug, string content)
+    {
+        var config = GetConfig(slug);
+
+        await _store.WriteTextAsync(config.Slug, DatasourceSettings.RequestsDocument, content ?? "");
+
+        _catalogCache.TryRemove(slug, out _);
+
+        return UserActionResult.Success($"Документ запросов сохранён: {config.Title}");
     }
 
     public async Task<QueryResultDto> Query(string slug, DatasourceRequest request, CancellationToken cancellationToken = default)

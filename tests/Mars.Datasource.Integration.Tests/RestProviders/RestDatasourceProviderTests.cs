@@ -29,7 +29,8 @@ public class RestDatasourceProviderTests
         catalog.Kind.Should().Be(DatasourceKind.Rest);
         catalog.SourceName.Should().Be("WordPress");
         catalog.Groups.Select(group => group.Name).Should().Equal("wp/v2");
-        catalog.Groups[0].Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/posts");
+        // Пути операций идут от корня REST API: запрос уходит на /wp-json/wp/v2/posts, а не на /wp/v2/posts
+        catalog.Groups[0].Objects.Select(obj => obj.Id).Should().Equal("GET /wp-json/wp/v2/posts");
 
         source.Storage.FileExists($"datasource/{RestSource.Slug}/{DatasourceSettings.CatalogDocument}").Should().BeTrue();
     }
@@ -46,7 +47,7 @@ public class RestDatasourceProviderTests
         var catalog = await source.NewProvider().Catalog();
 
         source.Discovery.Calls.Should().Be(1);
-        catalog.Groups[0].Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/posts");
+        catalog.Groups[0].Objects.Select(obj => obj.Id).Should().Equal("GET /wp-json/wp/v2/posts");
     }
 
     [Fact]
@@ -83,6 +84,37 @@ public class RestDatasourceProviderTests
         operation.ObjectType.Should().Be(DatasourceObjectType.Operation);
         operation.DefaultLanguage.Should().Be(DatasourceLanguage.Http);
         operation.DefaultQuery.Should().Be("GET {{baseUrl}}/wp/v2/posts?per_page={{perPage}}");
+    }
+
+    [Fact]
+    public async Task Catalog_DocumentRequestCarriesBlockLines()
+    {
+        // Границы блока нужны редактору: дерево переходит к запросу, «выполнить» берёт блок под курсором
+        var source = new RestSource(document: """
+            ###
+            # @name posts
+            GET /wp/v2/posts
+            """);
+
+        var catalog = await source.Provider.Catalog();
+
+        var operation = catalog.Groups.Single(group => group.Name == RestDatasourceProvider.DocumentGroupName).Objects.Single();
+
+        operation.Line.Should().Be(1);
+        operation.EndLine.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task Catalog_DiscoveryOperationHasNoBlockLines()
+    {
+        var source = new RestSource();
+
+        var catalog = await source.Provider.Catalog();
+
+        var operation = catalog.Groups.Single(group => group.Name == "wp/v2").Objects.Single();
+
+        operation.Line.Should().Be(0);
+        operation.EndLine.Should().Be(0);
     }
 
     [Fact]
@@ -274,6 +306,43 @@ public class RestDatasourceProviderTests
 
         var request = source.Http.Requests.Single();
         request.Url.Should().Be("https://example.org/wp/v2/posts?per_page=10");
+    }
+
+    [Fact]
+    public async Task Query_RunsDraftRequestOfCatalogOperation()
+    {
+        // Заготовка операции из каталога должна работать как есть: с корнем REST API в пути
+        var source = new RestSource();
+        source.Http.Respond = _ => RestSource.Ok(PostsJson);
+
+        var catalog = await source.Provider.Catalog();
+        var posts = catalog.Groups.SelectMany(group => group.Objects).Single(obj => obj.Id == "GET /wp-json/wp/v2/posts");
+
+        var result = await source.Provider.Query(new DatasourceRequest
+        {
+            Language = DatasourceLanguage.Http,
+            ObjectId = posts.Id,
+            Query = posts.DefaultQuery!,
+        });
+
+        source.Http.Requests.Single().Url.Should().Be("https://example.org/wp-json/wp/v2/posts");
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Query_BaseUrlWithSharedPrefixIsNotDoubled()
+    {
+        var source = new RestSource(baseUrl: "https://example.org/wp-json");
+        source.Http.Respond = _ => RestSource.Ok("[]");
+
+        await source.Provider.Query(new DatasourceRequest
+        {
+            Language = DatasourceLanguage.Http,
+            Query = "GET {{baseUrl}}/wp-json/wp/v2/posts",
+        });
+
+        source.Http.Requests.Single().Url.Should().Be("https://example.org/wp-json/wp/v2/posts");
     }
 
     [Fact]
@@ -484,6 +553,7 @@ class FakeRestDiscovery : IRestCatalogDiscovery
 {
     const string Index = """
         {
+          "namespace": "wp/v2",
           "routes": {
             "/wp/v2/posts": {
               "namespace": "wp/v2",
@@ -498,7 +568,7 @@ class FakeRestDiscovery : IRestCatalogDiscovery
     public int Calls { get; private set; }
 
     public Func<string, Task<IReadOnlyList<DatasourceCatalogGroup>>> Handler { get; set; }
-        = _ => Task.FromResult(WordPressRestDiscovery.Build(Index));
+        = address => Task.FromResult(WordPressRestDiscovery.Build(Index, address));
 
     public Task<IReadOnlyList<DatasourceCatalogGroup>> DiscoverAsync(HttpClient client, string address,
         CancellationToken cancellationToken = default)

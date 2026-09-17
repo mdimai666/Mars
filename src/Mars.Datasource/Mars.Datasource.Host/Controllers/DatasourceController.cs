@@ -68,6 +68,20 @@ public class DatasourceController : ControllerBase
         return await ds.RefreshCatalog(slug);
     }
 
+    /// <summary>Документ запросов источника (rest): `.http`, который правится прямо в рабочей области.</summary>
+    [HttpGet]
+    public async Task<RequestsDocumentDto> Requests([DefaultValue("default")] string slug)
+    {
+        return new RequestsDocumentDto { Content = await ds.RequestsDocument(slug) };
+    }
+
+    /// <summary>Сохранить документ запросов источника.</summary>
+    [HttpPost]
+    public Task<UserActionResult> SaveRequests([FromQuery] string slug, [FromBody] RequestsDocumentDto document)
+    {
+        return ds.SaveRequestsDocument(slug, document.Content);
+    }
+
     [HttpGet]
     public async Task<ViewDefinitionResponse> ViewDefinition([DefaultValue("default")] string slug, string? schema, string name)
     {

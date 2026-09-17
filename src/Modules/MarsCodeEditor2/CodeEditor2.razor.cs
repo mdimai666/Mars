@@ -167,6 +167,43 @@ public partial class CodeEditor2 : IDisposable
         await js.Editor_setModelLanguage(editor1.Id, language);
     }
 
+    /// <summary>
+    /// Строка, где стоит курсор (1-based); до создания JS-редактора — первая.
+    /// Нужна, когда «выполнить» относится к блоку под курсором, а не ко всему тексту.
+    /// </summary>
+    public async Task<int> GetCursorLineAsync()
+    {
+        if (!editorCreated) return 1;
+
+        var position = await editor1.GetPosition();
+
+        return position is { LineNumber: > 0 } ? position.LineNumber : 1;
+    }
+
+    /// <summary>Поставить курсор на строку, показать её и выделить блок: переход к запросу в документе.</summary>
+    public async Task RevealLinesAsync(int startLine, int endLine = 0)
+    {
+        if (!editorCreated) return;
+
+        var line = Math.Max(1, startLine);
+
+        await editor1.SetPosition(new Position { LineNumber = line, Column = 1 }, "mars-editor");
+        await editor1.RevealLineInCenter(line);
+
+        if (endLine >= line)
+        {
+            await editor1.SetSelection(new BlazorMonaco.Range
+            {
+                StartLineNumber = line,
+                StartColumn = 1,
+                EndLineNumber = endLine,
+                EndColumn = 1,
+            }, "mars-editor");
+        }
+
+        await editor1.Focus();
+    }
+
     public void Dispose()
     {
         editor1?.Dispose();

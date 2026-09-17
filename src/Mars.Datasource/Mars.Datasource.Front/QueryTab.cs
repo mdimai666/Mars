@@ -17,6 +17,12 @@ public class QueryTab
     /// <summary>Открытый объект каталога (просмотр данных).</summary>
     public DatasourceCatalogObject? Object { get; set; }
 
+    /// <summary>
+    /// Вкладка документа запросов: в ней лежит весь <c>requests.http</c> источника, а не одна операция.
+    /// Дерево для такого источника только переходит к нужному блоку, «выполнить» берёт блок под курсором.
+    /// </summary>
+    public bool IsDocument { get; set; }
+
     /// <summary>Группа открытого объекта: схема у sql, пусто у файла.</summary>
     public string Schema { get; set; } = "";
 

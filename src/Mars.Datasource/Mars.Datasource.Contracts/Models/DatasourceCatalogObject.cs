@@ -19,6 +19,15 @@ public class DatasourceCatalogObject
 
     /// <summary>Текст, который подставляется в редактор при открытии объекта.</summary>
     public string? DefaultQuery { get; set; }
+
+    /// <summary>
+    /// Строки документа запросов, где лежит этот объект (rest): дерево переходит к блоку,
+    /// «выполнить» берёт блок под курсором. 0 — объекта в документе нет.
+    /// </summary>
+    public int Line { get; set; }
+
+    /// <summary>Последняя строка блока в документе; 0 — объекта в документе нет.</summary>
+    public int EndLine { get; set; }
 }
 
 public static class DatasourceObjectType

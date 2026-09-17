@@ -50,3 +50,41 @@ public static partial class RestCatalogOperation
     [GeneratedRegex(@"\{(\w+)\}")]
     private static partial Regex PathTemplate();
 }
+
+/// <summary>
+/// Общий префикс путей операций. Описание API задаёт пути не от адреса сайта, а от своего корня:
+/// индекс WordPress по адресу <c>/wp-json/wp/v2</c> отдаёт маршруты вида <c>/wp/v2/posts</c>,
+/// то есть к ним нужен префикс <c>/wp-json</c>, иначе запрос уходит в никуда (404).
+/// </summary>
+public static class RestRoutePrefix
+{
+    /// <summary>
+    /// Префикс из адреса описания API: от адреса индекса отрезается путь его namespace
+    /// (<c>/wp-json/wp/v2</c> + <c>wp/v2</c> → <c>/wp-json</c>; адрес <c>/wp-json</c> остаётся собой).
+    /// </summary>
+    public static string FromAddress(string? address, string? namespaceName = null)
+    {
+        var path = PathOf(address);
+
+        if (path.Length == 0) return "";
+
+        if (!string.IsNullOrWhiteSpace(namespaceName))
+        {
+            var suffix = "/" + namespaceName.Trim('/');
+
+            if (path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) return path[..^suffix.Length];
+        }
+
+        return path;
+    }
+
+    /// <summary>Путь адреса без хвостового слэша; адрес бывает и относительным (server в OpenAPI).</summary>
+    static string PathOf(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address)) return "";
+
+        var path = (Uri.TryCreate(address, UriKind.Absolute, out var uri) ? uri.AbsolutePath : address).TrimEnd('/');
+
+        return path == "/" ? "" : path;
+    }
+}

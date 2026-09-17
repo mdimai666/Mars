@@ -37,8 +37,11 @@ public class HttpDocumentRequest
     /// <summary>Переменные, объявленные внутри блока запроса.</summary>
     public Dictionary<string, string> Variables { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Номер строки запроса в документе — для понятных ошибок.</summary>
+    /// <summary>Первая строка блока в документе (разделитель <c>###</c> или первая значимая строка).</summary>
     public int Line { get; init; }
+
+    /// <summary>Последняя строка блока — по <see cref="Line"/> и ей редактор выделяет запрос целиком.</summary>
+    public int EndLine { get; init; }
 
     /// <summary>Текст блока запроса как он записан в документе — заготовка для редактора.</summary>
     public string Raw { get; init; } = "";

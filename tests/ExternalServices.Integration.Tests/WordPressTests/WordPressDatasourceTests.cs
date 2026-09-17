@@ -58,14 +58,29 @@ public class WordPressDatasourceTests : IClassFixture<WordPressFixture>
 
         var operations = catalog.Groups.SelectMany(group => group.Objects).ToList();
 
-        var posts = operations.Single(operation => operation.Id == "GET /wp/v2/posts");
+        // Маршруты индекса идут от корня REST API — в каталоге путь полный
+        var posts = operations.Single(operation => operation.Id == "GET /wp-json/wp/v2/posts");
         posts.ObjectType.Should().Be(DatasourceObjectType.Operation);
         posts.DefaultLanguage.Should().Be(DatasourceLanguage.Http);
-        posts.DefaultQuery.Should().Be("GET {{baseUrl}}/wp/v2/posts");
+        posts.DefaultQuery.Should().Be("GET {{baseUrl}}/wp-json/wp/v2/posts");
         posts.Parameters.Select(parameter => parameter.Name).Should().Contain("per_page");
 
-        var post = operations.Single(operation => operation.Id == "GET /wp/v2/posts/{id}");
+        var post = operations.Single(operation => operation.Id == "GET /wp-json/wp/v2/posts/{id}");
         post.Parameters.Should().Contain(parameter => parameter.Name == "id" && parameter.In == DatasourceParameterIn.Path);
+    }
+
+    [IntegrationFact(Skip = WordPressPerformanceTests.SkipTest)]
+    public async Task Rest_DraftRequestOfCatalogOperationWorks()
+    {
+        // Заготовка из дерева должна работать как есть: без корня REST API запрос уходит в 404
+        var provider = Provider();
+        var catalog = await provider.Discover();
+        var posts = catalog.Groups.SelectMany(group => group.Objects).Single(obj => obj.Id == "GET /wp-json/wp/v2/posts");
+
+        var result = await provider.Query(Request(posts.DefaultQuery! + "?per_page=2&_fields=id,slug"));
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(2);
     }
 
     [IntegrationFact(Skip = WordPressPerformanceTests.SkipTest)]

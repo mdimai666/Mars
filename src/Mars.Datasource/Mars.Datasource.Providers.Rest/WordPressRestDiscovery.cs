@@ -14,13 +14,23 @@ public partial class WordPressRestDiscovery : IRestCatalogDiscovery
 
     public async Task<IReadOnlyList<DatasourceCatalogGroup>> DiscoverAsync(HttpClient client, string address,
         CancellationToken cancellationToken = default)
-        => Build(await RestDiscoveryHttp.GetStringAsync(client, address, "индекс REST API WordPress", cancellationToken));
+        => Build(await RestDiscoveryHttp.GetStringAsync(client, address, "индекс REST API WordPress", cancellationToken), address);
 
-    /// <summary>Группы операций из индекса: группа — пространство имён (<c>wp/v2</c>), объект — <c>METHOD path</c>.</summary>
-    public static IReadOnlyList<DatasourceCatalogGroup> Build(string json)
+    /// <summary>
+    /// Группы операций из индекса: группа — пространство имён (<c>wp/v2</c>), объект — <c>METHOD path</c>.
+    /// Маршруты индекса заданы от корня REST API, поэтому к ним добавляется префикс адреса индекса.
+    /// </summary>
+    public static IReadOnlyList<DatasourceCatalogGroup> Build(string json, string? discoveryAddress = null)
     {
-        var routes = JsonNode.Parse(json)?["routes"] as JsonObject
+        var index = JsonNode.Parse(json);
+
+        var routes = index?["routes"] as JsonObject
             ?? throw new InvalidOperationException("В ответе нет \"routes\": это не индекс REST API WordPress");
+
+        // Маршруты индекса заданы без корня REST API (/wp/v2/posts при адресе /wp-json/wp/v2):
+        // префикс один на весь индекс, иначе смешанные namespace уехали бы не туда.
+        var prefix = RestRoutePrefix.FromAddress(discoveryAddress,
+            Text(index?["namespace"]) ?? FirstNamespace(routes));
 
         Dictionary<string, DatasourceCatalogGroup> groups = new(StringComparer.OrdinalIgnoreCase);
 
@@ -38,6 +48,8 @@ public partial class WordPressRestDiscovery : IRestCatalogDiscovery
             }
 
             var (path, pathParameters) = NormalizePath(routePath);
+
+            path = prefix + path;
 
             foreach (var endpointNode in (route?["endpoints"] as JsonArray) ?? new JsonArray())
             {
@@ -145,6 +157,12 @@ public partial class WordPressRestDiscovery : IRestCatalogDiscovery
 
         return segments.Length == 0 ? "api" : segments[0];
     }
+
+    /// <summary>Пространство имён любого маршрута — когда корень индекса его не назвал.</summary>
+    static string? FirstNamespace(JsonObject routes)
+        => routes
+            .Select(route => Text((route.Value as JsonObject)?["namespace"]))
+            .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name));
 
     static bool Boolean(JsonNode? node)
         => node is JsonValue value && value.TryGetValue<bool>(out var flag) && flag;

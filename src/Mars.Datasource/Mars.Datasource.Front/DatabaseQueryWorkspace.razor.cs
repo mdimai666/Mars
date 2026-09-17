@@ -311,7 +311,9 @@ public partial class DatabaseQueryWorkspace
         if (!_editorReady || tab is null || _editor is null) return;
 
         var text = await _editor.GetValue();
-        if (!string.IsNullOrWhiteSpace(text)) tab.Text = text;
+
+        // У документа пустой текст — тоже правка: очищенный документ должен остаться пустым
+        if (tab.IsDocument || !string.IsNullOrWhiteSpace(text)) tab.Text = text;
     }
 
     async Task SyncEditorAsync()
@@ -337,6 +339,20 @@ public partial class DatabaseQueryWorkspace
         if (tab is null || tab.Loading) return;
 
         string text = await ReadEditorTextAsync();
+
+        if (tab.IsDocument)
+        {
+            // В документе лежат все запросы: выполняем тот, в котором стоит курсор
+            var block = DocumentText.BlockAt(text, await CursorLineAsync());
+
+            if (block is null)
+            {
+                _ = _messageService.Error("Поставьте курсор в текст запроса между разделителями «###»");
+                return;
+            }
+
+            text = block.Text;
+        }
 
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -366,7 +382,8 @@ public partial class DatabaseQueryWorkspace
         {
             var result = await service.Query(DataSourceConfigSlug, new DatasourceRequest
             {
-                ObjectId = tab.Object?.Id,
+                // Текст из документа самодостаточен: ObjectId подсказал бы серверу другой запрос документа
+                ObjectId = tab.IsDocument ? null : tab.Object?.Id,
                 Language = tab.Language,
                 Query = text,
                 Parameters = ParameterList(tab),
@@ -503,6 +520,13 @@ public partial class DatabaseQueryWorkspace
 
     async Task OpenObjectAsync(CatalogEntry entry)
     {
+        if (IsRest)
+        {
+            // У rest-источника редактор один — весь документ запросов: дерево только переходит к нужному.
+            await OpenDocumentBlockAsync(entry);
+            return;
+        }
+
         var tab = activeTab ?? AddTab();
 
         // Открыли другой объект — «изменяем вьюху» больше не про него.
@@ -530,15 +554,9 @@ public partial class DatabaseQueryWorkspace
             tab.Text = tab.BrowseSql;
             EnsureBrowseCap(tab);
         }
-        else if (IsRest)
-        {
-            // Операция REST открывается своей заготовкой запроса; значения её параметров — в форме над результатом.
-            tab.BrowseSql = null;
-            tab.Text = entry.Object.DefaultQuery ?? "";
-        }
         else
         {
-            // У не-sql источника текст запроса — условие фильтра, а сам объект уходит в запросе.
+            // У файла текст запроса — условие фильтра, а сам объект уходит в запросе.
             tab.BrowseSql = null;
             tab.Text = "";
             tab.MaxRows = DefaultBrowseLimit;
@@ -548,6 +566,176 @@ public partial class DatabaseQueryWorkspace
 
         await SyncEditorAsync();
         await RunActiveTabAsync();
+    }
+
+    //=== документ запросов (rest) =============================================
+
+    /// <summary>
+    /// Вкладка документа: одна на источник. Текст берём с сервера только при её открытии —
+    /// дальше это текст редактора, иначе несохранённые правки терялись бы при каждом клике по дереву.
+    /// </summary>
+    async Task<QueryTab?> OpenDocumentAsync()
+    {
+        var tab = tabs.FirstOrDefault(item => item.IsDocument);
+
+        if (tab is null)
+        {
+            tab = new QueryTab
+            {
+                Title = DatasourceSettings.RequestsDocument,
+                Language = DatasourceLanguage.Http,
+                IsDocument = true,
+            };
+
+            tabs.Add(tab);
+
+            try
+            {
+                tab.Text = await service.Requests(DataSourceConfigSlug);
+            }
+            catch (Exception ex)
+            {
+                tab.Error = ex.Message;
+            }
+
+            await RememberEditorTextAsync();
+
+            activeTabId = tab.Id;
+            _editorNeedsSync = true;
+
+            StateHasChanged();
+
+            return tab;
+        }
+
+        if (tab != activeTab) await SelectTabAsync(tab);
+
+        return tab;
+    }
+
+    /// <summary>
+    /// Переход к запросу в документе: есть в документе — показываем его блок, нет (операция из описания)
+    /// — дописываем заготовку в конец и показываем её.
+    /// </summary>
+    async Task OpenDocumentBlockAsync(CatalogEntry entry)
+    {
+        var tab = await OpenDocumentAsync();
+        if (tab is null) return;
+
+        var text = await ReadEditorTextAsync();
+        var block = entry.Object.Line > 0
+            ? DocumentText.BlockAt(text, entry.Object.Line)
+            : DocumentText.BlockContaining(text, entry.Object.DefaultQuery ?? entry.Object.Id);
+
+        if (block is null && entry.Object.DefaultQuery is { Length: > 0 } draft)
+        {
+            text = DocumentText.Append(text, draft);
+            tab.Text = text;
+
+            await SyncEditorAsync();
+
+            block = DocumentText.Blocks(text).LastOrDefault();
+        }
+
+        if (block is null) return;
+
+        // Документ — не объект каталога: показываем, к какому запросу перешли, и сбрасываем прежний результат
+        tab.Object = null;
+        tab.Schema = "";
+        tab.KeyColumns = [];
+        tab.SourceWritable = false;
+        tab.BrowseSql = null;
+        tab.Title = $"{DatasourceSettings.RequestsDocument}: {entry.Object.Name}";
+        tab.Reset();
+
+        StateHasChanged();
+
+        if (_editor is not null) await _editor.RevealLinesAsync(block.StartLine, block.EndLine);
+    }
+
+    /// <summary>Сохранить документ запросов и перечитать дерево: в нём появятся изменённые запросы.</summary>
+    async Task SaveDocumentAsync()
+    {
+        if (activeTab is not { IsDocument: true } tab) return;
+
+        var text = await ReadEditorTextAsync();
+
+        try
+        {
+            var result = await service.SaveRequests(DataSourceConfigSlug, text);
+
+            if (result.Ok) _ = _messageService.Success(result.Message);
+            else _ = _messageService.Error(result.Message);
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+            return;
+        }
+
+        tab.Text = text;
+        tab.Error = null;
+
+        await RefreshCatalogAsync();
+    }
+
+    /// <summary>Дублировать блок под курсором: копия встаёт сразу за оригиналом и получает новое имя.</summary>
+    async Task DuplicateDocumentBlockAsync()
+    {
+        if (activeTab is not { IsDocument: true } tab) return;
+
+        var text = await ReadEditorTextAsync();
+        var block = DocumentText.BlockAt(text, await CursorLineAsync());
+
+        if (block is null)
+        {
+            _ = _messageService.Error("Поставьте курсор в блок запроса (между разделителями «###»)");
+            return;
+        }
+
+        var updated = DocumentText.Duplicate(text, block);
+
+        tab.Text = updated;
+
+        await SyncEditorAsync();
+
+        var copy = DocumentText.Blocks(updated).FirstOrDefault(item => item.StartLine > block.StartLine);
+
+        if (copy is not null && _editor is not null) await _editor.RevealLinesAsync(copy.StartLine, copy.EndLine);
+
+        _ = _messageService.Success("Копия добавлена — не забудьте сохранить документ");
+    }
+
+    /// <summary>Убрать блок под курсором из документа (на сервере — только после сохранения).</summary>
+    async Task RemoveDocumentBlockAsync()
+    {
+        if (activeTab is not { IsDocument: true } tab) return;
+
+        var text = await ReadEditorTextAsync();
+        var block = DocumentText.BlockAt(text, await CursorLineAsync());
+
+        if (block is null)
+        {
+            _ = _messageService.Error("Поставьте курсор в блок запроса (между разделителями «###»)");
+            return;
+        }
+
+        tab.Text = DocumentText.Remove(text, block);
+
+        await SyncEditorAsync();
+
+        _ = _messageService.Success("Блок удалён из документа — не забудьте сохранить");
+    }
+
+    async Task<int> CursorLineAsync()
+        => _editor is null ? 1 : await _editor.GetCursorLineAsync();
+
+    /// <summary>Ctrl+S в редакторе: сохраняется документ запросов, остальные вкладки — черновики.</summary>
+    async Task OnEditorSaveAsync(string value)
+    {
+        if (activeTab is not { IsDocument: true }) return;
+
+        await SaveDocumentAsync();
     }
 
     /// <summary>

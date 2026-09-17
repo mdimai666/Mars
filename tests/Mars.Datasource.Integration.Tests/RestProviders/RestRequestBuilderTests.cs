@@ -64,6 +64,32 @@ public class RestRequestBuilderTests
     }
 
     [Fact]
+    public void Build_BaseUrlWithSharedPrefixIsNotDoubled()
+    {
+        // Адрес источника уже содержит корень REST API — в пути он второй раз не появляется
+        using var message = Build("GET /wp-json/wp/v2/posts", Settings(baseUrl: "https://example.org/wp-json"));
+
+        message.RequestUri!.ToString().Should().Be("https://example.org/wp-json/wp/v2/posts");
+    }
+
+    [Fact]
+    public void Build_AbsoluteUrlWithDoubledBasePrefixIsTrimmed()
+    {
+        using var message = Build("GET {{baseUrl}}/wp-json/wp/v2/posts",
+            Settings(baseUrl: "https://example.org/wp-json"));
+
+        message.RequestUri!.ToString().Should().Be("https://example.org/wp-json/wp/v2/posts");
+    }
+
+    [Fact]
+    public void Build_PathWithoutRestRootIsKeptAsWritten()
+    {
+        using var message = Build("GET /wp/v2/posts", Settings(baseUrl: "https://example.org/wp-json"));
+
+        message.RequestUri!.ToString().Should().Be("https://example.org/wp-json/wp/v2/posts");
+    }
+
+    [Fact]
     public void Build_PathTemplateTakesParameterValue()
     {
         using var message = Build("GET /wp/v2/posts/{id}", parameters: Param("id", "42"));

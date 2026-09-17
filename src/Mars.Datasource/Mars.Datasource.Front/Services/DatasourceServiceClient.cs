@@ -53,6 +53,21 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .AppendQueryParam(new { slug, schema, name })
                     .GetJsonAsync<ViewDefinitionResponse>();
 
+    public async Task<string> Requests(string slug)
+    {
+        var document = await _client.Request($"{_basePath}{_controllerName}", "Requests")
+                                       .AppendQueryParam(new { slug })
+                                       .GetJsonAsync<RequestsDocumentDto>();
+
+        return document.Content;
+    }
+
+    public Task<UserActionResult> SaveRequests(string slug, string content)
+        => _client.Request($"{_basePath}{_controllerName}", "SaveRequests")
+                    .AppendQueryParam(new { slug })
+                    .PostJsonAsync(new RequestsDocumentDto { Content = content ?? "" })
+                    .ReceiveJson<UserActionResult>();
+
     public Task<DatasourceCatalog> Catalog(string slug)
         => _client.Request($"{_basePath}{_controllerName}", "Catalog")
                     .AppendQueryParam(new { slug })

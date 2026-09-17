@@ -7,14 +7,18 @@ namespace Mars.Datasource.Integration.Tests.RestProviders;
 
 /// <summary>
 /// Каталог REST API WordPress из индекса <c>/wp-json/wp/v2</c>: группы по пространствам имён,
-/// операции на метод, аргументы как параметры.
+/// операции на метод, аргументы как параметры и префикс <c>/wp-json</c> в путях.
 /// </summary>
 public class WordPressRestDiscoveryTests
 {
+    /// <summary>Адрес индекса namespace: маршруты внутри него заданы без корня REST API.</summary>
+    const string Address = "https://example.org/wp-json/wp/v2";
+
     /// <summary>Форма ответа индекса WordPress: routes → endpoints → args.</summary>
     const string Index = """
     {
       "name": "Test blog",
+      "namespace": "wp/v2",
       "namespaces": ["wp/v2", "wp-site-health/v1"],
       "routes": {
         "/wp/v2/posts": {
@@ -53,13 +57,16 @@ public class WordPressRestDiscoveryTests
     }
     """;
 
+    static IReadOnlyList<DatasourceCatalogGroup> Build(string? address = Address)
+        => WordPressRestDiscovery.Build(Index, address);
+
     static DatasourceCatalogObject Object(IReadOnlyList<DatasourceCatalogGroup> groups, string id)
         => groups.SelectMany(group => group.Objects).Single(obj => obj.Id == id);
 
     [Fact]
     public void Build_GroupsByNamespace()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
         groups.Select(group => group.Name).Should().Equal("wp-site-health/v1", "wp/v2");
         groups.Single(group => group.Name == "wp/v2").Objects.Should().HaveCount(5);
@@ -68,28 +75,28 @@ public class WordPressRestDiscoveryTests
     [Fact]
     public void Build_OperationPerMethod()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
         groups.SelectMany(group => group.Objects)
             .Select(obj => obj.Id)
             .Should()
             .BeEquivalentTo(
             [
-                "GET /wp/v2/posts",
-                "POST /wp/v2/posts",
-                "DELETE /wp/v2/posts/{id}",
-                "GET /wp/v2/posts/{id}",
-                "PUT /wp/v2/posts/{id}",
-                "GET /wp-site-health/v1/tests/background-updates",
+                "GET /wp-json/wp/v2/posts",
+                "POST /wp-json/wp/v2/posts",
+                "DELETE /wp-json/wp/v2/posts/{id}",
+                "GET /wp-json/wp/v2/posts/{id}",
+                "PUT /wp-json/wp/v2/posts/{id}",
+                "GET /wp-json/wp-site-health/v1/tests/background-updates",
             ]);
     }
 
     [Fact]
     public void Build_RouteRegexBecomesPathParameter()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
-        var id = Object(groups, "GET /wp/v2/posts/{id}").Parameters.Single(parameter => parameter.Name == "id");
+        var id = Object(groups, "GET /wp-json/wp/v2/posts/{id}").Parameters.Single(parameter => parameter.Name == "id");
 
         id.In.Should().Be(DatasourceParameterIn.Path);
         id.Required.Should().BeTrue();
@@ -98,9 +105,9 @@ public class WordPressRestDiscoveryTests
     [Fact]
     public void Build_ReadArgsAreQueryParameters()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
-        var parameters = Object(groups, "GET /wp/v2/posts").Parameters;
+        var parameters = Object(groups, "GET /wp-json/wp/v2/posts").Parameters;
 
         parameters.Select(parameter => parameter.Name).Should().Equal("context", "page", "per_page", "search");
         parameters.Should().OnlyContain(parameter => parameter.In == DatasourceParameterIn.Query);
@@ -117,9 +124,9 @@ public class WordPressRestDiscoveryTests
     [Fact]
     public void Build_WriteArgsAreBodyParameters()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
-        var parameters = Object(groups, "POST /wp/v2/posts").Parameters;
+        var parameters = Object(groups, "POST /wp-json/wp/v2/posts").Parameters;
 
         parameters.Select(parameter => parameter.Name).Should().Equal("title", "status");
         parameters.Should().OnlyContain(parameter => parameter.In == DatasourceParameterIn.Body);
@@ -127,16 +134,70 @@ public class WordPressRestDiscoveryTests
     }
 
     [Fact]
-    public void Build_OperationCarriesHttpDraft()
+    public void Build_OperationCarriesHttpDraftWithRealPath()
     {
-        var groups = WordPressRestDiscovery.Build(Index);
+        var groups = Build();
 
-        var operation = Object(groups, "GET /wp/v2/posts/{id}");
+        var operation = Object(groups, "GET /wp-json/wp/v2/posts/{id}");
 
         operation.ObjectType.Should().Be(DatasourceObjectType.Operation);
         operation.DefaultLanguage.Should().Be(DatasourceLanguage.Http);
-        operation.DefaultQuery.Should().Be("GET {{baseUrl}}/wp/v2/posts/{{id}}");
+        operation.DefaultQuery.Should().Be("GET {{baseUrl}}/wp-json/wp/v2/posts/{{id}}");
         operation.Columns.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Build_IndexRootWithoutNamespaceSegmentKeepsItInPrefix()
+    {
+        // Корневой индекс /wp-json: маршруты всё равно идут от /wp-json
+        WordPressRestDiscovery.Build(Index, "https://example.org/wp-json")
+            .SelectMany(group => group.Objects).Select(obj => obj.Id)
+            .Should().Contain("GET /wp-json/wp/v2/posts");
+    }
+
+    [Fact]
+    public void Build_CustomRestRootIsKept()
+    {
+        var groups = WordPressRestDiscovery.Build("""
+            {
+              "namespace": "custom/v1",
+              "routes": {
+                "/custom/v1/items": {
+                  "namespace": "custom/v1",
+                  "endpoints": [ { "methods": ["GET"], "args": {} } ]
+                }
+              }
+            }
+            """, "https://example.org/api/v1/custom/v1");
+
+        groups.SelectMany(group => group.Objects).Select(obj => obj.Id)
+            .Should().Equal("GET /api/v1/custom/v1/items");
+    }
+
+    [Fact]
+    public void Build_WithoutAddressKeepsRoutePaths()
+    {
+        // Разбор индекса без адреса — пути как в ответе (провайдер всегда передаёт адрес)
+        Build(address: null).SelectMany(group => group.Objects).Select(obj => obj.Id)
+            .Should().Contain("GET /wp/v2/posts");
+    }
+
+    [Fact]
+    public void Build_NamespaceFromRoutesIsUsedWhenIndexHasNone()
+    {
+        var groups = WordPressRestDiscovery.Build("""
+            {
+              "routes": {
+                "/wp/v2/posts": {
+                  "namespace": "wp/v2",
+                  "endpoints": [ { "methods": ["GET"], "args": {} } ]
+                }
+              }
+            }
+            """, Address);
+
+        groups.SelectMany(group => group.Objects).Select(obj => obj.Id)
+            .Should().Equal("GET /wp-json/wp/v2/posts");
     }
 
     [Fact]
@@ -144,7 +205,7 @@ public class WordPressRestDiscoveryTests
     {
         var groups = WordPressRestDiscovery.Build("""
             { "routes": { "/custom/v1/items": { "endpoints": [ { "methods": ["GET"], "args": {} } ] } } }
-            """);
+            """, Address);
 
         groups.Single().Name.Should().Be("custom");
     }
@@ -152,9 +213,22 @@ public class WordPressRestDiscoveryTests
     [Fact]
     public void Build_ResponseWithoutRoutesThrows()
     {
-        var build = () => WordPressRestDiscovery.Build("""{ "name": "blog" }""");
+        var build = () => WordPressRestDiscovery.Build("""{ "name": "blog" }""", Address);
 
         build.Should().Throw<InvalidOperationException>().WithMessage("*нет \"routes\"*");
+    }
+
+    [Theory]
+    [InlineData("https://example.org/wp-json/wp/v2", "wp/v2", "/wp-json")]
+    [InlineData("https://example.org/wp-json/wp/v2/", "wp/v2", "/wp-json")]
+    [InlineData("https://example.org/wp-json", "wp/v2", "/wp-json")]
+    [InlineData("https://example.org/api/v1/custom/v1", "custom/v1", "/api/v1")]
+    [InlineData("/v1", null, "/v1")]
+    [InlineData("https://example.org/", null, "")]
+    [InlineData(null, "wp/v2", "")]
+    public void RoutePrefix_ComesFromDiscoveryAddress(string? address, string? ns, string expected)
+    {
+        RestRoutePrefix.FromAddress(address, ns).Should().Be(expected);
     }
 
     [Theory]
@@ -179,14 +253,14 @@ public class WordPressRestDiscoveryTests
             Content = new StringContent("""{"code":"rest_not_logged_in"}"""),
         });
 
-        var discover = () => new WordPressRestDiscovery().DiscoverAsync(client, "https://example.org/wp-json/wp/v2");
+        var discover = () => new WordPressRestDiscovery().DiscoverAsync(client, Address);
 
         await discover.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*401*https://example.org/wp-json/wp/v2*rest_not_logged_in*");
     }
 
     [Fact]
-    public async Task DiscoverAsync_ReadsIndexOverHttp()
+    public async Task DiscoverAsync_ReadsIndexOverHttpAndPrefixesPaths()
     {
         string? requested = null;
 
@@ -197,10 +271,11 @@ public class WordPressRestDiscoveryTests
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Index) };
         });
 
-        var groups = await new WordPressRestDiscovery().DiscoverAsync(client, "https://example.org/wp-json/wp/v2");
+        var groups = await new WordPressRestDiscovery().DiscoverAsync(client, Address);
 
-        requested.Should().Be("https://example.org/wp-json/wp/v2");
+        requested.Should().Be(Address);
         groups.Should().HaveCount(2);
+        groups.SelectMany(group => group.Objects).Select(obj => obj.Id).Should().Contain("GET /wp-json/wp/v2/posts");
     }
 
     [Fact]

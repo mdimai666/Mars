@@ -1,0 +1,21 @@
+@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Models
+
+@if (Object is { Columns.Count: > 0 } current)
+{
+    <details class="flex-shrink-0 px-2 fz14px">
+        <summary class="text-secondary">структура: @current.Columns.Count колонок</summary>
+        <div class="overflow-scroll pt-1" style="max-height:120px">
+            @foreach (var column in current.Columns.OrderBy(c => c.Ordinal))
+            {
+                <span class="badge bg-light text-dark border me-1 mb-1">
+                    @if (column.IsKey)
+                    {
+                        <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
+                    }
+                    @column.Name <span class="text-secondary">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
+                </span>
+            }
+        </div>
+    </details>
+}

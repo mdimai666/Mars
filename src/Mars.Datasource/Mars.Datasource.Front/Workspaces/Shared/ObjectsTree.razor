@@ -1,0 +1,55 @@
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Workspaces
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">
+    <div class="ds-pane h-100 d-flex flex-column">
+        <div class="flex-shrink-0 hstack gap-1 p-2">
+            <input class="form-control form-control-sm" placeholder="объект…"
+                   value="@Filter" @oninput="@(args => FilterChanged.InvokeAsync(args.Value?.ToString() ?? ""))" />
+            @ChildContent
+        </div>
+        <div class="flex-fill overflow-scroll">
+            @if (Busy)
+            {
+                <div class="p-3 text-center">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var group in Groups)
+                    {
+                        if (HasMultipleGroups)
+                        {
+                            <li class="list-group-item px-2 py-1 fz14px text-secondary ds-schema"
+                                @onclick="() => OnToggleGroup.InvokeAsync(group.Name)">
+                                <i class="bi @(IsExpanded(group.Name) ? "bi-chevron-down" : "bi-chevron-right") me-1"></i>
+                                <span>@group.Name</span>
+                            </li>
+                        }
+                        @if (!HasMultipleGroups || IsExpanded(group.Name))
+                        {
+                            @foreach (var item in group.Objects)
+                            {
+                                var entry = new CatalogEntry(group.Name, item);
+                                <li class="list-group-item list-group-item-action px-2 py-1 hstack @(IsActive(item) ? "active" : "")"
+                                    title="@item.ObjectType"
+                                    @onclick="() => OnOpen.InvokeAsync(entry)">
+                                    <span class="text-nowrap">@item.Name</span>
+                                    @if (item.ObjectType is DatasourceObjectType.View or DatasourceObjectType.MaterializedView)
+                                    {
+                                        <span class="badge bg-secondary fz14px ms-1">@item.ObjectType</span>
+                                    }
+                                </li>
+                            }
+                        }
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</FluentMultiSplitterPane>

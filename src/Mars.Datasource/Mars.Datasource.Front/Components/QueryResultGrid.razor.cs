@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mars.Admin.Framework.Interfaces;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Front.Services;
 using Mars.Datasource.Contracts.Models;
@@ -11,12 +10,15 @@ using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Datasource.Front.Components;
 
+/// <summary>
+/// Результат запроса: сводка, переключение таблица/JSON и правка ячеек.
+/// Сама таблица рисуется общим <see cref="ResultTable"/> — здесь только то, что относится к правке.
+/// </summary>
 public partial class QueryResultGrid
 {
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
-    [Inject] MarsDatasourceFrontJsInterop jsInterop { get; set; } = default!;
 
     [Parameter, EditorRequired] public QueryResultDto Result { get; set; } = default!;
     [Parameter, EditorRequired] public QueryTab Tab { get; set; } = default!;
@@ -26,111 +28,16 @@ public partial class QueryResultGrid
     /// <summary>Вызывается после успешного сохранения правок — рабочая область перечитывает данные.</summary>
     [Parameter] public EventCallback OnSaved { get; set; }
 
-    /// <summary>Длина начальных и конечных символов, которые видны у сжатого значения.</summary>
-    const int MidHeadLength = 8;
-    const int MidTailLength = 6;
+    /// <summary>Длинное значение правится в модалке: в ячейке (330px) его всё равно не видно.</summary>
+    const int InlineEditMaxLength = 50;
 
-    ElementReference _root;
     (int Row, string Column)? _editCell;
     string? _editValue;
-    ElementReference _editInput;
-    bool _focusNeeded;
-
-    QueryResultDto? _guidDetectedFor;
-    bool[] _guidColumns = [];
 
     protected override void OnParametersSet()
     {
         // Результат переехал в другую вкладку — незавершённую правку не тащим.
         _editCell = null;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Копирование выделения из грида отдаёт полные значения ячеек, а не «начало…конец».
-            await jsInterop.RegisterFullValueCopy(_root);
-        }
-
-        if (!_focusNeeded) return;
-
-        _focusNeeded = false;
-        await _editInput.FocusAsync();
-    }
-
-    /// <summary>
-    /// Класс цвета по категории типа — для значения ячейки и для подписи типа.
-    /// Строковые без класса: их большинство, и в ячейке это основной текст (цвет по умолчанию), а не подпись.
-    /// </summary>
-    static string? KindClass(QColumnKind kind)
-        => kind switch
-        {
-            QColumnKind.Number => "ds-type-number",
-            QColumnKind.Boolean => "ds-type-bool",
-            QColumnKind.DateTime => "ds-type-date",
-            QColumnKind.Json => "ds-type-json",
-            _ => null,
-        };
-
-    /// <summary>
-    /// Начало и конец длинного значения без середины — для колонок с guid-ами: 36 символов
-    /// распирают таблицу, а по краям значение всё ещё узнаваемо. `null` — показываем целиком.
-    /// </summary>
-    (string Head, string Tail)? MidParts(int columnIndex, string? value)
-    {
-        if (value is null || !IsGuidColumn(columnIndex)) return null;
-        if (value.Length <= MidHeadLength + MidTailLength + 1) return null;
-
-        return (value[..MidHeadLength], value[^MidTailLength..]);
-    }
-
-    bool IsGuidColumn(int columnIndex)
-    {
-        if (!ReferenceEquals(_guidDetectedFor, Result))
-        {
-            _guidDetectedFor = Result;
-            _guidColumns = DetectGuidColumns();
-        }
-
-        return columnIndex >= 0 && columnIndex < _guidColumns.Length && _guidColumns[columnIndex];
-    }
-
-    bool[] DetectGuidColumns()
-    {
-        var flags = new bool[Result.Columns.Length];
-
-        for (var i = 0; i < flags.Length; i++)
-        {
-            flags[i] = QColumnMapping.Kind(Result.Columns[i].DataTypeName) == QColumnKind.Guid
-                || LooksLikeGuidColumn(i);
-        }
-
-        return flags;
-    }
-
-    /// <summary>Guid в char-колонке (MySQL, старые схемы) по типу не отличить — смотрим значения.</summary>
-    bool LooksLikeGuidColumn(int columnIndex)
-    {
-        const int sampleSize = 5;
-
-        var sampled = 0;
-        var guids = 0;
-
-        foreach (var row in Result.Rows)
-        {
-            if (sampled >= sampleSize) break;
-            if (columnIndex >= row.Length) continue;
-
-            var value = row[columnIndex];
-            if (string.IsNullOrEmpty(value)) continue;
-
-            sampled++;
-
-            if (Guid.TryParse(value, out _)) guids++;
-        }
-
-        return sampled > 0 && guids == sampled;
     }
 
     /// <summary>
@@ -150,32 +57,26 @@ public partial class QueryResultGrid
         }
     }
 
-    bool IsEditing((int Row, string Column) cell)
-        => Tab.CanEdit && _editCell == cell;
-
-    /// <summary>Длинное значение правится в модалке: в ячейке (330px) его всё равно не видно.</summary>
-    const int InlineEditMaxLength = 50;
-
-    async Task StartCellEditAsync((int Row, string Column) cell, string? value, QColumnKind kind)
+    async Task StartCellEditAsync(CellEditRequest request)
     {
         if (!Tab.CanEdit) return;
 
-        if (value is not null && value.Length > InlineEditMaxLength)
+        if (request.Value is not null && request.Value.Length > InlineEditMaxLength)
         {
-            await EditLongValueAsync(cell, value, kind);
+            await EditLongValueAsync(request, request.Value);
             return;
         }
 
-        StartEdit(cell, value);
+        StartEdit(request, request.Value);
     }
 
-    async Task EditLongValueAsync((int Row, string Column) cell, string value, QColumnKind kind)
+    async Task EditLongValueAsync(CellEditRequest request, string value)
     {
         var dialog = await _dialogService.ShowDialogAsync<CellValueDialog>(
-            new CellValueDialogContent(value, kind == QColumnKind.Json ? CodeEditor2.Language.json : "plaintext"),
+            new CellValueDialogContent(value, request.Kind == QColumnKind.Json ? CodeEditor2.Language.json : "plaintext"),
             new DialogParameters
             {
-                Title = $"Значение: {cell.Column}",
+                Title = $"Значение: {request.Column}",
                 Width = "min(960px, 90vw)",
                 Modal = true,
                 PreventDismissOnOverlayClick = true,
@@ -184,18 +85,18 @@ public partial class QueryResultGrid
         var result = await dialog.Result;
         if (result.Cancelled) return;
 
-        ApplyEdit(cell, result.Data as string);
+        ApplyEdit((request.RowIndex, request.Column), result.Data as string);
         StateHasChanged();
     }
 
-    void StartEdit((int Row, string Column) cell, string? value)
+    void StartEdit(CellEditRequest request, string? value)
     {
+        var cell = (request.RowIndex, request.Column);
         if (!Tab.CanEdit) return;
         if (_editCell == cell) return;
 
         _editCell = cell;
         _editValue = value;
-        _focusNeeded = true;
         StateHasChanged();
     }
 

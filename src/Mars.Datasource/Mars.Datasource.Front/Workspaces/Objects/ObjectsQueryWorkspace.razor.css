@@ -7,10 +7,6 @@
     min-width: 0;
 }
 
-.ds-topmenu {
-    height: 42px;
-}
-
 /* Сплиттер и его панели рисует FluentUI: собственный b-атрибут Blazor вешает только на свои элементы,
    поэтому правила без ::deep по ним не применялись вовсе — отсюда «страница расширяется по данным». */
 .ds-workspace ::deep .fluent-multi-splitter {
@@ -45,18 +41,6 @@
 
 .ds-tabs {
     overflow-x: auto;
-}
-
-/* Заголовок схемы в дереве: сворачивается по клику (фон — вместо bootstrap-класса bg-light,
-   чтобы работал hover). */
-.ds-schema {
-    background: var(--bs-tertiary-bg, #f1f3f5);
-    cursor: pointer;
-    user-select: none;
-}
-
-.ds-schema:hover {
-    background: var(--bs-secondary-bg, #e9ecef);
 }
 
 .ds-tab {

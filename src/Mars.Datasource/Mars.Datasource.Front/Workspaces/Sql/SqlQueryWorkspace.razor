@@ -1,0 +1,142 @@
+@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Components
+@using Mars.Datasource.Front.Workspaces.Shared
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits Mars.Datasource.Front.Workspaces.QueryWorkspaceBase
+
+@if (catalog is null)
+{
+    @if (errorMessage is not null)
+    {
+        <div class="p-4">
+            <div class="alert alert-danger">@errorMessage</div>
+            <button class="btn btn-sm btn-light" disabled="@Busy" @onclick="LoadAsync">
+                <i class="bi bi-arrow-clockwise"></i> Повторить
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="p-5 main-fill xcenter">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="ds-workspace d-flex flex-column flex-fill">
+        @if (errorMessage is not null)
+        {
+            <div class="alert alert-danger flex-shrink-0 rounded-0 mb-0 py-2 px-3 fz14px">@errorMessage</div>
+        }
+        <DatasourceHeader Slug="@DataSourceConfigSlug" Sources="@listDatasources"
+                          SourceName="@catalog.SourceName" ObjectCount="@objectCount" SourceLabel="@SourceLabel" />
+
+        <FluentMultiSplitter>
+            <ObjectsTree Groups="@Tree.Groups(catalog)" Filter="@Tree.Filter" FilterChanged="@((string v) => Tree.Filter = v)"
+                        Busy="@Busy" HasMultipleGroups="@WorkspaceTreeState.HasMultipleGroups(catalog)" IsExpanded="@Tree.IsExpanded"
+                        OnToggleGroup="@((string name) => Tree.Toggle(name))"
+                        IsActive="@(obj => obj == activeTab?.Object)" OnOpen="@OpenObjectAsync">
+                @if (CanManageViews)
+                {
+                    <button class="btn btn-sm btn-light text-nowrap" title="Новая вьюха" disabled="@Busy" @onclick="CreateViewAsync">
+                        <i class="bi bi-plus-lg"></i> вьюха
+                    </button>
+                }
+                <button class="btn btn-sm btn-light" title="Обновить" disabled="@Busy" @onclick="RefreshCatalogAsync">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </ObjectsTree>
+
+            <FluentMultiSplitterPane>
+                <div class="ds-pane h-100 d-flex flex-column">
+                    <div class="ds-tabs flex-shrink-0 hstack gap-1 px-2 pt-2">
+                        @foreach (var item in tabs)
+                        {
+                            var tab = item;
+                            <span class="ds-tab hstack gap-1 px-2 py-1 @(tab == activeTab ? "ds-tab-active" : "")"
+                                  @onclick="() => SelectTabAsync(tab)">
+                                <span class="text-nowrap fz14px">@tab.Title</span>
+                                @if (tabs.Count > 1)
+                                {
+                                    <i class="bi bi-x" role="button" title="Закрыть" @onclick:stopPropagation="true"
+                                       @onclick="() => CloseTabAsync(tab)"></i>
+                                }
+                            </span>
+                        }
+                        <button class="btn btn-sm btn-light ms-1" title="Новый запрос" @onclick="() => AddTab()">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-shrink-0 hstack gap-2 px-2 py-2">
+                        <FluentButton Appearance="Appearance.Accent" Disabled="@(activeTab?.Loading == true)"
+                                      OnClick="RunActiveTabAsync">
+                            Выполнить
+                        </FluentButton>
+                        @if (activeTab?.CanLoadMore == true)
+                        {
+                            <FluentButton Appearance="Appearance.Neutral" Disabled="@(activeTab?.Loading == true)"
+                                          OnClick="RunMoreAsync">
+                                Показать больше
+                            </FluentButton>
+                        }
+                        <FluentButton Appearance="Appearance.Stealth"
+                                      OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
+                            AI help
+                        </FluentButton>
+                        @if (activeTab is { Object: { } opened } current)
+                        {
+                            @if (CanManageViews && opened.ObjectType == DatasourceObjectType.View)
+                            {
+                                <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
+                                    определение
+                                </FluentButton>
+                                <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="DropViewAsync">
+                                    удалить
+                                </FluentButton>
+                            }
+                            <span class="ms-auto text-secondary fz14px">@DisplayName(new CatalogEntry(current.Schema, opened))</span>
+                        }
+                    </div>
+
+                    <ObjectStructurePanel Object="@activeTab?.Object" />
+
+                    <div class="ds-editor px-2">
+                        <CodeEditor2 @ref="_editor" @key="EditorLang" Lang=@EditorLang Value="" OnInit="OnEditorInitAsync"
+                                     OnSave="OnEditorSaveAsync"
+                                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+                    </div>
+
+                    <div class="ds-result px-2 pb-2">
+                        @if (activeTab?.Loading == true)
+                        {
+                            <div class="p-4 text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
+                        else if (activeTab?.Error is not null)
+                        {
+                            <div class="alert alert-danger">@activeTab.Error</div>
+                        }
+                        else if (activeTab?.Result is { } result)
+                        {
+                            <QueryResultGrid Result="result" Tab="activeTab" Slug="@DataSourceConfigSlug"
+                                             Source="source" OnSaved="RunActiveTabAsync" />
+                        }
+                        else
+                        {
+                            <div class="text-secondary p-2">Выберите объект слева или напишите запрос и нажмите «Выполнить».</div>
+                        }
+                    </div>
+                </div>
+            </FluentMultiSplitterPane>
+        </FluentMultiSplitter>
+    </div>
+}

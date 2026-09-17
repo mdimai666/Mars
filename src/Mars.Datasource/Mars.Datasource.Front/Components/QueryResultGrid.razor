@@ -2,9 +2,8 @@
 @using Mars.Datasource.Front.Components
 @using Mars.Datasource.Front.Services
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Web
 
-<div class="ds-grid d-flex flex-column h-100" @ref="_root">
+<div class="ds-grid d-flex flex-column h-100">
     <div class="flex-shrink-0 hstack gap-2 text-secondary fz14px px-1">
         <span>@RowsSummary · @Result.ElapsedMs ms · @Result.DatabaseDriver</span>
         @if (Result.Truncated)
@@ -40,79 +39,9 @@
     }
     else
     {
-        <div class="ds-scroll overflow-scroll">
-            <table class="table table-sm table-hover ds-result-table">
-                <thead>
-                    <tr>
-                        @foreach (var column in Result.Columns)
-                        {
-                            var headerKind = QColumnMapping.Kind(column.DataTypeName);
-
-                            <th>
-                                @if (column.IsKey)
-                                {
-                                    <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
-                                }
-                                <span class="text-nowrap">@column.Name</span>
-                                <span class="@(KindClass(headerKind) ?? "ds-type-text") fz14px ms-1">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
-                            </th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (var rowIndex = 0; rowIndex < Result.Rows.Length; rowIndex++)
-                    {
-                        var row = Result.Rows[rowIndex];
-                        <tr>
-                            @for (var i = 0; i < Result.Columns.Length; i++)
-                            {
-                                var column = Result.Columns[i];
-                                var cell = (Row: rowIndex, Column: column.Name);
-                                var changed = Tab.Changes.TryGetValue(cell, out var pending);
-                                var value = changed ? pending : i < row.Length ? row[i] : null;
-                                var editing = IsEditing(cell);
-                                var mid = MidParts(i, value);
-                                var kind = QColumnMapping.Kind(column.DataTypeName);
-                                var cellClass = changed ? "ds-cell-changed" : "";
-                                var valueClass = KindClass(kind) ?? "";
-                                var display = kind == QColumnKind.DateTime ? QueryResultMapping.DisplayDateTime(value) : value;
-
-                                <td class="@cellClass @valueClass"
-                                    @ondblclick="@(() => StartCellEditAsync(cell, value, kind))">
-                                    @if (editing)
-                                    {
-                                        <input class="form-control form-control-sm" @ref="_editInput"
-                                               @bind="_editValue" @bind:event="oninput"
-                                               @onkeydown="OnEditKeyDown" @onblur="CommitEdit" />
-                                    }
-                                    else if (mid is not null)
-                                    {
-                                        <span class="ds-mid" data-full="@value" title="@value">
-                                            <span class="ds-mid-head">@mid.Value.Head</span><span
-                                                class="ds-mid-dots">…</span><span class="ds-mid-tail">@mid.Value.Tail</span>
-                                        </span>
-                                    }
-                                    else if (column.IsJson && value is not null)
-                                    {
-                                        <details data-full="@value">
-                                            <summary class="fz14px text-secondary" title="показать JSON">json</summary>
-                                            <JsonViewer Json="@value" Expanded="0" ShowToolbar="false" />
-                                        </details>
-                                    }
-                                    else if (display != value)
-                                    {
-                                        <span class="ds-cell-text" data-full="@value" title="@value">@display</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="ds-cell-text">@display</span>
-                                    }
-                                </td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <ResultTable Result="Result" Changes="@Tab.Changes" CanEdit="@Tab.CanEdit"
+                     EditCell="@_editCell" EditValue="@_editValue"
+                     EditValueChanged="@((string? value) => _editValue = value)"
+                     OnStartEdit="@StartCellEditAsync" OnCommitEdit="@CommitEdit" OnEditKeyDown="@OnEditKeyDown" />
     }
 </div>

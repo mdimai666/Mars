@@ -1,0 +1,27 @@
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="col-12 mt-3">
+    <label class="fz14px">Файлы (по одному в строке)</label>
+    <FluentTextArea Class="w-100" Rows="3"
+                    Value="@DatasourceSettingsEditor.FilesText(Config)"
+                    ValueChanged="@(value => DatasourceSettingsEditor.SetFiles(Config, value))" />
+    <div class="fz14px text-secondary">
+        Путь в медиа-хранилище (<code>2026/09/sales.csv</code>) или абсолютный путь на хосте
+        (<code>C:\data\sales.xlsx</code>). У книги каждый лист — отдельный объект.
+    </div>
+    <div class="row mt-2">
+        <div class="col-12 col-lg-4">
+            <label class="fz14px">Разделитель CSV</label>
+            <FluentTextField Class="w-100" placeholder="авто"
+                             Value="@Setting(DatasourceSettings.Delimiter)"
+                             ValueChanged="@(value => SetSetting(DatasourceSettings.Delimiter, value))" />
+        </div>
+        <div class="col-12 col-lg-8 d-flex align-items-end">
+            <FluentCheckbox Label="первая строка — заголовки"
+                            Value="@DatasourceSettingsEditor.HasHeaders(Config)"
+                            ValueChanged="@(value => SetSetting(DatasourceSettings.HasHeaders, value ? "" : "false"))" />
+        </div>
+    </div>
+</div>

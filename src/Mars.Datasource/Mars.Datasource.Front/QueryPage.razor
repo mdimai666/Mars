@@ -1,0 +1,29 @@
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Workspaces.Objects
+@using Mars.Datasource.Front.Workspaces.Sql
+
+@if (loading)
+{
+    <div class="p-5 main-fill xcenter">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (error is not null)
+{
+    <div class="p-4">
+        <div class="alert alert-danger">@error</div>
+        <button class="btn btn-sm btn-light" disabled="@loading" @onclick="LoadAsync">
+            <i class="bi bi-arrow-clockwise"></i> Повторить
+        </button>
+    </div>
+}
+else if (IsSql)
+{
+    <SqlQueryWorkspace DataSourceConfigSlug="@DataSourceConfigSlug" />
+}
+else
+{
+    <ObjectsQueryWorkspace DataSourceConfigSlug="@DataSourceConfigSlug" />
+}

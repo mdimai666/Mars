@@ -1,0 +1,29 @@
+@using Mars.Datasource.Contracts.Models
+
+<section class="ds-topmenu flex-shrink-0 hstack px-2">
+    <div class="dropdown">
+        <a class="btn btn-light btn-sm rounded-0 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-database-check"></i>
+            @Slug
+        </a>
+        <ul class="dropdown-menu rounded-0 shadow fz14px">
+            @foreach (var item in Sources)
+            {
+                if (item.Slug == Slug) continue;
+                <li><a class="dropdown-item" href="@($"{nav.BaseUri}datasource/query?slug={Uri.EscapeDataString(item.Slug)}")">@item.Title</a></li>
+            }
+            @if (Sources.Count > 1)
+            {
+                <li><hr class="dropdown-divider"></li>
+            }
+            <li><a class="dropdown-item" href="@ConfigUrl"><i class="bi bi-gear"></i> Настроить</a></li>
+        </ul>
+    </div>
+    <span class="ms-auto text-secondary fz14px">
+        @SourceName · объектов: @ObjectCount
+        @if (!string.IsNullOrEmpty(SourceLabel))
+        {
+            <span>· @SourceLabel</span>
+        }
+    </span>
+</section>

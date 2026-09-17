@@ -1,0 +1,120 @@
+@using Mars.Datasource.Contracts.Models
+@using Mars.Datasource.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="col-12 mt-3">
+    <label class="fz14px">Адрес API (baseUrl)</label>
+    <FluentTextField Class="w-100" placeholder="https://example.org"
+                     Value="@Setting(DatasourceSettings.BaseUrl)"
+                     ValueChanged="@(value => SetSetting(DatasourceSettings.BaseUrl, value))" />
+    <div class="fz14px text-secondary">
+        В запросах источника адрес доступен как переменная <code>{{baseUrl}}</code>.
+    </div>
+    @if (BaseUrlError is string urlError)
+    {
+        <div class="text-danger fz14px">@urlError</div>
+    }
+
+    <div class="row mt-2">
+        <div class="col-12 col-lg-4">
+            <label class="fz14px">Каталог операций</label>
+            <FluentSelect Class="w-100" Items="RestDiscovery.All"
+                          OptionText="@DatasourceSettingsEditor.DiscoveryLabel"
+                          OptionValue="@(mode => mode)"
+                          Value="@Setting(DatasourceSettings.Discovery)"
+                          ValueChanged="@(value => SetSetting(DatasourceSettings.Discovery, value))" />
+        </div>
+        <div class="col-12 col-lg-5">
+            <label class="fz14px">Адрес описания API</label>
+            <FluentTextField Class="w-100" placeholder="@RestDiscovery.DefaultUrl(Setting(DatasourceSettings.Discovery))"
+                             Value="@Setting(DatasourceSettings.DiscoveryUrl)"
+                             ValueChanged="@(value => SetSetting(DatasourceSettings.DiscoveryUrl, value))" />
+        </div>
+        <div class="col-12 col-lg-3">
+            <label class="fz14px">Таймаут, секунд</label>
+            <FluentTextField Class="w-100" placeholder="100" type="number"
+                             Value="@Setting(DatasourceSettings.TimeoutSec)"
+                             ValueChanged="@(value => SetSetting(DatasourceSettings.TimeoutSec, value))" />
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-12 col-lg-4">
+            <label class="fz14px">Доступ</label>
+            <FluentSelect Class="w-100" Items="RestAuthMode.All"
+                          OptionText="@DatasourceSettingsEditor.AuthLabel"
+                          OptionValue="@(mode => mode)"
+                          Value="@Setting(DatasourceSettings.AuthMode)"
+                          ValueChanged="@(value => SetSetting(DatasourceSettings.AuthMode, value))" />
+        </div>
+        @if (DatasourceSettingsEditor.UsesAuthUser(AuthMode))
+        {
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Логин</label>
+                <FluentTextField Class="w-100"
+                                 Value="@Setting(DatasourceSettings.AuthUsername)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthUsername, value))" />
+            </div>
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Пароль</label>
+                <FluentTextField Class="w-100" type="password"
+                                 Value="@Setting(DatasourceSettings.AuthPassword)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthPassword, value))" />
+            </div>
+        }
+        @if (DatasourceSettingsEditor.IsBearerAuth(AuthMode))
+        {
+            <div class="col-12 col-lg-6">
+                <label class="fz14px">Адрес получения токена</label>
+                <FluentTextField Class="w-100" placeholder="https://example.org/oauth/token"
+                                 Value="@Setting(DatasourceSettings.AuthTokenUrl)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthTokenUrl, value))" />
+            </div>
+            <div class="col-12 col-lg-3">
+                <label class="fz14px">Client id</label>
+                <FluentTextField Class="w-100"
+                                 Value="@Setting(DatasourceSettings.AuthClientId)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthClientId, value))" />
+            </div>
+            <div class="col-12 col-lg-3">
+                <label class="fz14px">Client secret</label>
+                <FluentTextField Class="w-100" type="password"
+                                 Value="@Setting(DatasourceSettings.AuthClientSecret)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthClientSecret, value))" />
+            </div>
+            <div class="col-12 col-lg-3">
+                <label class="fz14px">Scope</label>
+                <FluentTextField Class="w-100"
+                                 Value="@Setting(DatasourceSettings.AuthScope)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthScope, value))" />
+            </div>
+        }
+        @if (DatasourceSettingsEditor.IsApiKeyAuth(AuthMode))
+        {
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Ключ</label>
+                <FluentTextField Class="w-100" type="password"
+                                 Value="@Setting(DatasourceSettings.AuthApiKey)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthApiKey, value))" />
+            </div>
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Заголовок ключа</label>
+                <FluentTextField Class="w-100" placeholder="X-API-Key"
+                                 Value="@Setting(DatasourceSettings.AuthApiKeyHeader)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthApiKeyHeader, value))" />
+                <div class="fz14px text-secondary">
+                    Статичный токен: заголовок <code>Authorization</code>, ключ <code>Bearer …</code>.
+                </div>
+            </div>
+        }
+        @if (DatasourceSettingsEditor.IsCookieAuth(AuthMode))
+        {
+            <div class="col-12 col-lg-8">
+                <label class="fz14px">Страница входа</label>
+                <FluentTextField Class="w-100" placeholder="https://example.org/wp-login.php"
+                                 Value="@Setting(DatasourceSettings.AuthLoginPageUrl)"
+                                 ValueChanged="@(value => SetSetting(DatasourceSettings.AuthLoginPageUrl, value))" />
+            </div>
+        }
+    </div>
+</div>

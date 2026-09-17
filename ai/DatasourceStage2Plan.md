@@ -16,6 +16,12 @@
 вкладки на операцию — см. C7; после проверки C7 пользователем — дерево по методам, форма операции
 и отказ от авто-выполнения запроса кликом — см. C8. Открыто: что именно менять в «открытии `.http`-файла»
 (вопрос 7) и запись файлового источника (решение: «добавим дальше»).
+Отдельно 2026-09-17/18 пользователь назвал код этапа 2 излишне сложным и попросил план разбиения —
+добавлен этап E: мир делится на два (SQL-страница и страница объектов), решения — один роут,
+две страницы, общий `ResultTable`; SQL-словарь (таблица/колонка/схема) остаётся как есть, публичные
+SQL-входы (`DatabaseStructure`/`Tables`/`Columns`/`RefreshStructure`) сносятся, AiChat-инструмент
+схемы глушится до конца инициативы. Серверная чистка и переделки UI на общие примитивы в этап E
+не входят.
 
 ## 1. Направление
 
@@ -315,6 +321,112 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 `slug+objectId+hash(params)`) · секрет-слой (системный техдолг) · `DatasourceNode` для нод
 (параметры операции = входные поля с `ValueKind`, см. `ai/NodesReworkPlan.md`) · AiChat-инструменты
 поверх каталога · паковка провайдеров (бывший 6.4).
+
+### Этап E. Два мира: SQL-страница и страница объектов — уточнено 2026-09-18
+
+Ход обсуждения: пользователь сначала сказал «код излишне сложен… разбить, 400–500 строк максимум»,
+затем отверг единый словарь: «мне не нравится. Подумаем может просто разделим мир на два? SQL
+открывает свой редактор, все остальные свой. В SQL имена остаются. А в другом менять?», и далее —
+«давай полностью разные редакторы страницы. У SQL даже дерево таблиц будет отличаться. И таблица
+результатов тоже». Итоговые решения: **один роут**, **две страницы**, **`ResultTable` общий**.
+
+Граница — `Kind == sql`. SQL-страница: таблица/колонка/схема, вьюхи, browse-SQL, правка ячеек.
+Страница объектов: файл/лист, операция discovery, запрос документа, поле/параметр, форма параметров,
+документ `.http`, результат-таблица или документ. Общий компонент с ветвлениями по kind
+(`DatabaseQueryWorkspace`) исчезает — вместо него диспетчер и две страницы.
+
+**Подход — перенос и вынос, без переделки вида.** Разметка, CSS-классы и поведение сохраняются:
+блоки уезжают в свои страницы/подкомпоненты с `[Parameter]`/`EventCallback`, логика — в классы.
+Улучшения вида и замены самописного дерева/грида на `DTreeView`/`FluentDataGrid` — **вне этапа**
+(отдельным заходом с проверкой в браузере). Серверная часть (мёртвый код, дубли провайдеров, разрез
+`DatasourceService`, базовый ADO-драйвер, объединение парсеров `.http`) — тоже вне этапа E.
+
+Правило размера: компонент целиком (`.razor` + `.razor.cs`) — не больше ~400–500 строк, каждый
+новый файл после разреза — ориентировочно ≤250 строк.
+
+- [ ] E1. Диспетчер `Front/QueryPage.razor(.cs)` (~120): читает опцию и `Kind`, грузит каталог,
+      показывает полосу ошибки и «Повторить» при пустом каталоге, дальше отдаёт работу странице.
+      Роут `/datasource/query?slug=` не меняется — точка входа остаётся одна
+      (`src/Mars.Admin/Builder/DataSourceViews/DatasourceQueryPage.razor:3` рендерит её).
+- [ ] E2. SQL-страница `Front/Workspaces/Sql/` — своё дерево, свой тулбар, свой результат:
+      `SqlQueryWorkspace.razor(.cs)` (~180, композиция) · `SqlCatalogTree.razor(.cs)` (~170: схемы →
+      таблицы/вьюхи/матвьюхи, PK и размеры, «＋ вьюха», «обновить»; сейчас `.razor:64-125` и
+      `LoadAsync/RefreshCatalogAsync/ApplySchemaDefaults/IsSchemaExpanded/ToggleSchema/Filtered/
+      Schemas/DisplayName/FindObject`) · `SqlQueryToolbar.razor(.cs)` (~110: «Выполнить», «всего N»,
+      AI help, «определение»/«удалить»; `.razor:130-222`) · `SqlResultGrid.razor(.cs)` (~200:
+      типы и `QColumnKind`-раскраска, guid-сжатие, правка ячеек и `UPDATE`, «Показать больше»,
+      `SqlSafety`-подтверждение) · `SqlTabRunner.cs` (~170: `RunActiveTabAsync:346-436`,
+      `RunMoreAsync`, `StartTotalCount`, `CountTotalAsync`, `ParseTotal`, browse-SQL и `COUNT`) ·
+      `SqlViewActions.cs` (~110: `CreateViewAsync:810-835`, `ShowViewDefinitionAsync:837-876`,
+      `DropViewAsync:878-906`, `ExecuteViewDdlAsync:908-941`). SQL-лексика (таблица/колонка/схема)
+      остаётся здесь без переименований; `Q*`-типы не трогаем.
+- [ ] E3. Страница объектов `Front/Workspaces/Objects/` — для file/rest/GraphQL/Supabase и прочих
+      не-sql kind'ов: `ObjectsQueryWorkspace.razor(.cs)` (~150: композиция, выбор редактора по `Kind`) ·
+      `ObjectsCatalogTree.razor(.cs)` (~120: у файла одна группа без имени, у rest — группы по
+      HTTP-методам) · `ObjectsTabBar` + `ObjectsToolbar` (~90: «Выполнить блок», «Сохранить», «дубль»,
+      «удалить блок», «.http») · `Editors/File/*` (~140: LINQ-редактор, подсказки `Val.*`, выбор листа) ·
+      `Editors/Rest/*` (~330 на троих: документ `.http`, `OperationParametersForm` — переносится как
+      есть из `.razor:229-268`, переходы по блокам). Логика документа переезжает из
+      `DocumentTabActions` (`OpenDocumentAsync:589-630`, `OpenDocumentBlockAsync:632-676`,
+      `SaveDocumentAsync:687-711`, `DuplicateDocumentBlockAsync:713-738`, `RemoveDocumentBlockAsync:740-758`,
+      `CursorLineAsync`, `OnEditorSaveAsync`).
+- [ ] E4. Общий низкий уровень `Front/Shared/` — `ResultTable.razor(.cs)` (~150: строки, ячейки,
+      `data-full`, json-переключение, копирование; сейчас разметка `QueryResultGrid.razor:41-110`) ·
+      `QueryTabBase.cs` (Title/Loading/Error/Result, от него `SqlTab`/`FileTab`/`RestTab`; общий
+      `QueryTab` остаётся только базой) · чистые классы, вынесенные из старого грида: `GuidColumnDetector`
+      (guid-детект `:88-134`), `CellEditState` (ручная стейт-машина правки `:159-236`), `QueryResultJson`
+      (json-проекция `:339-396`), `RowUpdateSaver` (`SaveAsync:244-295`), `ColumnIndex/GetValue`
+      (`:339-356`) — нужны только `SqlResultGrid`/`RestResultView`.
+      Попутно (те же грабли, что были в общем компоненте): тройка `_editorReady/_editorNeedsSync/_editorLang`
+      (`:61-66`, пишется из 8 мест) — один `SyncEditorAsync`; сброс вкладки в `OpenObjectAsync:551-558`
+      заменить на существующий `QueryTab.Reset()`; двойной запуск загрузки (сеттер параметра `:41` +
+      `OnInitialized:187`) — один; `record CatalogEntry` (`:108`) и поле `_viewSource` (`:799`) убрать
+      из середины класса к полям. `CodeEditor2` пересоздаётся по `@key="EditorLang"` и сбрасывает
+      `_editorReady` — при выносе панелей `@ref` редактора не трогать; вкладку передавать параметром,
+      а не ссылкой на страницу.
+- [ ] E5. `Components/EditDatasourceOptions.razor` (432) — по веткам разметки: `DatasourceKindForm`
+      (kind/driver/connectionstring, `:37-83`), `RestSourceForm` (baseUrl, каталог, таймаут, доступы —
+      `:84-202`), `FileSourceForm` (файлы, разделитель, заголовки — `:203-227`), `@code:254-433`
+      (13 предикатов kind/auth, `RepairUnknownKinds`) — в `.razor.cs`. Попутно: `opt = opt;` (`:353-357`)
+      — трюк перерисовки; валидация slug (`:367-376`) дублирована в `PartDataSourceActions.razor:33`;
+      ~15 одинаковых пар «label + поле настроек» — вынести в один маленький `SettingField`.
+- [ ] E6. Мелкие дубли Front: общий шаблон диалога (`CellValueDialog`, `CreateViewDialog`,
+      `SqlPreviewDialog`, `ViewDefinitionDialog` — 4 копии обвязки Header/Body/Footer/`OkAsync`),
+      спиннеры 3× → `SharedLoader2`, ошибки → `ExceptionMessage`, подтверждения
+      (`ConfirmChangeAsync:1001-1013`, `DropViewAsync:890-899`) → готовый
+      `DialogExtensions.MarsDeleteConfirmation`, `SqlDialectMapping.Dialect(source?.Driver)` (6 точек:
+      `DatabaseQueryWorkspace.razor.cs:166,780,791,813,882`, `QueryResultGrid.razor.cs:334`) — один
+      член/хелпер. Проверено, что всё перечисленное существует в `src/Admin/Mars.Admin.Framework`.
+- [ ] E7. Словарь и снос SQL-входов из публичной поверхности (решение пользователя: «снести совсем,
+      ничего не оставлять»). Снести: `IDatasourceService.{DatabaseStructure,RefreshStructure,Columns,Tables}`,
+      эндпоинты `DatasourceController.{Columns,Tables,DatabaseStructure,RefreshStructure}` (`:40-54,92`),
+      методы `IDatasourceServiceClient`/`DatasourceServiceClient` (`:18,27,30-49`),
+      `QTableResponse`/`QTableSchemaResponse`/`QTableColumnResponse`/`QDatabaseStructureResponse`,
+      `Mappings/DataSourceMapping`, закомментированный хвост `DatasourceService.cs:387-450`; в
+      `IDatasourceDriver` убрать `Tables()/Columns()` (`:20-21`) — они нужны только самому sql-драйверу.
+      AiChat глушим: `src/Mars.Modules/Mars.AiChat.Host/Tools/MarsSqlTools.cs:64-85` (вызов
+      `DatabaseStructure` и обход `Tables/Columns`) снимается, инструмент переедет на каталог в конце
+      инициативы (решение 15) — сам модуль AiChat не развиваем.
+      Переименовать только «протечки» SQL-лексики в общий мир: `QColumnMapping`/`QColumnKind` →
+      `FieldTypeMapping`/`FieldKind` (ими пользуются `FileTypeInference` и `JsonTypeInference`),
+      `DatasourceCatalogColumn` → `DatasourceCatalogField`, `QueryColumn` + `QueryResultDto.Columns` →
+      `DatasourceField` + `.Fields`, `QueryResultDto.DatabaseDriver` → `SourceDriver`.
+      **Не переименовывать:** SQL-словарь внутри `Workspaces/Sql` и серверных провайдеров (`QTable*`,
+      `QDatabaseStructure*`, `BrowseSqlBuilder`, `SqlDialectMapping`, `SqlSafety`, `ViewDdlBuilder`,
+      `RowUpdateBuilder`, `QTableKind`); `SqlNode` (`TypeId => GetType().FullName!`,
+      `src/Mars.Nodes/Mars.Nodes.Core/Node.cs:17` — иначе сохранённые flows дадут `UnknownNode`);
+      `DatasourceOption` (ключ опции в БД = `typeof(T).Name`, `OptionService.cs:79,255-256`, и по имени
+      класса секреты закрыты в `MarsOptionsTools.cs:23`); имена файлов `requests.http`/`catalog.json`.
+      Тесты: `Mars.WebApiClient.Integration.Tests/Tests/Datasources/DataSourceTests.cs` (методы
+      зафиксированы `nameof` — снос ломает компиляцию), `Datasource.Integration.Tests/Engines/*`,
+      `WordPressDatasourceTests` (правится на `Fields`).
+- [ ] E8. Проверка: `dotnet build Mars.slnx` (0/0); точечно — `Mars.Datasource.Integration.Tests`
+      по `-namespace …Engines|…FileProviders|…RestProviders` и HTTP-контракт в
+      `Mars.WebApiClient.Integration.Tests`; руками — `/datasource/query` на источниках sql/file/rest
+      (`Workspaces/Sql`, `Workspaces/Objects`): дерево, вкладки, выполнение, документ `.http`, вьюхи,
+      форма параметров, правка ячейки. Автотестов на razor в репо нет (UI проверяется при разработке,
+      отдельным прогоном не гоняем); для вынесенной чистой логики (`GuidColumnDetector`,
+      `QueryResultJson`) тесты можно добавить. Если правки задели js/css — bump `MarsAppVersion`.
 
 ## 6. Проверка
 

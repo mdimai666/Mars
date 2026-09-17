@@ -6,6 +6,9 @@ public class SelectDatasourceDto
     public string Slug { get; set; } = default!;
     public string Driver { get; set; } = default!;
 
+    /// <summary>Тип источника: по нему выбирается страница запросов (SQL или объекты).</summary>
+    public string Kind { get; set; } = DatasourceKind.Sql;
+
     public SelectDatasourceDto()
     {
 
@@ -16,5 +19,6 @@ public class SelectDatasourceDto
         Title = config.Label;
         Slug = config.Slug;
         Driver = config.Driver;
+        Kind = config.Kind;
     }
 }

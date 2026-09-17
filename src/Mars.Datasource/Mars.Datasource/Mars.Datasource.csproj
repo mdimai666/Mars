@@ -13,6 +13,7 @@
         <ProjectReference Include="..\Mars.Datasource.Providers.MsSQL\Mars.Datasource.Providers.MsSQL.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Providers.MySQL\Mars.Datasource.Providers.MySQL.csproj" />
         <ProjectReference Include="..\Mars.Datasource.Providers.PostgreSQL\Mars.Datasource.Providers.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.Rest\Mars.Datasource.Providers.Rest.csproj" />
     </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@ using Mars.Datasource.Providers.File;
 using Mars.Datasource.Providers.MsSQL;
 using Mars.Datasource.Providers.MySQL;
 using Mars.Datasource.Providers.PostgreSQL;
+using Mars.Datasource.Providers.Rest;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +23,8 @@ public static class MainDatasource
                    .AddDatasourcePostgreSql()
                    .AddDatasourceMsSql()
                    .AddDatasourceMySql()
-                   .AddDatasourceFile();
+                   .AddDatasourceFile()
+                   .AddDatasourceRest();
 
     public static IApplicationBuilder UseDatasource(this IApplicationBuilder app)
     {

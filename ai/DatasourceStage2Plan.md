@@ -5,11 +5,12 @@
 Этот план — про не-SQL источники. Ветка `ai/datasource-rework-stage2` (от `ai/datasource-rework`).
 По закрытии обеих инициатив схлопнуть в один `ai/DatasourceGuide.md` ([PlanLifecycleGuide.md](./PlanLifecycleGuide.md)).
 
-Статус 2026-09-16: **этапы A (каркас kind'ов) и B (file-источник) сделаны целиком, включая фронт**;
-этап C (rest) не начат. Проверено: `dotnet build Mars.slnx` — 0 ошибок/0 предупреждений;
-`Mars.Datasource.Integration.Tests` 296/296; `Mars.WebApiClient.Integration.Tests` (Datasource) 15/15.
-На default-источнике страница работает как раньше (проверил пользователь). **File-источник глазами
-не проверяли**: форма настроек и дерево файла ждут проверки в браузере.
+Статус 2026-09-17: **этапы A (каркас kind'ов), B (file-источник) и C (rest-источник на WordPress)
+сделаны целиком, включая фронт**. Проверено: `dotnet build Mars.slnx` — 0 ошибок/0 предупреждений;
+`Mars.Datasource.Integration.Tests` 408/408; `Mars.WebApiClient.Integration.Tests` (Datasource) 17/17;
+rest на живом WordPress в Docker — 8/8 (`WordPressDatasourceTests`, скипнуты константой `SkipTest`).
+На default-источнике страница работает как раньше (проверил пользователь). **File- и rest-источник
+глазами не проверяли**: форма настроек, дерево и запрос ждут проверки в браузере.
 
 ## 1. Направление
 
@@ -66,10 +67,10 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
 
 | Артефакт | Где | Содержимое |
 |---|---|---|
-| **Конфиг** | `DatasourceOption` (как сейчас) | `Kind`, `Driver`, `Title`, `Slug`, `Disabled`, `Settings` (baseUrl, ссылка на auth-конфиг, язык запроса, таймауты) + **только ссылка** на каталог: `origin`, `fetchedAt`, `hash` |
-| **Документ пользователя** | `data/datasource/<slug>/requests.http` | именованные запросы, дубли, заготовки, переменные — то, что человек правит в Monaco |
-| **Каталог discovery** | `data/datasource/<slug>/catalog.json` (+ `catalog.source.json` — сырой swagger/wp-json) | операции со схемами: `name`, `method`, `path`, `params[{in,type,required,default,enum,description}]`, `responseShape` |
-| **Файлы источника** (file-kind, позже) | `data/datasource/<slug>/files/…` | CSV/XLSX внешних таблиц — данные источника, не контент сайта, поэтому не в медиа |
+| **Конфиг** | `DatasourceOption` (как сейчас) | `Kind`, `Driver`, `Title`, `Slug`, `Disabled`, `Settings`: у rest — `baseUrl`, `discovery`, `discoveryUrl`, `timeoutSec`, `authMode` и доступы; у file — `files`, `hasHeaders`, `delimiter`. Метаданных каталога (`origin`/`fetchedAt`/`hash`) в опции нет — не понадобились |
+| **Документ пользователя** | `data/datasource/<slug>/requests.http` | именованные запросы, дубли, заготовки, переменные — то, что человек правит в Monaco (пока только файлом, см. открытый вопрос 7) |
+| **Каталог discovery** | `data/datasource/<slug>/catalog.json` | группы операций в wire-модели `DatasourceCatalogGroup` (id/name/parameters/defaultQuery). Сырой swagger/wp-json (`catalog.source.json`) не сохраняем: он в десятки раз больше, а пересобрать каталог — один запрос |
+| **Файлы источника** (file-kind) | медиа-хранилище Mars или диск хоста | решение 2026-09-16: это контент сайта, в data-корень их не копируем; в `Settings["files"]` — ссылки |
 
 - Хранилище — keyed **`"data"` `IFileStorage`**: регистрирует `MainServer.UseFileStorages`
   (`src/Server/Mars.Server/MainServer.cs:153-168`, `PhysicalPath = ContentRootPath/data`), фолбэк для
@@ -82,9 +83,9 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
 - Дерево и форма параметров грузятся своим эндпоинтом `GET api/Datasource/Catalog(slug)` — по образцу
   уже работающего `DatabaseStructure(slug)` с серверным кэшем. В опцию и в WASM большой JSON не
   попадает никогда.
-- **Документ — данные пользователя, каталог — regenerable.** Ре-импорт не перезаписывает документ,
-  а предлагается как дифф/merge (так в Postman: import → merge or replace). «Создать дубль и
-  заготовку» — операция над документом, каталога не касается.
+- **Документ — данные пользователя, каталог — regenerable.** Ре-импорт («обновить» в дереве)
+  перезаписывает только `catalog.json` и никогда не трогает `requests.http`; дифф/merge как в Postman
+  не делали — свои настройки операций пока нечего беречь (открытый вопрос 1).
 - Паттерн «маленькая ссылка + отдельное тело» в Mars уже есть: `HttpRequestNode.AuthConfig` —
   `InputConfig<AuthFlowConfigNode>` (`src/Mars.Nodes/Mars.Nodes.Core/Nodes/Network/HttpRequestNode.cs:24`),
   тело в config-узле, резолвится `RNS.GetConfig(...)` (`HttpRequestNodeImpl.cs:31`, `NodeRuntime.cs:198`).
@@ -225,22 +226,52 @@ Power Platform custom connectors (OpenAPI + auth → поля рисует ди�
       Windows-путь с `:` в идентификаторе, `hasHeaders=false`, xlsx-лист, отказы, capabilities,
       DI-регистрация).
 
-### Этап C. rest-kind (WordPress)
+### Этап C. rest-kind (WordPress) — сделано 2026-09-17
 
-- [ ] C1. `Mars.Datasource.Providers.Rest`: discovery — OpenAPI (`Microsoft.OpenApi`), индекс
-      `wp-json` (routes→endpoints→args), manual/AI как фолбэк; всё даёт один `QCatalog`.
-- [ ] C2. Документ `.http` (синтаксис VS Code REST Client) + серверный парсер → операции; выполнение
-      через `HttpClient` + `AuthFlowHandler`/`AuthConfig`; ответ: массив объектов → колонки+строки,
-      иначе `Json`.
-- [ ] C3. Запись (POST/PUT/DELETE) + подтверждение опасного действия (аналог `SqlSafety.IsDestructive`
-      — по методу и наличию тела).
-- [ ] C4. `X-WP-Total`/`X-WP-TotalPages` → `Total`/`TotalNote` в гриде; пагинация `page`/`per_page`
-      из схемы параметров.
-- [ ] C5. Front: дерево = именованные запросы документа (`# @name`), форма параметров из схемы
-      каталога как дополнение к Monaco; язык `http` в бандле monaco отсутствует → `plaintext`
-      (подсветка позже).
-- [ ] C6. Тесты: парсер `.http` (юнит), discovery по индексу WP и выполнение — на
-      `WordPressFixture` (Docker + интернет + `git` в PATH).
+- [x] C1. `Mars.Datasource.Providers.Rest` (новый проект, в `Mars.slnx` и в агрегаторе
+      `AddDatasourceRest()`): два сборщика каталога за одним интерфейсом `IRestCatalogDiscovery` —
+      `WordPressRestDiscovery` (индекс `/wp-json/wp/v2`: `routes → endpoints → args`, маршрут-регулярка
+      `(?P<id>[\d]+)` → путь `{id}` + параметр path, GET-аргументы → query, остальные → body, группы —
+      пространства имён) и `OpenApiRestDiscovery` (`Microsoft.OpenApi` 2.7.5: `paths → operations`,
+      `parameters` + свойства схемы `requestBody`, группы — теги). Третий режим `discovery=none` —
+      каталог только из документа пользователя. Manual/AI-заполнение не делали: его заменяет документ.
+- [x] C2. Документ `.http` в `data/datasource/<slug>/requests.http` (вернулся `IDatasourceStore`,
+      реализация `DatasourceStore` в Host поверх keyed `"data"` `IFileStorage`): парсер
+      `HttpDocumentParser` — блоки `###`, имя `# @name` (иначе подпись разделителя), переменные
+      `@name = value` (документные и блочные), подстановки `{{name}}`, системные `$guid/$timestamp/
+      $isoTimestamp/$datetime/$randomInt` (переменных окружения нет намеренно — документ приходит
+      из браузера), заголовки до пустой строки, тело — до следующего блока. Выполнение:
+      `RestRequestBuilder` → `RestExecutor` → `HttpClient` c `AuthFlowHandler`/`AuthConfig`
+      (`Mars.HttpSmartAuthFlow`), клиенты кэширует `RestHttpClientCache` (ключ — отпечаток настроек,
+      `PooledConnectionLifetime` 5 мин). Ответ: `RestResponseMapping` — массив объектов → колонки
+      и строки, объект → одна строка + документ в `QueryResultDto.Json`, не-JSON → ячейка `response`.
+- [x] C3. Запись: метод из текста запроса решает всё — `Query` выполняет любой метод, `Modify` отдаёт
+      `SqlNonQueryResultActionDto`; `RestSafety.IsWrite`/`FirstMethod` (в Abstractions, рядом с
+      `SqlSafety`) — по ним фронт показывает подтверждение «Запрос POST меняет данные источника».
+      Тело для записи без тела собирается из параметров (числа и булевы — своим типом), `Content-Type`
+      берётся из документа, иначе `application/json`.
+- [x] C4. `X-WP-Total` → `QueryResultDto.Total` (новое поле) → `QueryTab.Total` → «строк: N из M»
+      в гриде; `page`/`per_page` приходят из схемы параметров операции в форму под редактором.
+- [x] C5. Front: дерево = операции discovery + группа «Запросы» из документа (объект — именованный
+      запрос, `DefaultQuery` = текст его блока), открытие операции подставляет заготовку
+      `GET {{baseUrl}}/wp/v2/posts` в Monaco, язык `plaintext` (`http` в бандле нет; в
+      `CodeEditor2.Language` добавлен `plaintext`), форма параметров операции (`in · type`, enum —
+      select, placeholder — default) над редактором, подтверждение записи, ответ документом сам
+      открывает json-вид, подсказка про синтаксис `.http`. Форма настроек: тип источника
+      «REST API — WordPress, OpenAPI», `baseUrl` (с проверкой), способ сбора каталога, адрес описания,
+      таймаут, доступ (none/basic/bearer/apiKey/cookieForm) с полями по режиму.
+- [x] C6. Тесты: `tests/Mars.Datasource.Integration.Tests/RestProviders/` — парсер `.http` (30),
+      discovery WordPress (13), `RestRequestBuilder` (23), `RestResponseMapping` (13), провайдер
+      с подменными сетью/discovery/хранилищем (23), `DatasourceStoreTests` (8); HTTP-контракт —
+      `Drivers_Request_Success` ждёт rest, `TestConnection_RestWithoutDiscovery_Succeeds`,
+      `TestConnection_RestWithoutBaseUrl_ReportsMissingAddress`. Живой WordPress —
+      `tests/ExternalServices.Integration.Tests/WordPressTests/WordPressDatasourceTests.cs` (8:
+      discovery по индексу, сохранение и повторное чтение каталога, чтение постов таблицей,
+      параметры в query string, одиночный пост документом, Basic Auth, 401 без доступа,
+      создание и удаление поста) — скипнуты константой `SkipTest`, как остальные тесты стенда.
+      Стенд починен: WordPress 5.6+ отвечает 401 на Basic Auth пользователя (встроенные Application
+      Passwords перехватывают заголовок) — отключены mu-плагином `MountFiles/disable-app-passwords.php`,
+      а недоклонированный каталог плагина (один `.git`) фикстура теперь пересоздаёт.
 
 ### Этап D. Очередь (в этой ветке не делаем, место в модели держим)
 
@@ -255,11 +286,17 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 
 - Сборка: `dotnet build Mars.slnx`.
 - Новые юнит-тесты: парсеры (CSV/XLSX/`.http`), normalizer `Kind`, Dynamic LINQ-запрос, хранилище
-  документа на `InMemoryFileStorage`.
+  документа и каталога на `InMemoryFileStorage`, discovery WordPress и OpenAPI, построитель
+  HTTP-запроса и разбор ответа.
 - `tests/Mars.Datasource.Integration.Tests` — новые провайдеры (движковые тесты не трогаем).
+  Запуск с фильтром: `…\Mars.Datasource.Integration.Tests.exe -namespace …RestProviders`
+  (MTP xUnit v3 понимает `-filter "/сборка/namespace/класс/метод"`, `-class`, `-namespace`, `-method`;
+  `--filter` и `--treenode-filter` — нет).
 - HTTP-контракт новых эндпоинтов: `tests/Mars.WebApiClient.Integration.Tests/Tests/Datasources/DataSourceTests.cs`.
-- rest-kind: `tests/ExternalServices.Integration.Tests/WordPressTests` (нужны Docker, интернет, `git`;
-  тесты скипнуты константой `SkipTest` — на время фазы обнулять, обратно не забывать).
+- rest-kind на живом API: `tests/ExternalServices.Integration.Tests/WordPressTests/WordPressDatasourceTests.cs`
+  (нужны Docker, интернет, `git`; скипнуты константой `SkipTest` — на время фазы снимать
+  `[IntegrationFact(Skip = …)]` у своих тестов, обратно не забывать: обнуление `SkipTest` включает
+  и нагрузочный тест на 1000 запросов).
 - UI — визуально при разработке фазы (тестов на Razor-компоненты в репо нет), отдельным прогоном не проверять.
 
 ## 7. Грабли и инварианты
@@ -316,9 +353,49 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 - Страница `/datasource/actions` (`DataSourceInfoComponent`) показывает pg-кнопки для источника
   любого типа: сервер отвечает внятной ошибкой «доступно только для PostgreSQL, а источник … — file».
   Скрывать кнопки по kind'у не стали — компонент не знает тип источника, а ошибка безопасна.
-- Файлы источника пока кладутся вручную в `data/datasource/<slug>/files/` — загрузки через админку нет.
+- В data-корне у источника только служебные тела — `datasource/<slug>/requests.http` и
+  `datasource/<slug>/catalog.json` (`IDatasourceStore`); файлы file-источника лежат в медиа или на
+  хосте (`IDatasourceFileSource`), загрузки их через админку нет — путь вводят руками.
 - `Tables`/`Columns`/`DatabaseStructure`/`RefreshStructure` остались (их пользуют AiChat-схема и тесты),
   фронт рабочей области ходит только в `Catalog`/`RefreshCatalog`.
+
+Грабли rest-kind (2026-09-17):
+
+- **`Microsoft.OpenApi` 2.x — не тот API, что в 1.x.** Типы живут в `Microsoft.OpenApi` (namespace
+  `.Models` удалён), `OpenApiFormat` исчез: чтение — `OpenApiDocument.LoadAsync(stream, format: null,
+  settings, ct)` → `ReadResult { Document, Diagnostic }`; `Paths` — `IDictionary<string, IOpenApiPathItem>`,
+  `Operations` — `Dictionary<System.Net.Http.HttpMethod, OpenApiOperation>`, `Tags` — `ISet<OpenApiTag>`,
+  `parameter.In` — `ParameterLocation?`, `parameter.Required` — `bool`, а обязательность полей тела —
+  `requestBody.Schema.Required` (`ISet<string>`), `schema.Type` — `JsonSchemaType?`. Версию пиним в
+  `Directory.Packages.props` (2.7.5, приходит транзитивно от Swashbuckle). Состав API проверяли
+  рефлексией по DLL из nuget-кэша через pwsh — быстрее, чем угадывать по сборке.
+- **`[GeneratedRegex]` требует модификатор доступа**: `static partial Regex X()` без `private` даёт
+  CS8796 (ошибка прилетает и из сгенерированного файла).
+- **`RestSourceSettings.Combine` обязан работать с не-URI baseUrl**: в заготовке операции адрес —
+  переменная `{{baseUrl}}`, и `new Uri("{{baseUrl}}/")` падал `UriFormatException` на ровном месте.
+- **`Content-Type` принадлежит телу**: `StringContent` ставит `text/plain`, а повторный
+  `TryAddWithoutValidation("Content-Type", …)` по занятому заголовку молча возвращает false —
+  mediaType надо передавать в конструктор `StringContent`, а из перебора заголовков его пропускать.
+- **JSON по умолчанию экранирует кириллицу** (`\u041f\u0440…`): тело запроса, значения json-колонок
+  и сохранённый каталог сериализуем с `JavaScriptEncoder.UnsafeRelaxedJsonEscaping` (`RestJson`).
+- **`ConnectionStringTestDto` с `default!` в non-nullable свойствах → HTTP 400**: ASP.NET Core
+  считает non-nullable ссылочные свойства обязательными, и проверка rest-подключения без `Driver` и
+  `ConnectionString` не доходила до сервиса («One or more validation errors occurred»). Дефолты — `""`.
+- **`TestConnection` форсирует discovery** (`IDatasourceDiscoverableProvider.Discover`), иначе
+  сохранённый `catalog.json` временного конфига (`test_<kind>`) показывал бы успех при нерабочих настройках.
+- **Каталог discovery сохраняется при первом же `Catalog()`**, а не только в `Discover()`: дерево и
+  `TestConnection` не должны ходить в сеть на каждое открытие, «обновить» — единственный принудительный
+  ре-импорт. Документ `requests.http` при этом перечитывается каждый раз — он данные пользователя.
+- **Параметры запроса — это переменные документа**: `{{name}}` и `{name}` в тексте важнее формы,
+  а не упомянутые в тексте параметры уходят в query (чтение) или в JSON-тело (запись). Дубль
+  исключают проверки «имя упомянуто в тексте» и «ключ уже есть в query».
+- **`HttpRequestMessage` освобождает провайдер** (`using`): в тестах запрос надо копировать
+  (метод, URL, тело, заголовки) внутри `HttpMessageHandler`, а не читать после выполнения.
+- **Стенд WordPress: Basic Auth пользователя не работает из коробки.** WordPress 5.6+ сам разбирает
+  `Authorization: Basic` как Application Passwords и отвечает 401, поэтому плагин WP-API/Basic-Auth
+  бесполезен, пока встроенный механизм включён — отключаем mu-плагином. Вторая грабля стенда:
+  прерванный `git clone` оставляет каталог с одним `.git`, фикстура считает его готовым, и WordPress
+  сообщает «The 'basic-auth' plugin could not be found» уже после успешной установки.
 
 ## 8. Отклонено (с причинами)
 
@@ -337,12 +414,21 @@ GraphQL (introspection; язык `graphql` в бандле есть) · Supabase
 
 ## 9. Открытые вопросы
 
-1. Ре-импорт каталога: merge/replace и показ диффа — в первом проходе rest-kind или позже.
+1. ~~Ре-импорт каталога: merge/replace и показ диффа~~ — сделано replace: «обновить» в дереве зовёт
+   `Discover` и перезаписывает `catalog.json`, диффа нет. Вернёмся, если появится кастомизация
+   операций (свои имена/описания), которую жалко терять при ре-импорте.
 2. Концепт «большое в `/data`» — внести в `ai/ProjectStructureGuide.md` отдельной правкой?
 3. Выбор файла источника из медиа в форме настроек (пикер вместо ручного ввода пути) — делать ли.
 4. Сортировка/проекция для file-kind: раз предикатом `Where` цепочку не выразить (грабли),
    делаем ли клик по заголовку грида серверным `OrderBy` для всех kind'ов.
 5. Подсветка `.http` своим monarch — когда (после прототипа).
-6. `SqlNode` показывает все источники, включая file: запрос с `Language=sql` к файлу даст ошибку
-   разбора предиката. Чинится в шаге про ноды (решение 15 — ноды пока не трогаем): нужен `Kind`
-   в `SelectDatasourceDto` и фильтр в форме узла.
+6. `SqlNode` показывает все источники, включая file и rest: запрос с `Language=sql` к файлу даст
+   ошибку разбора предиката, к rest-источнику — ошибку разбора `.http`. Чинится в шаге про ноды
+   (решение 15 — ноды пока не трогаем): нужен `Kind` в `SelectDatasourceDto` и фильтр в форме узла.
+7. **Документ `requests.http` пока не редактируется из UI**: рабочая область выполняет текст вкладки,
+   но не сохраняет его в документ, а дерево читает документ с диска (`data/datasource/<slug>/requests.http`).
+   «Создать дубль и заготовку» из сценария пользователя — это следующий шаг: нужны сохранение вкладки
+   в документ (эндпоинт + кнопка), создание заготовки из операции и удаление запроса.
+8. Доступы rest-источника (пароль, apiKey, clientSecret) лежат в опции открытым текстом — как
+   connection string sql-источника. До системного секрет-слоя так и остаётся; в сообщениях об ошибках
+   и в логах их не выводим, ключ кэша клиентов — отпечаток (SHA256), а не сами настройки.

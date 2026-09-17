@@ -52,6 +52,42 @@ public class DataSourceTests : BaseWebApiClientTests
 
         // Файловый провайдер подключается тем же реестром: у него нет ни движка, ни строки подключения.
         result.Should().Contain(d => d.Kind == DatasourceKind.File && d.Driver == "");
+        result.Should().Contain(d => d.Kind == DatasourceKind.Rest && d.Driver == "");
+    }
+
+    [IntegrationFact]
+    public async Task TestConnection_RestWithoutDiscovery_Succeeds()
+    {
+        //Arrange
+        _ = nameof(DatasourceController.TestConnection);
+        var client = GetWebApiClient();
+        var connection = new ConnectionStringTestDto
+        {
+            Kind = DatasourceKind.Rest,
+            Settings = new Dictionary<string, string> { [DatasourceSettings.Discovery] = RestDiscovery.None },
+        };
+
+        //Act
+        var result = await client.Datasource().TestConnection(connection);
+
+        //Assert
+        result.Ok.Should().BeTrue(result.Message);
+        result.Message.Should().Contain("0 objects");
+    }
+
+    [IntegrationFact]
+    public async Task TestConnection_RestWithoutBaseUrl_ReportsMissingAddress()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var connection = new ConnectionStringTestDto { Kind = DatasourceKind.Rest };
+
+        //Act
+        var result = await client.Datasource().TestConnection(connection);
+
+        //Assert
+        result.Ok.Should().BeFalse();
+        result.Message.Should().Contain("Не задан адрес API");
     }
 
     [IntegrationFact]

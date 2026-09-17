@@ -340,13 +340,15 @@ public partial class QueryResultGrid
     }
 
     /// <summary>
-    /// Результат как JSON: json-колонки разворачиваются вложенными объектами,
-    /// остальные значения остаются строками.
+    /// Результат как JSON: источник мог отдать ответ документом (rest) — тогда показываем его как есть,
+    /// иначе собираем из строк, разворачивая json-колонки вложенными объектами.
     /// </summary>
     string? resultJsonText
     {
         get
         {
+            if (!string.IsNullOrWhiteSpace(Result.Json)) return Result.Json;
+
             if (!Result.Ok) return null;
 
             JsonArray array = new();

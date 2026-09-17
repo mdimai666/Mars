@@ -34,6 +34,15 @@ public class QueryResultDto : IUserActionResult<string[][]?>
     public string Command { get; set; } = "";
 
     /// <summary>
+    /// Ответ документом: есть у источников, чей ответ не раскладывается в таблицу
+    /// (объект JSON, текст, XML). Табличные ответы его не заполняют.
+    /// </summary>
+    public string? Json { get; set; }
+
+    /// <summary>Сколько всего записей у источника, если он это сообщил (WordPress <c>X-WP-Total</c>).</summary>
+    public long? Total { get; set; }
+
+    /// <summary>
     /// Проекция в старый формат (первая строка — заголовки). Её читают ноды и AI-инструменты,
     /// поэтому она не уезжает по HTTP и NULL в ней приводится к пустой строке.
     /// </summary>

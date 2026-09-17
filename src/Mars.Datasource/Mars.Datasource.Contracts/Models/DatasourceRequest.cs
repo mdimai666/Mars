@@ -5,6 +5,7 @@ public static class DatasourceKind
 {
     public const string Sql = "sql";
     public const string File = "file";
+    public const string Rest = "rest";
 }
 
 /// <summary>Язык текста в <see cref="DatasourceRequest.Query"/>.</summary>
@@ -12,6 +13,9 @@ public static class DatasourceLanguage
 {
     public const string Sql = "sql";
     public const string Linq = "linq";
+
+    /// <summary>HTTP-запрос в синтаксисе VS Code REST Client (`.http`).</summary>
+    public const string Http = "http";
 }
 
 /// <summary>

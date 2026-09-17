@@ -54,10 +54,17 @@ public class QueryTab
     /// <summary>Несохранённые правки ячеек: (индекс строки, колонка) → новое значение.</summary>
     public Dictionary<(int Row, string Column), string?> Changes { get; } = [];
 
-    public bool CanEdit => Object is not null && SourceWritable && KeyColumns.Count > 0;
+    /// <summary>
+    /// Значения параметров открытой операции: уходят в запрос как переменные и поля строки запроса.
+    /// Пустое значение означает «параметр не отправляем».
+    /// </summary>
+    public Dictionary<string, string?> ParameterValues { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Почему правка ячеек выключена; null — правка доступна или объект не открыт.</summary>
-    public string? EditDisabledReason => Object is null || CanEdit
+    /// <summary>Правка ячеек есть у таблиц с первичным ключом: операцию REST и файл так править нельзя.</summary>
+    public bool CanEdit => Object is { ObjectType: not DatasourceObjectType.Operation } && SourceWritable && KeyColumns.Count > 0;
+
+    /// <summary>Почему правка ячеек выключена; null — правка доступна, объект не открыт или ячеек у него нет.</summary>
+    public string? EditDisabledReason => Object is null || CanEdit || Object.ObjectType == DatasourceObjectType.Operation
         ? null
         : SourceWritable
             ? "правка недоступна: у объекта нет первичного ключа"

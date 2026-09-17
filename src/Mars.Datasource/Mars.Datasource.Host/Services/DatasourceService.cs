@@ -138,7 +138,13 @@ internal class DatasourceService : IDatasourceService
 
         try
         {
-            var catalog = await _registry.Resolve(tmpConfig).Catalog();
+            var provider = _registry.Resolve(tmpConfig);
+
+            // Проверка подключения — всегда живой запрос: сохранённый каталог её не заменяет.
+            var catalog = provider is IDatasourceDiscoverableProvider discoverable
+                ? await discoverable.Discover()
+                : await provider.Catalog();
+
             var objects = catalog.Groups.Sum(group => group.Objects.Count);
 
             return new UserActionResult()
@@ -210,7 +216,12 @@ internal class DatasourceService : IDatasourceService
 
     public async Task<DatasourceCatalog> RefreshCatalog(string slug)
     {
-        var catalog = await _registry.Resolve(GetConfig(slug)).Catalog();
+        var provider = _registry.Resolve(GetConfig(slug));
+
+        // У источника с discovery «обновить» перечитывает описание API, а не сохранённый каталог.
+        var catalog = provider is IDatasourceDiscoverableProvider discoverable
+            ? await discoverable.Discover()
+            : await provider.Catalog();
 
         _catalogCache[slug] = (catalog, DateTime.UtcNow);
 

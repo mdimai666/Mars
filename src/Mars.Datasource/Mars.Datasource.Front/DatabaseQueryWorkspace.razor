@@ -166,7 +166,7 @@ else
                         }
                     </div>
 
-                    @if (activeTab?.Object is { } currentObject)
+                    @if (activeTab?.Object is { Columns.Count: > 0 } currentObject)
                     {
                         <details class="flex-shrink-0 px-2 fz14px">
                             <summary class="text-secondary">структура: @currentObject.Columns.Count колонок</summary>
@@ -180,6 +180,46 @@ else
                                         }
                                         @column.Name <span class="text-secondary">@QColumnMapping.ShortTypeName(column.DataTypeName)</span>
                                     </span>
+                                }
+                            </div>
+                        </details>
+                    }
+
+                    @if (activeTab?.Object is { Parameters.Count: > 0 } operation)
+                    {
+                        <details class="flex-shrink-0 px-2 fz14px" open>
+                            <summary class="text-secondary">параметры: @operation.Parameters.Count</summary>
+                            <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-2 pt-1">
+                                @foreach (var parameter in operation.Parameters)
+                                {
+                                    <div class="col">
+                                        <label class="text-nowrap" title="@parameter.Description">
+                                            @parameter.Name
+                                            @if (parameter.Required)
+                                            {
+                                                <span class="text-danger">*</span>
+                                            }
+                                            <span class="text-secondary">@parameter.In · @parameter.Type</span>
+                                        </label>
+                                        @if (parameter.Enum is { Count: > 0 } allowed)
+                                        {
+                                            <select class="form-select form-select-sm"
+                                                    value="@ParameterValue(parameter.Name)"
+                                                    @onchange="@(args => SetParameter(parameter.Name, args.Value?.ToString()))">
+                                                <option value=""></option>
+                                                @foreach (var value in allowed)
+                                                {
+                                                    <option value="@value" selected="@(ParameterValue(parameter.Name) == value)">@value</option>
+                                                }
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control form-control-sm" placeholder="@parameter.Default"
+                                                   value="@ParameterValue(parameter.Name)"
+                                                   @onchange="@(args => SetParameter(parameter.Name, args.Value?.ToString()))" />
+                                        }
+                                    </div>
                                 }
                             </div>
                         </details>
@@ -211,6 +251,17 @@ else
                         else if (IsSql)
                         {
                             <div class="text-secondary p-2">Выберите объект слева или напишите запрос и нажмите «Выполнить».</div>
+                        }
+                        else if (IsRest)
+                        {
+                            <div class="text-secondary p-2">
+                                <div>Выберите операцию слева — в редакторе появится заготовка запроса.</div>
+                                <div class="fz14px mt-1">
+                                    Синтаксис <code>.http</code>: <code>GET {{baseUrl}}/wp/v2/posts?per_page=10</code>,
+                                    заголовки через строку, тело после пустой строки, разделитель запросов <code>###</code>,
+                                    имя запроса <code># @@name posts</code>, переменные <code>@@var = 1</code> и <code>{{var}}</code>.
+                                </div>
+                            </div>
                         }
                         else
                         {

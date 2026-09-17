@@ -96,6 +96,9 @@ public class WordPressFixture : IAsyncLifetime
             .WithBindMount(Path.Combine(MountFilesDir, wp_install), wp_dest_dir + wp_install)
             .WithBindMount(WpCliPath(), "/usr/local/bin/wp")
             .WithBindMount(WpBasicAuthPluginPath(), wp_dest_dir + "wp-content/plugins/basic-auth")
+            // WordPress 5.6+ отвечает 401 на Basic Auth пользователя: встроенные Application Passwords
+            // перехватывают заголовок, поэтому отключаем их mu-плагином и оставляем работу плагину Basic-Auth.
+            .WithBindMount(Path.Combine(MountFilesDir, DisableAppPasswordsFile), wp_dest_dir + "wp-content/mu-plugins/" + DisableAppPasswordsFile)
             .Build();
 
         await _wordPressContainer.StartAsync();
@@ -150,6 +153,8 @@ public class WordPressFixture : IAsyncLifetime
 
     protected string MountFilesDir => SolutionPathHelper.Resolve("tests", "ExternalServices.Integration.Tests", "WordPressTests", "MountFiles");
 
+    const string DisableAppPasswordsFile = "disable-app-passwords.php";
+
     protected virtual int GetNextFreePort(int port = 0)
     {
         port = port > 0 ? port : new Random().Next(1, 65535);
@@ -198,13 +203,23 @@ public class WordPressFixture : IAsyncLifetime
     #region BasicAuthPlugin
     private const string WpBasicAuthPluginGitUrl = "https://github.com/WP-API/Basic-Auth";
     private const string WpBasicAuthPluginDirName = "t-wp-basic-auth";
+    private const string WpBasicAuthPluginFile = "basic-auth.php";
     private string WpBasicAuthPluginPath() => Path.Combine(Path.GetTempPath(), WpBasicAuthPluginDirName);
 
     private async Task EnsurePluginExistInTempPath()
     {
-        if (!Directory.Exists(WpBasicAuthPluginPath()))
+        var pluginPath = WpBasicAuthPluginPath();
+
+        // Прерванное клонирование оставляет каталог с одним .git: WordPress такой плагин не находит,
+        // а следующий запуск считает каталог готовым — поэтому недоделанный клон пересоздаём.
+        if (Directory.Exists(pluginPath) && !File.Exists(Path.Combine(pluginPath, WpBasicAuthPluginFile)))
         {
-            Directory.CreateDirectory(WpBasicAuthPluginPath());
+            Directory.Delete(pluginPath, true);
+        }
+
+        if (!Directory.Exists(pluginPath))
+        {
+            Directory.CreateDirectory(pluginPath);
 
             var startInfo = new ProcessStartInfo
             {

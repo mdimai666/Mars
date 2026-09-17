@@ -34,8 +34,9 @@ public partial class CodeEditor2 : IDisposable
         public static readonly string csharp = "csharp";
         public static readonly string sql = "sql";
         public static readonly string log = "log";
+        public static readonly string plaintext = "plaintext";
 
-        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql, log };
+        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql, log, plaintext };
     }
 
     [Parameter] public string Value { get; set; } = "";

@@ -22,6 +22,7 @@ public static class MainDatasource
     {
         services.AddSingleton<IDatasourceProviderRegistry, DatasourceProviderRegistry>();
         services.AddSingleton<IDatasourceFileSource, DatasourceFileSource>();
+        services.AddSingleton<IDatasourceStore, DatasourceStore>();
         services.AddSingleton<IDatasourceService, DatasourceService>();
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
         services.AddScoped<IDatasourceAIToolSchemaProviderHandler, DatasourceAIToolSchemaProviderHandler>();

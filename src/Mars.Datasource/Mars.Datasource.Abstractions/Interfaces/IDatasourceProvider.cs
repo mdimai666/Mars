@@ -25,3 +25,13 @@ public interface ISqlDatasourceProvider : IDatasourceProvider
 {
     IDatasourceDriver Driver { get; }
 }
+
+/// <summary>
+/// Провайдер, чей каталог собирается из внешнего описания API (discovery).
+/// <see cref="IDatasourceProvider.Catalog"/> у него читает сохранённый каталог, а этот метод
+/// перечитывает описание заново — его зовёт «обновить» в дереве объектов.
+/// </summary>
+public interface IDatasourceDiscoverableProvider : IDatasourceProvider
+{
+    Task<DatasourceCatalog> Discover(CancellationToken cancellationToken = default);
+}

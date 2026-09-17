@@ -69,15 +69,25 @@ public partial class DatabaseQueryWorkspace
 
     bool IsSql => string.Equals(catalog?.Kind, DatasourceKind.Sql, StringComparison.OrdinalIgnoreCase);
 
+    bool IsRest => string.Equals(catalog?.Kind, DatasourceKind.Rest, StringComparison.OrdinalIgnoreCase);
+
     bool CanManageViews => catalog?.Capabilities.CanManageViews == true;
 
     int objectCount => catalog?.Groups.Sum(group => group.Objects.Count) ?? 0;
 
-    /// <summary>Язык запроса по умолчанию для источника: у sql это SQL, у остальных пока Dynamic LINQ.</summary>
-    string DefaultLanguage => IsSql ? DatasourceLanguage.Sql : DatasourceLanguage.Linq;
+    /// <summary>Язык запроса по умолчанию для источника: SQL у базы, `.http` у REST, Dynamic LINQ у файла.</summary>
+    string DefaultLanguage => IsSql ? DatasourceLanguage.Sql : IsRest ? DatasourceLanguage.Http : DatasourceLanguage.Linq;
 
-    /// <summary>Язык подсветки редактора: SQL у базы, C# у запроса на Dynamic LINQ.</summary>
-    string EditorLang => DefaultLanguage == DatasourceLanguage.Linq ? CodeEditor2.Language.csharp : CodeEditor2.Language.sql;
+    /// <summary>
+    /// Язык подсветки редактора: SQL у базы, C# у запроса на Dynamic LINQ.
+    /// Подсветки `.http` в бандле monaco нет — запрос REST остаётся обычным текстом.
+    /// </summary>
+    string EditorLang => DefaultLanguage switch
+    {
+        DatasourceLanguage.Linq => CodeEditor2.Language.csharp,
+        DatasourceLanguage.Http => CodeEditor2.Language.plaintext,
+        _ => CodeEditor2.Language.sql,
+    };
 
     /// <summary>Подпись источника в шапке: тип, а у sql ещё и движок.</summary>
     string SourceLabel => catalog is null
@@ -330,15 +340,20 @@ public partial class DatabaseQueryWorkspace
 
         if (string.IsNullOrWhiteSpace(text))
         {
-            // У sql пустой запрос выполнять нечего; у файла пустое условие означает «все строки объекта».
+            // У sql пустой запрос выполнять нечего; у файла пустое условие означает «все строки объекта»;
+            // у REST пустой текст при открытой операции сервер выполнит как её заготовку.
             if (IsSql || tab.Object is null)
             {
-                _ = _messageService.Error(IsSql ? "SQL-запрос пуст" : "Выберите объект слева или напишите условие");
+                _ = _messageService.Error(EmptyRequestMessage);
                 return;
             }
         }
 
-        if (IsSql && SqlSafety.IsDestructive(text) && !await ConfirmDestructiveAsync(text)) return;
+        if (IsSql && SqlSafety.IsDestructive(text)
+            && !await ConfirmChangeAsync(SqlSafety.FirstWord(text), "изменяет данные или структуру базы")) return;
+
+        if (IsRest && RestSafety.IsWrite(RestSafety.FirstMethod(text))
+            && !await ConfirmChangeAsync(RestSafety.FirstMethod(text), "меняет данные источника")) return;
 
         tab.Text = text;
         tab.Title = tab.Object?.Name ?? tab.Title;
@@ -354,6 +369,7 @@ public partial class DatabaseQueryWorkspace
                 ObjectId = tab.Object?.Id,
                 Language = tab.Language,
                 Query = text,
+                Parameters = ParameterList(tab),
                 MaxRows = tab.MaxRows,
             });
 
@@ -366,8 +382,12 @@ public partial class DatabaseQueryWorkspace
             }
             else
             {
-                tab.Total = null;
+                // Не-sql источник сообщает общее число записей сам (WordPress — заголовком X-WP-Total).
+                tab.Total = result.Total;
                 tab.TotalNote = null;
+
+                // Ответ документом в таблицу не раскладывается — показываем его сразу.
+                if (result.Rows.Length == 0 && result.Json is not null) tab.ShowJson = true;
             }
         }
         catch (Exception ex)
@@ -502,12 +522,19 @@ public partial class DatabaseQueryWorkspace
         tab.TotalNote = null;
         tab.Changes.Clear();
         tab.ShowJson = false;
+        tab.ParameterValues.Clear();
 
         if (IsSql)
         {
             tab.BrowseSql = BuildBrowseSql(entry, tab.BrowseLimit);
             tab.Text = tab.BrowseSql;
             EnsureBrowseCap(tab);
+        }
+        else if (IsRest)
+        {
+            // Операция REST открывается своей заготовкой запроса; значения её параметров — в форме над результатом.
+            tab.BrowseSql = null;
+            tab.Text = entry.Object.DefaultQuery ?? "";
         }
         else
         {
@@ -702,10 +729,40 @@ public partial class DatabaseQueryWorkspace
     static string DisplayName(CatalogEntry entry)
         => string.IsNullOrEmpty(entry.Group) ? entry.Object.Name : $"{entry.Group}.{entry.Object.Name}";
 
-    async Task<bool> ConfirmDestructiveAsync(string sql)
+    //=== параметры операции ====================================================
+
+    string EmptyRequestMessage => IsSql
+        ? "SQL-запрос пуст"
+        : IsRest
+            ? "Напишите HTTP-запрос или выберите операцию слева"
+            : "Выберите объект слева или напишите условие";
+
+    /// <summary>Заполненные значения параметров вкладки; пустые не отправляем — у источника есть свои defaults.</summary>
+    static List<DatasourceParam>? ParameterList(QueryTab tab)
+    {
+        var values = tab.ParameterValues
+            .Where(pair => !string.IsNullOrWhiteSpace(pair.Value))
+            .Select(pair => new DatasourceParam { Name = pair.Key, Value = pair.Value })
+            .ToList();
+
+        return values.Count == 0 ? null : values;
+    }
+
+    string? ParameterValue(string name)
+        => activeTab is { } tab && tab.ParameterValues.TryGetValue(name, out var value) ? value : null;
+
+    void SetParameter(string name, string? value)
+    {
+        if (activeTab is not { } tab) return;
+
+        if (string.IsNullOrWhiteSpace(value)) tab.ParameterValues.Remove(name);
+        else tab.ParameterValues[name] = value;
+    }
+
+    async Task<bool> ConfirmChangeAsync(string keyword, string what)
     {
         var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Запрос <b>{SqlSafety.FirstWord(sql)}</b> изменяет данные или структуру базы. Выполнить?",
+            (MarkupString)$"Запрос <b>{keyword}</b> {what}. Выполнить?",
             new DialogParameters
             {
                 Title = "Подтверждение запроса",

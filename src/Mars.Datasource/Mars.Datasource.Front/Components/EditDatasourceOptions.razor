@@ -81,6 +81,125 @@
                                         }
                                     </div>
                                 }
+                                @if (IsRestKind(config.Kind))
+                                {
+                                    <div class="col-12 mt-3">
+                                        <label class="fz14px">Адрес API (baseUrl)</label>
+                                        <FluentTextField Class="w-100" placeholder="https://example.org"
+                                                         Value="@Setting(config, DatasourceSettings.BaseUrl)"
+                                                         ValueChanged="@(value => SetSetting(config, DatasourceSettings.BaseUrl, value))" />
+                                        <div class="fz14px text-secondary">
+                                            В запросах источника адрес доступен как переменная <code>{{baseUrl}}</code>.
+                                        </div>
+                                        @if (BaseUrlError(config) is string urlError)
+                                        {
+                                            <div class="text-danger fz14px">@urlError</div>
+                                        }
+
+                                        <div class="row mt-2">
+                                            <div class="col-12 col-lg-4">
+                                                <label class="fz14px">Каталог операций</label>
+                                                <FluentSelect Class="w-100" Items="RestDiscovery.All"
+                                                              OptionText="@DiscoveryLabel"
+                                                              OptionValue="@(mode => mode)"
+                                                              Value="@Setting(config, DatasourceSettings.Discovery)"
+                                                              ValueChanged="@(value => SetSetting(config, DatasourceSettings.Discovery, value))" />
+                                            </div>
+                                            <div class="col-12 col-lg-5">
+                                                <label class="fz14px">Адрес описания API</label>
+                                                <FluentTextField Class="w-100" placeholder="@RestDiscovery.DefaultUrl(Setting(config, DatasourceSettings.Discovery))"
+                                                                 Value="@Setting(config, DatasourceSettings.DiscoveryUrl)"
+                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.DiscoveryUrl, value))" />
+                                            </div>
+                                            <div class="col-12 col-lg-3">
+                                                <label class="fz14px">Таймаут, секунд</label>
+                                                <FluentTextField Class="w-100" placeholder="100" type="number"
+                                                                 Value="@Setting(config, DatasourceSettings.TimeoutSec)"
+                                                                 ValueChanged="@(value => SetSetting(config, DatasourceSettings.TimeoutSec, value))" />
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-12 col-lg-4">
+                                                <label class="fz14px">Доступ</label>
+                                                <FluentSelect Class="w-100" Items="RestAuthMode.All"
+                                                              OptionText="@AuthLabel"
+                                                              OptionValue="@(mode => mode)"
+                                                              Value="@Setting(config, DatasourceSettings.AuthMode)"
+                                                              ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthMode, value))" />
+                                            </div>
+                                            @if (UsesAuthUser(Setting(config, DatasourceSettings.AuthMode)))
+                                            {
+                                                <div class="col-12 col-lg-4">
+                                                    <label class="fz14px">Логин</label>
+                                                    <FluentTextField Class="w-100"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthUsername)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthUsername, value))" />
+                                                </div>
+                                                <div class="col-12 col-lg-4">
+                                                    <label class="fz14px">Пароль</label>
+                                                    <FluentTextField Class="w-100" type="password"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthPassword)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthPassword, value))" />
+                                                </div>
+                                            }
+                                            @if (IsBearerAuth(Setting(config, DatasourceSettings.AuthMode)))
+                                            {
+                                                <div class="col-12 col-lg-6">
+                                                    <label class="fz14px">Адрес получения токена</label>
+                                                    <FluentTextField Class="w-100" placeholder="https://example.org/oauth/token"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthTokenUrl)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthTokenUrl, value))" />
+                                                </div>
+                                                <div class="col-12 col-lg-3">
+                                                    <label class="fz14px">Client id</label>
+                                                    <FluentTextField Class="w-100"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthClientId)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthClientId, value))" />
+                                                </div>
+                                                <div class="col-12 col-lg-3">
+                                                    <label class="fz14px">Client secret</label>
+                                                    <FluentTextField Class="w-100" type="password"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthClientSecret)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthClientSecret, value))" />
+                                                </div>
+                                                <div class="col-12 col-lg-3">
+                                                    <label class="fz14px">Scope</label>
+                                                    <FluentTextField Class="w-100"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthScope)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthScope, value))" />
+                                                </div>
+                                            }
+                                            @if (IsApiKeyAuth(Setting(config, DatasourceSettings.AuthMode)))
+                                            {
+                                                <div class="col-12 col-lg-4">
+                                                    <label class="fz14px">Ключ</label>
+                                                    <FluentTextField Class="w-100" type="password"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthApiKey)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthApiKey, value))" />
+                                                </div>
+                                                <div class="col-12 col-lg-4">
+                                                    <label class="fz14px">Заголовок ключа</label>
+                                                    <FluentTextField Class="w-100" placeholder="X-API-Key"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthApiKeyHeader)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthApiKeyHeader, value))" />
+                                                    <div class="fz14px text-secondary">
+                                                        Статичный токен: заголовок <code>Authorization</code>, ключ <code>Bearer …</code>.
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (IsCookieAuth(Setting(config, DatasourceSettings.AuthMode)))
+                                            {
+                                                <div class="col-12 col-lg-8">
+                                                    <label class="fz14px">Страница входа</label>
+                                                    <FluentTextField Class="w-100" placeholder="https://example.org/wp-login.php"
+                                                                     Value="@Setting(config, DatasourceSettings.AuthLoginPageUrl)"
+                                                                     ValueChanged="@(value => SetSetting(config, DatasourceSettings.AuthLoginPageUrl, value))" />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
                                 @if (IsFileKind(config.Kind))
                                 {
                                     <div class="col-12 mt-3">
@@ -158,12 +277,41 @@
 
     bool IsFileKind(string kind) => string.Equals(kind, DatasourceKind.File, StringComparison.OrdinalIgnoreCase);
 
+    bool IsRestKind(string kind) => string.Equals(kind, DatasourceKind.Rest, StringComparison.OrdinalIgnoreCase);
+
     static string KindLabel(string kind) => kind switch
     {
         DatasourceKind.Sql => "SQL — база данных",
         DatasourceKind.File => "Файлы — CSV, XLSX",
+        DatasourceKind.Rest => "REST API — WordPress, OpenAPI",
         _ => kind,
     };
+
+    static string DiscoveryLabel(string mode) => mode switch
+    {
+        RestDiscovery.WordPress => "индекс WordPress (wp-json)",
+        RestDiscovery.OpenApi => "документ OpenAPI",
+        RestDiscovery.None => "не собирать — только мои запросы",
+        _ => mode,
+    };
+
+    static string AuthLabel(string mode) => mode switch
+    {
+        RestAuthMode.None => "без доступа",
+        RestAuthMode.Basic => "Basic — логин и пароль",
+        RestAuthMode.Bearer => "Bearer — токен по логину",
+        RestAuthMode.ApiKey => "API key — заголовок с ключом",
+        RestAuthMode.CookieForm => "Cookie — вход через форму",
+        _ => mode,
+    };
+
+    static bool UsesAuthUser(string mode) => mode is RestAuthMode.Basic or RestAuthMode.Bearer or RestAuthMode.CookieForm;
+
+    static bool IsBearerAuth(string mode) => mode == RestAuthMode.Bearer;
+
+    static bool IsApiKeyAuth(string mode) => mode == RestAuthMode.ApiKey;
+
+    static bool IsCookieAuth(string mode) => mode == RestAuthMode.CookieForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -230,6 +378,12 @@
     string? SettingsError(DatasourceConfig config)
         => UsesConnectionString(config.Kind) && string.IsNullOrWhiteSpace(config.ConnectionString)
             ? "Укажите строку подключения"
+            : null;
+
+    /// <summary>Без адреса API rest-источник не может ни запрос выполнить, ни собрать каталог.</summary>
+    string? BaseUrlError(DatasourceConfig config)
+        => string.IsNullOrWhiteSpace(Setting(config, DatasourceSettings.BaseUrl))
+            ? "Укажите адрес API"
             : null;
 
     static string Setting(DatasourceConfig config, string key)

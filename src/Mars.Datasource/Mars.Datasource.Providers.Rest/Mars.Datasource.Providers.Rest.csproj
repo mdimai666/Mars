@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.OpenApi" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

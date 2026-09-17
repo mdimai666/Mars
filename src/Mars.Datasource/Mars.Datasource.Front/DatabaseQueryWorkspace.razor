@@ -6,23 +6,33 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject NavigationManager nav
 
-@if (errorMessage is not null)
+@if (catalog is null)
 {
-    <div class="p-4">
-        <div class="alert alert-danger">@errorMessage</div>
-    </div>
-}
-else if (catalog is null)
-{
-    <div class="p-5 main-fill xcenter">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+    @if (errorMessage is not null)
+    {
+        <div class="p-4">
+            <div class="alert alert-danger">@errorMessage</div>
+            <button class="btn btn-sm btn-light" disabled="@Busy" @onclick="LoadAsync">
+                <i class="bi bi-arrow-clockwise"></i> Повторить
+            </button>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="p-5 main-fill xcenter">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
 }
 else
 {
     <div class="ds-workspace d-flex flex-column flex-fill">
+        @if (errorMessage is not null)
+        {
+            <div class="alert alert-danger flex-shrink-0 rounded-0 mb-0 py-2 px-3 fz14px">@errorMessage</div>
+        }
         <section class="ds-topmenu flex-shrink-0 hstack px-2">
             <div class="dropdown">
                 <a class="btn btn-light btn-sm rounded-0 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -185,6 +195,10 @@ else
                             }
                             <span class="ms-auto text-secondary fz14px">@DisplayName(new CatalogEntry(current.Schema, opened))</span>
                         }
+                        else if (activeTab?.Operation is { } selected)
+                        {
+                            <span class="ms-auto text-secondary fz14px" title="Операция каталога, к которой перешло дерево">@selected.Id</span>
+                        }
                     </div>
 
                     @if (activeTab?.Object is { Columns.Count: > 0 } currentObject)
@@ -206,7 +220,7 @@ else
                         </details>
                     }
 
-                    @if (activeTab?.Object is { Parameters.Count: > 0 } operation)
+                    @if (FormOperation is { Parameters.Count: > 0 } operation)
                     {
                         <details class="flex-shrink-0 px-2 fz14px" open>
                             <summary class="text-secondary">параметры: @operation.Parameters.Count</summary>
@@ -279,7 +293,13 @@ else
                             <div class="text-secondary p-2">
                                 <div>
                                     Кнопка «.http» открывает документ запросов: все запросы лежат в нём плашмя,
-                                    а дерево слева — переход к нужному. «Выполнить блок» выполняет запрос под курсором.
+                                    а дерево слева разложено по методам и только переходит к нужному запросу.
+                                    Клик по операции ничего не выполняет — запрос уходит по кнопке «Выполнить блок».
+                                </div>
+                                <div class="fz14px mt-1">
+                                    Запрос можно написать в редакторе или выбрать операцию в дереве и заполнить
+                                    её параметры: подставленные значения уходят переменными, остальные — в строку
+                                    запроса (чтение) или в JSON-тело (запись).
                                 </div>
                                 <div class="fz14px mt-1">
                                     Синтаксис <code>.http</code>: <code>GET {{baseUrl}}/wp-json/wp/v2/posts?per_page=10</code>,

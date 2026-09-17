@@ -13,8 +13,8 @@ namespace Mars.Datasource.Providers.Rest;
 /// </summary>
 public class RestDatasourceProvider : IDatasourceDiscoverableProvider
 {
-    /// <summary>Группа каталога с запросами пользователя из документа.</summary>
-    public const string DocumentGroupName = "Запросы";
+    /// <summary>Группа каталога с запросами пользователя из документа: до раскладки по методам.</summary>
+    const string DocumentGroupName = "Запросы";
 
     static readonly string[] KnownMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
 
@@ -217,7 +217,8 @@ public class RestDatasourceProvider : IDatasourceDiscoverableProvider
         Kind = string.IsNullOrWhiteSpace(_config.Kind) ? DatasourceKind.Rest : _config.Kind,
         SourceName = _config.Label,
         Capabilities = Capabilities,
-        Groups = groups,
+        // Операции из описания API и из документа пользователя показываются одним списком по методам
+        Groups = RestCatalogTree.ByMethod(groups),
     };
 
     /// <summary>Идентификатор объекта должен быть один на каталог: дерево ищет объект по нему.</summary>

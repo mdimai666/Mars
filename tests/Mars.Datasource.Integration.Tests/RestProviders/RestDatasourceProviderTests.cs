@@ -28,7 +28,7 @@ public class RestDatasourceProviderTests
         source.Discovery.Calls.Should().Be(1);
         catalog.Kind.Should().Be(DatasourceKind.Rest);
         catalog.SourceName.Should().Be("WordPress");
-        catalog.Groups.Select(group => group.Name).Should().Equal("wp/v2");
+        catalog.Groups.Select(group => group.Name).Should().Equal("GET");
         // Пути операций идут от корня REST API: запрос уходит на /wp-json/wp/v2/posts, а не на /wp/v2/posts
         catalog.Groups[0].Objects.Select(obj => obj.Id).Should().Equal("GET /wp-json/wp/v2/posts");
 
@@ -61,7 +61,7 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.NewProvider().Catalog();
 
-        catalog.Groups.Select(group => group.Name).Should().Equal("wp/v2");
+        catalog.Groups.Select(group => group.Name).Should().Equal("GET");
     }
 
     [Fact]
@@ -77,13 +77,14 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.Provider.Catalog();
 
-        var group = catalog.Groups.Single(group => group.Name == RestDatasourceProvider.DocumentGroupName);
-        var operation = group.Objects.Single();
+        // Запрос пользователя стоит в общей группе своего метода — рядом с операциями описания API
+        var operation = Operation(catalog, "моиПосты");
 
-        operation.Id.Should().Be("моиПосты");
         operation.ObjectType.Should().Be(DatasourceObjectType.Operation);
         operation.DefaultLanguage.Should().Be(DatasourceLanguage.Http);
         operation.DefaultQuery.Should().Be("GET {{baseUrl}}/wp/v2/posts?per_page={{perPage}}");
+        catalog.Groups.Single(group => group.Name == "GET").Objects.Select(obj => obj.Name)
+            .Should().Contain("моиПосты");
     }
 
     [Fact]
@@ -98,7 +99,7 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.Provider.Catalog();
 
-        var operation = catalog.Groups.Single(group => group.Name == RestDatasourceProvider.DocumentGroupName).Objects.Single();
+        var operation = Operation(catalog, "posts");
 
         operation.Line.Should().Be(1);
         operation.EndLine.Should().Be(3);
@@ -111,7 +112,8 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.Provider.Catalog();
 
-        var operation = catalog.Groups.Single(group => group.Name == "wp/v2").Objects.Single();
+        var operation = catalog.Groups.Single(group => group.Name == "GET").Objects
+            .Single(obj => obj.Id == "GET /wp-json/wp/v2/posts");
 
         operation.Line.Should().Be(0);
         operation.EndLine.Should().Be(0);
@@ -127,8 +129,7 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.Provider.Catalog();
 
-        catalog.Groups.Single(group => group.Name == RestDatasourceProvider.DocumentGroupName)
-            .Objects.Single().Id.Should().Be("GET /wp/v2/users");
+        Operation(catalog, "GET /wp/v2/users").Id.Should().Be("GET /wp/v2/users");
     }
 
     [Fact]
@@ -141,8 +142,11 @@ public class RestDatasourceProviderTests
 
         var catalog = await source.Provider.Catalog();
 
-        var operation = catalog.Groups.Single(group => group.Name == RestDatasourceProvider.DocumentGroupName).Objects.Single();
+        var operation = Operation(catalog, DatasourceSettings.RequestsDocument);
+
         operation.Name.Should().Contain("не разобрать строку запроса");
+        // Метод у сломанного запроса не прочитать — он уходит в группу «прочее»
+        catalog.Groups.Select(group => group.Name).Should().Equal("GET", RestCatalogTree.OtherMethods);
     }
 
     [Fact]
@@ -204,11 +208,11 @@ public class RestDatasourceProviderTests
         var catalog = await source.Provider.Discover();
 
         source.Discovery.Calls.Should().Be(2);
-        catalog.Groups.Single(group => group.Name == "wp/v2").Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/pages");
+        catalog.Groups.Single(group => group.Name == "GET").Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/pages");
 
         // Сохранённый каталог заменён: новый провайдер видит уже страницы.
         var reread = await source.NewProvider().Catalog();
-        reread.Groups.Single(group => group.Name == "wp/v2").Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/pages");
+        reread.Groups.Single(group => group.Name == "GET").Objects.Select(obj => obj.Id).Should().Equal("GET /wp/v2/pages");
     }
 
     [Fact]
@@ -460,6 +464,54 @@ public class RestDatasourceProviderTests
         DatasourceKind.Rest.Should().Be("rest");
         DatasourceLanguage.Http.Should().Be("http");
     }
+
+    [Fact]
+    public async Task Catalog_GroupsOperationsByMethod()
+    {
+        // В списке операции ищут по методу, поэтому группировка идёт по нему, а не по namespace описания API
+        var source = new RestSource();
+
+        source.Discovery.Handler = _ => Task.FromResult<IReadOnlyList<DatasourceCatalogGroup>>(
+        [
+            new DatasourceCatalogGroup
+            {
+                Name = "wp/v2",
+                Objects =
+                [
+                    RestCatalogOperation.Operation("GET", "/wp-json/wp/v2/posts", []),
+                    RestCatalogOperation.Operation("POST", "/wp-json/wp/v2/posts", []),
+                    RestCatalogOperation.Operation("DELETE", "/wp-json/wp/v2/posts/1", []),
+                ],
+            },
+        ]);
+
+        var catalog = await source.Provider.Discover();
+
+        catalog.Groups.Select(group => group.Name).Should().Equal("GET", "POST", "DELETE");
+
+        // Метод уже в имени группы: в строке остаётся только путь
+        catalog.Groups[0].Objects.Select(obj => obj.Name).Should().Equal("/wp-json/wp/v2/posts");
+        catalog.Groups[0].Objects[0].Id.Should().Be("GET /wp-json/wp/v2/posts");
+    }
+
+    [Fact]
+    public async Task Catalog_DocumentRequestIsGroupedByItsMethod()
+    {
+        var source = new RestSource(document: """
+            ###
+            # @name новыйПост
+            POST {{baseUrl}}/wp/v2/posts
+            """);
+
+        var catalog = await source.Provider.Catalog();
+
+        catalog.Groups.Select(group => group.Name).Should().Equal("GET", "POST");
+        catalog.Groups.Single(group => group.Name == "POST").Objects.Single().Name.Should().Be("новыйПост");
+    }
+
+    /// <summary>Объект каталога по идентификатору: с раскладкой по методам группа заранее неизвестна.</summary>
+    static DatasourceCatalogObject Operation(DatasourceCatalog catalog, string id)
+        => catalog.Groups.SelectMany(group => group.Objects).Single(obj => obj.Id == id);
 
     [Fact]
     public void AddDatasourceRest_RegistersFactoryAndDiscoveries()

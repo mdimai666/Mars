@@ -266,7 +266,18 @@ public partial class QueryResultGrid
 
         foreach (var plan in plans)
         {
-            var response = await service.NonQuery(Slug, new DatasourceRequest { Query = plan.Sql, Parameters = plan.Parameters });
+            SqlNonQueryResultActionDto response;
+
+            try
+            {
+                response = await service.NonQuery(Slug, new DatasourceRequest { Query = plan.Sql, Parameters = plan.Parameters });
+            }
+            catch (Exception ex)
+            {
+                // Исключение из обработчика события убивает страницу целиком — сообщаем словами
+                _ = _messageService.Error(ex.Message);
+                return;
+            }
 
             if (!response.Ok)
             {

@@ -54,7 +54,8 @@ public class WordPressDatasourceTests : IClassFixture<WordPressFixture>
         var catalog = await Provider().Discover();
 
         catalog.Kind.Should().Be(DatasourceKind.Rest);
-        catalog.Groups.Select(group => group.Name).Should().Contain("wp/v2");
+        // Дерево в списке разложено по методам, а не по namespace описания API
+        catalog.Groups.Select(group => group.Name).Should().Contain("GET");
 
         var operations = catalog.Groups.SelectMany(group => group.Objects).ToList();
 

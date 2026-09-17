@@ -73,6 +73,16 @@ public partial class DatabaseQueryWorkspace
 
     bool CanManageViews => catalog?.Capabilities.CanManageViews == true;
 
+    /// <summary>Объект — http-запрос (операция rest-провайдера или запрос документа).</summary>
+    static bool IsHttpObject(DatasourceCatalogObject obj)
+        => string.Equals(obj.DefaultLanguage, DatasourceLanguage.Http, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Операция, чьи параметры показывает форма: у документа запросов — та, к которой перешло дерево,
+    /// у остальных вкладок — открытый объект.
+    /// </summary>
+    DatasourceCatalogObject? FormOperation => activeTab?.Operation ?? activeTab?.Object;
+
     int objectCount => catalog?.Groups.Sum(group => group.Objects.Count) ?? 0;
 
     /// <summary>Язык запроса по умолчанию для источника: SQL у базы, `.http` у REST, Dynamic LINQ у файла.</summary>
@@ -207,7 +217,7 @@ public partial class DatabaseQueryWorkspace
         }
         catch (Exception ex)
         {
-            catalog = null;
+            // Уже загруженный каталог не выбрасываем: ошибка обновления — не повод гасить рабочую область
             errorMessage = ex.Message;
         }
         finally
@@ -520,9 +530,11 @@ public partial class DatabaseQueryWorkspace
 
     async Task OpenObjectAsync(CatalogEntry entry)
     {
-        if (IsRest)
+        // У rest-источника редактор один — весь документ запросов: дерево только переходит к нужному
+        // запросу. Операция, приехавшая от rest-провайдера, ведёт себя так же, даже если тип источника
+        // определён неверно: http-запрос никогда не выполняется кликом, только по кнопке.
+        if (IsRest || IsHttpObject(entry.Object))
         {
-            // У rest-источника редактор один — весь документ запросов: дерево только переходит к нужному.
             await OpenDocumentBlockAsync(entry);
             return;
         }
@@ -637,7 +649,12 @@ public partial class DatabaseQueryWorkspace
             block = DocumentText.Blocks(text).LastOrDefault();
         }
 
-        if (block is null) return;
+        if (block is null)
+        {
+            // Запроса нет в документе и заготовки для него тоже — молчать нельзя (документ со сломанным запросом)
+            _ = _messageService.Error($"{entry.Object.Name}: запроса нет в документе {DatasourceSettings.RequestsDocument}");
+            return;
+        }
 
         // Документ — не объект каталога: показываем, к какому запросу перешли, и сбрасываем прежний результат
         tab.Object = null;
@@ -646,11 +663,24 @@ public partial class DatabaseQueryWorkspace
         tab.SourceWritable = false;
         tab.BrowseSql = null;
         tab.Title = $"{DatasourceSettings.RequestsDocument}: {entry.Object.Name}";
+        SetOperation(tab, entry.Object);
         tab.Reset();
 
         StateHasChanged();
 
         if (_editor is not null) await _editor.RevealLinesAsync(block.StartLine, block.EndLine);
+    }
+
+    /// <summary>
+    /// Операция, к которой перешло дерево: её параметры показывает форма. У другой операции
+    /// значения чужие, поэтому форму начинаем с чистого листа.
+    /// </summary>
+    static void SetOperation(QueryTab tab, DatasourceCatalogObject operation)
+    {
+        if (string.Equals(tab.Operation?.Id, operation.Id, StringComparison.Ordinal)) return;
+
+        tab.Operation = operation;
+        tab.ParameterValues.Clear();
     }
 
     /// <summary>Сохранить документ запросов и перечитать дерево: в нём появятся изменённые запросы.</summary>
@@ -808,7 +838,18 @@ public partial class DatabaseQueryWorkspace
     {
         if (ViewObject() is not { } entry) return;
 
-        var response = await service.ViewDefinition(DataSourceConfigSlug, entry.Group, entry.Object.Name);
+        ViewDefinitionResponse response;
+
+        try
+        {
+            response = await service.ViewDefinition(DataSourceConfigSlug, entry.Group, entry.Object.Name);
+        }
+        catch (Exception ex)
+        {
+            // Исключение из обработчика события роняет рабочую область целиком — сообщаем словами
+            _ = _messageService.Error(ex.Message);
+            return;
+        }
 
         var dialog = await _dialogService.ShowDialogAsync<ViewDefinitionDialog>(
             new ViewDefinitionDialogContent(DisplayName(entry), response.Sql),
@@ -866,7 +907,17 @@ public partial class DatabaseQueryWorkspace
     /// </summary>
     async Task<bool> ExecuteViewDdlAsync(string sql, string success)
     {
-        var response = await service.NonQuery(DataSourceConfigSlug, new DatasourceRequest { Query = sql });
+        SqlNonQueryResultActionDto response;
+
+        try
+        {
+            response = await service.NonQuery(DataSourceConfigSlug, new DatasourceRequest { Query = sql });
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+            return false;
+        }
 
         if (!response.Ok)
         {

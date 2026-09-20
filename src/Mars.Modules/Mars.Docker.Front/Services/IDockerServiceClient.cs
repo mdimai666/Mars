@@ -21,7 +21,7 @@ public interface IDockerServiceClient
 
 }
 
-public static class WebApiClientDatasourceClientExtensions
+public static class WebApiClientDockerClientExtensions
 {
     public static IDockerServiceClient Docker(this IMarsWebApiClient client)
     {

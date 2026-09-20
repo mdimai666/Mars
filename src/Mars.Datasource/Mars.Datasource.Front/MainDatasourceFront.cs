@@ -1,6 +1,6 @@
 using Mars.Datasource.Front.Nodes.EditForms;
 using Mars.Datasource.Front.Services;
-using Mars.Datasource.Nodes;
+using Mars.Datasource.Contracts.Nodes;
 using Mars.Nodes.Core;
 using Mars.Nodes.FormEditor;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +14,7 @@ public static class MainDatasourceFront
         if (!OperatingSystem.IsBrowser()) return services;
 
         services.AddScoped<IDatasourceServiceClient, DatasourceServiceClient>();
+        services.AddScoped<MarsDatasourceFrontJsInterop>();
 
         return services;
     }

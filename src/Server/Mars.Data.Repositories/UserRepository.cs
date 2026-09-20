@@ -341,7 +341,7 @@ internal class UserRepository : IUserRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var user = await _userManager.FindByEmailAsync(query.Username) ?? throw new NotFoundException();
+        var user = await _userManager.FindByEmailAsync(query.Username) ?? await _userManager.FindByNameAsync(query.Username) ?? throw new NotFoundException();
 
         var removeResult = await _userManager.RemovePasswordAsync(user);
         var addResult = await _userManager.AddPasswordAsync(user, query.NewPassword);

@@ -1,0 +1,131 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+@using Mars.Datasource.Front.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (Catalog is null)
+{
+    @if (Error is not null)
+    {
+        <div class="p-4">
+            <div class="alert alert-danger">@Error</div>
+            <button class="btn btn-sm btn-light" disabled="@Busy" @onclick="OnRetry">
+                <i class="bi bi-arrow-clockwise"></i> Повторить
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="p-5 main-fill xcenter">
+            <SharedLoader1 />
+        </div>
+    }
+}
+else
+{
+    <div class="ds-workspace d-flex flex-column flex-fill">
+        @if (Error is not null)
+        {
+            <div class="alert alert-danger flex-shrink-0 rounded-0 mb-0 py-2 px-3 fz14px">@Error</div>
+        }
+        <DatasourceHeader Slug="@Slug" Sources="@Sources"
+                          SourceName="@Catalog.SourceName" ObjectCount="@ObjectCount" SourceLabel="@SourceLabel" />
+
+        <FluentMultiSplitter>
+            <FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">
+                <ObjectsTree Groups="@Tree.Groups(Catalog)" Filter="@Tree.Filter" FilterChanged="@((string v) => Tree.Filter = v)"
+                             Busy="@Busy" HasMultipleGroups="@WorkspaceTreeState.HasMultipleGroups(Catalog)" IsExpanded="@Tree.IsExpanded"
+                             OnToggleGroup="@((string name) => Tree.Toggle(name))"
+                             IsActive="@(obj => obj == ActiveTab?.Object)" OnOpen="@OnOpenObject">
+                    <button class="btn btn-sm btn-light" title="Обновить" disabled="@Busy" @onclick="OnRefreshCatalog">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    @TreeActions
+                </ObjectsTree>
+            </FluentMultiSplitterPane>
+
+            <FluentMultiSplitterPane>
+                <div class="ds-pane h-100 d-flex flex-column">
+                    <div class="ds-tabs flex-shrink-0 hstack gap-1 px-2 pt-2">
+                        @foreach (var item in Tabs)
+                        {
+                            var tab = item;
+                            <span class="ds-tab hstack gap-1 px-2 py-1 @(tab == ActiveTab ? "ds-tab-active" : "")"
+                                  @onclick="() => OnSelectTab.InvokeAsync(tab)">
+                                <span class="text-nowrap fz14px">@tab.Title</span>
+                                @if (Tabs.Count > 1)
+                                {
+                                    <i class="bi bi-x" role="button" title="Закрыть" @onclick:stopPropagation="true"
+                                       @onclick="() => OnCloseTab.InvokeAsync(tab)"></i>
+                                }
+                            </span>
+                        }
+                        <button class="btn btn-sm btn-light ms-1" title="Новый запрос" @onclick="() => OnAddTab.InvokeAsync()">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-shrink-0 hstack gap-2 px-2 py-2">
+                        <FluentButton Appearance="Appearance.Accent" Disabled="@(ActiveTab?.Loading == true)"
+                                      OnClick="OnRun">
+                            @RunLabel
+                        </FluentButton>
+                        @ToolbarActions
+                        @if (ActiveTab?.CanLoadMore == true)
+                        {
+                            <FluentButton Appearance="Appearance.Neutral" Disabled="@(ActiveTab?.Loading == true)"
+                                          OnClick="OnRunMore">
+                                Показать больше
+                            </FluentButton>
+                        }
+                        @if (!string.IsNullOrEmpty(TrailingLabel))
+                        {
+                            <span class="ms-auto text-secondary fz14px" title="@TrailingTitle">@TrailingLabel</span>
+                        }
+                    </div>
+
+                    <div class="flex-shrink-0">
+                        @AboveEditor
+                    </div>
+
+                    <div class="ds-split-host">
+                        <FluentSplitter Orientation="Orientation.Vertical" BarSize="6" Style="height:100%"
+                                        Panel1Size="50%" Panel1MinSize="60px" Panel2MinSize="60px">
+                            <Panel1>
+                                <div class="ds-editor h-100 px-2">
+                                    @Editor
+                                </div>
+                            </Panel1>
+                            <Panel2>
+                                <div class="ds-result h-100 px-2 pb-2">
+                                    @if (ActiveTab?.Loading == true)
+                                    {
+                                        <div class="p-4">
+                                            <SharedLoader2 />
+                                        </div>
+                                    }
+                                    else if (ActiveTab?.Error is not null)
+                                    {
+                                        <div class="alert alert-danger">@ActiveTab.Error</div>
+                                    }
+                                    else if (ActiveTab?.Result is { } result)
+                                    {
+                                        <QueryResultGrid Result="result" Tab="ActiveTab" Slug="@Slug"
+                                                         Source="Source" OnSaved="OnRun" />
+                                    }
+                                    else
+                                    {
+                                        <div class="text-secondary p-2" style="white-space: pre-line">@Hint</div>
+                                    }
+                                </div>
+                            </Panel2>
+                        </FluentSplitter>
+                    </div>
+                </div>
+            </FluentMultiSplitterPane>
+        </FluentMultiSplitter>
+    </div>
+}

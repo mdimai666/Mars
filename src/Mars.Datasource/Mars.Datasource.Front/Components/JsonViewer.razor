@@ -1,0 +1,23 @@
+@* Обёртка над веб-компонентом @andypf/json-viewer. Скрипт подключается оболочкой админки
+   (/mars/vendor/json-viewer/index.js), тема shadow DOM — внешний CSS не нужен. *@
+<andypf-json-viewer data="@Json"
+                    indent="2"
+                    expanded="@Expanded"
+                    theme="@Theme"
+                    show-data-types="true"
+                    show-toolbar="@(ShowToolbar ? "true" : "false")"
+                    show-copy="true"
+                    show-size="true"
+                    expand-empty="false"></andypf-json-viewer>
+
+@code {
+    /// <summary>JSON-строка для отображения.</summary>
+    [Parameter] public string? Json { get; set; }
+
+    /// <summary>Глубина раскрытия: true/число (см. атрибут expanded у компонента).</summary>
+    [Parameter] public int Expanded { get; set; } = 1;
+
+    [Parameter] public string Theme { get; set; } = "default-light";
+
+    [Parameter] public bool ShowToolbar { get; set; } = true;
+}

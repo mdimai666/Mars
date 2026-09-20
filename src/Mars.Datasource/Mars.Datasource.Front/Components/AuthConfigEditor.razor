@@ -1,0 +1,78 @@
+@using Mars.HttpSmartAuthFlow
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="row mt-1">
+    <div class="col-12 col-lg-4">
+        <label class="fz14px">Способ доступа</label>
+        <FluentSelect Class="w-100"
+                      Items="Modes"
+                      OptionText="@ModeLabel"
+                      OptionValue="@(mode => mode)"
+                      Value="@Mode"
+                      ValueChanged="OnModeChanged" />
+    </div>
+
+    @if (Value is not null)
+    {
+        @if (UsesCredentials)
+        {
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Логин</label>
+                <FluentTextField Class="w-100" Value="@Value.Username" ValueChanged="@(value => Set(config => config.Username = value))" />
+            </div>
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Пароль</label>
+                <FluentTextField Class="w-100" TextFieldType="TextFieldType.Password"
+                                 Value="@Value.Password" ValueChanged="@(value => Set(config => config.Password = value))" />
+            </div>
+        }
+
+        @if (Value.Mode == AuthMode.BearerToken)
+        {
+            <div class="col-12 col-lg-6 mt-2">
+                <label class="fz14px">Адрес получения токена</label>
+                <FluentTextField Class="w-100" placeholder="https://example.org/oauth/token"
+                                 Value="@Value.TokenUrl" ValueChanged="@(value => Set(config => config.TokenUrl = value))" />
+            </div>
+            <div class="col-12 col-lg-3 mt-2">
+                <label class="fz14px">Client id</label>
+                <FluentTextField Class="w-100" Value="@Value.ClientId" ValueChanged="@(value => Set(config => config.ClientId = value))" />
+            </div>
+            <div class="col-12 col-lg-3 mt-2">
+                <label class="fz14px">Client secret</label>
+                <FluentTextField Class="w-100" TextFieldType="TextFieldType.Password"
+                                 Value="@Value.ClientSecret" ValueChanged="@(value => Set(config => config.ClientSecret = value))" />
+            </div>
+            <div class="col-12 col-lg-3 mt-2">
+                <label class="fz14px">Scope</label>
+                <FluentTextField Class="w-100" Value="@Value.Scope" ValueChanged="@(value => Set(config => config.Scope = value))" />
+            </div>
+        }
+
+        @if (Value.Mode == AuthMode.ApiKey)
+        {
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Ключ</label>
+                <FluentTextField Class="w-100" TextFieldType="TextFieldType.Password"
+                                 Value="@Value.ApiKey" ValueChanged="@(value => Set(config => config.ApiKey = value))" />
+            </div>
+            <div class="col-12 col-lg-4">
+                <label class="fz14px">Заголовок ключа</label>
+                <FluentTextField Class="w-100" placeholder="X-API-Key"
+                                 Value="@Value.ApiKeyHeaderName" ValueChanged="@(value => Set(config => config.ApiKeyHeaderName = value))" />
+                <div class="fz14px text-secondary">
+                    Статичный токен: заголовок <code>Authorization</code>, ключ <code>Bearer …</code>.
+                </div>
+            </div>
+        }
+
+        @if (Value.Mode == AuthMode.CookieForm)
+        {
+            <div class="col-12 col-lg-8">
+                <label class="fz14px">Страница входа</label>
+                <FluentTextField Class="w-100" placeholder="https://example.org/wp-login.php"
+                                 Value="@Value.LoginPageUrl" ValueChanged="@(value => Set(config => config.LoginPageUrl = value))" />
+            </div>
+        }
+    }
+</div>

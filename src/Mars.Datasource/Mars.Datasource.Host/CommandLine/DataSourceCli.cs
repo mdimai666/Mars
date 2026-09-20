@@ -1,7 +1,9 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Common;
-using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Abstractions.Mappings;
+using Mars.Datasource.Abstractions.Sql;
+using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +42,7 @@ public class DataSourceCli : CommandCli
             throw new ArgumentException("most one of --file (-f) or --dir (-d) ");
 
         using var scope = app.Services.CreateScope();
-        var ds = scope.ServiceProvider.GetRequiredService<IDatasourceService>();
+        var ds = scope.ServiceProvider.GetRequiredService<IDatasourceRegistry>();
         var bs = scope.ServiceProvider.GetRequiredService<IDatabaseBackupService>();
 
         string dateTimeFormat = "yyyy-MM-dd";
@@ -76,7 +78,7 @@ public class DataSourceCli : CommandCli
     async Task RestoreCommand(FileInfo file, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
-        var ds = scope.ServiceProvider.GetRequiredService<IDatasourceService>();
+        var ds = scope.ServiceProvider.GetRequiredService<IDatasourceRegistry>();
         var bs = scope.ServiceProvider.GetRequiredService<IDatabaseBackupService>();
 
         string filePath = file.FullName;

@@ -3,6 +3,10 @@ export function showPrompt(message) {
     return prompt(message, 'Type anything here');
 }
 
+// Ссылки на .NET-объекты CodeEditor2 по id BlazorMonaco: JS-команды редактора
+// (например CodeLens «выполнить» в .http) вызывают их без Blazor-обёртки.
+const dotnetRefs = new Map();
+
 function getEditorByBlazorMonacoId(blazorMonacoId) {
     return blazorMonaco.editors.find(s => s.id == blazorMonacoId).editor
 }
@@ -13,7 +17,7 @@ export function f_editor_doaction(blazorMonacoId, action_id) {
     action.run();
 }
 
-export function activateJSextensions(blazorMonacoId, optionsJson) {
+export function activateJSextensions(blazorMonacoId, optionsJson, dotNetRef) {
     let editor = getEditorByBlazorMonacoId(blazorMonacoId)
 
     if (!blazorMonaco.Mars_extensions_activated) {
@@ -22,6 +26,7 @@ export function activateJSextensions(blazorMonacoId, optionsJson) {
         emmetMonaco.emmetCSS(monaco)
         if (monaco_plugin_init_log_lang) monaco_plugin_init_log_lang()
         else "'monaco_plugin_init_log_lang' not found";
+        registerHttpLanguage()
     }
 
     // произвольные опции редактора из JSON (CodeEditor2.OptionsJson)
@@ -33,7 +38,40 @@ export function activateJSextensions(blazorMonacoId, optionsJson) {
         }
     }
 
+    if (dotNetRef) dotnetRefs.set(blazorMonacoId, dotNetRef)
+    editor.__marsBlazorId = blazorMonacoId
+
+    if (dotNetRef) {
+        // События курсора и текста для .NET: связь формы с блоком под курсором в документе .http.
+        // О смене строки сообщаем один раз, правку текста — с дебаунсом (печать не должна долбить .NET).
+        let lastLine = -1;
+        editor.onDidChangeCursorPosition(e => {
+            const line = e.position.lineNumber;
+            if (line === lastLine) return;
+            lastLine = line;
+            dotNetRef.invokeMethodAsync('CursorMovedToLine', line);
+        });
+        let contentTimer;
+        editor.onDidChangeModelContent(() => {
+            lastLine = -1;
+            clearTimeout(contentTimer);
+            contentTimer = setTimeout(() => dotNetRef.invokeMethodAsync('ContentChanged'), 400);
+        });
+    }
+
     add_more_actions(editor)
+}
+
+// Замена строк через executeEdits: в отличие от setValue сохраняет курсор, выделение и стек undo
+// (синхронизация формы параметров с текстом блока .http).
+export function replaceLines(blazorMonacoId, startLine, endLine, text) {
+    let editor = getEditorByBlazorMonacoId(blazorMonacoId)
+    let model = editor.getModel()
+    let end = Math.min(endLine, model.getLineCount())
+    editor.executeEdits('mars-form-sync', [{
+        range: new monaco.Range(startLine, 1, end, model.getLineLength(end) + 1),
+        text: text,
+    }])
 }
 
 function add_more_actions(editor) {
@@ -78,6 +116,23 @@ function add_more_actions(editor) {
         precondition: null,
         keybindingContext: null,
         run: (ed) => showLanguagePicker(ed)
+    });
+
+    // команда CodeLens «выполнить» над строкой запроса в .http: ставим курсор на строку
+    // и сообщаем .NET (CodeEditor2.OnRunRequest), какой запрос запустить
+    editor.addAction({
+        id: 'mars.http.run',
+        label: 'Run HTTP request',
+        keybindings: [],
+        precondition: null,
+        keybindingContext: null,
+        run: (ed, line) => {
+            const lineNumber = (typeof line === 'number' && line > 0) ? line : ed.getPosition().lineNumber
+            ed.setPosition({ lineNumber: lineNumber, column: 1 })
+            ed.revealLineInCenter(lineNumber)
+            const ref = dotnetRefs.get(ed.__marsBlazorId)
+            if (ref) ref.invokeMethodAsync('RunRequestAtLine', lineNumber)
+        }
     });
 }
 
@@ -204,4 +259,96 @@ function showLanguagePicker(editor) {
 export function setModelLanguage(blazorMonacoId, lang) {
     let editor = getEditorByBlazorMonacoId(blazorMonacoId)
     monaco.editor.setModelLanguage(editor.getModel(), lang);
+}
+
+//=== язык .http (VS Code REST Client) =========================================
+// В бандл Monaco язык http не входит, поэтому monarch-грамматика своя; за образец
+// взята TextMate-грамматика humao.restclient (syntaxes/http.tmLanguage.json).
+
+const httpMethods = 'get|post|put|delete|patch|head|options|connect|trace|lock|unlock|propfind|proppatch|copy|move|mkcol|mkcalendar|acl|search';
+
+// Строка запроса: метод и URL-подобный аргумент (со слэшем, {{переменной}} или схемой) —
+// без такой оговорки строка тела «delete the item» тоже сошла бы за запрос.
+const httpRequestLine = new RegExp('^\\s*(' + httpMethods + ')(\\s+)(?=(?:\\S*[/]|\\{\\{|\\w+://))', 'i');
+
+function registerHttpLanguage() {
+    if (monaco.languages.getLanguages().some(l => l.id === 'http')) return;
+
+    monaco.languages.register({ id: 'http', aliases: ['HTTP', 'http'], extensions: ['.http', '.rest'] });
+
+    monaco.languages.setLanguageConfiguration('http', {
+        comments: { lineComment: '#' },
+        brackets: [['{', '}'], ['[', ']'], ['(', ')']],
+        autoClosingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: '"', close: '"' },
+            { open: "'", close: "'" },
+        ],
+        surroundingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: '"', close: '"' },
+            { open: "'", close: "'" },
+        ],
+    });
+
+    monaco.languages.setMonarchTokensProvider('http', {
+        ignoreCase: true,
+        defaultToken: '',
+        tokenPostfix: '.http',
+        tokenizer: {
+            root: [
+                // # @name posts — имя запроса: директива внутри комментария.
+                // Литеральный @ экранирован классом: голый «@name» monarch принял бы
+                // за ссылку на атрибут определения языка и упал при компиляции.
+                [/^\s*(#+\s+[@]name\s+)(\S+)\s*$/, ['comment', 'metatag']],
+                [/^\s*(?:#+|\/\/+).*$/, 'comment'],
+                // переменные документа: @host = https://example.org
+                [/^\s*(@)([^\s=]+)(\s*=\s*)(.*?)\s*$/, ['keyword', 'variable', 'delimiter', 'string']],
+                // строка запроса: метод + URL [+ HTTP/версия]
+                [/^\s*(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|CONNECT|TRACE|LOCK|UNLOCK|PROPFIND|PROPPATCH|COPY|MOVE|MKCOL|MKCALENDAR|ACL|SEARCH)(\s+)(\S.*?)(\s+)(HTTP\/[\d.]+)\s*$/,
+                    ['keyword.control', 'white', 'constant.language', 'white', 'keyword.other']],
+                [/^\s*(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|CONNECT|TRACE|LOCK|UNLOCK|PROPFIND|PROPPATCH|COPY|MOVE|MKCOL|MKCALENDAR|ACL|SEARCH)(\s+)(\S.*?)\s*$/,
+                    ['keyword.control', 'white', 'constant.language']],
+                // query-параметры, перенесённые на отдельные строки: ?a=b / &a=b
+                [/^\s*([?&])([^=\s]+)(=)(.*)$/, ['keyword.operator', 'variable', 'delimiter', 'string']],
+                // заголовки: имя, двоеточие, значение до конца строки
+                [/^([\w-]+)(\s*:\s*)(.*?)\s*$/, ['tag', 'delimiter', 'string']],
+                // тело: переменные {{…}}, строки, литералы и числа JSON
+                [/\{\{[^}]*\}\}/, 'variable.predefined'],
+                [/"[^"]*"/, 'string'],
+                [/\b(?:true|false|null)\b/, 'constant.language'],
+                [/\b\d+(?:\.\d+)?\b/, 'number'],
+            ],
+        },
+    });
+
+    // CodeLens «выполнить» над каждой строкой запроса — аналог Send Request из REST Client.
+    // editor.addAction регистрирует команду в глобальном реестре с префиксом экземпляра
+    // («<editorId>:mars.http.run»), поэтому id команды собираем по редактору модели.
+    monaco.languages.registerCodeLensProvider('http', {
+        provideCodeLenses(model) {
+            const lenses = [];
+            const editor = monaco.editor.getEditors().find(e => e.getModel() === model);
+            if (!editor) return { lenses, dispose() { } };
+            const commandId = editor.getId() + ':mars.http.run';
+            for (let line = 1; line <= model.getLineCount(); line++) {
+                if (!httpRequestLine.test(model.getLineContent(line))) continue;
+                lenses.push({
+                    range: { startLineNumber: line, startColumn: 1, endLineNumber: line, endColumn: 1 },
+                    command: { id: commandId, title: '\u25b6 выполнить', arguments: [line] },
+                });
+            }
+            return { lenses, dispose() { } };
+        },
+        resolveCodeLens(model, lens) { return lens; },
+    });
+
+    // Модели, созданные с languageId http до регистрации языка, перетокенизировать
+    for (const model of monaco.editor.getModels()) {
+        if (model.getLanguageId() === 'http') monaco.editor.setModelLanguage(model, 'http');
+    }
 }

@@ -69,6 +69,8 @@
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.4" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.22.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <!-- Пин: версия из Swashbuckle, но rest-провайдер источников читает чужие OpenAPI-документы напрямую -->
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.62.0" />
     <PackageVersion Include="Microsoft.Playwright.Xunit" Version="1.62.0" />
     <PackageVersion Include="Microsoft.SemanticKernel" Version="1.80.0" />

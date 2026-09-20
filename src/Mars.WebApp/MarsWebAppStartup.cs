@@ -5,8 +5,7 @@ using Mars.Cms.Host;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
-using Mars.Datasource.Front;
-using Mars.Datasource.Host;
+using Mars.Datasource;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
 using Mars.Forms.Abstractions;
@@ -103,7 +102,7 @@ public static class MarsWebAppStartup
                         .AddPostgresDistributedCache(builder.Configuration)
                         .AddMarsNodes()
                         .AddMarsWebAppNodes()
-                        .AddDatasourceHost()
+                        .AddDatasource()
                         .AddMarsScheduler()
                         .AddMarsExcel()
                         .AddMarsTemplateEngines()
@@ -124,7 +123,6 @@ public static class MarsWebAppStartup
         // CLIENT
         builder.Services.AddMarsAdmin(builder.Configuration);
         builder.Services.AddNodeWorkspace();
-        builder.Services.AddDatasourceWorkspace();
         // end CLIENT
 
         //------------------------------------------
@@ -205,14 +203,13 @@ public static class MarsWebAppStartup
         app.UseMarsCms();
         app.UseMarsMedia();
 
-        app.Services.UseNodeWorkspace()
-                    .UseDatasourceWorkspace();
+        app.Services.UseNodeWorkspace();
 
         app.UsePlugins();
         app.UseMarsAdmin();
         app.UseMarsNodes()
            .UseMarsWebAppNodes();
-        app.UseDatasourceHost();
+        app.UseDatasource();
         app.UseEditorJsBlazored();
         app.Services.UseMarsSiteEngineStartup();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();

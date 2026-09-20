@@ -1,5 +1,12 @@
+using Mars.Datasource.Abstractions.Mappings;
+using Mars.Datasource.Abstractions.Sql;
+using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Abstractions.Services;
-using Mars.Datasource.Nodes;
+using Mars.Datasource.Contracts.Catalog;
+using Mars.Datasource.Contracts.Config;
+using Mars.Datasource.Contracts.Document;
+using Mars.Datasource.Contracts.Query;
+using Mars.Datasource.Contracts.Nodes;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +45,7 @@ public class SqlNodeImpl : INodeImplement<SqlNode>
             throw new NotImplementedException();
         }
 
-        var result = await ds.SqlQuery(Node.DatasourceSlug, query);
+        var result = await ds.Query(Node.DatasourceSlug, new DatasourceRequest { Query = query });
 
         if (result.Ok)
         {

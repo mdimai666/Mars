@@ -49,6 +49,18 @@
     <Project Path="src/Mars.Modules/Mars.CommandLine.Abstractions/Mars.CommandLine.Abstractions.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
     <Project Path="src/Mars.Modules/Mars.CommandLine/Mars.CommandLine.csproj" Id="6b088378-aa0e-4a8a-a220-3359c86d6106" />
   </Folder>
+  <Folder Name="/Mars.Modules/Datasource/">
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Abstractions/Mars.Datasource.Abstractions.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Contracts/Mars.Datasource.Contracts.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Front/Mars.Datasource.Front.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Host/Mars.Datasource.Host.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.File/Mars.Datasource.Providers.File.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.MsSQL/Mars.Datasource.Providers.MsSQL.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.MySQL/Mars.Datasource.Providers.MySQL.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.PostgreSQL/Mars.Datasource.Providers.PostgreSQL.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Providers.Rest/Mars.Datasource.Providers.Rest.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource/Mars.Datasource.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/Docker/">
     <Project Path="src/Mars.Modules/Mars.Docker.Abstractions/Mars.Docker.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Docker.Contracts/Mars.Docker.Contracts.csproj" />
@@ -68,15 +80,6 @@
     <Project Path="src/Mars.Modules/Mars.Identity.Abstractions/Mars.Identity.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Identity.Contracts/Mars.Identity.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Identity.Host/Mars.Identity.Host.csproj" />
-  </Folder>
-  <Folder Name="/Mars.Modules/Mars.Datasource/">
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Abstractions/Mars.Datasource.Abstractions.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Front/Mars.Datasource.Front.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Host.MsSQL/Mars.Datasource.Host.MsSQL.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Host.MySQL/Mars.Datasource.Host.MySQL.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Host.PostgreSQL/Mars.Datasource.Host.PostgreSQL.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Host/Mars.Datasource.Host.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource/Mars.Datasource.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/Media/">
     <Project Path="src/Mars.Modules/Mars.Media.Abstractions/Mars.Media.Abstractions.csproj" />
@@ -214,6 +217,7 @@
     <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
     <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
+    <Project Path="tests/Mars.Datasource.Tests/Mars.Datasource.Tests.csproj" />
     <Project Path="tests/Mars.DockerImage.Tests/Mars.DockerImage.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />
     <Project Path="tests/Mars.Forms.Tests/Mars.Forms.Tests.csproj" />

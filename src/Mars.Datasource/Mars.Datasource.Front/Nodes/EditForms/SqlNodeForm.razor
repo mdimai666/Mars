@@ -1,9 +1,11 @@
 @using BlazorMonaco.Editor
 @using Mars.Admin.Framework.Services
-@using Mars.Datasource.Abstractions.Models
-@using Mars.Datasource.Dto
 @using Mars.Datasource.Front.Services
-@using Mars.Datasource.Nodes
+@using Mars.Datasource.Contracts.Nodes
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Attributes
 @using Mars.Nodes.FormEditor
@@ -35,9 +37,13 @@
                     {
                         <li><hr class="dropdown-divider"></li>
                     }
-                    <li><a class="dropdown-item" href="datasource/config"><i class="bi bi-gear"></i> Настроить</a></li>
+                    <li><a class="dropdown-item" href="@datasourceConfigUrl"><i class="bi bi-gear"></i> Настроить</a></li>
                 </ul>
             </div>
+            @if (listError is not null)
+            {
+                <div class="text-danger fz14px">@listError</div>
+            }
         </div>
         <div class="col">
             <label>input source</label>
@@ -55,16 +61,7 @@
         <div class="d-flex mt-3" style="height:50vh">
             <CodeEditor2 @ref=_editor
                          Lang=@CodeEditor2.Language.sql
-                         Value=@Node.SqlQuery>
-                <HeaderArea>
-                    <div class="d-flex flew-wrap gap-3">
-                        <FluentButton OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
-                            <i class="bi bi-stars"></i>
-                            AI help
-                        </FluentButton>
-                    </div>
-                </HeaderArea>
-            </CodeEditor2>
+                         Value=@Node.SqlQuery />
 
         </div>
     }
@@ -86,21 +83,28 @@
     SqlNode Node { get => (SqlNode)Value!; set => Value = value; }
 
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
-    [Inject] IAIToolAppService _aiTool { get; set; } = default!;
+    [Inject] NavigationManager nav { get; set; } = default!;
 
     CodeEditor2? _editor = default!;
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+    string? listError;
 
-        _ = Task.Run(async () =>
+    string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
         {
             listDatasources = await service.ListSelectDatasource();
-            StateHasChanged();
-        });
+        }
+        catch (Exception ex)
+        {
+            listError = ex.Message;
+        }
     }
 
     public override async Task OnEditSave()

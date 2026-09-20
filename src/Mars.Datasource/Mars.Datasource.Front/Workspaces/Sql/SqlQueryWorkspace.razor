@@ -1,0 +1,43 @@
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+@using Mars.Datasource.Front.Workspaces.Shared
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits Mars.Datasource.Front.Workspaces.QueryWorkspaceBase
+
+<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Sources="@listDatasources" Source="source"
+                SourceLabel="@SourceLabel" Catalog="catalog" Tree="Tree" Tabs="tabs" ActiveTab="activeTab"
+                ObjectCount="objectCount" Hint="@Hint" TrailingLabel="@TrailingLabel" TrailingTitle="@TrailingTitle"
+                OnRetry="LoadAsync" OnOpenObject="OpenObjectAsync" OnRefreshCatalog="RefreshCatalogAsync"
+                OnSelectTab="SelectTabAsync" OnCloseTab="CloseTabAsync" OnAddTab="@(() => AddTab())"
+                OnRun="RunActiveTabAsync" OnRunMore="RunMoreAsync">
+    <TreeActions>
+        @if (CanManageViews)
+        {
+            <button class="btn btn-sm btn-light text-nowrap" title="Новая вьюха" disabled="@Busy" @onclick="CreateViewAsync">
+                <i class="bi bi-plus-lg"></i> вьюха
+            </button>
+        }
+    </TreeActions>
+    <ToolbarActions>
+        @if (CanManageViews && activeTab?.Object?.ObjectType == DatasourceObjectType.View)
+        {
+            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
+                определение
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="DropViewAsync">
+                удалить
+            </FluentButton>
+        }
+    </ToolbarActions>
+    <AboveEditor>
+        <ObjectStructurePanel Object="@activeTab?.Object" />
+    </AboveEditor>
+    <Editor>
+        <CodeEditor2 @ref="_editor" @key="EditorLang" Lang=@EditorLang Value="" OnInit="OnEditorInitAsync"
+                     OnSave="OnEditorSaveAsync"
+                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+    </Editor>
+</WorkspaceShell>

@@ -1,0 +1,41 @@
+@using Mars.Datasource.Contracts.Sql
+
+@using Mars.Contracts.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<List<SqlUpdatePlan>>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Изменение данных")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="mb-2 text-secondary fz14px">
+        Будут выполнены запросы (значения передаются параметрами, а не подстановкой в текст):
+    </div>
+    @foreach (var plan in Content)
+    {
+        <pre class="ds-sql-preview">@plan.Sql</pre>
+    }
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">
+            @(AppRes.Ok)
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">
+            @(AppRes.Cancel)
+        </FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public List<SqlUpdatePlan> Content { get; set; } = [];
+
+    private Task OkAsync() => Dialog.CloseAsync();
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+}

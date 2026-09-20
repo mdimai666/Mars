@@ -34,7 +34,7 @@ internal class AccountsService : IAccountsService
 
     public async Task<AuthResultDto> Login(AuthCredentialsDto authCredentials, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByNameAsync(authCredentials.Login);
+        var user = await _userManager.FindByNameAsync(authCredentials.Login) ?? await _userManager.FindByEmailAsync(authCredentials.Login);
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, authCredentials.Password))
         {

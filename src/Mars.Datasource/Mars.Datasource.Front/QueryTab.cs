@@ -1,0 +1,96 @@
+using Mars.Datasource.Contracts.Catalog;
+using Mars.Datasource.Contracts.Config;
+using Mars.Datasource.Contracts.Document;
+using Mars.Datasource.Contracts.Query;
+
+namespace Mars.Datasource.Front;
+
+/// <summary>Вкладка запроса: свой текст запроса, свой результат и свои несохранённые правки.</summary>
+public class QueryTab
+{
+    public string Id { get; init; } = Guid.NewGuid().ToString("N");
+    public string Title { get; set; } = "query";
+
+    /// <summary>Текст редактора: SQL у базы, предикат Dynamic LINQ у файла.</summary>
+    public string Text { get; set; } = "";
+
+    /// <summary>Язык текста: из открытого объекта, иначе из типа источника.</summary>
+    public string Language { get; set; } = DatasourceLanguage.Sql;
+
+    /// <summary>Открытый объект каталога (просмотр данных).</summary>
+    public DatasourceCatalogObject? Object { get; set; }
+
+    /// <summary>
+    /// Операция каталога, к которой перешёл документ запросов: её параметры показывает форма,
+    /// а значения уходят в тот запрос документа, где стоит курсор.
+    /// </summary>
+    public DatasourceCatalogObject? Operation { get; set; }
+
+    /// <summary>
+    /// Вкладка документа запросов: в ней лежит весь <c>requests.http</c> источника, а не одна операция.
+    /// Дерево для такого источника только переходит к нужному блоку, «выполнить» берёт блок под курсором.
+    /// </summary>
+    public bool IsDocument { get; set; }
+
+    /// <summary>Группа открытого объекта: схема у sql, пусто у файла.</summary>
+    public string Schema { get; set; } = "";
+
+    /// <summary>Колонки первичного ключа открытой таблицы — без них правка выключена.</summary>
+    public List<string> KeyColumns { get; set; } = [];
+
+    /// <summary>Источник вообще можно писать (`DatasourceCapabilities.CanWrite`).</summary>
+    public bool SourceWritable { get; set; }
+
+    public QueryResultDto? Result { get; set; }
+    public bool Loading { get; set; }
+    public bool ShowJson { get; set; }
+    public string? Error { get; set; }
+    public int MaxRows { get; set; } = 500;
+
+    /// <summary>Сколько строк показывать при просмотре объекта из дерева (в самом SQL, а не только на сервере).</summary>
+    public int BrowseLimit { get; set; } = 50;
+
+    /// <summary>SQL просмотра, который сгенерировали мы; null — вкладка не про просмотр SQL-объекта.</summary>
+    public string? BrowseSql { get; set; }
+
+    /// <summary>Общее число строк объекта: известно только для нашего просмотра (см. <see cref="BrowseSql"/>).</summary>
+    public long? Total { get; set; }
+
+    /// <summary>Подпись к количеству строк: «считаем всего…» / «всего не сосчитали».</summary>
+    public string? TotalNote { get; set; }
+
+    /// <summary>Вкладка показывает объект из дерева, и её текст с тех пор не правили руками.</summary>
+    public bool IsBrowse => BrowseSql is not null && BrowseSql == Text;
+
+    /// <summary>Есть смысл просить больше строк: упёрлись либо в лимит просмотра, либо в серверный.</summary>
+    public bool CanLoadMore => Result?.Ok == true
+        && (IsBrowse ? Result.Rows.Length >= BrowseLimit : Result.Truncated);
+
+    /// <summary>Несохранённые правки ячеек: (индекс строки, колонка) → новое значение.</summary>
+    public Dictionary<(int Row, string Column), string?> Changes { get; } = [];
+
+    /// <summary>
+    /// Значения параметров открытой операции: уходят в запрос как переменные и поля строки запроса.
+    /// Пустое значение означает «параметр не отправляем».
+    /// </summary>
+    public Dictionary<string, string?> ParameterValues { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Правка ячеек есть у таблиц с первичным ключом: операцию REST и файл так править нельзя.</summary>
+    public bool CanEdit => Object is { ObjectType: not DatasourceObjectType.Operation } && SourceWritable && KeyColumns.Count > 0;
+
+    /// <summary>Почему правка ячеек выключена; null — правка доступна, объект не открыт или ячеек у него нет.</summary>
+    public string? EditDisabledReason => Object is null || CanEdit || Object.ObjectType == DatasourceObjectType.Operation
+        ? null
+        : SourceWritable
+            ? "правка недоступна: у объекта нет первичного ключа"
+            : "источник только для чтения";
+
+    public void Reset()
+    {
+        Result = null;
+        Error = null;
+        Total = null;
+        TotalNote = null;
+        Changes.Clear();
+    }
+}

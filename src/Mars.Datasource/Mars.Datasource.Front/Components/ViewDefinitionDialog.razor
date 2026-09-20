@@ -1,0 +1,50 @@
+@using Mars.Contracts.Resources
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<ViewDefinitionDialogContent>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Определение вьюхи")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    @if (string.IsNullOrWhiteSpace(Content.Sql))
+    {
+        <div class="alert alert-warning mb-0 fz14px">Движок не отдал определение этого объекта.</div>
+    }
+    else
+    {
+        <div class="ds-view-definition">
+            <CodeEditor2 @ref="_editor" Lang="@CodeEditor2.Language.sql" Value="@Content.Sql"
+                         ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+        </div>
+    }
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" Disabled="@(string.IsNullOrWhiteSpace(Content.Sql))"
+                      OnClick="LoadToEditorAsync">
+            В редактор
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseAsync">
+            @AppRes.Cancel
+        </FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public ViewDefinitionDialogContent Content { get; set; } = default!;
+
+    CodeEditor2? _editor;
+
+    /// <summary>
+    /// Закрытие с текстом: рабочая область положит его в редактор, чтобы вьюху можно было поправить.
+    /// </summary>
+    async Task LoadToEditorAsync() => await Dialog.CloseAsync(await _editor!.GetValue());
+
+    Task CloseAsync() => Dialog.CancelAsync();
+}

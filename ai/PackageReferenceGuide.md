@@ -64,7 +64,8 @@
 Убраны лишние ссылки в ~15 проектах (самые крупные: `Duende.IdentityServer`,
 `ApiAuthorization.IdentityServer`, `JsonPatch`, `Humanizer`, `Cryptography.Pkcs` из `Mars.WebApp`;
 `Extensions.AI*`/`Caching.Memory` из `Mars.SemanticKernel.Abstractions`; identity-пакеты из SSO-контрактов),
-вычищены мёртвые записи из `Directory.Packages.props`, драйверы `Mars.Datasource.Host.MsSQL/MySQL`
+вычищены мёртвые записи из `Directory.Packages.props`, драйверы `Mars.Datasource.Providers.MsSQL/MySQL`
+(на момент правки — `Mars.Datasource.Host.MsSQL/MySQL`)
 переведены с EF-провайдеров на прямые ADO-клиенты (`Microsoft.Data.SqlClient`, `MySqlConnector`),
 `EFCore.NamingConventions` переехал из `Mars.Data` в `Mars.Data.PostgreSQL` к единственному потребителю.
 Сборка зелёная.

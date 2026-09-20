@@ -1,0 +1,47 @@
+@using Mars.Datasource.Contracts.Sql
+@using Mars.Datasource.Front.Components
+@using Mars.Datasource.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="ds-grid d-flex flex-column h-100">
+    <div class="flex-shrink-0 hstack gap-2 text-secondary fz14px px-1">
+        <span>@RowsSummary · @Result.ElapsedMs ms · @SourceLabel</span>
+        @if (Result.Truncated)
+        {
+            <span class="text-warning">показаны первые @Tab.MaxRows — в результате есть ещё строки</span>
+        }
+        @if (Tab.EditDisabledReason is string editDisabled)
+        {
+            <span class="text-secondary">@editDisabled</span>
+        }
+        else if (Tab.CanEdit)
+        {
+            <span class="text-secondary">правка ячейки — двойной клик</span>
+        }
+        <span class="ms-auto hstack gap-2">
+            @if (Tab.Changes.Count > 0)
+            {
+                <button class="btn btn-sm btn-light" @onclick="DiscardChanges">Отменить (@Tab.Changes.Count)</button>
+                <button class="btn btn-sm btn-primary" @onclick="SaveAsync">Сохранить (@Tab.Changes.Count)</button>
+            }
+            <button class="btn btn-sm btn-light" title="Таблица или дерево JSON"
+                    @onclick="@(() => Tab.ShowJson = !Tab.ShowJson)">
+                @(Tab.ShowJson ? "table" : "json")
+            </button>
+        </span>
+    </div>
+
+    @if (Tab.ShowJson)
+    {
+        <div class="ds-scroll overflow-scroll">
+            <JsonViewer Json="@resultJsonText" Expanded="1" />
+        </div>
+    }
+    else
+    {
+        <ResultTable Result="Result" Changes="@Tab.Changes" CanEdit="@Tab.CanEdit"
+                     EditCell="@_editCell" EditValue="@_editValue"
+                     EditValueChanged="@((string? value) => _editValue = value)"
+                     OnStartEdit="@StartCellEditAsync" OnCommitEdit="@CommitEdit" OnEditKeyDown="@OnEditKeyDown" />
+    }
+</div>

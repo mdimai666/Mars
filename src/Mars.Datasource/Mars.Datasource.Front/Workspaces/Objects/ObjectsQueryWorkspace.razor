@@ -1,0 +1,76 @@
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+@using Mars.Datasource.Front.Workspaces.Shared
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits Mars.Datasource.Front.Workspaces.QueryWorkspaceBase
+
+<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Sources="@listDatasources" Source="source"
+                SourceLabel="@SourceLabel" Catalog="catalog" Tree="Tree" Tabs="tabs" ActiveTab="activeTab"
+                ObjectCount="objectCount" Hint="@Hint" TrailingLabel="@TrailingLabel" TrailingTitle="@TrailingTitle"
+                RunLabel="@(activeTab?.IsDocument == true ? "Выполнить блок" : "Выполнить")"
+                OnRetry="LoadAsync" OnOpenObject="OpenObjectAsync" OnRefreshCatalog="RefreshCatalogAsync"
+                OnSelectTab="SelectTabAsync" OnCloseTab="CloseTabAsync" OnAddTab="@(() => AddTab())"
+                OnRun="RunActiveTabAsync" OnRunMore="RunMoreAsync">
+    <ToolbarActions>
+        @if (activeTab?.IsDocument == true)
+        {
+            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="SaveDocumentAsync"
+                          Title="Записать документ на сервер (Ctrl+S)">
+                Сохранить
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Stealth" OnClick="DuplicateDocumentBlockAsync"
+                          Title="Скопировать блок под курсором">
+                дубль
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Stealth" OnClick="RemoveDocumentBlockAsync"
+                          Title="Убрать блок под курсором из документа">
+                удалить блок
+            </FluentButton>
+            <FluentButton id="@_examplesButtonId" Appearance="Appearance.Stealth" Title="Добавить пример запроса в конец документа"
+                          @onclick="@(() => _examplesOpen = !_examplesOpen)">
+                примеры
+                <span slot="end">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
+            </FluentButton>
+            <FluentMenu Anchor="@_examplesButtonId" @bind-Open="_examplesOpen">
+                @foreach (var item in HttpDocumentExamples.All)
+                {
+                    var example = item;
+                    <FluentMenuItem Label="@example.Name" OnClick="@(() => AddExampleAsync(example))" />
+                }
+            </FluentMenu>
+        }
+        else if (activeTab is { IsDocument: false, Language: DatasourceLanguage.Linq })
+        {
+            <FluentButton id="@_fileExamplesButtonId" Appearance="Appearance.Stealth"
+                          Title="Вставить пример условия фильтра в редактор"
+                          @onclick="@(() => _fileExamplesOpen = !_fileExamplesOpen)">
+                примеры
+                <span slot="end">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
+            </FluentButton>
+            <FluentMenu Anchor="@_fileExamplesButtonId" @bind-Open="_fileExamplesOpen">
+                @foreach (var item in FileQueryExamples.All)
+                {
+                    var example = item;
+                    <FluentMenuItem Label="@example.Name" OnClick="@(() => AddFileExampleAsync(example))" />
+                }
+            </FluentMenu>
+        }
+    </ToolbarActions>
+    <AboveEditor>
+        <OperationParametersPanel Operation="@FormOperation" GetValue="@ParameterValue"
+                                  ValueChanged="@SetDocumentParameterAsync" />
+    </AboveEditor>
+    <Editor>
+        <CodeEditor2 @ref="_editor" @key="EditorLang" Lang=@EditorLang Value="" OnInit="OnEditorInitAsync"
+                     OnSave="OnEditorSaveAsync" OnRunRequest="RunBlockAtLineAsync"
+                     OnCursorLine="OnCursorLineAsync" OnContentChanged="OnContentChangedAsync"
+                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+    </Editor>
+</WorkspaceShell>

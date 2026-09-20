@@ -1,0 +1,40 @@
+@using Mars.Contracts.Resources
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<CellValueDialogContent>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Значение ячейки")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="ds-cell-dialog">
+        <CodeEditor2 @ref="_editor" Lang="@Content.Language" Value="@Content.Value"
+                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">
+            @(AppRes.Ok)
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">
+            @(AppRes.Cancel)
+        </FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public CellValueDialogContent Content { get; set; } = default!;
+
+    CodeEditor2? _editor;
+
+    async Task OkAsync()
+        => await Dialog.CloseAsync(await _editor!.GetValue());
+
+    Task CancelAsync() => Dialog.CancelAsync();
+}

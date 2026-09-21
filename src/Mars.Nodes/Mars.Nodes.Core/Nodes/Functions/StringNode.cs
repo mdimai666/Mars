@@ -6,9 +6,12 @@ namespace Mars.Nodes.Core.Nodes.Functions;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/StringNode/StringNode{.lang}.md")]
 [Display(GroupName = "functions")]
-public class StringNode : Node
+public class StringNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.StringNode";
+
+    static readonly Lazy<IReadOnlyDictionary<string, StringMethod>> Methods =
+        new(() => StringNodeOperationUtilsMethodParser.ParseMethods(typeof(StringNodeOperationUtils)).ToDictionary(s => s.Name));
 
     public StringNodeOperation[] Operations { get; set; } = [new() { Method = nameof(StringNodeOperationUtils.ToUpper) }];
 
@@ -18,6 +21,19 @@ public class StringNode : Node
         Color = "#b2b2b2";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/string.svg";
+    }
+
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        if (Operations.Length == 0) yield break;
+
+        if (!Methods.Value.TryGetValue(Operations[^1].Method, out var method)) yield break;
+
+        var varType = method.MethodInfo.ReturnType == typeof(string[]) ? "string[]"
+            : method.MethodInfo.ReturnType == typeof(string) ? "string"
+            : VarNode.ObjectTypeName;
+
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), varType);
     }
 }
 

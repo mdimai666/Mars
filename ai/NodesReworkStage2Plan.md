@@ -446,6 +446,55 @@ MqttOut.Topic делаем msg-драйвен; HttpInNode — вариант A (
 Отложено (фаза G): разворот `EndpointNode.JsonSchema` в точные пути подсказок без DebugMode; кандидаты из
 собственных свойств ноды (ось «дефолт значения поля» для `HttpRequestNode.Url` — см. «Дописано в план»).
 
+## Фаза H — спеки и умные поля остальных групп, партиями по 5–9 нод (старт 2026-09-22)
+
+Продолжение фазы G на остальные группы (Functions, Sequences, Parsers, Storage, Events, Diagnostics,
+TaskNodes, Validation, Connections). DevNodes пропущены (debug-эксперименты/мёртвые заглушки).
+Решения пользователя по развилкам: JsonNode мёртвые поля — **оживить** (`Property` → MarsPathInput,
+`FormatJsonString` → impl); `FileReadNode.FilePath` — **расширить** до msg-driven; `DevAdminConnection.Message` —
+**добавить** `MessageKind`; баги JoinNode/DirRead — чинить (объяснить подробнее к моменту партии 2/3);
+InlineFunction null-callback — обсудить позже.
+
+### Партия 1 — Functions (сделана 2026-09-22)
+
+- [x] `ExecNodeImpl`: `[NodeOutputValueSpec(typeof(string))]` (stdout).
+- [x] `StringNode`: интерфейс на модели — тип Payload по `ReturnType` последней операции
+      (`string` / `string[]`, иначе object); пустой список операций — ничего не объявляем (passthrough).
+      Методы парсятся ленивым статическим кэшем `StringNodeOperationUtilsMethodParser` (browser-safe, Core).
+- [x] `EvalNodeForm`: **баг-фикс** — `MarsValueInput` биндился в `Node.Input` напрямую без маппинга
+      `@`↔`ValueKind`: введённый `@…` уходил в DynamicExpresso вместе с `@`. Теперь маппинг как в Inject
+      (`@`-префикс → Expression со снятием префикса; без префикса → Const).
+- [x] `SwitchNodeForm`: условия — plain FluentTextField → `MarsValueInput` с маппингом `Condition.ValueKind`
+      (модель/impl уже резолвили, форма отставала). `$else` показывается как есть без `@` (impl сверяет
+      `Value == "$else"` после снятия префикса — round-trip безопасен).
+- [x] `DelayNode` (passthrough), `SwitchNode` (транзит — спека пустая намеренно), `FunctionNode` /
+      `InlineFunctionNode` (выход динамический — статически необъявим, fallback object) — без изменений.
+      `DelayNode.DelayMillis` оставлен const.
+- [x] Тесты: Exec-атрибут, StringNode (ToUpper→string, Split→string[], Split+Join→string, пусто→ничего).
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (552 / 0 / 0). CSS/JS не правились —
+      `MarsAppVersion` не поднимался.
+
+### Партия 2 — Sequences + Parsers (в плане)
+
+Foreach (порты: 0=`Payload:int`, 1=`Payload:object` + слот `ForeachCycle` вручную — у цикла public **поля**,
+экспандер ходит только свойства), Queue (0=int, 1=object), Join (`object[]` на все порты; фикс бага
+fallback `15*1000` секунд), Split (object+Description), JsonNode (интерфейс по `Action` + оживление
+`Property`/`FormatJsonString`), HtmlParse (интерфейс по `Output`; MapToObjects → пути `Payload[].<OutputField>`
+из конфига InputMappings).
+
+### Партия 3 — Storage (в плане)
+
+FileRead/FileServiceRead (интерфейс по `OutputMode`), DirRead (`string[]`; фикс `UseRootGitIgnore`),
+FileWrite (форма отстаёт: `FilePathKind`+resolver уже есть → MarsValueInput), FileRead — добавить
+`FilePathKind`+resolver+MarsValueInput (решение пользователя). FileWrite/FileServiceWrite — passthrough.
+
+### Партия 4 — Events/Diagnostics/TaskNodes/Validation/Connections (в плане)
+
+EventListener (`ManagerEventPayload`), Counter (`int`; формы нет — не создаём), CheckUser (слот
+`IRequestContext` на порт 0), ActionCommand (object+Description «args string→string»), ExecXAction
+(`XActResult`), DevAdminConnection (`MessageKind`+MarsValueInput, решение пользователя; sink).
+Logger/TerminateAllJobs/KillTaskJob — sink'и, без специй.
+
 ## Грабли и риски
 
 - **Фаза D, внешний класс — только через параметр `Class`**: у `MarsValueInput`/`MarsPathInput` есть

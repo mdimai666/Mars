@@ -1,7 +1,9 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
+using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Tests.OutputValueSpecs;
 
@@ -174,6 +176,42 @@ public class NodeOutputValueSpecReaderTests
         specs.Should().Contain(new OutputValueSpec("Payload.StackTrace", "string"));
         specs.Should().Contain(new OutputValueSpec("Payload.InnerException", "object"));
         specs.Should().NotContain(s => s.Path.StartsWith("Payload.InnerException.", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ReadStatics_ExecNodeImpl_DeclaresStringPayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(ExecNodeImpl))
+            .Should().Equal(new OutputValueSpec("Payload", "string"));
+    }
+
+    [Fact]
+    public void Read_StringNode_PayloadTypeFollowsLastOperation()
+    {
+        NodeOutputValueSpecReader.Read(new StringNode())
+            .Should().Equal(new OutputValueSpec("Payload", "string"));
+
+        NodeOutputValueSpecReader.Read(new StringNode
+            {
+                Operations = [new() { Method = nameof(StringNodeOperationUtils.Split) }]
+            })
+            .Should().Equal(new OutputValueSpec("Payload", "string[]"));
+
+        NodeOutputValueSpecReader.Read(new StringNode
+            {
+                Operations =
+                [
+                    new() { Method = nameof(StringNodeOperationUtils.Split) },
+                    new() { Method = nameof(StringNodeOperationUtils.Join) },
+                ]
+            })
+            .Should().Equal(new OutputValueSpec("Payload", "string"));
+    }
+
+    [Fact]
+    public void Read_StringNode_WithoutOperations_DeclaresNothing()
+    {
+        NodeOutputValueSpecReader.Read(new StringNode { Operations = [] }).Should().BeEmpty();
     }
 
     [NodeOutputValueSpec(typeof(NamedSlotDto), Name = "RequestInfo")]

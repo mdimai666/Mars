@@ -1,6 +1,7 @@
 @using Mars.Admin.Framework.Components
 @using Mars.Core.Utils
 @using Mars.Nodes.Core.Nodes.Functions
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SwitchNode))]
@@ -40,7 +41,9 @@
                     <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
                         <div class="d-grid align-items-center" style="grid-template-columns: auto 33px;column-gap: 10px; ">
                             <FormItem2 For="() => Node.Conditions" Label=@($"Condition {index + 1}")>
-                                <FluentTextField @bind-Value="item.Value" Class="w-100" />
+                                <MarsValueInput Class="mvi-fill" Value="@ConditionValue(item)"
+                                                ValueChanged="@(v => SetConditionValue(item, v))"
+                                                For="() => item.Value" />
                             </FormItem2>
                             <FluentButton OnClick=@(() => ClickRemoveItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                         </div>
@@ -59,6 +62,32 @@
 @code {
     [CascadingParameter] Node? Value { get; set; }
     SwitchNode Node { get => (SwitchNode)Value!; set => Value = value; }
+
+    static string ConditionValue(SwitchNode.Condition condition)
+    {
+        if (condition.Value == SwitchNode.ElseConditionValue) return condition.Value;
+
+        return condition.ValueKind switch
+        {
+            InputValueKind.Const => condition.Value,
+            InputValueKind.Msg => "@msg." + condition.Value,
+            _ => "@" + condition.Value,
+        };
+    }
+
+    static void SetConditionValue(SwitchNode.Condition condition, string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            condition.ValueKind = InputValueKind.Expression;
+            condition.Value = value[1..].Trim();
+        }
+        else
+        {
+            condition.ValueKind = InputValueKind.Const;
+            condition.Value = value;
+        }
+    }
 
     void SortList(FluentSortableListEventArgs args) => Node.Conditions = Node.Conditions.MoveItem(args.OldIndex, args.NewIndex);
 

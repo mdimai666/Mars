@@ -517,12 +517,113 @@ InlineFunction null-callback — обсудить позже.
       Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (560 / 0 / 0). CSS/JS не правились —
       `MarsAppVersion` не поднимался.
 
-### Партия 4 — Events/Diagnostics/TaskNodes/Validation/Connections (в плане)
+### Партия 4 — Events/Diagnostics/TaskNodes/Validation/Connections (сделана 2026-09-22)
 
-EventListener (`ManagerEventPayload`), Counter (`int`; формы нет — не создаём), CheckUser (слот
-`IRequestContext` на порт 0), ActionCommand (object+Description «args string→string»), ExecXAction
-(`XActResult`), DevAdminConnection (`MessageKind`+MarsValueInput, решение пользователя; sink).
-Logger/TerminateAllJobs/KillTaskJob — sink'и, без специй.
+- [x] `EventListenerNodeImpl`: атрибут `typeof(ManagerEventPayload)` (Id/Created/Data/Topic; `Data` — object,
+      не разворачивается).
+- [x] `CounterNodeImpl`: атрибут `typeof(int)`.
+- [x] `CheckUserNodeImpl`: атрибут `typeof(IRequestContext)`, `Name = nameof(IRequestContext)`, порт 0
+      (`TryAdd(requestContext)` → слот по имени интерфейса; UserName/IsAuthenticated/Roles:string[] и т.д.).
+- [x] `ActionCommandNodeImpl`: атрибут `typeof(object)` + Description «command args (string → string)»
+      (payload инжектит `CommandNodesActionProvider` словарём — ключи неизвестны статически).
+- [x] `ExecXActionNodeImpl`: атрибут `typeof(XActResult)` (Ok/Message/MessageIntent/Effects).
+- [x] `DevAdminConnectionNode`: `MessageKind` + `InputValueResolver` в impl (семантика «пусто → msg.Payload»
+      сохранена — применяется к уже резолвнутому значению); форма — multiline `MarsValueInput` (решение
+      пользователя: добавлять Kind).
+- [x] Sink'и без специй: `LoggerNode`, `TerminateAllJobsNode`, `KillTaskJobNode`, `DevAdminConnectionNode`;
+      `CounterNode` формы не имеет — не создавали. DevNodes пропущены (debug/мёртвые).
+- [x] Тесты: EventListener, Counter, CheckUser (слот+порт), ActionCommand, ExecXAction.
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (565 / 0 / 0). CSS/JS не правились —
+      `MarsAppVersion` не поднимался.
+
+Заметки партии 4 (не правили, только наблюдение): `KillTaskJobNode` отправляет в wires[0] задачу с
+`msg = null`; `InlineFunctionNodeImpl` при null-результате не зовёт callback (поток молча обрывается) —
+обсуждение отложено (решение пользователя); `ExecNodeImpl` читает stderr и выбрасывает без логирования.
+
+## Черновик гайда (влить в NodesValueSpecsGuide.md при закрытии инициативы)
+
+### Что построено (этап 2 + партии G/H, 2026-09-17..22)
+
+Система «контракты выходов нод → подсказки в полях форм». Три слоя:
+
+1. **Контракты выходов** (`Mars.Nodes.Core`, browser-safe):
+   - `INodeOutputValueSpec.GetOutputValueSpec()` — **на модели** ноды: считается в браузере, видит конфиг
+     экземпляра. Для веток, зависящих от конфига (`HttpRequestNode.ReturnResponse`, `EndpointNode.EndpointInputModel`,
+     `FileReadNode.OutputMode`, `HtmlParseNode.Output`, `StringNode` — последняя операция, `JsonNode.Action/Property`).
+     `VarType` — строка, поэтому пути типов из чужих сборок объявляются вручную (`HttpInFormSaveFilesNode` →
+     `FileListItem`, `ForeachNode` → `ForeachCycle`: у него public **поля**, автoразворот их не видит).
+   - `[NodeOutputValueSpec(typeof(X), Name="slot", OutputPort=n, Description="…")]` — **на impl** (или модели):
+     статика, разворачивается из CLR-типа. Для сложных DTO (`HttpRequestInfo`, `XActResult`,
+     `ManagerEventPayload`, `IRequestContext`, `Exception`). `Name` по умолчанию `"Payload"`;
+     `Set(obj)` в рантайме пишет слот под `typeof(T).Name` — `Name` атрибута должен совпадать.
+   - `NodeOutputValueSpecReader` (интерфейс → атрибуты типа; пусто = транзит, не ошибка),
+     `OutputValueSpecExpander` (тип → плоские пути; `DefaultMaxDepth=3`, visited-set против рекурсии типов,
+     `NoExpansionTypes`: object/Type/NodeMsg/JsonElement/JsonDocument/JsonNode; словари/IEnumerable не
+     разворачиваются; `[]` в пути = элемент массива). `Fallback` = `Payload: object` — только если Payload
+     не объявил никто по цепочке проводов.
+   - Транспорт: `NodeService.CollectOutputValueSpecs` (атрибуты моделей + impl'ов, мерж по TypeId) →
+     `NodesDataResponse.OutputValueSpecs` → клиентский `IHostValueHints`.
+2. **Провайдер подсказок** (`Mars.Nodes.Workspace/Services/ValueFields/`): `MsgValueRootProvider` обходит
+   провода вверх от редактируемой ноды, фильтр по порту выхода, ближайшее объявление побеждает,
+   **мерж инстанс+хост с дедупом по `(Path, OutputPort)`** (инстанс точнее — знает конфиг). Корни:
+   msg(0)/FlowContext(10)/GlobalContext(20)/VarNode(30). В DebugMode к путям прилагаются значения из снимков.
+3. **Поля форм** (`Mars.Nodes.FormEditor/EditForms/Components/`):
+   - `MarsValueInput` — **значение** (const ↔ `@`expression; `Multiline`/`Rows` — textarea без слоя
+     подсветки; `For="() => X"` — адрес поля для подсказок; `Class="mvi-fill"` — растянуть).
+   - `MarsPathInput` — **путь к свойству** (`Root="msg"`+относительный, либо `Roots`; свободный ввод
+     несуществующего пути разрешён — цель записи может ещё не существовать).
+
+### Рецепты
+
+- **Новая нода со статическим выходом:** атрибут на impl + тест `ReadStatics_*`.
+- **Новая нода с config-зависимым выходом:** `INodeOutputValueSpec` на модели + тест `Read_*` на каждую ветку.
+- **Поле «значение из msg/выражение»:** в модели парное `XxxKind = InputValueKind.Const`; в impl —
+  `InputValueResolver.Resolve(kind, value, "string", interpreter, new ExpressionScope(RNS, input), Node, "Xxx")`
+  (interpreter создавать только при kind Expression/Msg); в форме — `MarsValueInput` + маппинг
+  (см. `InjectNodeForm`/`HttpRequestNodeForm`: `@`-префикс ⇄ Expression со снятием префикса, иначе Const;
+  Msg-kind только отображается, из UI не создаётся). Старые flows совместимы: дефолт Kind = Const.
+- **Поле «куда писать результат»:** `MarsPathInput Root="msg"` + маршрутизация в impl по образцу
+  `TemplateNodeImpl`/`JsonNodeImpl`: `"Payload"` → payload, dot-path → `DynamicNodeMsgWrapper.SetValueByPath`,
+  иначе `Set(name, value)`.
+
+### Покрытые ноды (спеки)
+
+Интерфейс на модели: Inject, HttpRequest, Endpoint, HttpIn, HttpInFormSaveFiles, String, Foreach, Json,
+HtmlParse, FileRead, FileServiceRead. Атрибуты на impl: MqttIn, CatchError(Exception), HttpRequest
+(слот `HttpRequestInfo`), Exec, Queue(порты 0/1), Join(all ports), Split, DirRead, EventListener,
+Counter, CheckUser(слот `IRequestContext`, порт 0), ActionCommand, ExecXAction. Транзит/sink/динамические
+без специй: Switch, Delay, Call, LinkOut, EmailSend, FileWrite, FileServiceWrite, VariableSet,
+Template (пишет в динамический `Property` — цель видна в форме, не в подсказках downstream),
+Function/InlineFunction/Eval (результат кода), Logger, HttpResponse, MqttOut, CallResponse,
+Terminate/KillTaskJob, DevAdminConnection, Debug.
+
+### Умные поля в формах
+
+MarsValueInput: Inject(Value), Eval(Input), HttpRequest(Url), EmailSend(ToEmail/Subject/Message-multiline),
+MqttOut(Topic), Switch(Conditions, `$else` как есть), FileRead(FilePath), FileWrite(FilePath),
+DevAdminConnection(Message-multiline). MarsPathInput: Debug(PropertyPath), Template(Property),
+VariableSet(ValuePath), Inject(Key), JsonNode(Property).
+
+### Инварианты и грабли
+
+- Дедуп специй — **только по `(Path, OutputPort)`**; по одному Path портовые ветки (Foreach/Queue) теряются.
+- Экспандер: глубина 3, visited-set вдоль ветки (Exception.InnerException не рекурсирует), enum/uint/byte →
+  `object`, `Dictionary`/`JsonNode` не разворачиваются (ключи придут только debug-значениями).
+- Рукописные пути в моделях (`FileListItem`, `ForeachCycle`) — при изменении DTO обновлять вручную.
+- Интерполятор бюджета: подсказки считаются в браузере без обращений к серверу; значения — только из
+  снимков DebugMode (pull по upstream-замыканию + version-bump сигнал).
+- `MarsValueInput` в формах — только через параметр `Class` (историческая грабля фазы D).
+- CSS: `style.less` и `style.css` править **оба** (компиляция ручная, compilerconfig.json); при правке —
+  bump `MarsAppVersion` в `Directory.Build.props`.
+
+### Поведенческие изменения для старых flows
+
+- `EmailSendNode.Message` теперь реально применяется (был закомментирован); payload не-dto → Message.
+- `JsonNode.Property`/`FormatJsonString` ожили: Property ≠ "Payload" пишет в слот/путь; ToJsonString по
+  умолчанию теперь компактный (раньше formatted=true был зашит).
+- `MqttNodeMessagePaylad` → `MqttNodeMessagePayload` (имя слота runtime-only; рукописные выражения со
+  старым именем ломаются — осознанно).
+- `KillTaskJobNode` шлёт `msg = null`; `InlineFunctionNode` при null не зовёт callback — не меняли (отложено).
 
 ## Грабли и риски
 

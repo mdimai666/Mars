@@ -1,10 +1,14 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Implements.Nodes.Connections;
+using Mars.Nodes.Core.Implements.Nodes.Diagnostics;
+using Mars.Nodes.Core.Implements.Nodes.Events;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Implements.Nodes.Sequences;
 using Mars.Nodes.Core.Implements.Nodes.Storage;
+using Mars.Nodes.Core.Implements.Nodes.Validation;
 using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Tests.OutputValueSpecs;
@@ -284,6 +288,52 @@ public class NodeOutputValueSpecReaderTests
     {
         NodeOutputValueSpecReader.ReadStatics(typeof(DirReadNodeImpl))
             .Should().Equal(new OutputValueSpec("Payload", "string[]"));
+    }
+
+    [Fact]
+    public void ReadStatics_EventListenerNodeImpl_DeclaresEventPayload()
+    {
+        var specs = NodeOutputValueSpecReader.ReadStatics(typeof(EventListenerNodeImpl));
+
+        specs.Should().Contain(new OutputValueSpec("Payload", "object"));
+        specs.Should().Contain(new OutputValueSpec("Payload.Id", "Guid"));
+        specs.Should().Contain(new OutputValueSpec("Payload.Created", "DateTime"));
+        specs.Should().Contain(new OutputValueSpec("Payload.Topic", "string"));
+    }
+
+    [Fact]
+    public void ReadStatics_CounterNodeImpl_DeclaresIntPayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(CounterNodeImpl))
+            .Should().Equal(new OutputValueSpec("Payload", "int"));
+    }
+
+    [Fact]
+    public void ReadStatics_CheckUserNodeImpl_DeclaresRequestContextSlotOnAuthPort()
+    {
+        var specs = NodeOutputValueSpecReader.ReadStatics(typeof(CheckUserNodeImpl));
+
+        specs.Should().Contain(new OutputValueSpec("IRequestContext", "object", 0));
+        specs.Should().Contain(new OutputValueSpec("IRequestContext.UserName", "string", 0));
+        specs.Should().Contain(new OutputValueSpec("IRequestContext.IsAuthenticated", "bool", 0));
+        specs.Should().Contain(new OutputValueSpec("IRequestContext.Roles", "string[]", 0));
+    }
+
+    [Fact]
+    public void ReadStatics_ActionCommandNodeImpl_DeclaresArgsPayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(ActionCommandNodeImpl))
+            .Should().Equal(new OutputValueSpec("Payload", "object", 0, "command args (string → string)"));
+    }
+
+    [Fact]
+    public void ReadStatics_ExecXActionNodeImpl_DeclaresXActResult()
+    {
+        var specs = NodeOutputValueSpecReader.ReadStatics(typeof(ExecXActionNodeImpl));
+
+        specs.Should().Contain(new OutputValueSpec("Payload", "object"));
+        specs.Should().Contain(new OutputValueSpec("Payload.Ok", "bool"));
+        specs.Should().Contain(new OutputValueSpec("Payload.Message", "string"));
     }
 
     [Fact]

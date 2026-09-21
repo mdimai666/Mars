@@ -11,6 +11,7 @@ public class DevAdminConnectionNode : Node
 
     public string Action { get; set; } = ACTION_MESSAGE;
     public string Message { get; set; } = "";
+    public string MessageKind { get; set; } = InputValueKind.Const;
 
     public MessageRecipientType MessageRecipient { get; set; }
 

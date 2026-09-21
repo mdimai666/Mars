@@ -1,7 +1,10 @@
+using DynamicExpresso;
 using Mars.Core.Models;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Dto;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Connections;
+using Mars.Nodes.Expressions;
 using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,7 +30,14 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
 
             var adminConnectionService = RNS.ServiceProvider.GetRequiredService<IDevAdminConnectionService>();
 
-            var message = string.IsNullOrEmpty(Node.Message) ? input.Payload?.ToString()! : Node.Message;
+            Interpreter? interpreter = null;
+
+            if (Node.MessageKind is InputValueKind.Expression or InputValueKind.Msg)
+                interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+
+            var resolvedMessage = (string?)InputValueResolver.Resolve(Node.MessageKind, Node.Message, "string", interpreter, new ExpressionScope(RNS, input), Node, "Message");
+
+            var message = string.IsNullOrEmpty(resolvedMessage) ? input.Payload?.ToString()! : resolvedMessage;
             var messageIntent = Enum.TryParse(Node.MessageIntent, out MessageIntent intent) ? intent : MessageIntent.Info;
 
             var recepient = Node.MessageRecipient;

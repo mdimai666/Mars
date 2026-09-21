@@ -1,4 +1,5 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Connections;
 using Mars.XActions.Abstractions.Managers;
 
@@ -8,6 +9,7 @@ namespace Mars.Nodes.Core.Implements.Nodes.Connections;
 /// <see cref="IActionManager"/>
 /// <see cref="CommandNodesActionProvider"/>
 /// </summary>
+[NodeOutputValueSpec(typeof(object), Description = "command args (string → string)")]
 public class ActionCommandNodeImpl : INodeImplement<ActionCommandNode>
 {
     public ActionCommandNode Node { get; }

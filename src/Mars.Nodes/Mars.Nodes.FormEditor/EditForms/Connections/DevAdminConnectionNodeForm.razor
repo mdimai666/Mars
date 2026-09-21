@@ -1,5 +1,6 @@
 @using Mars.Admin.Framework.Components
 @using Mars.Nodes.Core.Nodes.Connections
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(DevAdminConnectionNode))]
@@ -16,7 +17,9 @@
     @if (Node.Action == DevAdminConnectionNode.ACTION_MESSAGE)
     {
         <FormItem2 For="() => Node.Message" Class="">
-            <FluentTextArea @bind-Value="@Node.Message" Class="w-100" Placeholder="leave it empty for msg.payload" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="3"
+                            Placeholder="leave it empty for msg.payload"
+                            Value="@MessageValue" ValueChanged="SetMessageValue" For="() => Node.Message" />
         </FormItem2>
 
         <FormItem2 For=@(() => Node.MessageRecipient)>
@@ -43,4 +46,24 @@
     [CascadingParameter] Node Value { get; set; } = default!;
     DevAdminConnectionNode Node { get => (DevAdminConnectionNode)Value; set => Value = value; }
 
+    string MessageValue => Node.MessageKind switch
+    {
+        InputValueKind.Expression => "@" + Node.Message,
+        InputValueKind.Msg => "@msg." + Node.Message,
+        _ => Node.Message,
+    };
+
+    void SetMessageValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.MessageKind = InputValueKind.Expression;
+            Node.Message = value[1..].Trim();
+        }
+        else
+        {
+            Node.MessageKind = InputValueKind.Const;
+            Node.Message = value;
+        }
+    }
 }

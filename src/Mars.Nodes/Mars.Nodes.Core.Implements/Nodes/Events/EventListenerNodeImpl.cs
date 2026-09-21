@@ -1,9 +1,11 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Events;
 using Mars.Server.Abstractions.Managers;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Events;
 
+[NodeOutputValueSpec(typeof(ManagerEventPayload))]
 public class EventListenerNodeImpl : INodeImplement<EventListenerNode>
 {
     public EventListenerNode Node { get; }

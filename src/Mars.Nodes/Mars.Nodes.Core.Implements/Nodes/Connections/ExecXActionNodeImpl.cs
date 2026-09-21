@@ -1,9 +1,12 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Connections;
 using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Connections;
 
+[NodeOutputValueSpec(typeof(XActResult))]
 public class ExecXActionNodeImpl : INodeImplement<ExecXActionNode>
 {
     private readonly IActionManager _actionManager;

@@ -1,9 +1,11 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Diagnostics;
 
+[NodeOutputValueSpec(typeof(int))]
 public class CounterNodeImpl : INodeImplement<CounterNode>, INodeLifecycleOnAssigned, INodeLifecycleOnDelete
 {
     private readonly HybridCache _cache;

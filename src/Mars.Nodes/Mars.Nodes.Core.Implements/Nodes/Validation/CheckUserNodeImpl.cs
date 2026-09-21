@@ -1,10 +1,12 @@
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Validation;
 
+[NodeOutputValueSpec(typeof(IRequestContext), Name = nameof(IRequestContext), OutputPort = 0)]
 public class CheckUserNodeImpl : INodeImplement<CheckUserNode>
 {
 

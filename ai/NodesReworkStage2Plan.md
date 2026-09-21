@@ -542,88 +542,152 @@ InlineFunction null-callback — обсудить позже.
 
 ## Черновик гайда (влить в NodesValueSpecsGuide.md при закрытии инициативы)
 
-### Что построено (этап 2 + партии G/H, 2026-09-17..22)
+### Архитектура: контракт выходов → подсказки в поле
 
-Система «контракты выходов нод → подсказки в полях форм». Три слоя:
+Цепочка доставки подсказки до пикера (всё считается без обращений к серверу при наборе текста):
 
-1. **Контракты выходов** (`Mars.Nodes.Core`, browser-safe):
-   - `INodeOutputValueSpec.GetOutputValueSpec()` — **на модели** ноды: считается в браузере, видит конфиг
-     экземпляра. Для веток, зависящих от конфига (`HttpRequestNode.ReturnResponse`, `EndpointNode.EndpointInputModel`,
-     `FileReadNode.OutputMode`, `HtmlParseNode.Output`, `StringNode` — последняя операция, `JsonNode.Action/Property`).
-     `VarType` — строка, поэтому пути типов из чужих сборок объявляются вручную (`HttpInFormSaveFilesNode` →
-     `FileListItem`, `ForeachNode` → `ForeachCycle`: у него public **поля**, автoразворот их не видит).
-   - `[NodeOutputValueSpec(typeof(X), Name="slot", OutputPort=n, Description="…")]` — **на impl** (или модели):
-     статика, разворачивается из CLR-типа. Для сложных DTO (`HttpRequestInfo`, `XActResult`,
-     `ManagerEventPayload`, `IRequestContext`, `Exception`). `Name` по умолчанию `"Payload"`;
-     `Set(obj)` в рантайме пишет слот под `typeof(T).Name` — `Name` атрибута должен совпадать.
-   - `NodeOutputValueSpecReader` (интерфейс → атрибуты типа; пусто = транзит, не ошибка),
-     `OutputValueSpecExpander` (тип → плоские пути; `DefaultMaxDepth=3`, visited-set против рекурсии типов,
-     `NoExpansionTypes`: object/Type/NodeMsg/JsonElement/JsonDocument/JsonNode; словари/IEnumerable не
-     разворачиваются; `[]` в пути = элемент массива). `Fallback` = `Payload: object` — только если Payload
-     не объявил никто по цепочке проводов.
-   - Транспорт: `NodeService.CollectOutputValueSpecs` (атрибуты моделей + impl'ов, мерж по TypeId) →
-     `NodesDataResponse.OutputValueSpecs` → клиентский `IHostValueHints`.
-2. **Провайдер подсказок** (`Mars.Nodes.Workspace/Services/ValueFields/`): `MsgValueRootProvider` обходит
-   провода вверх от редактируемой ноды, фильтр по порту выхода, ближайшее объявление побеждает,
-   **мерж инстанс+хост с дедупом по `(Path, OutputPort)`** (инстанс точнее — знает конфиг). Корни:
-   msg(0)/FlowContext(10)/GlobalContext(20)/VarNode(30). В DebugMode к путям прилагаются значения из снимков.
-3. **Поля форм** (`Mars.Nodes.FormEditor/EditForms/Components/`):
-   - `MarsValueInput` — **значение** (const ↔ `@`expression; `Multiline`/`Rows` — textarea без слоя
-     подсветки; `For="() => X"` — адрес поля для подсказок; `Class="mvi-fill"` — растянуть).
-   - `MarsPathInput` — **путь к свойству** (`Root="msg"`+относительный, либо `Roots`; свободный ввод
-     несуществующего пути разрешён — цель записи может ещё не существовать).
+1. Нода **объявляет**, что кладёт в msg: атрибут на impl/модели или интерфейс на модели (см. рецепты ниже).
+2. `OutputValueSpecExpander` (`Mars.Nodes.Core`) разворачивает CLR-тип атрибута в плоские пути
+   (`Payload.user.name`, `[]` = элемент массива): глубина ≤ 3, visited-set против рекурсии типов
+   (`Exception.InnerException` не зацикливается), `NoExpansionTypes` (object/Type/NodeMsg/JsonElement/
+   JsonDocument/JsonNode) и словари/IEnumerable не разворачиваются — их ключи неизвестны статически.
+3. Хост при `Load()` собирает **статику** (атрибуты моделей + impl'ов, `NodeService.CollectOutputValueSpecs`,
+   мерж по TypeId) и отдаёт в `NodesDataResponse.OutputValueSpecs`; клиент кладёт их в `IHostValueHints`.
+   **Динамику** (интерфейс) клиент считает сам — инстанс ноды в редакторе есть, конфиг он видит.
+4. `MsgValueRootProvider` (`Mars.Nodes.Workspace/Services/ValueFields/`) при открытии пикера обходит провода
+   вверх от редактируемой ноды: для каждой ноды **мержит** инстансные спеки с хостовыми (дедуп по
+   `(Path, OutputPort)`, инстанс побеждает — он знает конфиг), фильтр по порту выхода, ближайшее объявление
+   побеждает; `Fallback` (`Payload: object`) — только если Payload не объявил никто по цепочке.
+   В DebugMode к путям добавляются значения из снимков.
 
-### Рецепты
+### Рецепт: статическое объявление выхода (атрибут)
 
-- **Новая нода со статическим выходом:** атрибут на impl + тест `ReadStatics_*`.
-- **Новая нода с config-зависимым выходом:** `INodeOutputValueSpec` на модели + тест `Read_*` на каждую ветку.
-- **Поле «значение из msg/выражение»:** в модели парное `XxxKind = InputValueKind.Const`; в impl —
-  `InputValueResolver.Resolve(kind, value, "string", interpreter, new ExpressionScope(RNS, input), Node, "Xxx")`
-  (interpreter создавать только при kind Expression/Msg); в форме — `MarsValueInput` + маппинг
-  (см. `InjectNodeForm`/`HttpRequestNodeForm`: `@`-префикс ⇄ Expression со снятием префикса, иначе Const;
-  Msg-kind только отображается, из UI не создаётся). Старые flows совместимы: дефолт Kind = Const.
-- **Поле «куда писать результат»:** `MarsPathInput Root="msg"` + маршрутизация в impl по образцу
-  `TemplateNodeImpl`/`JsonNodeImpl`: `"Payload"` → payload, dot-path → `DynamicNodeMsgWrapper.SetValueByPath`,
-  иначе `Set(name, value)`.
+Когда: выход одинаков для всех экземпляров ноды — фиксированный тип payload или именованный слот.
 
-### Покрытые ноды (спеки)
+```csharp
+[NodeOutputValueSpec(typeof(HttpRequestInfo), Name = nameof(HttpRequestInfo))]  // слот из input.Set(obj)
+[NodeOutputValueSpec(typeof(int), OutputPort = 0, Description = "total processed")] // конкретный порт
+public class SomeNodeImpl : INodeImplement<SomeNode> { ... }
+```
 
-Интерфейс на модели: Inject, HttpRequest, Endpoint, HttpIn, HttpInFormSaveFiles, String, Foreach, Json,
-HtmlParse, FileRead, FileServiceRead. Атрибуты на impl: MqttIn, CatchError(Exception), HttpRequest
-(слот `HttpRequestInfo`), Exec, Queue(порты 0/1), Join(all ports), Split, DirRead, EventListener,
-Counter, CheckUser(слот `IRequestContext`, порт 0), ActionCommand, ExecXAction. Транзит/sink/динамические
-без специй: Switch, Delay, Call, LinkOut, EmailSend, FileWrite, FileServiceWrite, VariableSet,
-Template (пишет в динамический `Property` — цель видна в форме, не в подсказках downstream),
-Function/InlineFunction/Eval (результат кода), Logger, HttpResponse, MqttOut, CallResponse,
-Terminate/KillTaskJob, DevAdminConnection, Debug.
+- `Name` по умолчанию `"Payload"`. Для слота **обязан** совпадать с рантайм-ключом: `NodeMsg.Set<T>(obj)`
+  пишет под `typeof(T).Name` — бери `nameof(Тип)`.
+- `OutputPort`: номер выхода или `OutputValueSpec.AllOutputPorts` (-1).
+- Атрибуты читаются и с impl'а, и с модели (`ReadStatics` обоих → мерж), но место атрибута — **impl**:
+  модели из `Mars.Nodes.Core` часто не видят DTO-типы (они в Implements/модулях), а impl видит всё.
+- Тип разворачивается автоматически: public **свойства** (поля не участвуют!), вложенность до глубины 3.
+- Проверка: тест `NodeOutputValueSpecReader.ReadStatics(typeof(XxxNodeImpl))` — см.
+  `tests/Mars.Nodes.Tests/OutputValueSpecs/NodeOutputValueSpecReaderTests.cs`.
 
-### Умные поля в формах
+### Рецепт: config-зависимый выход (интерфейс на модели)
 
-MarsValueInput: Inject(Value), Eval(Input), HttpRequest(Url), EmailSend(ToEmail/Subject/Message-multiline),
-MqttOut(Topic), Switch(Conditions, `$else` как есть), FileRead(FilePath), FileWrite(FilePath),
-DevAdminConnection(Message-multiline). MarsPathInput: Debug(PropertyPath), Template(Property),
-VariableSet(ValuePath), Inject(Key), JsonNode(Property).
+Когда: тип/путь выхода зависит от конфига экземпляра (`ReturnResponse`, `OutputMode`, `Action`, список
+операций) или DTO живёт в сборке, недоступной из Core.
+
+```csharp
+public class SomeNode : Node, INodeOutputValueSpec
+{
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        yield return Mode == Mode.Json
+            ? new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName, Description: "parsed JSON")
+            : new OutputValueSpec(nameof(NodeMsg.Payload), "string");
+    }
+}
+```
+
+- `OutputValueSpec(Path, VarType, OutputPort = 0, Description = null)`; `VarType` — **строка** из словаря
+  `VarNode` (`int`/`string`/`Guid`/`string[]`/…; `object` — только для специй, не валидный тип хранения).
+  Можно писать пути вручную для типов из чужих сборок (`"Payload[].Name", "string"`) — но при изменении
+  DTO список придётся обновлять руками.
+- Считается в браузере — не ссылаться на серверные типы; только Core.
+- Интерфейс **не отменяет** атрибуты impl'а: провайдер мержит оба источника (так у HttpRequestNode
+  уживаются динамический Payload и статический слот `HttpRequestInfo`).
+- Транзит-нода (msg не меняет) не объявляет **ничего** — пустой спек это «ничего не добавляет»,
+  провайдер унаследует объявления вышестоящих. Проверка: тест `Read_*` на каждую config-ветку.
+
+### Рецепт: поле значения MarsValueInput (const / @expression / msg)
+
+Когда: в поле формы может прийти значение из msg или вычисленное выражение (URL, topic, email, условие,
+путь к файлу). Ось одна: строка без префикса = const, `@…` = выражение (корни `msg`/`GlobalContext`/
+`FlowContext`/`VarNode`/`env()`).
+
+1. **Модель** — парное Kind-поле, дефолт Const (старые flows остаются валидными):
+   ```csharp
+   public string Url { get; set; } = "";
+   public string UrlKind { get; set; } = InputValueKind.Const;
+   ```
+2. **Impl** — резолв через `InputValueResolver` (`Mars.Nodes.Expressions`); interpreter создавать только
+   если kind не Const:
+   ```csharp
+   Interpreter? interpreter = null;
+   if (Node.UrlKind is InputValueKind.Expression or InputValueKind.Msg)
+       interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+   var url = (string)InputValueResolver.Resolve(Node.UrlKind, Node.Url, "string",
+       interpreter, new ExpressionScope(RNS, input), Node, "Url")!;
+   ```
+3. **Форма** — `MarsValueInput` + маппинг `@`-префикса в Kind (эталон — `InjectNodeForm`/`HttpRequestNodeForm`):
+   ```razor
+   <MarsValueInput Class="mvi-fill" VarType="string" Value="@UrlValue" ValueChanged="SetUrlValue" For="() => Node.Url" />
+   ```
+   ```csharp
+   string UrlValue => Node.UrlKind switch
+   {
+       InputValueKind.Expression => "@" + Node.Url,
+       InputValueKind.Msg => "@msg." + Node.Url,
+       _ => Node.Url,
+   };
+   void SetUrlValue(string value)
+   {
+       if (value.StartsWith('@')) { Node.UrlKind = InputValueKind.Expression; Node.Url = value[1..].Trim(); }
+       else { Node.UrlKind = InputValueKind.Const; Node.Url = value; }
+   }
+   ```
+   - `For="() => X"` **обязателен** — по имени члена модели компонент сам тянет подсказки из контейнера.
+   - `Class="mvi-fill"` — растянуть по ячейке (внешние классы только через параметр `Class`, иначе затрут
+     корневой класс компонента и все стили).
+   - `Multiline Rows="N"` — textarea (без слоя подсветки выражения); для многострочных тел (email Message).
+   - `VarType` — для const-валидации и подписи тега (`int`/`bool`/`DateTime` → проверка формата).
+   - Kind `Msg` только отображается (из UI `@msg.x` сохранится как Expression — семантически то же).
+   - Значения-«свободный текст» (константы с переводом строк) переживают режим expr без потерь:
+     префикс снимается/возвращается симметрично.
+
+### Рецепт: поле пути MarsPathInput (куда писать результат)
+
+Когда: поле задаёт **путь**, а не значение (`Property` у Template/Json, `PropertyPath` у Debug,
+`ValuePath` у VariableSet, `Key` у Inject).
+
+```razor
+<MarsPathInput Root="msg" @bind-Value=@Node.Property For="() => Node.Property" />   @* относительный путь *@
+<MarsPathInput Roots="…" @bind-Value=… />                                            @* полные пути с корнем *@
+```
+
+- `Root="msg"` + `ShowRoot="false"` — чип корня слева, значение относительное; `Roots` — список разрешённых
+  корней, значение с корнем. Свободный ввод несуществующего пути разрешён (цель записи может ещё не
+  существовать), валидация только синтаксическая.
+- **Impl** — маршрутизация записи по образцу `TemplateNodeImpl`/`JsonNodeImpl`:
+  ```csharp
+  if (Node.Property == "Payload") input.Payload = result;
+  else if (Node.Property.Contains('.')) new DynamicNodeMsgWrapper(input).SetValueByPath(Node.Property, result);
+  else input.Set(Node.Property, result);
+  ```
+  Ограничение: `SetValueByPath` — только рефлексия (не словари/JsonElement), промежуточные сегменты должны
+  существовать. Dataflow-нодам не писать в контексты (msg-корень): запись в GlobalContext не видна ни
+  снимкам DebugMode, ни провайдеру подсказок — это работа VariableSetNode.
 
 ### Инварианты и грабли
 
-- Дедуп специй — **только по `(Path, OutputPort)`**; по одному Path портовые ветки (Foreach/Queue) теряются.
-- Экспандер: глубина 3, visited-set вдоль ветки (Exception.InnerException не рекурсирует), enum/uint/byte →
-  `object`, `Dictionary`/`JsonNode` не разворачиваются (ключи придут только debug-значениями).
-- Рукописные пути в моделях (`FileListItem`, `ForeachCycle`) — при изменении DTO обновлять вручную.
-- Интерполятор бюджета: подсказки считаются в браузере без обращений к серверу; значения — только из
-  снимков DebugMode (pull по upstream-замыканию + version-bump сигнал).
-- `MarsValueInput` в формах — только через параметр `Class` (историческая грабля фазы D).
+- Дедуп специй — **только по `(Path, OutputPort)`** (ридер, серверный мерж, провайдер): по одному Path
+  портовые ветки теряются.
+- Бюджет интеропа: подсказки — при открытии пикера и по refresh, фильтрация локальная; набор текста не
+  должен порождать обращений к провайдеру.
+- Экспандер видит только свойства; класс с public **полями** (ForeachCycle) объявлять вручную строками.
+- enum/uint/byte/short дают `object` (нет в словаре `VarNode`) — для точных имён расширять `_namesDict`.
+- Рукописные пути в моделях — при изменении DTO обновлять вручную (компенсируется тестом `Read_*`).
 - CSS: `style.less` и `style.css` править **оба** (компиляция ручная, compilerconfig.json); при правке —
-  bump `MarsAppVersion` в `Directory.Build.props`.
-
-### Поведенческие изменения для старых flows
-
-- `EmailSendNode.Message` теперь реально применяется (был закомментирован); payload не-dto → Message.
-- `JsonNode.Property`/`FormatJsonString` ожили: Property ≠ "Payload" пишет в слот/путь; ToJsonString по
-  умолчанию теперь компактный (раньше formatted=true был зашит).
-- `MqttNodeMessagePaylad` → `MqttNodeMessagePayload` (имя слота runtime-only; рукописные выражения со
-  старым именем ломаются — осознанно).
-- `KillTaskJobNode` шлёт `msg = null`; `InlineFunctionNode` при null не зовёт callback — не меняли (отложено).
+  bump `MarsAppVersion` в `Directory.Build.props` и `?v=` у ассета.
+- Тесты: `ReadStatics_*` (атрибуты) и `Read_*` (интерфейс, каждая config-ветка) в
+  `tests/Mars.Nodes.Tests/OutputValueSpecs/`, провайдер — `ValueFields/ValueFieldProviderTests.cs`.
 
 ## Грабли и риски
 

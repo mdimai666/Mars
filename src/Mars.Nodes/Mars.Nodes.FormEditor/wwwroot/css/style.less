@@ -541,7 +541,8 @@
             background: var(--mvi-accent);
             color: var(--mvi-accent-ink);
 
-            .mvi-type {
+            .mvi-type,
+            .mvi-value {
                 color: inherit;
             }
         }
@@ -552,12 +553,20 @@
         }
 
         .mvi-name {
+            flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
+        .mvi-value {
+            max-width: 45%;
+            overflow: hidden;
+            color: var(--mvi-str);
+            font-size: 11px;
+            text-overflow: ellipsis;
+        }
+
         .mvi-type {
-            margin-left: auto;
             padding-left: 12px;
             color: var(--mvi-dim);
             font-size: 11px;

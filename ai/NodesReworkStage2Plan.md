@@ -167,13 +167,12 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 1. **Один глобальный флаг DebugMode, не сохраняется** — после перезагрузки процесса снова выключен
    (singleton на сервере, без записи в flows.json и без опций). Тумблер — в редакторе.
-2. **Пишем только «out» ноды, с ключом по исходной ноде и её выходному порту** — `(sourceNodeId, sourceOutputPort)`.
-   Это ровно то, что нужно провайдеру: при обходе проводов он уже знает пары `(предшественник, порт)`.
-   Для этого в `ExecutionParameters` добавляется `SourceNodeId` (в `NodeTaskJob.ExecuteNodeIterative` он есть:
-   `node.Id` + `task.SourceOutputPortIndex`).
+2. **Записывает исполнитель, а не нода отладки**: захват в `NodeTaskJob`, внутри `callbackNext(e, output)` — то есть
+   сохраняется всё, что нода **отдала дальше**, у каждой ноды без исключений.
+   Ключ — `(id ноды-отправителя, номер её выходного порта)`; это ровно та пара, которой ходит провайдер подсказок.
+   Пишется копия сообщения (`e.Copy()`), потому что сборка снимка отложена троттлом.
 3. **Ключ хранилища — с портом**: `nodeId + port`.
-4. **Запись делает специальная нода отладки** (`DebugNode`): сохраняет значения, проходящие через неё, когда
-   глобальный флаг включён. Остальные ноды не пишут ничего.
+4. **Что хранит `DebugNode` — отдельный разговор** (пока он не пишет ничего; решение выше его не требует).
 5. **Записываем не всё, а через троттл** — `src/Mars.Nodes/Mars.Nodes.Host/Helpers/SmartThrottleByKey.cs`
    (тот же, что уже использует `NodeService`). Троттл живёт внутри стора, нода зовёт один метод.
 6. **Транспорт — только pull**: запрос снимков при открытии формы; SignalR/эфир не используем (эфир теряется
@@ -184,23 +183,41 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 9. `InjectNode` входящих подсказок не получит — у него нет входного порта; в его форме только `VarNode` /
    `FlowContext` / `GlobalContext`.
 
-**Единственное место, где я дочитываю формулировку:** снимок кладётся под ключом **источника**
-(`sourceNodeId` + `sourceOutputPort`), а не под ключом самой ноды отладки. Иначе подсказки у других нод
-значений не найдут: нода отладки знает только свой id и свой входной порт. Если имелось в виду «ключ — нода
-отладки + её вход», правка в двух местах.
+**Семантика захвата (согласовано 2026-09-17):** сохраняет исполнитель — всё, что нода отдала дальше,
+под ключом `(нода, её выходной порт)`. Нода отладки в записи не участвует; что она будет хранить — обсудим
+отдельно.
 
-- [ ] `INodeDebugMode` (Host, singleton, не персистится), метод в `INodeServiceClient` + тумблер в редакторе.
-- [ ] `NodeDebugSnapshot` (Core) + `INodeDebugStore` (Abstractions, impl в Host): `IMemoryCache`, TTL 10 минут,
-      ключ `nodeId + port`, троттл `SmartThrottleByKey`, обрезка значений одной функцией.
-- [ ] `ExecutionParameters.SourceNodeId` + заполнение в `NodeTaskJob`.
-- [ ] `DebugNodeImpl` пишет снимок, когда режим включён.
-- [ ] Транспорт: `INodeServiceClient.DebugSnapshots(nodeIds)` + эндпоинт + клиентский кэш на форме.
-- [ ] Провайдер: `ValueFieldInfo.Value` из снимков для пар `(предшественник, порт)`; пути — объединение
-      объявленных спек и дерева JSON снимка (это закрывает «`object`-поля» на живых данных).
-- [ ] UI: значение в строке подсказки, INPUT-панель, признак `stale`.
-- [ ] Тесты: стор (ключ+порт, TTL, обрезка, троттл), провайдер (значения из снимка), `SourceNodeId` в задаче.
+- [x] `INodeDebugMode` (Host, singleton, не персистится) + `INodeServiceClient.SetDebugMode` + эндпоинт
+      `NodeController.SetDebugMode` + `Load()` отдаёт `DebugMode` в `NodesDataResponse`.
+- [x] `NodeDebugSnapshot` (Core) + `NodeDebugSnapshotBuilder` (обрезка: строка 150, глубина 4, первые 50
+      элементов; на пределе глубины значение становится обрезанной строкой, циклы не вешают разбор) +
+      `INodeDebugStore` (Abstractions, impl `NodeDebugStore` в Host), TTL 10 минут, ключ `nodeId|port`,
+      троттл `SmartThrottleByKey` (300 мс, сборка снимка внутри троттла).
+      **Отклонение от плана:** не `IMemoryCache`, а `ConcurrentDictionary` + проверка `CapturedAt` при чтении —
+      `IMemoryCache` не умеет перечислять ключи, а клиент просит пачку `nodeIds` сразу.
+- [x] Захват в `NodeTaskJob.callbackNext` (проверка режима в исполнителе, до копирования сообщения).
+- [x] Транспорт: `INodeServiceClient.DebugSnapshots()` + эндпоинт + запрос при открытии формы
+      (`NodeEditContainer1.StartEditNode` → `IHostValueHints.SetDebugSnapshots`), `Version` в хинтах для
+      сброса кэша подсказок.
+- [x] Провайдер: `ValueFieldInfo.Value` из снимков, пути из живых данных добавляются отдельно
+      (`msg.Payload.items[1].name` с индексом — вставляется как есть), `DebugSnapshotValues` режет значения до 80.
+- [x] UI: тумблер `DEBUG` в панели редактора (`NodeEditor1.razor` → `NodeEditor1.razor.cs:OnToggleDebugMode`,
+      состояние приходит параметром `DebugMode` от страницы), значение в строке подсказки
+      (`.mvi-value` в `MarsValueInput.razor` + стили в `style.less`/`style.css`), INPUT-панель над консолью
+      (`EditorParts/NodeInputViewer.razor`: предшественники выбранной ноды + `JsonObjectViewer`, пометка
+      `stale` старше минуты, стили в `Mars.Nodes.Workspace/wwwroot/styles.css`).
+- [x] Тесты: `tests/Mars.Nodes.Tests/Debug/NodeDebugStoreTests.cs` (снимок: обрезка/глубина/цикл; стор:
+      выключенный режим, порты, троттл, TTL, фильтр по нодам), `NodeDebugCaptureTests.cs` (захват через
+      реальный job: включённый режим даёт снимок каждой ноды цепочки, выключенный — ничего;
+      в `NodeServiceUnitTestBase` добавлены `DebugMode`/`DebugStore` для тестов) и тесты в `ValueFields`
+      (значения из снимка, пути только из данных, чужой порт, разбор JSON).
+      Проверка: `dotnet build Mars.slnx` + стенд + `Mars.Nodes.Tests.exe` (523 / 0 / 0).
+      `MarsAppVersion` поднят до `0.8.3-alpha.15` (правлены `style.css` / `styles.css`).
 
 ## Грабли и риски
+
+- **Не называть папки в репо `Debug/`** — `.gitignore:23` (`[Dd]ebug/`) их молча игнорирует, файлы не попадут
+  в коммит (поймано на `tests/Mars.Nodes.Tests/Debug/` → переименовано в `DebugMode/`).
 
 - Форма работает с **копией** ноды (`Mars.Nodes.Workspace/NodeEditContainer1.razor.cs`: `_node = node.Copy(...)`):
   `Id` и `TypeId` есть, живых ссылок на рантайм нет — всё динамическое обязано приходить через сервис.
@@ -256,6 +273,12 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 
+- **Отложено: что хранит `DebugNode`** (согласовано 2026-09-17). Сейчас запись делает исполнитель
+  (`NodeTaskJob`), нода отладки не участвует. Отдельно решим, что она хранит сама: свой вход, свой выход,
+  историю нескольких сообщений, отдельный вид в INPUT-панели — и не превратится ли это в дубль стора.
+- **Цена захвата при включённом режиме**: `e.Copy()` на каждое отданное сообщение (копия `Context`, payload
+  по ссылке) плюс сборка снимка в троттле (300 мс на пару «нода+порт»). Стор ограничен `число нод × портов`,
+  обрезка на входе. При выключенном режиме — одна проверка флага, копирования нет.
 - **Разворачивать `object`-поля в подсказках глубже.** Сейчас часть путей останавливается на `object`:
   свойства с типом `object`/интерфейс/абстрактный класс не разворачиваются (`OutputValueSpecExpander.NoExpansionTypes`),
   примитивы вне `VarNode._typesDict` (`uint`, `short`, `byte`, `char`) дают `object`, enum — тоже `object`.

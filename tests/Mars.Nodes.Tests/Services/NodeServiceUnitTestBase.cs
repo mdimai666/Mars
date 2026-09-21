@@ -49,6 +49,8 @@ public class NodeServiceUnitTestBase
     internal readonly ILogger<NodeTaskJob> _loggerJob;
     internal readonly INodesLocator _nodesLocator;
     internal readonly INodeImplementFactory _nodeImplementFactory;
+    internal readonly DebugModeState DebugMode = new();
+    internal readonly NodeDebugStore DebugStore;
     internal NodeService? _nodeService;
     internal INodeRuntime Runtime;
     internal NodeTaskManager _nodeTaskManager;
@@ -87,6 +89,11 @@ public class NodeServiceUnitTestBase
         _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
         _serviceProvider.GetService(typeof(INodeTaskManager)).Returns(_nodeTaskManager);
         _serviceProvider.GetService(typeof(INodeImplementFactory)).Returns(_nodeImplementFactory);
+
+        DebugStore = new NodeDebugStore(DebugMode);
+        _serviceProvider.GetService(typeof(INodeDebugMode)).Returns(DebugMode);
+        _serviceProvider.GetService(typeof(INodeDebugStore)).Returns(DebugStore);
+
         IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
         _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 

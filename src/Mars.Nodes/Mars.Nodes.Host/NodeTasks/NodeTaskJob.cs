@@ -8,6 +8,7 @@ using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.NodeTasks;
@@ -22,6 +23,8 @@ internal class NodeTaskJob : IAsyncDisposable
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected ConcurrentDictionary<string, NodeJob> _jobs = new();
     protected INodeRuntime _runtime;
+    private readonly INodeDebugMode? _debugMode;
+    private readonly INodeDebugStore? _debugStore;
     private readonly ILogger<NodeTaskJob>? _logger;
 
     private int executedCount;
@@ -63,6 +66,8 @@ internal class NodeTaskJob : IAsyncDisposable
         _runtime = runtime;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _debugMode = serviceProvider.GetService<INodeDebugMode>();
+        _debugStore = serviceProvider.GetService<INodeDebugStore>();
         _maxDegreeOfParallelism = maxDegreeOfParallelism;
 
         StartDate = DateTimeOffset.Now;
@@ -166,6 +171,9 @@ internal class NodeTaskJob : IAsyncDisposable
             async Task callbackNext(NodeMsg e, int output = 0)
             {
                 if (_cancellationTokenSource.IsCancellationRequested) return;
+
+                if (_debugMode?.Enabled == true)
+                    _debugStore?.Save(e.Copy(), node.Id, output);
 
                 var nextNodes = GetNextWires(node.Id, output);
 

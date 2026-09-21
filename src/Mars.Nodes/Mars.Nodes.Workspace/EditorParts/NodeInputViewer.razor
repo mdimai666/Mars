@@ -1,0 +1,59 @@
+@using Mars.Nodes.Core
+@using Mars.Nodes.Front.Abstractions.Services
+@inject IHostValueHints Hints
+
+<div class="node-input-viewer">
+    <div class="niv-head">
+        <span class="niv-title">INPUT</span>
+        @if (Node is null)
+        {
+            <span class="niv-empty">click a node to see what it received</span>
+        }
+        else
+        {
+            <span>@Node.DisplayName</span>
+        }
+    </div>
+
+    @if (Node is not null && !Inputs().Any())
+    {
+        <div class="niv-empty">no incoming data (source node, or debug mode is off)</div>
+    }
+
+    @foreach (var (source, snapshot) in Inputs())
+    {
+        <div class="niv-head niv-head-sub">
+            <span>@source.DisplayName</span>
+            <span>port @snapshot.Port</span>
+            <span class="@(IsStale(snapshot) ? "niv-stale" : null)">
+                @snapshot.CapturedAt.ToString("HH:mm:ss")@(IsStale(snapshot) ? " stale" : "")
+            </span>
+        </div>
+        <JsonObjectViewer Json="@snapshot.Json" />
+    }
+</div>
+
+@code {
+    static readonly TimeSpan StaleAfter = TimeSpan.FromMinutes(1);
+
+    [Parameter] public Node? Node { get; set; }
+    [Parameter] public IDictionary<string, Node>? Nodes { get; set; }
+
+    IEnumerable<(Node Source, NodeDebugSnapshot Snapshot)> Inputs()
+    {
+        if (Node is null || Nodes is null) yield break;
+
+        foreach (var source in Nodes.Values)
+        {
+            for (var port = 0; port < source.Wires.Count; port++)
+            {
+                if (source.Wires[port].All(wire => wire.NodeId != Node.Id)) continue;
+
+                if (Hints.GetDebugSnapshot(source.Id, port) is { } snapshot)
+                    yield return (source, snapshot);
+            }
+        }
+    }
+
+    static bool IsStale(NodeDebugSnapshot snapshot) => DateTime.Now - snapshot.CapturedAt > StaleAfter;
+}

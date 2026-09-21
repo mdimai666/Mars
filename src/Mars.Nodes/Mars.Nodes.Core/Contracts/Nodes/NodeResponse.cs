@@ -12,6 +12,9 @@ public record NodesDataResponse
         new Dictionary<string, OutputValueSpec[]>();
 
     public IReadOnlyCollection<string> GlobalVariableNames { get; init; } = [];
+
+    /// <summary>Global debug mode state; not persisted, off after a restart.</summary>
+    public bool DebugMode { get; init; }
 }
 
 public record NodeStateInfoResponse

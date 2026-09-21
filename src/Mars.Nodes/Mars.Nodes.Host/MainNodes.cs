@@ -37,6 +37,8 @@ public static class MainNodes
 
         services.AddSingleton<INodeService, NodeService>();
         services.AddSingleton<INodeTaskManager, NodeTaskManager>();
+        services.AddSingleton<INodeDebugMode, DebugModeState>();
+        services.AddSingleton<INodeDebugStore, NodeDebugStore>();
         services.AddSingleton<INodeSchedulerService, NodeSchedulerService>();
         services.AddSingleton<INodeRuntime, NodeRuntime>();
         services.AddSingleton<INodesReader, NodesReader>();

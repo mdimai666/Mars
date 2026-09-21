@@ -227,6 +227,73 @@ public class ValueFieldProviderTests
             new ValueFieldInfo("VarNode.siteName", "string", varNode.DisplayName));
     }
 
+    [Fact]
+    public void GetFields_WithDebugSnapshot_AttachesValuesToDeclaredPaths()
+    {
+        var inject = new InjectNode
+        {
+            Fields =
+            [
+                new() { Key = "Payload", Value = "hello" },
+                new() { Key = "count", VarType = "int", Value = "1" },
+            ]
+        };
+        var eval = new EvalNode();
+        Wire(inject, eval);
+
+        var hints = new HostValueHints();
+        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
+        {
+            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 0, DateTime.Now,
+                """{"Payload":"hello","count":42}""")],
+        });
+
+        var fields = MsgProvider(hints).GetFields(Context(eval, inject));
+
+        fields.Should().Equal(
+            new ValueFieldInfo("msg.Payload", "string", inject.DisplayName, "hello"),
+            new ValueFieldInfo("msg.count", "int", inject.DisplayName, "42"));
+    }
+
+    [Fact]
+    public void GetFields_SnapshotOnlyPaths_AreAddedWithValues()
+    {
+        var inject = new InjectNode { Fields = [new() { Key = "Payload", Value = "hello" }] };
+        var eval = new EvalNode();
+        Wire(inject, eval);
+
+        var hints = new HostValueHints();
+        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
+        {
+            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 0, DateTime.Now,
+                """{"Payload":{"user":{"email":"a@b.c"},"items":[{"name":"one"},{"name":"two"}]}}""")],
+        });
+
+        var fields = MsgProvider(hints).GetFields(Context(eval, inject));
+
+        fields.Should().Contain(new ValueFieldInfo("msg.Payload.user.email", "object", inject.DisplayName, "a@b.c"));
+        fields.Should().Contain(new ValueFieldInfo("msg.Payload.items[1].name", "object", inject.DisplayName, "two"));
+        fields.Should().Contain(new ValueFieldInfo("msg.Payload.items", "object", inject.DisplayName, "[2 items]"));
+    }
+
+    [Fact]
+    public void GetFields_SnapshotOfAnotherPort_IsNotUsed()
+    {
+        var inject = new InjectNode { Fields = [new() { Key = "Payload", Value = "hello" }] };
+        var eval = new EvalNode();
+        Wire(inject, eval, fromPort: 0);
+
+        var hints = new HostValueHints();
+        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
+        {
+            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 1, DateTime.Now, """{"Payload":"other"}""")],
+        });
+
+        var fields = MsgProvider(hints).GetFields(Context(eval, inject));
+
+        fields.Should().Equal(new ValueFieldInfo("msg.Payload", "string", inject.DisplayName));
+    }
+
     private sealed class DuplicateVarNodeValueRootProvider : IValueRootProvider
     {
         public int Order => 40;

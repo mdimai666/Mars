@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Implements.JsonConverters;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
 
@@ -54,26 +55,40 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
                     Level = intentLevel,
                 };
             }
-            else if (input.Payload is not string && input.Payload is object)
-            {
-                string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, _jsonSerializerOptions);
-
-                msg = new DebugMessage
-                {
-                    NodeId = Node.Id,
-                    Message = $"DebugNode (serialized)\nType=({input.Payload?.GetType().Name}):",
-                    Json = json.TextEllipsis(jsonSymbolsLimit),
-                    Level = intentLevel,
-                };
-            }
             else
             {
-                msg = new DebugMessage
+                var readProp = () =>
                 {
-                    NodeId = Node.Id,
-                    Message = input.Payload?.ToString()?.TextEllipsis(500) ?? "null",
-                    Level = intentLevel,
+                    var interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+                    var value = InputValueResolver.Resolve(InputValueKind.Expression, Node.PropertyPath, VarNode.ObjectTypeName, interpreter, new ExpressionScope(RNS, input), Node, $"Field '{nameof(Node.PropertyPath)}'");
+                    return value;
                 };
+
+                var prop = (Node.PropertyPath == DebugNode.PropertyPathPayloadDefault || Node.PropertyPath.IsNullOrEmpty())
+                            ? input.Payload
+                            : readProp();
+
+                if (prop is not string && prop is object)
+                {
+                    string json = System.Text.Json.JsonSerializer.Serialize(prop, _jsonSerializerOptions);
+
+                    msg = new DebugMessage
+                    {
+                        NodeId = Node.Id,
+                        Message = $"DebugNode (serialized)\nType=({prop?.GetType().Name}):",
+                        Json = json.TextEllipsis(jsonSymbolsLimit),
+                        Level = intentLevel,
+                    };
+                }
+                else
+                {
+                    msg = new DebugMessage
+                    {
+                        NodeId = Node.Id,
+                        Message = input.Payload?.ToString()?.TextEllipsis(500) ?? "null",
+                        Level = intentLevel,
+                    };
+                }
             }
 
             RNS.DebugMsg(msg);

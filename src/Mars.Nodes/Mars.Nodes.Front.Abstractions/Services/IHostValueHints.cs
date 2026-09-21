@@ -10,7 +10,12 @@ public interface IHostValueHints
 {
     void SetOutputSpecs(IReadOnlyDictionary<string, OutputValueSpec[]> specs);
     void SetGlobalVariableNames(IReadOnlyCollection<string> names);
+    void SetDebugSnapshots(IReadOnlyDictionary<string, NodeDebugSnapshot[]> snapshots);
 
     IReadOnlyCollection<OutputValueSpec> GetOutputSpecs(string nodeTypeId);
     IReadOnlyCollection<string> GlobalVariableNames { get; }
+    NodeDebugSnapshot? GetDebugSnapshot(string nodeId, int port);
+
+    /// <summary>Растёт при каждом Set — по нему потребитель видит, что кэш подсказок устарел.</summary>
+    int Version { get; }
 }

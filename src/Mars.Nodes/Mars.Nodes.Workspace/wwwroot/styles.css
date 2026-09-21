@@ -446,3 +446,42 @@ g.red-ui-flow-link-ghost path.red-ui-flow-link-line {
     --red-ui-node-link-port-background: #eee;
     --red-ui-node-port-label-color: #888;
 }
+
+.node-input-viewer {
+    max-height: 45%;
+    overflow: auto;
+    padding: 4px 6px;
+    border-bottom: 1px solid #d6d6d6;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 11px;
+}
+
+.node-input-viewer .niv-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+.node-input-viewer .niv-title {
+    font-weight: 600;
+}
+
+.node-input-viewer .niv-head-sub {
+    margin-top: 6px;
+    color: #6b6b6b;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.node-input-viewer .niv-empty {
+    padding: 4px 0;
+    color: #8a8a8a;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.node-input-viewer .niv-stale {
+    color: #b06a00;
+}

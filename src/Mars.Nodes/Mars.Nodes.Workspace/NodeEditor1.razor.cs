@@ -11,6 +11,7 @@ using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.FormEditor;
 using Mars.Nodes.Front.Abstractions.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
@@ -63,6 +64,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     }
 
     [Parameter] public EventCallback<IDictionary<string, Node>> AllNodesChanged { get; set; }
+
+    /// <summary>Глобальный режим отладки: хранит последнее сообщение, которое каждая нода отдала дальше.</summary>
+    [Parameter] public bool DebugMode { get; set; }
+    [Parameter] public EventCallback<bool> DebugModeChanged { get; set; }
     [Parameter] public EventCallback<string> OnInject { get; set; }
     [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
     [Parameter] public EventCallback<string> OnCmdClick { get; set; }
@@ -73,6 +78,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public JsonSerializerOptions NodesJsonSerializerOptionsFormatted { get; private set; } = default!;
 
     Dictionary<string, Node> _allNodes = [];
+    Node? _selectedNode;
     string runningTaskCountDisplayText = "-";
 
     #region PALETTE
@@ -297,8 +303,20 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnClickNode(NodeComponentMouseEventArgs e)
     {
+        _selectedNode = e.Node;
+
         if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
         if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+    }
+
+    async Task OnToggleDebugMode()
+    {
+        var enabled = !DebugMode;
+
+        if (_serviceProvider.GetService(typeof(INodeServiceClient)) is INodeServiceClient client)
+            await client.SetDebugMode(enabled);
+
+        await DebugModeChanged.InvokeAsync(enabled);
     }
 
     void OnDblClickNode(NodeComponentMouseEventArgs e)

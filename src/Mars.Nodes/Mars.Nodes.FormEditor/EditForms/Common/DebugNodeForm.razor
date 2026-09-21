@@ -1,5 +1,6 @@
 @using Mars.Admin.Framework.Components
 @using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(DebugNode))]
@@ -7,6 +8,11 @@
 <div class="vstack gap-4">
 
     <FluentCheckbox @bind-Value=Node.CompleteInputMessage Label="CompleteInputMessage" />
+
+    @if (!Node.CompleteInputMessage)
+    {
+        <MarsValueInput @bind-Value=Node.PropertyPath For="() => Node.PropertyPath" />
+    }
 
     <FluentCheckbox @bind-Value=Node.WriteToConsole Label="WriteToConsole" />
 

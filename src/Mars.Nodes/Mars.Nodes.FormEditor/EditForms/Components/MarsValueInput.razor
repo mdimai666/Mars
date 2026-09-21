@@ -112,6 +112,10 @@
                          aria-selected="@selected" @key="item.Path"
                          @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
                         <span class="mvi-name">@item.Path</span>
+                        @if (!string.IsNullOrEmpty(item.Value))
+                        {
+                            <span class="mvi-value" title="@item.Value">@item.Value</span>
+                        }
                         <span class="mvi-type">@item.VarType</span>
                     </div>
                 }
@@ -339,7 +343,7 @@
         if (Candidates is null)
         {
             var node = NodeEditContainer?.Node;
-            var key = node is null ? null : $"{node.Id}|{FieldName}";
+            var key = node is null ? null : $"{node.Id}|{FieldName}|{NodeEditContainer?.ValueFieldsVersion}";
 
             if (_hostFieldsKey != key)
             {

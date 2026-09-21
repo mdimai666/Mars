@@ -446,7 +446,8 @@
   background: var(--mvi-accent);
   color: var(--mvi-accent-ink);
 }
-.mars-value-input .mvi-row.is-active .mvi-type {
+.mars-value-input .mvi-row.is-active .mvi-type,
+.mars-value-input .mvi-row.is-active .mvi-value {
   color: inherit;
 }
 .mars-value-input .mvi-row .mvi-bullet {
@@ -454,11 +455,18 @@
   color: var(--mvi-dim);
 }
 .mars-value-input .mvi-row .mvi-name {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.mars-value-input .mvi-row .mvi-value {
+  max-width: 45%;
+  overflow: hidden;
+  color: var(--mvi-str);
+  font-size: 11px;
+  text-overflow: ellipsis;
+}
 .mars-value-input .mvi-row .mvi-type {
-  margin-left: auto;
   padding-left: 12px;
   color: var(--mvi-dim);
   font-size: 11px;

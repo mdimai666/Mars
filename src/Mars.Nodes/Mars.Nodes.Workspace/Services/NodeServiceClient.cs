@@ -48,6 +48,16 @@ internal class NodeServiceClient : INodeServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Inject", nodeId)
                     .GetJsonAsync<UserActionResult>();
 
+    public Task<UserActionResult> SetDebugMode(bool enabled)
+        => _client.Request($"{_basePath}{_controllerName}", "SetDebugMode")
+                    .AppendQueryParam("enabled", enabled)
+                    .PostAsync()
+                    .ReceiveJson<UserActionResult>();
+
+    public Task<IReadOnlyDictionary<string, NodeDebugSnapshot[]>> DebugSnapshots()
+        => _client.Request($"{_basePath}{_controllerName}", "DebugSnapshots")
+                    .GetJsonAsync<IReadOnlyDictionary<string, NodeDebugSnapshot[]>>();
+
     public Task<NodesDataResponse> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")
                     .GetJsonAsync<NodesDataResponse>();

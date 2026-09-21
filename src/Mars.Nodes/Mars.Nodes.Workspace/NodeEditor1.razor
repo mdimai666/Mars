@@ -44,6 +44,11 @@
                 </div>
 
                 <div class="d-flex gap-2 me-2">
+                    <FluentButton Appearance="@(DebugMode ? Appearance.Accent : Appearance.Stealth)"
+                                  OnClick="OnToggleDebugMode"
+                                  Title="debug mode: store the last message every node sent further">
+                        DEBUG
+                    </FluentButton>
                     <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
                         <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Neutral))" />
                     </FluentButton>
@@ -250,6 +255,10 @@
                 </Panel1>
                 <Panel2>
                     <div class="console-panel" style="height: 100%;">
+                        @if (DebugMode)
+                        {
+                            <NodeInputViewer Node="_selectedNode" Nodes="AllNodes" />
+                        }
                         <DebugMessagesConsole @ref="_debugMessagesConsole" Messages="messages" />
                     </div>
                 </Panel2>

@@ -21,6 +21,8 @@ public partial class NodeRedPage
 
     bool Busy = false;
 
+    bool _debugMode;
+
     IDictionary<string, Node>? _nodes;
 
     IReadOnlyDictionary<string, InlineFunctionNodeSchema> _inlineFunctionNodeSchemas = default!;
@@ -105,6 +107,7 @@ public partial class NodeRedPage
 
             HostHints.SetOutputSpecs(data.OutputValueSpecs);
             HostHints.SetGlobalVariableNames(data.GlobalVariableNames);
+            _debugMode = data.DebugMode;
         }
         catch (Exception ex)
         {

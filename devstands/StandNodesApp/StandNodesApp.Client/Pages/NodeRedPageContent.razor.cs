@@ -23,6 +23,8 @@ public partial class NodeRedPageContent
 
     bool Busy = false;
 
+    bool _debugMode;
+
     IDictionary<string, Node>? _nodes;
 
     IReadOnlyDictionary<string, InlineFunctionNodeSchema> _inlineFunctionNodeSchemas = default!;
@@ -109,6 +111,7 @@ public partial class NodeRedPageContent
 
                 HostHints.SetOutputSpecs(data.OutputValueSpecs);
                 HostHints.SetGlobalVariableNames(data.GlobalVariableNames);
+                _debugMode = data.DebugMode;
             }
             else
             {

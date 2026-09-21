@@ -3,6 +3,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
+using Mars.Nodes.Core.Implements.Nodes.Sequences;
 using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Tests.OutputValueSpecs;
@@ -212,6 +213,75 @@ public class NodeOutputValueSpecReaderTests
     public void Read_StringNode_WithoutOperations_DeclaresNothing()
     {
         NodeOutputValueSpecReader.Read(new StringNode { Operations = [] }).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Read_ForeachNode_DeclaresPerPortPayloadAndCycleSlot()
+    {
+        NodeOutputValueSpecReader.Read(new ForeachNode()).Should().Equal(
+            new OutputValueSpec("Payload", "int", 0, "items count"),
+            new OutputValueSpec("Payload", "object", 1, "current item"),
+            new OutputValueSpec("ForeachCycle", "object", OutputValueSpec.AllOutputPorts),
+            new OutputValueSpec("ForeachCycle.index", "int", OutputValueSpec.AllOutputPorts),
+            new OutputValueSpec("ForeachCycle.count", "int", OutputValueSpec.AllOutputPorts),
+            new OutputValueSpec("ForeachCycle.arr", "object[]", OutputValueSpec.AllOutputPorts));
+    }
+
+    [Fact]
+    public void ReadStatics_QueueNodeImpl_DeclaresPerPortPayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(QueueNodeImpl)).Should().Equal(
+            new OutputValueSpec("Payload", "int", 0, "total processed"),
+            new OutputValueSpec("Payload", "object", 1, "queued item"));
+    }
+
+    [Fact]
+    public void ReadStatics_JoinAndSplitNodeImpls_DeclarePayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(JoinNodeImpl)).Should().Equal(
+            new OutputValueSpec("Payload", "object[]", OutputValueSpec.AllOutputPorts, "aggregated payloads"));
+
+        NodeOutputValueSpecReader.ReadStatics(typeof(SplitNodeImpl)).Should().Equal(
+            new OutputValueSpec("Payload", "object", 0, "string/collection element, or {PropertyName,Value} for a POCO"));
+    }
+
+    [Fact]
+    public void Read_JsonNode_TargetAndTypeFollowConfig()
+    {
+        NodeOutputValueSpecReader.Read(new JsonNode { Action = JsonNode.JsonNodeAction.ToJsonString })
+            .Should().Equal(new OutputValueSpec("Payload", "string"));
+
+        NodeOutputValueSpecReader.Read(new JsonNode { Action = JsonNode.JsonNodeAction.ToObject })
+            .Should().Equal(new OutputValueSpec("Payload", "object", Description: "DynamicJson"));
+
+        NodeOutputValueSpecReader.Read(new JsonNode { Action = JsonNode.JsonNodeAction.ToJsonString, Property = "data.json" })
+            .Should().Equal(new OutputValueSpec("data.json", "string"));
+    }
+
+    [Fact]
+    public void Read_HtmlParseNode_BranchesByOutputMode()
+    {
+        NodeOutputValueSpecReader.Read(new HtmlParseNode { Output = HtmlParseNodeOutput.Text })
+            .Should().Equal(
+                new OutputValueSpec("Payload", "string[]", Description: "element TextContent"),
+                new OutputValueSpec("Payload[]", "string"));
+
+        NodeOutputValueSpecReader.Read(new HtmlParseNode
+            {
+                Output = HtmlParseNodeOutput.Html,
+                ReturnEachObjectAsMessage = true,
+            })
+            .Should().Equal(new OutputValueSpec("Payload", "string", Description: "element InnerHtml"));
+
+        NodeOutputValueSpecReader.Read(new HtmlParseNode
+            {
+                Output = HtmlParseNodeOutput.MapToObjects,
+                InputMappings = [new() { OutputField = "title" }, new()],
+            })
+            .Should().Equal(
+                new OutputValueSpec("Payload", "object[]", Description: "mapped objects (field → string)"),
+                new OutputValueSpec("Payload[].title", "string"),
+                new OutputValueSpec("Payload[].field2", "string"));
     }
 
     [NodeOutputValueSpec(typeof(NamedSlotDto), Name = "RequestInfo")]

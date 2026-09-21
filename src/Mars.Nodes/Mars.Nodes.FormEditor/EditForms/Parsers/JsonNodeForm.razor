@@ -1,4 +1,5 @@
 @using Mars.Admin.Framework.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(JsonNode))]
@@ -6,7 +7,7 @@
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-3">
         <FormItem2 For="() => Node.Property">
-            <FluentTextField @bind-Value=Node.Property Class="" />
+            <MarsPathInput Root="msg" @bind-Value=@Node.Property For="() => Node.Property" />
         </FormItem2>
 
         <FormItem2 For="() => Node.Action">

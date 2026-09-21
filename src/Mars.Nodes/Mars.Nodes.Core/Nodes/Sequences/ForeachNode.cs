@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes.Sequences;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachNode/ForeachNode{.lang}.md")]
 [Display(GroupName = "sequence")]
-public class ForeachNode : Node
+public class ForeachNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.ForeachNode";
 
@@ -26,6 +26,17 @@ public class ForeachNode : Node
             new NodeOutput(){ Label = "Iterate" },
         ];
         Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
+    }
+
+    /// <summary>Пути ForeachCycle объявлены вручную: у цикла public поля, а экспандер ходит только свойства.</summary>
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), "int", 0, "items count");
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName, 1, "current item");
+        yield return new OutputValueSpec(nameof(ForeachCycle), VarNode.ObjectTypeName, OutputValueSpec.AllOutputPorts);
+        yield return new OutputValueSpec($"{nameof(ForeachCycle)}.index", "int", OutputValueSpec.AllOutputPorts);
+        yield return new OutputValueSpec($"{nameof(ForeachCycle)}.count", "int", OutputValueSpec.AllOutputPorts);
+        yield return new OutputValueSpec($"{nameof(ForeachCycle)}.arr", "object[]", OutputValueSpec.AllOutputPorts);
     }
 
     public class ForeachCycle

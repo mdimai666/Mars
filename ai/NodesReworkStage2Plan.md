@@ -474,13 +474,32 @@ InlineFunction null-callback — обсудить позже.
       Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (552 / 0 / 0). CSS/JS не правились —
       `MarsAppVersion` не поднимался.
 
-### Партия 2 — Sequences + Parsers (в плане)
+### Партия 2 — Sequences + Parsers (сделана 2026-09-22)
 
-Foreach (порты: 0=`Payload:int`, 1=`Payload:object` + слот `ForeachCycle` вручную — у цикла public **поля**,
-экспандер ходит только свойства), Queue (0=int, 1=object), Join (`object[]` на все порты; фикс бага
-fallback `15*1000` секунд), Split (object+Description), JsonNode (интерфейс по `Action` + оживление
-`Property`/`FormatJsonString`), HtmlParse (интерфейс по `Output`; MapToObjects → пути `Payload[].<OutputField>`
-из конфига InputMappings).
+- [x] **Дедуп специй по `(Path, OutputPort)`** вместо `Path` — иначе портовые ветки (два `Payload` на разных
+      портах) терялись: `NodeOutputValueSpecReader.Read`/`ReadStatics`, `NodeService.AddOutputValueSpecs`,
+      `MsgValueRootProvider.SpecsOf`.
+- [x] `ForeachNode`: интерфейс на модели — порт 0 `Payload: int` (count), порт 1 `Payload: object` (элемент),
+      слот `ForeachCycle` + `index/count/arr` **вручную** (у цикла public поля — экспандер ходит только свойства).
+- [x] `QueueNodeImpl`: атрибуты — порт 0 `int` «total processed», порт 1 `object` «queued item».
+- [x] `JoinNodeImpl`: атрибут `typeof(object[])` на все порты.
+- [x] `SplitNodeImpl`: атрибут `typeof(object)` + Description (элемент строки/коллекции или `{PropertyName,Value}`).
+- [x] `JsonNode` — **оживление мёртвых полей** (решение пользователя): impl уважает `Property`
+      (маршрутизация как в `TemplateNodeImpl`: "Payload" / dot-path через `SetValueByPath` / слот через `Set`)
+      и `FormatJsonString` (раньше formatted было зашито `true`); форма: `Property` → `MarsPathInput Root="msg"`.
+      Спека — интерфейс на модели: цель = `Property`, ToJsonString → string, иначе object (DynamicJson).
+      **Изменение поведения**: flows с непустым `Property` ≠ "Payload" теперь реально пишут в слот/путь;
+      выход ToJsonString по умолчанию теперь компактный (чекбокс Format стал рабочим, default false).
+- [x] `HtmlParseNode`: интерфейс на модели — Text/Html → `string[]` (+`Payload[]`), `ReturnEachObjectAsMessage`
+      → по элементу; MapToObjects → `object[]` + пути `Payload[].<OutputField>` из конфига InputMappings
+      (пустое имя → `field{N}` как в impl).
+- [x] `JoinNodeForm` — **фикс**: fallback при неудачном парсинге таймспана писал `15 * 1000` **секунд**
+      (≈4ч10м) в `AggregationTimeSeconds`/`InputAggregationTimeoutSeconds` — перепутаны миллисекунды с
+      секундами; теперь неудачный парсинг значение не меняет (геттер перерисует текущее).
+- [x] Тесты: Foreach (порты+слот), Queue (порты), Join/Split (атрибуты), JsonNode (Action/Property),
+      HtmlParse (все три Output-ветки).
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (557 / 0 / 0). CSS/JS не правились —
+      `MarsAppVersion` не поднимался.
 
 ### Партия 3 — Storage (в плане)
 

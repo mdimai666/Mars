@@ -17,7 +17,7 @@ public static class NodeOutputValueSpecReader
 
     public static IReadOnlyList<OutputValueSpec> Read(Node node)
         => node is INodeOutputValueSpec nodeSpec
-            ? nodeSpec.GetOutputValueSpec().DistinctBy(s => s.Path).ToArray()
+            ? nodeSpec.GetOutputValueSpec().DistinctBy(s => (s.Path, s.OutputPort)).ToArray()
             : ReadStatics(node.GetType());
 
     public static IReadOnlyList<OutputValueSpec> ReadStatics(Type nodeOrImplementType)
@@ -32,6 +32,6 @@ public static class NodeOutputValueSpecReader
                     specs.Add(attribute.Description is null ? spec : spec with { Description = attribute.Description });
             }
 
-            return specs.DistinctBy(s => s.Path).ToArray();
+            return specs.DistinctBy(s => (s.Path, s.OutputPort)).ToArray();
         });
 }

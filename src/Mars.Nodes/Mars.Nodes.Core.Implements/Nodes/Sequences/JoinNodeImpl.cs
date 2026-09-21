@@ -1,11 +1,13 @@
 using System.Collections.Concurrent;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.TaskNodes;
 using Mars.Nodes.Core.Nodes.Sequences;
 using static Mars.Nodes.Core.Nodes.Sequences.JoinNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Sequences;
 
+[NodeOutputValueSpec(typeof(object[]), OutputPort = OutputValueSpec.AllOutputPorts, Description = "aggregated payloads")]
 public class JoinNodeImpl : INodeImplement<JoinNode>
 {
     public JoinNode Node { get; }

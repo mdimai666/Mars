@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes.Parsers;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HtmlParseNode/HtmlParseNode{.lang}.md")]
 [Display(GroupName = "parser")]
-public class HtmlParseNode : Node
+public class HtmlParseNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.HtmlParseNode";
 
@@ -22,6 +22,37 @@ public class HtmlParseNode : Node
         Color = "#ecb56a";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+    }
+
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        if (Output == HtmlParseNodeOutput.MapToObjects)
+        {
+            yield return new OutputValueSpec(nameof(NodeMsg.Payload),
+                ReturnEachObjectAsMessage ? VarNode.ObjectTypeName : "object[]",
+                Description: "mapped objects (field → string)");
+
+            var root = ReturnEachObjectAsMessage ? nameof(NodeMsg.Payload) : "Payload[]";
+
+            for (var i = 0; i < InputMappings.Length; i++)
+            {
+                var name = string.IsNullOrEmpty(InputMappings[i].OutputField) ? $"field{i + 1}" : InputMappings[i].OutputField;
+                yield return new OutputValueSpec($"{root}.{name}", "string");
+            }
+
+            yield break;
+        }
+
+        var description = Output == HtmlParseNodeOutput.Html ? "element InnerHtml" : "element TextContent";
+
+        if (ReturnEachObjectAsMessage)
+        {
+            yield return new OutputValueSpec(nameof(NodeMsg.Payload), "string", Description: description);
+            yield break;
+        }
+
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), "string[]", Description: description);
+        yield return new OutputValueSpec("Payload[]", "string");
     }
 }
 

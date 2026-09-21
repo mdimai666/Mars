@@ -104,7 +104,7 @@ internal class MsgValueRootProvider(IHostValueHints hostHints) : IValueRootProvi
         if (own.Count == 0) return host;
         if (host.Count == 0) return own;
 
-        return own.Concat(host).DistinctBy(s => s.Path).ToArray();
+        return own.Concat(host).DistinctBy(s => (s.Path, s.OutputPort)).ToArray();
     }
 
     static IEnumerable<(Node Node, int Port)> Sources(IDictionary<string, Node> nodes, string nodeId)

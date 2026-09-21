@@ -286,7 +286,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         if (specs.Count == 0) return;
 
         var merged = result.TryGetValue(typeId, out var existing) ? existing.Concat(specs) : specs;
-        result[typeId] = [.. merged.DistinctBy(spec => spec.Path)];
+        result[typeId] = [.. merged.DistinctBy(spec => (spec.Path, spec.OutputPort))];
     }
 
     public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null, bool throwOnError = false)

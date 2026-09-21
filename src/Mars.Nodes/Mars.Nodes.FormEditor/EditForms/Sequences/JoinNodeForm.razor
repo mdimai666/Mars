@@ -62,13 +62,19 @@
     public string AggregationTimeSecondsSetter
     {
         get => TimeSpanParser.Format(TimeSpan.FromSeconds(Node.AggregationTimeSeconds));
-        set => Node.AggregationTimeSeconds = TimeSpanParser.TryParse(value, out var ts) ? (int)ts.TotalSeconds : (15 * 1000);
+        set
+        {
+            if (TimeSpanParser.TryParse(value, out var ts)) Node.AggregationTimeSeconds = (int)ts.TotalSeconds;
+        }
     }
 
     public string InputAggregationTimeoutSecondsSetter
     {
         get => TimeSpanParser.Format(TimeSpan.FromSeconds(Node.InputAggregationTimeoutSeconds));
-        set => Node.InputAggregationTimeoutSeconds = TimeSpanParser.TryParse(value, out var ts) ? (int)ts.TotalSeconds : (15 * 1000);
+        set
+        {
+            if (TimeSpanParser.TryParse(value, out var ts)) Node.InputAggregationTimeoutSeconds = (int)ts.TotalSeconds;
+        }
     }
 
     public JoinNode.JoinMode ModeSetter

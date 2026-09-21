@@ -43,12 +43,18 @@
                     <span>[@SelectContextString]</span>
                 </div>
 
-                <div class="d-flex gap-2 me-2">
-                    <FluentButton Appearance="@(DebugMode ? Appearance.Accent : Appearance.Stealth)"
-                                  OnClick="OnToggleDebugMode"
-                                  Title="debug mode: store the last message every node sent further">
-                        DEBUG
-                    </FluentButton>
+                <div class="d-flex align-items-center gap-2 me-2">
+                    <FluentTooltip Anchor="debug-mode-switch">
+                        <b>DEBUG MODE</b><br />
+                        Stores the last message every node sent further (10 min, one per node output).<br />
+                        Values appear in field hints and in the INPUT panel.<br />
+                        Turns itself off after 30 minutes.
+                    </FluentTooltip>
+                    <FluentSwitch Id="debug-mode-switch"
+                                  Value="DebugMode"
+                                  ValueChanged="OnDebugModeSwitchChanged"
+                                  Label="DEBUG">
+                    </FluentSwitch>
                     <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
                         <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Neutral))" />
                     </FluentButton>
@@ -275,6 +281,10 @@
 <style>
     .btn-terminate-all-tasks:hover {
         --neutral-foreground-rest: red;
+    }
+
+    #debug-mode-switch.checked::part(switch) {
+        background: #7a2101;
     }
 </style>
 

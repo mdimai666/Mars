@@ -311,10 +311,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _debugSnapshotsDebouncer.Debouce(RefreshDebugSnapshots);
     }
 
-    async Task OnToggleDebugMode()
+    async Task OnDebugModeSwitchChanged(bool enabled)
     {
-        var enabled = !DebugMode;
-
         if (_serviceProvider.GetService(typeof(INodeServiceClient)) is INodeServiceClient client)
             await client.SetDebugMode(enabled);
 

@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using DynamicExpresso;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Network;
+using Mars.Nodes.Expressions;
 using Mars.Notifications.Abstractions;
 using Mars.Notifications.Contracts;
 using Mars.Options.Abstractions.Services;
@@ -43,20 +46,29 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>
         }
         else
         {
-            //info = new EmailSendMessageDto
-            //{
-            //    ToEmail = Node.ToEmail,
-            //    Subject = Node.Subject,
-            //    Message = input.Payload?.ToString() ?? "",
-            //};
-            //info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
+            info = new EmailSendMessageDto { Message = input.Payload.ToString() ?? "" };
         }
+
+        var interpreter = NeedInterpreter() ? InputValueResolver.CreateInterpreter(RNS, input) : null;
+        var scope = new ExpressionScope(RNS, input);
+
+        var toEmail = Resolve(Node.ToEmailKind, Node.ToEmail, "ToEmail");
+        var subject = Resolve(Node.SubjectKind, Node.Subject, "Subject");
+        var message = Resolve(Node.MessageKind, Node.Message, "Message");
 
         info ??= new();
 
-        if (!string.IsNullOrWhiteSpace(Node.ToEmail)) { info.ToEmail = Node.ToEmail; }
-        //if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
-        if (!string.IsNullOrWhiteSpace(Node.Subject)) { info.Subject = Node.Subject; }
+        if (!string.IsNullOrWhiteSpace(toEmail)) { info.ToEmail = toEmail!; }
+        if (!string.IsNullOrWhiteSpace(message)) { info.Message = message!; }
+        if (!string.IsNullOrWhiteSpace(subject)) { info.Subject = subject!; }
+
+        bool NeedInterpreter()
+            => Node.ToEmailKind is InputValueKind.Expression or InputValueKind.Msg
+               || Node.SubjectKind is InputValueKind.Expression or InputValueKind.Msg
+               || Node.MessageKind is InputValueKind.Expression or InputValueKind.Msg;
+
+        string? Resolve(string kind, string value, string source)
+            => (string?)InputValueResolver.Resolve(kind, value, "string", interpreter, scope, Node, source);
 
         var valid = info.Validate(new ValidationContext(info));
 

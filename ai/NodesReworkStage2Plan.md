@@ -1,7 +1,8 @@
 # План: этап 2 — контракты выходов нод и провайдер подсказок в поле значения
 
 > **Статус: фазы A–D сделаны (A/B 2026-09-17, C 2026-09-21 — `9f3bead8`, D 2026-09-21 — `a0fa8aeb`),
-> фаза E (пересборка DebugMode) — сделана 2026-09-22, в работе остаток D (`MarsPathInput`) и дополнения.**
+> фаза E (пересборка DebugMode) и фаза F (DebugNode хранит полный объект) — сделаны 2026-09-22,
+> фаза G (спеки и умные поля Common/Network) — сделана 2026-09-22.**
 > Задача-источник: запрос пользователя «как будем делать провайдера подсказок?» (2026-09-17).
 > Продолжение [NodesReworkPlan.md](./NodesReworkPlan.md): этапы 1–2 того плана (список полей в `InjectNode`,
 > ось «источник значения»: `ValueKind`, `InputValueResolver`, `FieldPathPicker`, `ValueSourceEditor`) выполнены,
@@ -389,6 +390,61 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 - **Форма тянет метаданные один раз при первом рендере** (и по кнопке refresh) — live-обновление по
   сигналу `DebugSnapshotsChanged` не делали: сигнал дёргает pull снимков фазы C, полный объект — отдельная
   история; при необходимости подписать форму на bump `IHostValueHints.Version`.
+
+## Фаза G — спеки и умные поля остальных нод Common/Network (2026-09-22)
+
+Задача-источник: запрос пользователя «поработать над остальными нодами по типам подсказок и полям свойств,
+начать с Common и Network». Решения пользователя: EmailSend расширяем до const/msg/expr, `Message` чиним;
+MqttOut.Topic делаем msg-драйвен; HttpInNode — вариант A (object + Description, конкретика из DebugMode);
+опечатку `MqttNodeMessagePaylad` исправляем («пусть ломаются»); баг `CallNodeForm.Timeout` чиним;
+разворот `EndpointNode.JsonSchema` в подсказки — отложен.
+
+Ключевая механика фазы: **мерж источников специй**. Атрибут статичен (не видит конфиг), интерфейс на модели
+считается в браузере (видит конфиг, но не видит типы из Implements). Поэтому: config-зависимые ветки —
+интерфейс на модели (VarType строкой, можно объявлять пути типов из чужих сборок вручную), сложные DTO —
+атрибут на impl, а `MsgValueRootProvider.SpecsOf` теперь **объединяет** инстансные спеки с хостовыми
+(дедуп по Path, инстанс побеждает) вместо «или-или». Рекурсию типов (Exception.InnerException) держат
+существующие `DefaultMaxDepth=3` + `visited` экспандера.
+
+- [x] F1: мерж specs в `MsgValueRootProvider.SpecsOf` (инстанс + хост); серверный мерж model/impl атрибутов
+      в `NodeService.AddOutputValueSpecs` уже был. Тест `GetFields_InstanceSpecsAndHostSpecs_AreMerged`.
+- [x] `CatchErrorNodeImpl`: `[NodeOutputValueSpec(typeof(Exception))]` (Payload — Exception, инжектится в
+      `NodeService` при ошибке). Тест: разворот без рекурсии InnerException.
+- [x] `HttpRequestNode`: интерфейс на модели (Payload = string/object по `ReturnResponse`) + атрибут на impl
+      `[NodeOutputValueSpec(typeof(HttpRequestInfo), Name = nameof(HttpRequestInfo))]` (слот из `Set(requestInfo)`).
+- [x] `EndpointNode`: интерфейс на модели (String → `Payload: string`; JsonSchema → object «JSON validated by schema»).
+- [x] `HttpInFormSaveFilesNode`: интерфейс на модели (SaveInMediaFiles → пути `FileListItem` вручную строками,
+      иначе `Payload: string[]`).
+- [x] `HttpInNode`: интерфейс на модели — `Payload: object` + Description «string, JSON (JsonNode) or form-data —
+      by request Content-Type» (ветка по content-type запроса, статически не определить; конкретика — из снимков DebugMode).
+- [x] `HttpRequestNodeForm.Url` → `MarsValueInput` c маппингом `UrlKind` (`@`-префикс → Expression, как в
+      `InjectNodeForm`); impl не менялся — `InputValueResolver` уже работал.
+- [x] `EmailSendNode`: `ToEmailKind`/`SubjectKind`/`MessageKind` + resolver в impl; `Message` починен
+      (override из Node.Message; payload не-dto → `Message = payload.ToString()`); форма на `MarsValueInput`,
+      Message — `Multiline`.
+- [x] `MarsValueInput`: параметр `Multiline` (+`Rows`) — textarea без слоя `.mvi-highlight` (текст рисуется
+      сам, как в `MarsPathInput`), стили `.mvi-multiline` в `style.less`/`style.css`.
+- [x] `MqttOutNode`: `TopicKind` + resolver в impl (пустой topic → `NodeExecuteException`), форма на `MarsValueInput`.
+- [x] Переименование `MqttNodeMessagePaylad` → `MqttNodeMessagePayload` (импл, `MqttManager`, тесты);
+      имя слота runtime-only, в flows.json не persistится.
+- [x] Фикс `CallNodeForm.Timeout`: `.Milliseconds` → `(int)TotalMilliseconds` (дефолт 2s показывался как 0).
+- [x] Тесты: ридер (HttpRequest ветки + слот impl, Endpoint, HttpIn, HttpInFormSaveFiles, CatchError/Exception),
+      провайдер (мерж инстанс+хост).
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (549 / 0 / 0).
+      `MarsAppVersion` поднят до `0.8.3-alpha.19` (правлены `style.css`/`style.less`).
+
+Грабли фазы G:
+
+- **Kind-поля EmailSend/MqttOut/HttpRequest маппятся через `@`-префикс**: UI создаёт только Const/Expression
+  (Msg-kind отображается, но из поля не создаётся — `@msg.x` уходит в Expression; семантически эквивалентно,
+  та же грабля что в `InjectNodeForm`).
+- **Старые flows EmailSend**: `ToEmailKind` и др. по умолчанию Const — поведение прежнее, кроме `Message`:
+  непустой `Node.Message` теперь реально применяется (раньше игнорировался) и payload не-dto идёт в `Message`.
+- **HttpInFormSaveFiles спеки рукописные** — при изменении `FileListItem`/`FileSummary`
+  (`Mars.Media.Abstractions/Dto/Files/`) список путей в модели надо обновлять вручную.
+
+Отложено (фаза G): разворот `EndpointNode.JsonSchema` в точные пути подсказок без DebugMode; кандидаты из
+собственных свойств ноды (ось «дефолт значения поля» для `HttpRequestNode.Url` — см. «Дописано в план»).
 
 ## Грабли и риски
 

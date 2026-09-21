@@ -5,6 +5,7 @@ using Flurl.Http;
 using Mars.Core.Extensions;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Mapping;
 using Mars.Nodes.Core.Implements.Models;
@@ -15,6 +16,7 @@ using JsonNode = System.Text.Json.Nodes.JsonNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;
 
+[NodeOutputValueSpec(typeof(HttpRequestInfo), Name = nameof(HttpRequestInfo))]
 public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
 {
     private readonly AuthClientManager _authClientManager;

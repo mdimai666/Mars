@@ -12,15 +12,29 @@
         <span class="mvi-tag">@ModeLabel</span>
 
         <div class="mvi-field">
-            <pre class="mvi-highlight" aria-hidden="true">@Highlight</pre>
-            <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
-                   role="combobox" aria-autocomplete="list"
-                   aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
-                   aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
-                   aria-describedby="@(IsInvalid ? ErrorId : null)"
-                   disabled="@Disabled" readonly="@ReadOnly"
-                   value="@Value" placeholder="@EffectivePlaceholder"
-                   @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
+            @if (Multiline)
+            {
+                <textarea @ref="_input" class="mvi-input" rows="@Rows" spellcheck="false" autocomplete="off"
+                          role="combobox" aria-autocomplete="list"
+                          aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
+                          aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
+                          aria-describedby="@(IsInvalid ? ErrorId : null)"
+                          disabled="@Disabled" readonly="@ReadOnly"
+                          placeholder="@EffectivePlaceholder"
+                          @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove">@Value</textarea>
+            }
+            else
+            {
+                <pre class="mvi-highlight" aria-hidden="true">@Highlight</pre>
+                <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
+                       role="combobox" aria-autocomplete="list"
+                       aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
+                       aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
+                       aria-describedby="@(IsInvalid ? ErrorId : null)"
+                       disabled="@Disabled" readonly="@ReadOnly"
+                       value="@Value" placeholder="@EffectivePlaceholder"
+                       @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
+            }
         </div>
 
         @if (CanEdit)
@@ -187,6 +201,13 @@
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    /// <summary>Textarea вместо однострочного инпута; слой подсветки выражения в этом режиме не рисуется.</summary>
+    [Parameter]
+    public bool Multiline { get; set; }
+
+    [Parameter]
+    public int Rows { get; set; } = 3;
+
     [Parameter]
     public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
 
@@ -293,6 +314,9 @@
         get
         {
             var css = IsExpression ? "mars-value-input mvi-expr" : "mars-value-input mvi-const";
+
+            if (Multiline)
+                css += " mvi-multiline";
 
             if (Disabled)
                 css += " mvi-disabled";

@@ -1,7 +1,11 @@
+using DynamicExpresso;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Network;
+using Mars.Nodes.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 
@@ -32,6 +36,16 @@ public class MqttOutNodeImpl : INodeImplement<MqttOutNode>
         var instance = _mqttManager.GetConfigInstance(Node.Config.Id);
         var mqttClient = await instance.GetConnectedClient();
 
+        Interpreter? interpreter = null;
+
+        if (Node.TopicKind is InputValueKind.Expression or InputValueKind.Msg)
+            interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+
+        var topic = (string?)InputValueResolver.Resolve(Node.TopicKind, Node.Topic, "string", interpreter, new ExpressionScope(RNS, input), Node, "Topic");
+
+        if (string.IsNullOrWhiteSpace(topic))
+            throw new NodeExecuteException(Node, "Topic is empty");
+
         //TODO: add support bytes
 
         var isJson = false;
@@ -46,7 +60,7 @@ public class MqttOutNodeImpl : INodeImplement<MqttOutNode>
         }
 
         var applicationMessage = new MqttApplicationMessageBuilder()
-            .WithTopic(Node.Topic)
+            .WithTopic(topic)
             .WithPayload(payload)
             .WithContentType(isJson ? "application/json" : "text/plain")
             .WithQualityOfServiceLevel(MqttClientInstance.ConvertQoS(Node.QoS))

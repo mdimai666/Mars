@@ -459,6 +459,21 @@
     }
 }
 
+.mars-value-input.mvi-multiline {
+    // нет слоя .mvi-highlight — текст рисуется самой textarea
+    textarea.mvi-input {
+        padding: 4px 8px;
+        line-height: 1.45;
+        color: var(--mvi-fg);
+        white-space: pre-wrap;
+        resize: vertical;
+
+        &::selection {
+            color: var(--mvi-fg);
+        }
+    }
+}
+
 // растянуть поле по flex/grid-ячейке вместо фиксированной --mvi-width
 .mars-value-input.mvi-fill {
     width: auto;

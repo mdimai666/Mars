@@ -13,7 +13,7 @@
     [CascadingParameter] Node? Value { get; set; }
     CallNode Node { get => (CallNode)Value!; set => Value = value; }
 
-    int timeoutMillis { get => Node.Timeout.Milliseconds; set => OnValueChanged(value); }
+    int timeoutMillis { get => (int)Node.Timeout.TotalMilliseconds; set => OnValueChanged(value); }
 
     void OnValueChanged(int millis)
     {

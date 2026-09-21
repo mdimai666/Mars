@@ -7,7 +7,7 @@ namespace Mars.Nodes.Core.Nodes.Network;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HttpRequestNode/HttpRequestNode{.lang}.md")]
 [Display(GroupName = "network")]
-public class HttpRequestNode : Node
+public class HttpRequestNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.HttpRequestNode";
 
@@ -30,6 +30,21 @@ public class HttpRequestNode : Node
         Color = "#e7e6af";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
+    }
+
+    /// <summary>Слот HttpRequestInfo объявлен атрибутом на impl (тип живёт в Implements).</summary>
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        var (payloadType, description) = ReturnResponse switch
+        {
+            ReturnResponseType.String => ("string", (string?)null),
+            ReturnResponseType.Object => (VarNode.ObjectTypeName, (string?)"parsed JSON"),
+            ReturnResponseType.Bytes => (VarNode.ObjectTypeName, (string?)"byte[]"),
+            ReturnResponseType.Stream => (VarNode.ObjectTypeName, (string?)"response stream"),
+            _ => (VarNode.ObjectTypeName, (string?)"by Content-Type: JSON, string or bytes"),
+        };
+
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), payloadType, Description: description);
     }
 
     public enum ReturnResponseType

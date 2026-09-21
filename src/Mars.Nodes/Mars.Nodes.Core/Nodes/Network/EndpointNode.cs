@@ -6,7 +6,7 @@ namespace Mars.Nodes.Core.Nodes.Network;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/EndpointNode/EndpointNode{.lang}.md")]
 [Display(GroupName = "network")]
-public class EndpointNode : Node
+public class EndpointNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.EndpointNode";
 
@@ -52,6 +52,12 @@ public class EndpointNode : Node
         Icon = "_content/Mars.Nodes.Workspace/nodes/azure-icon-service-Private-Endpoints.svg";
     }
 
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        yield return EndpointInputModel == EndpointInputModelType.String
+            ? new OutputValueSpec(nameof(NodeMsg.Payload), "string")
+            : new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName, Description: "JSON validated by schema");
+    }
 }
 
 public enum EndpointInputModelType

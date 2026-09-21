@@ -6,7 +6,7 @@ namespace Mars.Nodes.Core.Nodes.Network;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HttpInNode/HttpInNode{.lang}.md")]
 [Display(GroupName = "network")]
-public class HttpInNode : Node
+public class HttpInNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.HttpInNode";
 
@@ -34,4 +34,9 @@ public class HttpInNode : Node
         Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
     }
 
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName,
+            Description: "request body: string, JSON (JsonNode) or form-data — by request Content-Type");
+    }
 }

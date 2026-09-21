@@ -14,6 +14,7 @@ public class MqttOutNode : Node
 
     [Display(Name = "Topic", Description = "the MQTT topic to publish to")]
     public string Topic { get; set; } = "";
+    public string TopicKind { get; set; } = InputValueKind.Const;
     public NodeMqttQualityOfServiceLevel QoS { get; set; }
 
     public MqttOutNode()

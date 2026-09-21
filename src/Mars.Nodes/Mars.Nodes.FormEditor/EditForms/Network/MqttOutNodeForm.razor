@@ -12,7 +12,9 @@
         </FormItem2>
 
         <FormItem2 For="()=>Node.Topic">
-            <FluentTextField @bind-Value=@Node.Topic Class="flex-fill" />
+            <MarsValueInput Class="mvi-fill" VarType="string"
+                            Value="@TopicValue" ValueChanged="SetTopicValue"
+                            For="() => Node.Topic" />
         </FormItem2>
 
         <FormItem2 For="()=>Node.QoS">
@@ -27,4 +29,24 @@
     [CascadingParameter] Node? Value { get; set; }
     MqttOutNode Node { get => (MqttOutNode)Value!; set => Value = value; }
 
+    string TopicValue => Node.TopicKind switch
+    {
+        InputValueKind.Expression => "@" + Node.Topic,
+        InputValueKind.Msg => "@msg." + Node.Topic,
+        _ => Node.Topic,
+    };
+
+    void SetTopicValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.TopicKind = InputValueKind.Expression;
+            Node.Topic = value[1..].Trim();
+        }
+        else
+        {
+            Node.TopicKind = InputValueKind.Const;
+            Node.Topic = value;
+        }
+    }
 }

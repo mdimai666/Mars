@@ -91,10 +91,20 @@ internal class MsgValueRootProvider(IHostValueHints hostHints) : IValueRootProvi
     static string Short(string value)
         => value.Length <= MaxDisplayValueLength ? value : value[..MaxDisplayValueLength] + "...";
 
+    /// <summary>
+    /// Инстансные спеки (интерфейс/атрибуты модели, знает конфиг) мержатся со статическими хостовыми
+    /// (атрибуты impl'ов, которые в браузер не грузятся): у ноды могут быть оба источника одновременно,
+    /// как у HttpRequestNode. Дедуп по Path, инстанс точнее — побеждает.
+    /// </summary>
     IEnumerable<OutputValueSpec> SpecsOf(Node node)
     {
-        var specs = NodeOutputValueSpecReader.Read(node);
-        return specs.Count > 0 ? specs : hostHints.GetOutputSpecs(node.TypeId);
+        var own = NodeOutputValueSpecReader.Read(node);
+        var host = hostHints.GetOutputSpecs(node.TypeId);
+
+        if (own.Count == 0) return host;
+        if (host.Count == 0) return own;
+
+        return own.Concat(host).DistinctBy(s => s.Path).ToArray();
     }
 
     static IEnumerable<(Node Node, int Port)> Sources(IDictionary<string, Node> nodes, string nodeId)

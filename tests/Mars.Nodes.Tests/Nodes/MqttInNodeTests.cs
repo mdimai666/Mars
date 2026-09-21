@@ -30,10 +30,10 @@ public class MqttInNodeTests
             WriteIndented = true,
         };
 
-        var paylad = new MqttNodeMessagePaylad(recivedMessage.ApplicationMessage);
+        var payload = new MqttNodeMessagePayload(recivedMessage.ApplicationMessage);
 
         //Act
-        var action = () => JsonSerializer.Serialize(paylad, options);
+        var action = () => JsonSerializer.Serialize(payload, options);
 
         //Assert
         action.Should().NotThrow();

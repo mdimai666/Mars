@@ -14,10 +14,14 @@ public class EmailSendNode : Node
 
     [Required]
     public string ToEmail { get; set; } = "";
+    public string ToEmailKind { get; set; } = InputValueKind.Const;
 
     [Required]
     public string Subject { get; set; } = "";
+    public string SubjectKind { get; set; } = InputValueKind.Const;
+
     public string Message { get; set; } = "";
+    public string MessageKind { get; set; } = InputValueKind.Const;
 
     public EmailSendNode()
     {

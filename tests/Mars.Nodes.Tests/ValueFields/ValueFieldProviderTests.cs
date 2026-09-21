@@ -306,6 +306,42 @@ public class ValueFieldProviderTests
         fields.Should().Equal(new ValueFieldInfo("msg.Payload", "string", inject.DisplayName));
     }
 
+    [Fact]
+    public void GetFields_InstanceSpecsAndHostSpecs_AreMerged()
+    {
+        var hints = new HostValueHints();
+        hints.SetOutputSpecs(new Dictionary<string, OutputValueSpec[]>
+        {
+            ["test.SpecNode"] =
+            [
+                new OutputValueSpec("Payload", "object"),
+                new OutputValueSpec("RequestInfo", "object"),
+                new OutputValueSpec("RequestInfo.StatusCode", "int"),
+            ],
+        });
+
+        var node = new SpecNode();
+        var eval = new EvalNode();
+        Wire(node, eval);
+
+        var fields = MsgProvider(hints).GetFields(Context(eval, node));
+
+        fields.Select(f => (f.Path, f.VarType)).Should().Equal(
+            ("msg.Payload", "string"),
+            ("msg.RequestInfo", "object"),
+            ("msg.RequestInfo.StatusCode", "int"));
+    }
+
+    private sealed class SpecNode : Node, INodeOutputValueSpec
+    {
+        public override string TypeId => "test.SpecNode";
+
+        public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+        {
+            yield return new OutputValueSpec("Payload", "string");
+        }
+    }
+
     private sealed class DuplicateVarNodeValueRootProvider : IValueRootProvider
     {
         public int Order => 40;

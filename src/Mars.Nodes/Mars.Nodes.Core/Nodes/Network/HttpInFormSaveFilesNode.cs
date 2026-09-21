@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes.Network;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HttpInFormSaveFilesNode/HttpInFormSaveFilesNode{.lang}.md")]
 [Display(GroupName = "network")]
-public class HttpInFormSaveFilesNode : Node
+public class HttpInFormSaveFilesNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.HttpInFormSaveFilesNode";
 
@@ -21,6 +21,29 @@ public class HttpInFormSaveFilesNode : Node
         Inputs = [new()];
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
+    }
+
+    /// <summary>Пути FileListItem объявлены вручную: тип живёт в Mars.Media.Abstractions, из Core не виден.</summary>
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        if (!SaveInMediaFiles)
+        {
+            yield return new OutputValueSpec(nameof(NodeMsg.Payload), "string[]", Description: "saved file paths");
+            yield return new OutputValueSpec("Payload[]", "string");
+            yield break;
+        }
+
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName, Description: "saved media files (FileListItem[])");
+        yield return new OutputValueSpec("Payload[]", VarNode.ObjectTypeName);
+        yield return new OutputValueSpec("Payload[].Id", "Guid");
+        yield return new OutputValueSpec("Payload[].Name", "string");
+        yield return new OutputValueSpec("Payload[].Ext", "string");
+        yield return new OutputValueSpec("Payload[].Size", "long");
+        yield return new OutputValueSpec("Payload[].Url", "string");
+        yield return new OutputValueSpec("Payload[].UrlRelative", "string");
+        yield return new OutputValueSpec("Payload[].IsImage", "bool");
+        yield return new OutputValueSpec("Payload[].FilePhysicalPath", "string");
+        yield return new OutputValueSpec("Payload[].FileVirtualPath", "string");
     }
 
     public static IReadOnlyCollection<string> ExampleTemplates =

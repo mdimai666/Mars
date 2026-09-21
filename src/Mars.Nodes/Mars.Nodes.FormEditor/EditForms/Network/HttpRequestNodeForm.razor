@@ -7,7 +7,7 @@
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-2">
         <FormItem2 For="() => Node.Url">
-            <FluentTextField TextFieldType="TextFieldType.Url" @bind-Value=@Node.Url Appearance="FluentInputAppearance.Filled" Class="w-100" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Value="@UrlValue" ValueChanged="SetUrlValue" For="() => Node.Url" />
         </FormItem2>
         <FormItem2 For="() => Node.Method">
             <FluentSelect TOption="string"
@@ -40,4 +40,24 @@
     [CascadingParameter] Node Value { get; set; } = default!;
     HttpRequestNode Node { get => (HttpRequestNode)Value; set => Value = value; }
 
+    string UrlValue => Node.UrlKind switch
+    {
+        InputValueKind.Expression => "@" + Node.Url,
+        InputValueKind.Msg => "@msg." + Node.Url,
+        _ => Node.Url,
+    };
+
+    void SetUrlValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.UrlKind = InputValueKind.Expression;
+            Node.Url = value[1..].Trim();
+        }
+        else
+        {
+            Node.UrlKind = InputValueKind.Const;
+            Node.Url = value;
+        }
+    }
 }

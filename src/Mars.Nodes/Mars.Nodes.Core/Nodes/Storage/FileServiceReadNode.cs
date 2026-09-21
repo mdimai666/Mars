@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes.Storage;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/FileServiceReadNode/FileServiceReadNode{.lang}.md")]
 [Display(GroupName = "storage")]
-public class FileServiceReadNode : Node
+public class FileServiceReadNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.FileServiceReadNode";
 
@@ -22,6 +22,14 @@ public class FileServiceReadNode : Node
         Color = "#ffea9f";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+    }
+
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        yield return OutputMode == FileOutputMode.SingleBuffer
+            ? new OutputValueSpec(nameof(NodeMsg.Payload), VarNode.ObjectTypeName, Description: "byte[]")
+            : new OutputValueSpec(nameof(NodeMsg.Payload), "string",
+                Description: OutputMode == FileOutputMode.MsgPerLine ? "one message per line" : null);
     }
 
     public enum FileOutputMode

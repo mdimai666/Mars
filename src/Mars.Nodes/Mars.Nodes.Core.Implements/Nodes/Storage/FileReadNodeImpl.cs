@@ -1,7 +1,9 @@
 using System.Text;
+using DynamicExpresso;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes.Storage;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Storage;
 
@@ -20,7 +22,13 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         var ct = parameters.CancellationToken;
-        var filepath = Node.FilePath;
+
+        Interpreter? interpreter = null;
+
+        if (Node.FilePathKind is InputValueKind.Expression or InputValueKind.Msg)
+            interpreter = InputValueResolver.CreateInterpreter(RNS, input);
+
+        var filepath = (string)InputValueResolver.Resolve(Node.FilePathKind, Node.FilePath, "string", interpreter, new ExpressionScope(RNS, input), Node, "FilePath")!;
 
         // 1. Валидация пути
         if (string.IsNullOrWhiteSpace(filepath))

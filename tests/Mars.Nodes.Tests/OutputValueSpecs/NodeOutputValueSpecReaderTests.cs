@@ -4,6 +4,7 @@ using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Implements.Nodes.Sequences;
+using Mars.Nodes.Core.Implements.Nodes.Storage;
 using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Tests.OutputValueSpecs;
@@ -256,6 +257,33 @@ public class NodeOutputValueSpecReaderTests
 
         NodeOutputValueSpecReader.Read(new JsonNode { Action = JsonNode.JsonNodeAction.ToJsonString, Property = "data.json" })
             .Should().Equal(new OutputValueSpec("data.json", "string"));
+    }
+
+    [Fact]
+    public void Read_FileReadNode_PayloadTypeFollowsOutputMode()
+    {
+        NodeOutputValueSpecReader.Read(new FileReadNode())
+            .Should().Equal(new OutputValueSpec("Payload", "string"));
+
+        NodeOutputValueSpecReader.Read(new FileReadNode { OutputMode = FileReadNode.FileOutputMode.MsgPerLine })
+            .Should().Equal(new OutputValueSpec("Payload", "string", Description: "one message per line"));
+
+        NodeOutputValueSpecReader.Read(new FileReadNode { OutputMode = FileReadNode.FileOutputMode.SingleBuffer })
+            .Should().Equal(new OutputValueSpec("Payload", "object", Description: "byte[]"));
+    }
+
+    [Fact]
+    public void Read_FileServiceReadNode_PayloadTypeFollowsOutputMode()
+    {
+        NodeOutputValueSpecReader.Read(new FileServiceReadNode { OutputMode = FileServiceReadNode.FileOutputMode.SingleBuffer })
+            .Should().Equal(new OutputValueSpec("Payload", "object", Description: "byte[]"));
+    }
+
+    [Fact]
+    public void ReadStatics_DirReadNodeImpl_DeclaresStringArrayPayload()
+    {
+        NodeOutputValueSpecReader.ReadStatics(typeof(DirReadNodeImpl))
+            .Should().Equal(new OutputValueSpec("Payload", "string[]"));
     }
 
     [Fact]

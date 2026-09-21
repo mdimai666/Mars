@@ -501,11 +501,21 @@ InlineFunction null-callback — обсудить позже.
       Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (557 / 0 / 0). CSS/JS не правились —
       `MarsAppVersion` не поднимался.
 
-### Партия 3 — Storage (в плане)
+### Партия 3 — Storage (сделана 2026-09-22)
 
-FileRead/FileServiceRead (интерфейс по `OutputMode`), DirRead (`string[]`; фикс `UseRootGitIgnore`),
-FileWrite (форма отстаёт: `FilePathKind`+resolver уже есть → MarsValueInput), FileRead — добавить
-`FilePathKind`+resolver+MarsValueInput (решение пользователя). FileWrite/FileServiceWrite — passthrough.
+- [x] `FileReadNode`: интерфейс на модели (`SingleString`/`MsgPerLine` → `Payload: string`,
+      `SingleBuffer` → object «byte[]»); **добавлен `FilePathKind`** + `InputValueResolver` в impl
+      (решение пользователя — симметрично `FileWriteNode`); форма — `MarsValueInput` с маппингом `@`↔Kind.
+- [x] `FileServiceReadNode`: интерфейс на модели (те же три ветки `OutputMode`). `FilePath`/`StorageFileId`
+      оставлены const (медиа-пикер, ids — не msg-значения).
+- [x] `DirReadNodeImpl`: атрибут `typeof(string[])`; **фикс**: `Node.UseRootGitIgnore` не передавался в
+      `FileListUtility.GetFiles` (параметр `useRootGitIgnore` существовал, default false) — флаг формы был мёртв.
+- [x] `FileWriteNodeForm`: `FilePath` — plain FluentTextField → `MarsValueInput` с маппингом уже
+      существующего `FilePathKind` (impl резолвил и раньше, UI kind не выставлял).
+- [x] `FileWrite`/`FileServiceWrite` — passthrough, специй нет.
+- [x] Тесты: FileRead (три ветки), FileServiceRead (buffer), DirRead (атрибут).
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (560 / 0 / 0). CSS/JS не правились —
+      `MarsAppVersion` не поднимался.
 
 ### Партия 4 — Events/Diagnostics/TaskNodes/Validation/Connections (в плане)
 

@@ -1,0 +1,45 @@
+@using Mars.Nodes.Core.Contracts.Nodes
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDialogContentComponent<NodeDebugFullResponse>
+
+<FluentDialogHeader ShowDismiss="true">
+    <div class="hstack gap-3">
+        <FluentLabel Typo="Typography.Header">DebugNode full object</FluentLabel>
+        @if (Content is { CapturedAt: { } captured })
+        {
+            <FluentLabel>@captured.ToLocalTime().ToString("HH:mm:ss") · @($"{Content.Size:N0} chars")@(Content.Truncated ? " · truncated (2 MB)" : "")</FluentLabel>
+        }
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <MarsCodeEditor2.CodeEditor2 Lang=@Lang
+                                 Value=@(Content?.Json ?? "")
+                                 OptionsJson=@("""{"wordWrap":"on","minimap":{"enabled":false}}""")
+                                 ContainerCssStyle="height:70vh;border:1px solid #dfdfdf;overflow:hidden;"
+                                 HideToolbarComponents="true" />
+</FluentDialogBody>
+<FluentDialogFooter Visible="false" />
+
+@code {
+    [Parameter] public NodeDebugFullResponse Content { get; set; } = default!;
+
+    // обрезанный на 2 МБ JSON — битый, подсветка json-ошибками только мешает
+    string Lang => Content is { Truncated: true } ? CodeEditor2.Language.plaintext : CodeEditor2.Language.json;
+
+    public static void ShowDialog(IDialogService dialogService, NodeDebugFullResponse content)
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "DebugNode full object",
+            PrimaryActionEnabled = false,
+            SecondaryActionEnabled = false,
+            Width = "1100px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true,
+        };
+
+        _ = dialogService.ShowDialogAsync<DebugNodeFullObjectDialog>(content, parameters);
+    }
+}

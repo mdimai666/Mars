@@ -76,6 +76,21 @@ public class NodeController : ControllerBase
         };
     }
 
+    [HttpGet(nameof(DebugNodeFull) + "/{nodeId}")]
+    public NodeDebugFullResponse DebugNodeFull(string nodeId, [FromQuery] bool includeJson = false)
+    {
+        var snapshot = _debugStore.GetFull(nodeId);
+
+        return new NodeDebugFullResponse
+        {
+            ServerTimeUtc = DateTime.UtcNow,
+            CapturedAt = snapshot?.CapturedAt,
+            Size = snapshot?.Json.Length ?? 0,
+            Truncated = snapshot?.Truncated ?? false,
+            Json = includeJson ? snapshot?.Json : null,
+        };
+    }
+
     [HttpPost(nameof(SetDebugMode))]
     public UserActionResult SetDebugMode([FromQuery] bool enabled)
     {

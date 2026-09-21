@@ -16,6 +16,14 @@ public interface INodeDebugStore
     bool Save(NodeMsg msg, string nodeId, int outputPort);
 
     IReadOnlyDictionary<string, NodeDebugSnapshot[]> Get(IReadOnlyCollection<string> nodeIds);
+
+    /// <summary>
+    /// Полный объект DebugNode (StoreFullObject): последний на ноду, жёсткий лимит 2 МБ,
+    /// без TTL и независимо от глобального DebugMode. Throttled per node.
+    /// </summary>
+    bool SaveFull(string nodeId, object? value);
+
+    NodeDebugFullSnapshot? GetFull(string nodeId);
 }
 
 /// <summary>Global debug mode; not persisted — after a restart it is off again.</summary>

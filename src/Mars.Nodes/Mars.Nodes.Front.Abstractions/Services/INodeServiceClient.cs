@@ -11,6 +11,7 @@ public interface INodeServiceClient
     Task<UserActionResult> Inject(string nodeId);
     Task<UserActionResult> SetDebugMode(bool enabled);
     Task<NodeDebugSnapshotsResponse> DebugSnapshots(IReadOnlyCollection<string> nodeIds);
+    Task<NodeDebugFullResponse> DebugNodeFull(string nodeId, bool includeJson = false);
     Task<NodesDataResponse> Load();
     Task<ListDataResult<NodeTaskResultSummaryResponse>> JobList(ListNodeTaskJobQueryRequest request);
     Task<PagingResult<NodeTaskResultSummaryResponse>> JobListTable(TableNodeTaskJobQueryRequest request);

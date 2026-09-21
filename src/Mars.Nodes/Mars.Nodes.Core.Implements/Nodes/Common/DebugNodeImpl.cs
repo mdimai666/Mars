@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Implements.JsonConverters;
 using Mars.Nodes.Expressions;
 
@@ -57,12 +58,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
             }
             else
             {
-                // legacy flows stored the path in expression form ("@msg.Payload")
-                var path = (Node.PropertyPath ?? "").Trim().TrimStart('@').Trim();
-
-                var prop = (path == DebugNode.PropertyPathPayloadDefault || path.IsNullOrEmpty())
-                            ? input.Payload
-                            : ReadByPath(path, input);
+                var prop = ReadDisplayValue(input);
 
                 if (prop is not string && prop is object)
                 {
@@ -88,6 +84,9 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
             }
 
             RNS.DebugMsg(msg);
+
+            if (Node.StoreFullObject)
+                StoreFullSnapshot(input);
 
 #if DEBUG
             //RNS.logger.LogWarning("DebugNode", msg);
@@ -126,6 +125,23 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
         }
 
         return Task.CompletedTask;
+    }
+
+    void StoreFullSnapshot(NodeMsg input)
+    {
+        if (RNS.ServiceProvider?.GetService(typeof(INodeDebugStore)) is not INodeDebugStore store) return;
+
+        store.SaveFull(Node.Id, Node.CompleteInputMessage ? input.AsFullDict() : ReadDisplayValue(input));
+    }
+
+    object? ReadDisplayValue(NodeMsg input)
+    {
+        // legacy flows stored the path in expression form ("@msg.Payload")
+        var path = (Node.PropertyPath ?? "").Trim().TrimStart('@').Trim();
+
+        return path == DebugNode.PropertyPathPayloadDefault || path.IsNullOrEmpty()
+            ? input.Payload
+            : ReadByPath(path, input);
     }
 
     object? ReadByPath(string path, NodeMsg input)

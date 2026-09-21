@@ -59,6 +59,11 @@ internal class NodeServiceClient : INodeServiceClient
                     .SetQueryParam("nodeIds", string.Join(',', nodeIds))
                     .GetJsonAsync<NodeDebugSnapshotsResponse>();
 
+    public Task<NodeDebugFullResponse> DebugNodeFull(string nodeId, bool includeJson = false)
+        => _client.Request($"{_basePath}{_controllerName}", "DebugNodeFull", nodeId)
+                    .SetQueryParam("includeJson", includeJson)
+                    .GetJsonAsync<NodeDebugFullResponse>();
+
     public Task<NodesDataResponse> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")
                     .GetJsonAsync<NodesDataResponse>();

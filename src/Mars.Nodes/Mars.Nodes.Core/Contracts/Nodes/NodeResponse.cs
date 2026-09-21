@@ -33,3 +33,16 @@ public record NodeDebugSnapshotsResponse
     public IReadOnlyDictionary<string, NodeDebugSnapshot[]> Snapshots { get; init; } =
         new Dictionary<string, NodeDebugSnapshot[]>();
 }
+
+/// <summary>
+/// Ответ про полный объект DebugNode: метаданные всегда, <see cref="Json"/> — только при
+/// <c>includeJson</c> (форма тянет тяжёлое тело лишь при открытии модалки).
+/// </summary>
+public record NodeDebugFullResponse
+{
+    public DateTime ServerTimeUtc { get; init; }
+    public DateTime? CapturedAt { get; init; }
+    public int Size { get; init; }
+    public bool Truncated { get; init; }
+    public string? Json { get; init; }
+}

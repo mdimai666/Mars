@@ -362,12 +362,6 @@
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
-.mars-path-input {
-  width: auto;
-  min-width: 0;
-  flex: 1 1 auto;
-  max-height: max-content;
-}
 .mars-path-input .mvi-input {
   color: var(--mvi-fg);
 }

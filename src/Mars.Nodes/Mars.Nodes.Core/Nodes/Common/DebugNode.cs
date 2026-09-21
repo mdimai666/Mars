@@ -15,6 +15,9 @@ public class DebugNode : Node
     public string PropertyPath { get; set; } = PropertyPathPayloadDefault;
     public bool WriteToConsole { get; set; }
     public bool ShowPayloadTypeInStatus { get; set; }
+
+    /// <summary>Хранить полный объект на сервере (последний, жёсткий лимит 2 МБ), независимо от глобального DebugMode.</summary>
+    public bool StoreFullObject { get; set; }
     public override string Label => CompleteInputMessage ? "Msg" : base.Label;
     public Mars.Core.Models.MessageIntent? Level { get; set; }
 

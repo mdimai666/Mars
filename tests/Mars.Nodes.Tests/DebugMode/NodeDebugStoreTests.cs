@@ -247,6 +247,80 @@ public class NodeDebugStoreTests
     private sealed class Mutable { public string Value { get; set; } = ""; }
 }
 
+public class NodeDebugStoreFullTests
+{
+    static NodeDebugStore CreateStore() => new(new DebugModeState());
+
+    [Fact]
+    public void SaveFull_WorksRegardlessOfDebugMode()
+    {
+        var store = CreateStore();
+
+        store.SaveFull("node1", new { Mark = "value" }).Should().BeTrue();
+
+        store.GetFull("node1")!.Json.Should().Contain("value");
+    }
+
+    [Fact]
+    public void SaveFull_KeepsOnlyTheLast()
+    {
+        var store = CreateStore();
+
+        store.SaveFull("node1", "first");
+        store.Clock = () => DateTime.UtcNow + NodeDebugStore.ThrottleDelay + TimeSpan.FromMilliseconds(1);
+        store.SaveFull("node1", "second");
+
+        store.GetFull("node1")!.Json.Should().Contain("second").And.NotContain("first");
+    }
+
+    [Fact]
+    public void SaveFull_InsideThrottleWindow_IsSkipped()
+    {
+        var store = CreateStore();
+
+        store.SaveFull("node1", "first").Should().BeTrue();
+        store.SaveFull("node1", "second").Should().BeFalse();
+
+        store.GetFull("node1")!.Json.Should().Contain("first");
+    }
+
+    [Fact]
+    public void SaveFull_HasNoTtl()
+    {
+        var store = CreateStore();
+
+        store.SaveFull("node1", "value");
+        store.Clock = () => DateTime.UtcNow + NodeDebugStore.Ttl + TimeSpan.FromHours(1);
+
+        store.GetFull("node1").Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetFull_UnknownNode_ReturnsNull()
+    {
+        CreateStore().GetFull("missing").Should().BeNull();
+    }
+
+    [Fact]
+    public void BuildFull_UnderLimit_IsNotTruncated()
+    {
+        var snapshot = NodeDebugSnapshotBuilder.BuildFull(new { Text = new string('x', 1000) }, "node1");
+
+        snapshot.Truncated.Should().BeFalse();
+        snapshot.Json.Should().Contain(new string('x', 100));
+    }
+
+    [Fact]
+    public void BuildFull_OverLimit_CutsAndMarksTruncated()
+    {
+        var snapshot = NodeDebugSnapshotBuilder.BuildFull(new string('a', 2_500_000), "node1");
+
+        snapshot.Truncated.Should().BeTrue();
+        snapshot.Json.Length.Should().BeLessThan(NodeDebugSnapshotBuilder.FullMaxTotalLength + 100);
+        snapshot.Json.Should().EndWith("...[truncated: exceeded 2 MB limit]");
+    }
+}
+
 public class DebugModeStateTests
 {
     [Fact]

@@ -12,3 +12,10 @@ public record NodeDebugSnapshot(string NodeId, int Port, DateTime CapturedAt, st
     /// <summary>Единый формат ключа «нода + выходной порт» для стора и клиентских кэшей.</summary>
     public static string Key(string nodeId, int port) => $"{nodeId}|{port}";
 }
+
+/// <summary>
+/// Full object stored by a <c>DebugNode</c> with <c>StoreFullObject</c> on: last one per node,
+/// hard 2 MB cap. Over the cap <see cref="Json"/> is cut mid-structure (invalid JSON) and
+/// <see cref="Truncated"/> is set — the viewer falls back to raw text.
+/// </summary>
+public record NodeDebugFullSnapshot(string NodeId, DateTime CapturedAt, string Json, bool Truncated);

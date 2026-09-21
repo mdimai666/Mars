@@ -16,18 +16,49 @@ public static class NodeDebugSnapshotBuilder
     public const int DefaultMaxDepth = 4;
     public const int DefaultMaxItems = 50;
 
+    public const int FullMaxTotalLength = 2_000_000;
+
     static readonly JsonSerializerOptions JsonOptions = new()
     {
         ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    public static NodeDebugSnapshot Build(NodeMsg msg, string nodeId, int port, DateTime? capturedAtUtc = null)
+    static readonly JsonSerializerOptions FullJsonOptions = new(JsonOptions)
+    {
+        WriteIndented = true,
+    };
+
+    public static NodeDebugSnapshot Build(NodeMsg msg, string nodeId, int port)
     {
         var truncated = Truncate(msg.AsFullDict(), DefaultMaxDepth, DefaultMaxStringLength, DefaultMaxItems);
 
-        return new NodeDebugSnapshot(nodeId, port, capturedAtUtc ?? DateTime.UtcNow,
+        return new NodeDebugSnapshot(nodeId, port, DateTime.UtcNow,
             JsonSerializer.Serialize(truncated, JsonOptions), Flatten(truncated));
+    }
+
+    /// <summary>
+    /// Full-object variant for DebugNode: serialize as is, then hard-cut at the total cap —
+    /// over it the JSON is cut mid-structure and marked truncated (no per-field walk).
+    /// </summary>
+    public static NodeDebugFullSnapshot BuildFull(object? value, string nodeId)
+    {
+        string json;
+
+        try
+        {
+            json = JsonSerializer.Serialize(value, FullJsonOptions);
+        }
+        catch (Exception)
+        {
+            json = JsonSerializer.Serialize(value?.ToString() ?? "", FullJsonOptions);
+        }
+
+        var overLimit = json.Length > FullMaxTotalLength;
+        if (overLimit)
+            json = json[..FullMaxTotalLength] + "\n...[truncated: exceeded 2 MB limit]";
+
+        return new NodeDebugFullSnapshot(nodeId, DateTime.UtcNow, json, overLimit);
     }
 
     /// <summary>

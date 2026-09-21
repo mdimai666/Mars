@@ -85,4 +85,53 @@ public class DebugNodeTests : NodeServiceUnitTestBase
         await Task.Delay(100);
         Runtime.Received(1).DebugMsg(node.Id, Arg.Is<DebugMessage>(msg => msg.Json != null && msg.Json.Contains("gmark")));
     }
+
+    [Fact]
+    public async Task StoreFullObject_Complete_StoresWholeMessage()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { CompleteInputMessage = true, StoreFullObject = true };
+        var input = new NodeMsg { Payload = new { Mark = "payloadmark" } };
+        input.Set("ctxKey", "ctxmark");
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        var full = DebugStore.GetFull(node.Id);
+        full.Should().NotBeNull();
+        full!.Json.Should().Contain("payloadmark").And.Contain("ctxmark");
+    }
+
+    [Fact]
+    public async Task StoreFullObject_WithPath_StoresOnlyPathValue()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { PropertyPath = "msg.Payload.user", StoreFullObject = true };
+        var input = new NodeMsg { Payload = new { user = new { Mark = "usermark" }, other = "noise" } };
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        var full = DebugStore.GetFull(node.Id);
+        full.Should().NotBeNull();
+        full!.Json.Should().Contain("usermark").And.NotContain("noise");
+    }
+
+    [Fact]
+    public async Task StoreFullObject_Off_StoresNothing()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode();
+
+        //Act
+        await ExecuteNode(node, new NodeMsg { Payload = "plain" });
+
+        //Assert
+        DebugStore.GetFull(node.Id).Should().BeNull();
+    }
 }

@@ -36,6 +36,7 @@ internal class NodeDebugStore(INodeDebugMode debugMode, ILogger<NodeDebugStore>?
     public static readonly TimeSpan ThrottleDelay = TimeSpan.FromMilliseconds(300);
 
     readonly ConcurrentDictionary<string, NodeDebugSnapshot> _snapshots = new();
+    readonly ConcurrentDictionary<string, NodeDebugFullSnapshot> _fullSnapshots = new();
 
     internal Func<DateTime> Clock { get; set; } = () => DateTime.UtcNow;
 
@@ -44,21 +45,45 @@ internal class NodeDebugStore(INodeDebugMode debugMode, ILogger<NodeDebugStore>?
         if (!debugMode.Enabled || string.IsNullOrEmpty(nodeId)) return false;
 
         var key = NodeDebugSnapshot.Key(nodeId, outputPort);
+
+        return Throttled(key, _snapshots, () => NodeDebugSnapshotBuilder.Build(msg, nodeId, outputPort));
+    }
+
+    public bool SaveFull(string nodeId, object? value)
+    {
+        if (string.IsNullOrEmpty(nodeId)) return false;
+
+        return Throttled(nodeId, _fullSnapshots, () => NodeDebugSnapshotBuilder.BuildFull(value, nodeId));
+    }
+
+    public NodeDebugFullSnapshot? GetFull(string nodeId)
+        => _fullSnapshots.TryGetValue(nodeId, out var snapshot) ? snapshot : null;
+
+    bool Throttled<TSnapshot>(string key, ConcurrentDictionary<string, TSnapshot> storage,
+        Func<TSnapshot> build) where TSnapshot : class
+    {
         var now = Clock();
 
-        if (_snapshots.TryGetValue(key, out var last) && now - last.CapturedAt < ThrottleDelay) return false;
+        if (storage.TryGetValue(key, out var last) && now - CapturedAtOf(last) < ThrottleDelay) return false;
 
         try
         {
-            _snapshots[key] = NodeDebugSnapshotBuilder.Build(msg, nodeId, outputPort, now);
+            storage[key] = build();
             return true;
         }
         catch (Exception ex)
         {
-            logger?.LogError(ex, "debug snapshot build failed (nodeId={NodeId}, port={Port})", nodeId, outputPort);
+            logger?.LogError(ex, "debug snapshot build failed (key={Key})", key);
             return false;
         }
     }
+
+    static DateTime CapturedAtOf<TSnapshot>(TSnapshot snapshot) => snapshot switch
+    {
+        NodeDebugSnapshot s => s.CapturedAt,
+        NodeDebugFullSnapshot s => s.CapturedAt,
+        _ => throw new InvalidOperationException($"unexpected snapshot type {typeof(TSnapshot)}"),
+    };
 
     public IReadOnlyDictionary<string, NodeDebugSnapshot[]> Get(IReadOnlyCollection<string> nodeIds)
     {

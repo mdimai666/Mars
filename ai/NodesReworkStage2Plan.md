@@ -118,9 +118,10 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 - [x] Пилот, статика: `MqttInNodeImpl` — `[NodeOutputValueSpec(typeof(string))]` (его `Payload` — строка).
 - [x] Пилот, транзит: `SwitchNode` не объявляет ничего (`SwitchNodeImpl` в msg ничего не пишет, его условия —
       это порты), тест фиксирует пустой спек.
-- [ ] Не в пилоте, позже: `TemplateNode` (`Node.Property`), `ForeachNodeImpl` (`Set(cycle)`),
+- [x] Не в пилоте, позже: `TemplateNode` (`Node.Property`), `ForeachNodeImpl` (`Set(cycle)`),
       `HttpRequestNodeImpl` (`Set(requestInfo)`, слот через `Name`), `CounterNode`, `QueueNode`, `DirReadNode`,
-      `HtmlParseNode`.
+      `HtmlParseNode` — **сделано 2026-09-22 в фазах G/H** (Template — через MarsPathInput-поле фазы D,
+      остальные — спеки; полный список в «Черновике гайда»).
 - [x] Тесты: ридер (интерфейс / атрибут / пусто / несколько атрибутов / слот `Name`), разворот типа
       (вложенность, массивы, глубина, цикл, скип-лист), маппер имён.
       Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (481 / 0 / 0).
@@ -747,15 +748,16 @@ public class SomeNode : Node, INodeOutputValueSpec
 
 ## Открытые вопросы
 
-- Где живёт флаг DebugMode (нода / редактор / `DebugNode`) и включает ли запись для всех нод или выборочно.
-- Глубина разворота типа: сколько уровней по умолчанию, что показывать для `object`, открытых словарей
-  и коллекций без известного типа элемента; циклы в DTO (взаимные ссылки) — проверять на реальных типах нод.
+- ~~Где живёт флаг DebugMode~~ — решено (фаза C/E: глобальный singleton на сервере, тумблер в редакторе, auto-off 30 мин).
+- ~~Глубина разворота типа~~ — решено (фаза A: глубина 3, visited-set, скип-лист); остаток — в «Отложено:
+  разворачивать object-поля глубже».
 - Откуда клиент берёт список переменных `flow`/`global`: из графа (кто пишет ключи) или из дефолтов `VarNode`;
-  и в каком виде приходит SignalR-обновление.
+  и в каком виде приходит SignalR-обновление (сейчас имена global приходят в `Load()`, flow — из графа по
+  `VariableSetNode.Setters`).
 - **Проверить**: реализован ли flow-контекст полностью (`IRuntimeNodeScope.FlowContext`,
   `NodeRuntime.FlowContexts`, `NodeService.cs:418` передаёт `flowContext: null`) — от этого зависит, когда
   отдавать имена flow-переменных в `Load()`.
-- Нужен ли отдельный проект контрактов провайдера или хватит `Mars.Nodes.Front.Abstractions`.
+- Нужен ли отдельный проект контрактов провайдера или хватит `Mars.Nodes.Front.Abstractions` (пока хватает).
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 
@@ -794,8 +796,7 @@ public class SomeNode : Node, INodeOutputValueSpec
 - **JSON-редактор для поля значения**: добавить в `MarsValueInput` режим редактирования JSON-значения.
   Прецедент в репо — `Mars.Nodes.FormEditor/EditForms/Network/EndpointNodeForm.razor` (поле `JsonSchema` через
   `MarsCodeEditor2`/`MarsEditors`, `editor.GetValue()`); поле значения должно ходить в те же компоненты.
-- **`EvalNode.ValueKind` не синхронизирован с осью `@`**: в `EvalNodeForm.razor` поле биндится на `Node.Input`
-  как есть, режим ноды (`ValueKind`, по умолчанию `Expression`) остаётся её собственным — если решим жить по
-  конвенции «символ в начале строки задаёт интерпретацию», это надо согласовать для `EvalNode` отдельно
-  (`src/Mars.Nodes/Mars.Nodes.Core/Nodes/Functions/EvalNode.cs`).
+- **`EvalNode.ValueKind` не синхронизирован с осью `@`** — **сделано 2026-09-22, партия H1**: форма
+  переведена на конвенцию `@`-префикса (маппинг `@`↔`ValueKind` как в Inject), баг с уходом `@` в
+  DynamicExpresso устранён.
 

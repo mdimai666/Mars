@@ -123,6 +123,10 @@
     [Parameter]
     public Expression<Func<object?>>? For { get; set; }
 
+    /// <summary>Дополнительный класс на корень компонента; биндится с атрибута class/Class и не мешает основным.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
     [CascadingParameter]
     public NodeEditContainer1? NodeEditContainer { get; set; }
 
@@ -206,18 +210,11 @@
             if (IsInvalid)
                 css += " mvi-invalid";
 
-            return ExtraClass is string extra ? $"{css} {extra}" : css;
+            return Class is { Length: > 0 } extra ? $"{css} {extra}" : css;
         }
     }
 
-    string? ExtraClass => AdditionalAttributes?.TryGetValue("class", out var value) == true
-        ? value?.ToString()
-        : null;
-
-    IReadOnlyDictionary<string, object>? RootAttributes =>
-        AdditionalAttributes is null || !AdditionalAttributes.ContainsKey("class")
-            ? AdditionalAttributes
-            : AdditionalAttributes.Where(a => a.Key != "class").ToDictionary(a => a.Key, a => a.Value);
+    IReadOnlyDictionary<string, object>? RootAttributes => AdditionalAttributes;
 
     string? ValidationMessage => ValidatePath(Value ?? "");
 

@@ -275,6 +275,11 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 ## Грабли и риски
 
+- **Фаза D, внешний класс — только через параметр `Class`**: у `MarsValueInput`/`MarsPathInput` есть
+  `[Parameter] string? Class` — он биндится с атрибута `class`/`Class` (регистронезависимо) и добавляется
+  к корневому классу. Историческая грабля (2026-09-21): до параметра `Class="…"` не подхватывался
+  компонентом и сплатился отдельным атрибутом, который перезатирал `class="@RootClass"` — компонент терял
+  все стили.
 - **Фаза D, чтение контекстов по пути**: `DebugNodeImpl.ReadByPath` для `GlobalContext`/`FlowContext` читает
   только ключ первого уровня (`TryGetValue(rest)`) — вложенный путь `GlobalContext.var1.x` вернёт null;
   deep-read контекстов — вместе с задачей про массивы/индексы.

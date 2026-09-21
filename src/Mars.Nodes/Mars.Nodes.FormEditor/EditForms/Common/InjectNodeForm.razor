@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Components
 @using Mars.Core.Utils
 @using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.Extensions.Localization
@@ -12,28 +11,8 @@
 
     <div class="vstack gap-2">
         <div class="text-secondary">
-            <b>@InjectNode.PayloadKey</b> becomes <code>msg.Payload</code>, any other key becomes <code>msg.&lt;key&gt;</code>
+            <b>@InjectNode.PayloadKey</b> becomes <code>msg.Payload</code>, any other key or path becomes <code>msg.&lt;key.path&gt;</code>
         </div>
-
-        <FormItem2 For="()=>Email">
-            <MarsValueInput @bind-Value=Email For="() => Email" />
-        </FormItem2>
-
-        <FormItem2 For="()=>Count">
-            <MarsValueInput @bind-Value=Count VarType="int" For="() => Count" />
-        </FormItem2>
-
-        <FormItem2 For="()=>DueDate">
-            <MarsValueInput @bind-Value=DueDate VarType="DateTime" For="() => DueDate" />
-        </FormItem2>
-
-        <FormItem2 For="()=>ReadOnlyValue">
-            <MarsValueInput @bind-Value=ReadOnlyValue VarType="double" ReadOnly="true" For="() => ReadOnlyValue" />
-        </FormItem2>
-
-        <FormItem2 For="()=>DisabledValue">
-            <MarsValueInput @bind-Value=DisabledValue Disabled="true" For="() => DisabledValue" />
-        </FormItem2>
 
         <FluentSortableList Id="injectFields" Handle="true" Items="Node.Fields" OnUpdate="@SortList" Context="item">
             <ItemTemplate>
@@ -44,7 +23,7 @@
                     <div class="d-grid align-items-center" style="grid-template-columns: 1fr 130px 1.5fr 33px; column-gap: 10px;">
                         <MarsPathInput Root="msg" ShowRoot="false" @bind-Value="item.Key" For="() => item.Key" Placeholder="Key" />
                         <FluentSelect TOption="string" Items="@VarTypeItems" @bind-SelectedOption="item.VarType" Style="min-width: unset;" />
-                        <ValueSourceEditor @bind-Value="item.Value" @bind-ValueKind="item.ValueKind" VarType="item.VarType" />
+                        <MarsValueInput Class="mvi-fill" VarType="item.VarType" Value="@FieldValue(item)" ValueChanged="v => SetFieldValue(item, v)" For="() => item.Value" />
                         <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                     </div>
                     <FluentValidationMessage For=@(() => item.Key) />
@@ -99,13 +78,24 @@
 
     void DeleteItem(InjectNodeField item) => Node.Fields = Node.Fields.Where(s => s != item).ToArray();
 
-    public string Email { get; set; } = "";
+    static string FieldValue(InjectNodeField field) => field.ValueKind switch
+    {
+        InputValueKind.Expression => "@" + field.Value,
+        InputValueKind.Msg => "@msg." + field.Value,
+        _ => field.Value,
+    };
 
-    public string Count { get; set; } = "42";
-
-    public string DueDate { get; set; } = "2026-09-16";
-
-    public string ReadOnlyValue { get; set; } = "3.14";
-
-    public string DisabledValue { get; set; } = "issued by scheduler";
+    static void SetFieldValue(InjectNodeField field, string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            field.ValueKind = InputValueKind.Expression;
+            field.Value = value[1..].Trim();
+        }
+        else
+        {
+            field.ValueKind = InputValueKind.Const;
+            field.Value = value;
+        }
+    }
 }

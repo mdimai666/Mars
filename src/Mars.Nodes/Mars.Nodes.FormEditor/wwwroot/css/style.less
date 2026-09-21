@@ -24,74 +24,6 @@
     font-family: 'Cascadia Mono', monospace;
 }
 
-.value-source-editor {
-    display: inline-flex;
-    align-items: center;
-    flex: 1 1 auto;
-    min-width: 0;
-
-    .vse-kind {
-        position: relative;
-    }
-
-    .vse-kind-btn {
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-right: none;
-        border-radius: 4px 0 0 4px;
-        background: var(--neutral-fill-rest, #f5f5f5);
-        padding: 0 6px;
-        line-height: 26px;
-        font-family: 'Cascadia Mono', monospace;
-        white-space: nowrap;
-        cursor: pointer;
-    }
-
-    .vse-value {
-        display: flex;
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    .vse-input {
-        flex: 1 1 auto;
-        min-width: 0;
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-radius: 0 4px 4px 0;
-        padding: 0 6px;
-        line-height: 26px;
-    }
-
-    .vse-expr {
-        font-family: 'Cascadia Mono', monospace;
-    }
-
-    .vse-popup {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 1050;
-        min-width: 90px;
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-radius: 4px;
-        background: var(--neutral-fill-solid, #fff);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
-
-        .vse-item {
-            padding: 4px 8px;
-            font-family: 'Cascadia Mono', monospace;
-            cursor: pointer;
-
-            &:hover {
-                background: var(--neutral-fill-hover, #ebebeb);
-            }
-
-            &.active {
-                background: var(--accent-fill-rest, #e0e0e0);
-            }
-        }
-    }
-}
-
 .mvi-tokens() {
     --mvi-line: #23282e;
     --mvi-line-soft: rgba(35, 40, 46, .22);
@@ -530,6 +462,14 @@
             color: var(--mvi-fg);
         }
     }
+}
+
+// растянуть поле по flex/grid-ячейке вместо фиксированной --mvi-width
+.mars-value-input.mvi-fill {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-height: max-content;
 }
 
 @media (prefers-color-scheme: dark) {

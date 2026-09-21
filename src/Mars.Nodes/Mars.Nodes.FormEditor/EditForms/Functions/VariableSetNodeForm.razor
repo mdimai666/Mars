@@ -23,7 +23,7 @@
                 <span class="input-group-text">[ @(index + 1) ]</span>
                 <MarsPathInput @bind-Value=@setter.ValuePath For="() => setter.ValuePath" />
                 <span class="input-group-text">=</span>
-                <InputText @bind-Value=@setter.Expression class="form-control" placeholder="Expression" aria-label="Expression" />
+                <MarsValueInput Class="mvi-fill" Value="@ExprValue(setter)" ValueChanged="v => SetExprValue(setter, v)" For="() => setter.Expression" />
                 <div class="input-group-text py-0">
                     <FluentButton OnClick=@(() => DeleteItem(setter)) IconStart="@(new Icons.Regular.Size16.Delete())" Appearance="Appearance.Stealth" />
                 </div>
@@ -75,6 +75,13 @@
         list.Remove(item);
         Node.Setters = list.ToArray();
     }
+
+    // рантайм ноды всегда исполняет Expression как выражение — поле всегда в @-режиме
+    static string ExprValue(VariableSetExpression setter)
+        => string.IsNullOrEmpty(setter.Expression) ? "" : "@" + setter.Expression;
+
+    static void SetExprValue(VariableSetExpression setter, string value)
+        => setter.Expression = value.StartsWith('@') ? value[1..].Trim() : value;
 
     static IReadOnlyCollection<string> ExampleList = [
         "msg.Payload=msg.Payload.subprop",

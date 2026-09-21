@@ -307,6 +307,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
         if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+
+        _debugSnapshotsDebouncer.Debouce(RefreshDebugSnapshots);
     }
 
     async Task OnToggleDebugMode()
@@ -319,6 +321,72 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         await DebugModeChanged.InvokeAsync(enabled);
     }
 
+    readonly Debouncer _debugSnapshotsDebouncer = new(300);
+
+    /// <summary>
+    /// Тянет снимки DebugMode для выбранной и редактируемой ноды вместе с upstream-замыканием.
+    /// Вызывается при открытии формы, смене выбора и по сигналу хаба DebugSnapshotsChanged —
+    /// эфир данных не несёт, после реконнекта достаточно перетянуть.
+    /// </summary>
+    public void RefreshDebugSnapshots() => _ = RefreshDebugSnapshotsAsync();
+
+    async Task RefreshDebugSnapshotsAsync()
+    {
+        if (_serviceProvider.GetService(typeof(INodeServiceClient)) is not INodeServiceClient client) return;
+        if (_serviceProvider.GetService(typeof(IHostValueHints)) is not IHostValueHints hints) return;
+
+        var nodeIds = DebugSnapshotScope();
+        if (nodeIds.Count == 0) return;
+
+        try
+        {
+            var response = await client.DebugSnapshots(nodeIds);
+            hints.SetDebugSnapshots(response);
+
+            if (response.DebugMode != DebugMode)
+                await DebugModeChanged.InvokeAsync(response.DebugMode);
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogTrace(ex, "debug snapshots are not available");
+        }
+    }
+
+    HashSet<string> DebugSnapshotScope()
+    {
+        var scope = new HashSet<string>();
+        AddUpstreamClosure(scope, _selectedNode?.Id);
+        AddUpstreamClosure(scope, EditNode?.Id);
+        return scope;
+    }
+
+    void AddUpstreamClosure(HashSet<string> scope, string? startId)
+    {
+        if (startId is null) return;
+
+        var queue = new Queue<string>();
+        queue.Enqueue(startId);
+
+        while (queue.Count > 0)
+        {
+            var id = queue.Dequeue();
+            if (!scope.Add(id)) continue;
+
+            foreach (var node in AllNodes.Values)
+            {
+                for (var port = 0; port < node.Wires.Count; port++)
+                {
+                    foreach (var wire in node.Wires[port])
+                    {
+                        if (wire.NodeId == id) queue.Enqueue(node.Id);
+                    }
+                }
+            }
+        }
+    }
+
     void OnDblClickNode(NodeComponentMouseEventArgs e)
     {
         StartEditNode(e.Node);
@@ -329,6 +397,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         EnableHotkeys(false);
         EditNode = node;
         nodeEditContainer1.StartEditNode(EditNode);
+        RefreshDebugSnapshots();
     }
 
     public void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent)
@@ -346,7 +415,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         {
             await Task.Delay(10);
             appendNewConfigNodeEvent.ConfigNodeSetter(instance);
+            EditNode = instance;
             nodeEditContainer1.StartEditNode(instance);
+            RefreshDebugSnapshots();
             StateHasChanged();
         });
     }
@@ -359,7 +430,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             _ = _messageService.Error($"Error editConfigNode command: id:{id} not found");
             return;
         }
+        EditNode = node;
         nodeEditContainer1.StartEditNode(node);
+        RefreshDebugSnapshots();
     }
 
     void OnClickNewConfigNode(AppendNewConfigNodeEvent e)

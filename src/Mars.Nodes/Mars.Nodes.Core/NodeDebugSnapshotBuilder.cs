@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Mars.Core.Extensions;
@@ -21,12 +22,60 @@ public static class NodeDebugSnapshotBuilder
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    public static NodeDebugSnapshot Build(NodeMsg msg, string nodeId, int port)
+    public static NodeDebugSnapshot Build(NodeMsg msg, string nodeId, int port, DateTime? capturedAtUtc = null)
     {
         var truncated = Truncate(msg.AsFullDict(), DefaultMaxDepth, DefaultMaxStringLength, DefaultMaxItems);
 
-        return new NodeDebugSnapshot(nodeId, port, DateTime.Now, JsonSerializer.Serialize(truncated, JsonOptions));
+        return new NodeDebugSnapshot(nodeId, port, capturedAtUtc ?? DateTime.UtcNow,
+            JsonSerializer.Serialize(truncated, JsonOptions), Flatten(truncated));
     }
+
+    /// <summary>
+    /// Flat "path → value" view of the already truncated tree: array items get concrete indexes so the
+    /// path can be inserted into a field as is; a collection itself gets a "[N items]" entry.
+    /// </summary>
+    public static Dictionary<string, string> Flatten(object? tree)
+    {
+        var result = new Dictionary<string, string>();
+        Walk(result, "", tree);
+        return result;
+    }
+
+    static void Walk(Dictionary<string, string> result, string path, object? value)
+    {
+        switch (value)
+        {
+            case null:
+                result[path] = "";
+                return;
+
+            case Dictionary<string, object?> dictionary:
+                foreach (var (key, item) in dictionary)
+                    Walk(result, Join(path, key), item);
+                return;
+
+            case List<object?> list:
+                var index = 0;
+                foreach (var item in list)
+                    Walk(result, $"{path}[{index++}]", item);
+                result[path] = $"[{index} items]";
+                return;
+
+            default:
+                result[path] = AsText(value);
+                return;
+        }
+    }
+
+    static string Join(string path, string name) => path.Length == 0 ? name : $"{path}.{name}";
+
+    static string AsText(object value) => value switch
+    {
+        string text => text,
+        bool flag => flag ? "true" : "false",
+        IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
+        _ => value.ToString() ?? "",
+    };
 
     static object? Truncate(object? value, int depth, int maxStringLength, int maxItems)
     {

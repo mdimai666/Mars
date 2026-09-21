@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Contracts.Nodes;
 
 namespace Mars.Nodes.Front.Abstractions.Services;
 
@@ -10,11 +11,16 @@ public interface IHostValueHints
 {
     void SetOutputSpecs(IReadOnlyDictionary<string, OutputValueSpec[]> specs);
     void SetGlobalVariableNames(IReadOnlyCollection<string> names);
-    void SetDebugSnapshots(IReadOnlyDictionary<string, NodeDebugSnapshot[]> snapshots);
+
+    /// <summary>Дополняет кэш снимков (pull может быть частичным — только нужные ноды).</summary>
+    void SetDebugSnapshots(NodeDebugSnapshotsResponse response);
 
     IReadOnlyCollection<OutputValueSpec> GetOutputSpecs(string nodeTypeId);
     IReadOnlyCollection<string> GlobalVariableNames { get; }
     NodeDebugSnapshot? GetDebugSnapshot(string nodeId, int port);
+
+    /// <summary>Возраст снимка по серверным часам (часы клиента могут отличаться).</summary>
+    TimeSpan GetSnapshotAge(DateTime capturedAtUtc);
 
     /// <summary>Растёт при каждом Set — по нему потребитель видит, что кэш подсказок устарел.</summary>
     int Version { get; }

@@ -37,6 +37,7 @@ public partial class NodeRedPage
         hub.OnDebugMsg += OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged += OnNodeRunningTaskCountChanged;
         hub.OnNodeExecuted += OnNodeExecuted;
+        hub.OnDebugSnapshotsChanged += OnDebugSnapshotsChanged;
 
         hub.ws.Reconnected += OnWsReconnected;
 
@@ -51,6 +52,7 @@ public partial class NodeRedPage
         hub.OnDebugMsg -= OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged -= OnNodeRunningTaskCountChanged;
         hub.OnNodeExecuted -= OnNodeExecuted;
+        hub.OnDebugSnapshotsChanged -= OnDebugSnapshotsChanged;
 
         hub.ws.Reconnected -= OnWsReconnected;
     }
@@ -58,7 +60,13 @@ public partial class NodeRedPage
     Task OnWsReconnected(string? connectionId)
     {
         hub.JoinGroup(NodeConstants.WsNodesNotifyGroupName);
+        _editor1?.RefreshDebugSnapshots();
         return Task.CompletedTask;
+    }
+
+    void OnDebugSnapshotsChanged()
+    {
+        _editor1?.RefreshDebugSnapshots();
     }
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)

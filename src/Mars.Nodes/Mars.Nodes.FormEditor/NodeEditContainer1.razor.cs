@@ -87,23 +87,6 @@ public partial class NodeEditContainer1
         _node = node.Copy(_nodeEditorApi.NodesJsonSerializerOptions);
         _windowStack.Push(_node);
         OpenOffcanvasEditor(true);
-        _ = LoadDebugSnapshotsAsync();
-    }
-
-    async Task LoadDebugSnapshotsAsync()
-    {
-        if (HintService is not { } hints) return;
-        if (Services.GetService(typeof(INodeServiceClient)) is not INodeServiceClient client) return;
-
-        try
-        {
-            hints.SetDebugSnapshots(await client.DebugSnapshots());
-            await InvokeAsync(StateHasChanged);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogTrace(ex, "debug snapshots are not available");
-        }
     }
 
     void CloseEditNode()

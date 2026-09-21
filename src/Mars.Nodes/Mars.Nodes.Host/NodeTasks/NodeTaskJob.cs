@@ -23,7 +23,6 @@ internal class NodeTaskJob : IAsyncDisposable
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected ConcurrentDictionary<string, NodeJob> _jobs = new();
     protected INodeRuntime _runtime;
-    private readonly INodeDebugMode? _debugMode;
     private readonly INodeDebugStore? _debugStore;
     private readonly ILogger<NodeTaskJob>? _logger;
 
@@ -66,7 +65,6 @@ internal class NodeTaskJob : IAsyncDisposable
         _runtime = runtime;
         _logger = logger;
         _serviceProvider = serviceProvider;
-        _debugMode = serviceProvider.GetService<INodeDebugMode>();
         _debugStore = serviceProvider.GetService<INodeDebugStore>();
         _maxDegreeOfParallelism = maxDegreeOfParallelism;
 
@@ -172,8 +170,8 @@ internal class NodeTaskJob : IAsyncDisposable
             {
                 if (_cancellationTokenSource.IsCancellationRequested) return;
 
-                if (_debugMode?.Enabled == true)
-                    _debugStore?.Save(e.Copy(), node.Id, output);
+                if (_debugStore?.Save(e, node.Id, output) == true)
+                    _runtime?.DebugSnapshotsChanged();
 
                 var nextNodes = GetNextWires(node.Id, output);
 

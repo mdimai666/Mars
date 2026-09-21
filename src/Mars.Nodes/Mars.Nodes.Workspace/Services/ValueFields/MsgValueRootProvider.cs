@@ -14,6 +14,9 @@ internal class MsgValueRootProvider(IHostValueHints hostHints) : IValueRootProvi
 {
     public const string RootName = "msg";
 
+    /// <summary>Значение в строке подсказки — сервер отдаёт до 150, в пикере показываем короче.</summary>
+    internal const int MaxDisplayValueLength = 80;
+
     public int Order => 0;
 
     public IEnumerable<ValueFieldInfo> GetFields(ValueFieldContext context)
@@ -80,8 +83,13 @@ internal class MsgValueRootProvider(IHostValueHints hostHints) : IValueRootProvi
     {
         var snapshot = hostHints.GetDebugSnapshot(node.Id, port);
 
-        return snapshot is null ? null : DebugSnapshotValues.Flatten(snapshot.Json);
+        if (snapshot?.Values is not { Count: > 0 } values) return null;
+
+        return values.ToDictionary(pair => pair.Key, pair => Short(pair.Value));
     }
+
+    static string Short(string value)
+        => value.Length <= MaxDisplayValueLength ? value : value[..MaxDisplayValueLength] + "...";
 
     IEnumerable<OutputValueSpec> SpecsOf(Node node)
     {

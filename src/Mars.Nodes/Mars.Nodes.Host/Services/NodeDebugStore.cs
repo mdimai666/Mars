@@ -1,36 +1,63 @@
 using System.Collections.Concurrent;
 using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.Services;
 
+/// <summary>
+/// Global debug mode with auto-off: enabling starts a fixed window, after which the mode turns
+/// itself off (lazily, on the next read). Not persisted — after a restart it is off again.
+/// </summary>
 internal class DebugModeState : INodeDebugMode
 {
-    public bool Enabled { get; set; }
+    public static readonly TimeSpan AutoOffAfter = TimeSpan.FromMinutes(30);
+
+    DateTime _enabledUntil;
+
+    internal Func<DateTime> Clock { get; set; } = () => DateTime.UtcNow;
+
+    public bool Enabled
+    {
+        get => _enabledUntil != default && Clock() < _enabledUntil;
+        set => _enabledUntil = value ? Clock() + AutoOffAfter : default;
+    }
 }
 
 /// <summary>
-/// In-memory snapshots with a TTL, written by the task executor for every message a node sent further.
+/// In-memory snapshots with a TTL, written synchronously by the task executor for every message a node
+/// sent further. The build is not deferred: a delayed snapshot would race with downstream payload
+/// mutations. A per-key leading-edge throttle caps the build rate; messages inside the window are skipped.
 /// Not <c>IMemoryCache</c>: it cannot enumerate keys, and the client asks for a set of node ids at once.
 /// </summary>
-internal class NodeDebugStore(INodeDebugMode debugMode) : INodeDebugStore
+internal class NodeDebugStore(INodeDebugMode debugMode, ILogger<NodeDebugStore>? logger = null) : INodeDebugStore
 {
     public static readonly TimeSpan Ttl = TimeSpan.FromMinutes(10);
-    static readonly TimeSpan ThrottleDelay = TimeSpan.FromMilliseconds(300);
+    public static readonly TimeSpan ThrottleDelay = TimeSpan.FromMilliseconds(300);
 
     readonly ConcurrentDictionary<string, NodeDebugSnapshot> _snapshots = new();
-    readonly SmartThrottleByKey _throttle = new(ThrottleDelay);
 
-    internal Func<DateTime> Clock { get; set; } = () => DateTime.Now;
+    internal Func<DateTime> Clock { get; set; } = () => DateTime.UtcNow;
 
-    public void Save(NodeMsg msg, string nodeId, int outputPort)
+    public bool Save(NodeMsg msg, string nodeId, int outputPort)
     {
-        if (!debugMode.Enabled || string.IsNullOrEmpty(nodeId)) return;
+        if (!debugMode.Enabled || string.IsNullOrEmpty(nodeId)) return false;
 
-        var key = Key(nodeId, outputPort);
+        var key = NodeDebugSnapshot.Key(nodeId, outputPort);
+        var now = Clock();
 
-        _throttle.TryExecute(key, () => _snapshots[key] = NodeDebugSnapshotBuilder.Build(msg, nodeId, outputPort));
+        if (_snapshots.TryGetValue(key, out var last) && now - last.CapturedAt < ThrottleDelay) return false;
+
+        try
+        {
+            _snapshots[key] = NodeDebugSnapshotBuilder.Build(msg, nodeId, outputPort, now);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "debug snapshot build failed (nodeId={NodeId}, port={Port})", nodeId, outputPort);
+            return false;
+        }
     }
 
     public IReadOnlyDictionary<string, NodeDebugSnapshot[]> Get(IReadOnlyCollection<string> nodeIds)
@@ -56,6 +83,4 @@ internal class NodeDebugStore(INodeDebugMode debugMode) : INodeDebugStore
 
         return result;
     }
-
-    static string Key(string nodeId, int port) => $"{nodeId}|{port}";
 }

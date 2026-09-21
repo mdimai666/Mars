@@ -8,8 +8,6 @@ namespace Mars.Nodes.Tests.DebugMode;
 [Collection("TimingSensitive")]
 public class NodeDebugCaptureTests : NodeServiceUnitTestBase
 {
-    static readonly TimeSpan WaitForThrottle = TimeSpan.FromMilliseconds(400);
-
     [Fact]
     public async Task DebugModeOn_CapturesMessageTheNodeSentFurther()
     {
@@ -24,7 +22,6 @@ public class NodeDebugCaptureTests : NodeServiceUnitTestBase
         };
 
         await RunUsingTaskManager(inject);
-        await Task.Delay(WaitForThrottle);
 
         var snapshots = DebugStore.Get([inject.Id]);
 
@@ -41,7 +38,6 @@ public class NodeDebugCaptureTests : NodeServiceUnitTestBase
         var inject = new InjectNode { Fields = [new() { Key = "Payload", Value = "hello" }] };
 
         await RunUsingTaskManager(inject);
-        await Task.Delay(WaitForThrottle);
 
         DebugStore.Get([inject.Id]).Should().BeEmpty();
     }
@@ -54,11 +50,22 @@ public class NodeDebugCaptureTests : NodeServiceUnitTestBase
         var second = new EvalNode { Input = "msg.Payload + 1" };
 
         await RunUsingTaskManager(NodesWorkflowBuilder.Create().AddNext(first).AddNext(second));
-        await Task.Delay(WaitForThrottle);
 
         var snapshots = DebugStore.Get([first.Id, second.Id]);
 
         snapshots.Should().ContainKey(first.Id);
         snapshots.Should().ContainKey(second.Id);
+    }
+
+    [Fact]
+    public async Task DebugModeOn_CapturedSnapshotHasFlatValues()
+    {
+        DebugMode.Enabled = true;
+        var inject = new InjectNode { Fields = [new() { Key = "Payload", Value = "hello" }] };
+
+        await RunUsingTaskManager(inject);
+
+        DebugStore.Get([inject.Id])[inject.Id].Single()
+            .Values.Should().Contain("Payload", "hello");
     }
 }

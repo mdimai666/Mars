@@ -21,3 +21,15 @@ public record NodeStateInfoResponse
 {
     public required string? Status { get; set; }
 }
+
+/// <summary>
+/// Pull-ответ со снимками DebugMode: серверное время и флаг режима — чтобы клиент считал возраст
+/// снимков и синхронизировал тумблер, не полагаясь на свои часы.
+/// </summary>
+public record NodeDebugSnapshotsResponse
+{
+    public DateTime ServerTimeUtc { get; init; }
+    public bool DebugMode { get; init; }
+    public IReadOnlyDictionary<string, NodeDebugSnapshot[]> Snapshots { get; init; } =
+        new Dictionary<string, NodeDebugSnapshot[]>();
+}

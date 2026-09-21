@@ -8,7 +8,12 @@ namespace Mars.Nodes.Abstractions.Services;
 /// </summary>
 public interface INodeDebugStore
 {
-    void Save(NodeMsg msg, string nodeId, int outputPort);
+    /// <summary>
+    /// Builds and stores the snapshot synchronously (the message is not copied — a deferred build
+    /// would race with downstream mutations of the payload). Throttled per node+port.
+    /// Returns true when a snapshot was actually stored.
+    /// </summary>
+    bool Save(NodeMsg msg, string nodeId, int outputPort);
 
     IReadOnlyDictionary<string, NodeDebugSnapshot[]> Get(IReadOnlyCollection<string> nodeIds);
 }

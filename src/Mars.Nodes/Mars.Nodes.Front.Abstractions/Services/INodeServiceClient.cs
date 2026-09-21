@@ -10,7 +10,7 @@ public interface INodeServiceClient
     Task<UserActionResult> Deploy(IEnumerable<Node> nodes);
     Task<UserActionResult> Inject(string nodeId);
     Task<UserActionResult> SetDebugMode(bool enabled);
-    Task<IReadOnlyDictionary<string, NodeDebugSnapshot[]>> DebugSnapshots();
+    Task<NodeDebugSnapshotsResponse> DebugSnapshots(IReadOnlyCollection<string> nodeIds);
     Task<NodesDataResponse> Load();
     Task<ListDataResult<NodeTaskResultSummaryResponse>> JobList(ListNodeTaskJobQueryRequest request);
     Task<PagingResult<NodeTaskResultSummaryResponse>> JobListTable(TableNodeTaskJobQueryRequest request);

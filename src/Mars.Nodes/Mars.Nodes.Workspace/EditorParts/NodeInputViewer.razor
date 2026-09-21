@@ -26,7 +26,7 @@
             <span>@source.DisplayName</span>
             <span>port @snapshot.Port</span>
             <span class="@(IsStale(snapshot) ? "niv-stale" : null)">
-                @snapshot.CapturedAt.ToString("HH:mm:ss")@(IsStale(snapshot) ? " stale" : "")
+                @snapshot.CapturedAt.ToLocalTime().ToString("HH:mm:ss")@(IsStale(snapshot) ? " stale" : "")
             </span>
         </div>
         <JsonObjectViewer Json="@snapshot.Json" />
@@ -55,5 +55,5 @@
         }
     }
 
-    static bool IsStale(NodeDebugSnapshot snapshot) => DateTime.Now - snapshot.CapturedAt > StaleAfter;
+    bool IsStale(NodeDebugSnapshot snapshot) => Hints.GetSnapshotAge(snapshot.CapturedAt) > StaleAfter;
 }

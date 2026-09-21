@@ -54,9 +54,10 @@ internal class NodeServiceClient : INodeServiceClient
                     .PostAsync()
                     .ReceiveJson<UserActionResult>();
 
-    public Task<IReadOnlyDictionary<string, NodeDebugSnapshot[]>> DebugSnapshots()
+    public Task<NodeDebugSnapshotsResponse> DebugSnapshots(IReadOnlyCollection<string> nodeIds)
         => _client.Request($"{_basePath}{_controllerName}", "DebugSnapshots")
-                    .GetJsonAsync<IReadOnlyDictionary<string, NodeDebugSnapshot[]>>();
+                    .SetQueryParam("nodeIds", string.Join(',', nodeIds))
+                    .GetJsonAsync<NodeDebugSnapshotsResponse>();
 
     public Task<NodesDataResponse> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")

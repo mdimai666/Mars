@@ -67,6 +67,42 @@ public class NodeDebugSnapshotBuilderTests
         snapshot.Json.Length.Should().BeLessThan(300);
     }
 
+    [Fact]
+    public void Build_Values_FlattensNestedPathsAndArrayIndexes()
+    {
+        var msg = new NodeMsg
+        {
+            Payload = new Dictionary<string, object?>
+            {
+                ["user"] = new Dictionary<string, object?> { ["email"] = "a@b.c" },
+                ["items"] = new List<object?>
+                {
+                    new Dictionary<string, object?> { ["name"] = "one" },
+                    new Dictionary<string, object?> { ["name"] = "two" },
+                },
+            }
+        };
+        msg.Set("count", 42);
+
+        var values = NodeDebugSnapshotBuilder.Build(msg, "node1", 0).Values!;
+
+        values.Should().Contain("Payload.user.email", "a@b.c");
+        values.Should().Contain("Payload.items[0].name", "one");
+        values.Should().Contain("Payload.items[1].name", "two");
+        values.Should().Contain("Payload.items", "[2 items]");
+        values.Should().Contain("count", "42");
+    }
+
+    [Fact]
+    public void Build_Values_UseInvariantCultureForNumbers()
+    {
+        var msg = new NodeMsg { Payload = 1.5 };
+
+        var values = NodeDebugSnapshotBuilder.Build(msg, "node1", 0).Values!;
+
+        values.Should().Contain("Payload", "1.5");
+    }
+
     private sealed class Level1 { public Level2? Next { get; set; } }
     private sealed class Level2 { public Level3? Next { get; set; } }
     private sealed class Level3 { public Level4? Next { get; set; } }
@@ -77,26 +113,28 @@ public class NodeDebugSnapshotBuilderTests
 
 public class NodeDebugStoreTests
 {
-    static readonly TimeSpan WaitForThrottle = TimeSpan.FromMilliseconds(400);
+    static NodeDebugStore CreateStore(out DebugModeState mode)
+    {
+        mode = new DebugModeState { Enabled = true };
+        return new NodeDebugStore(mode);
+    }
 
     [Fact]
-    public async Task Save_WhenDebugModeOff_StoresNothing()
+    public void Save_WhenDebugModeOff_StoresNothing()
     {
         var store = new NodeDebugStore(new DebugModeState { Enabled = false });
 
-        store.Save(new NodeMsg { Payload = "hello" }, "node1", 0);
-        await Task.Delay(WaitForThrottle);
+        store.Save(new NodeMsg { Payload = "hello" }, "node1", 0).Should().BeFalse();
 
         store.Get(["node1"]).Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Save_WhenDebugModeOn_StoresSnapshotOfSourcePort()
+    public void Save_WhenDebugModeOn_StoresSnapshotOfSourcePortImmediately()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
 
-        store.Save(new NodeMsg { Payload = "hello" }, "node1", 3);
-        await Task.Delay(WaitForThrottle);
+        store.Save(new NodeMsg { Payload = "hello" }, "node1", 3).Should().BeTrue();
 
         var snapshots = store.Get(["node1"]);
         snapshots.Should().ContainKey("node1");
@@ -105,48 +143,74 @@ public class NodeDebugStoreTests
     }
 
     [Fact]
-    public async Task Save_DifferentPortsOfOneNode_AreKeptSeparately()
+    public void Save_SnapshotIsBuiltSynchronously_LaterPayloadMutationDoesNotLeak()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
+        var payload = new Mutable { Value = "before" };
+        var msg = new NodeMsg { Payload = payload };
+
+        store.Save(msg, "node1", 0);
+        payload.Value = "after";
+
+        store.Get(["node1"])["node1"].Single().Json.Should().Contain("before").And.NotContain("after");
+    }
+
+    [Fact]
+    public void Save_DifferentPortsOfOneNode_AreKeptSeparately()
+    {
+        var store = CreateStore(out _);
 
         store.Save(new NodeMsg { Payload = "first" }, "node1", 0);
         store.Save(new NodeMsg { Payload = "second" }, "node1", 1);
-        await Task.Delay(WaitForThrottle);
 
         store.Get(["node1"])["node1"].Select(s => s.Port).Should().BeEquivalentTo([0, 1]);
     }
 
     [Fact]
-    public async Task Save_FastSequence_KeepsTheLastValue()
+    public void Save_InsideThrottleWindow_IsSkipped()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
+        var now = DateTime.UtcNow;
+        store.Clock = () => now;
 
-        store.Save(new NodeMsg { Payload = "first" }, "node1", 0);
-        store.Save(new NodeMsg { Payload = "second" }, "node1", 0);
-        await Task.Delay(WaitForThrottle);
+        store.Save(new NodeMsg { Payload = "first" }, "node1", 0).Should().BeTrue();
+        store.Save(new NodeMsg { Payload = "second" }, "node1", 0).Should().BeFalse();
+
+        store.Get(["node1"])["node1"].Should().ContainSingle().Which.Json.Should().Contain("first");
+    }
+
+    [Fact]
+    public void Save_AfterThrottleWindow_ReplacesSnapshot()
+    {
+        var store = CreateStore(out _);
+        var now = DateTime.UtcNow;
+        store.Clock = () => now;
+
+        store.Save(new NodeMsg { Payload = "first" }, "node1", 0).Should().BeTrue();
+
+        now += NodeDebugStore.ThrottleDelay + TimeSpan.FromMilliseconds(1);
+        store.Save(new NodeMsg { Payload = "second" }, "node1", 0).Should().BeTrue();
 
         store.Get(["node1"])["node1"].Should().ContainSingle().Which.Json.Should().Contain("second");
     }
 
     [Fact]
-    public async Task Save_WithoutSourceNode_IsIgnored()
+    public void Save_WithoutSourceNode_IsIgnored()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
 
-        store.Save(new NodeMsg { Payload = "hello" }, "", 0);
-        await Task.Delay(WaitForThrottle);
+        store.Save(new NodeMsg { Payload = "hello" }, "", 0).Should().BeFalse();
 
         store.Get([""]).Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Get_ReturnsOnlyRequestedNodes()
+    public void Get_ReturnsOnlyRequestedNodes()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
 
         store.Save(new NodeMsg { Payload = "one" }, "node1", 0);
         store.Save(new NodeMsg { Payload = "two" }, "node2", 0);
-        await Task.Delay(WaitForThrottle);
 
         var snapshots = store.Get(["node1"]);
 
@@ -155,32 +219,32 @@ public class NodeDebugStoreTests
     }
 
     [Fact]
-    public async Task Get_ExpiredSnapshot_IsDropped()
+    public void Get_ExpiredSnapshot_IsDropped()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
 
         store.Save(new NodeMsg { Payload = "hello" }, "node1", 0);
-        await Task.Delay(WaitForThrottle);
 
-        store.Clock = () => DateTime.Now + NodeDebugStore.Ttl + TimeSpan.FromMinutes(1);
+        store.Clock = () => DateTime.UtcNow + NodeDebugStore.Ttl + TimeSpan.FromMinutes(1);
 
         store.Get(["node1"]).Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Get_AfterExpiryWindow_GoneForEveryNode()
+    public void Get_AfterExpiryWindow_GoneForEveryNode()
     {
-        var store = new NodeDebugStore(new DebugModeState { Enabled = true });
+        var store = CreateStore(out _);
 
         store.Save(new NodeMsg { Payload = "hello" }, "node1", 0);
-        await Task.Delay(WaitForThrottle);
 
-        store.Clock = () => DateTime.Now + NodeDebugStore.Ttl - TimeSpan.FromMinutes(1);
+        store.Clock = () => DateTime.UtcNow + NodeDebugStore.Ttl - TimeSpan.FromMinutes(1);
         store.Get(["node1"]).Should().ContainKey("node1");
 
-        store.Clock = () => DateTime.Now + NodeDebugStore.Ttl + TimeSpan.FromMinutes(1);
+        store.Clock = () => DateTime.UtcNow + NodeDebugStore.Ttl + TimeSpan.FromMinutes(1);
         store.Get(["node1"]).Should().BeEmpty();
     }
+
+    private sealed class Mutable { public string Value { get; set; } = ""; }
 }
 
 public class DebugModeStateTests
@@ -198,5 +262,31 @@ public class DebugModeStateTests
 
         ((INodeDebugMode)mode).Enabled.Should().BeTrue();
         new DebugModeState().Enabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Enabled_AutoTurnsOffAfterWindow()
+    {
+        var now = DateTime.UtcNow;
+        var mode = new DebugModeState { Clock = () => now };
+
+        mode.Enabled = true;
+        mode.Enabled.Should().BeTrue();
+
+        now += DebugModeState.AutoOffAfter - TimeSpan.FromMinutes(1);
+        mode.Enabled.Should().BeTrue();
+
+        now += TimeSpan.FromMinutes(2);
+        mode.Enabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Enabled_CanBeTurnedOffManually()
+    {
+        var mode = new DebugModeState { Enabled = true };
+
+        mode.Enabled = false;
+
+        mode.Enabled.Should().BeFalse();
     }
 }

@@ -51,6 +51,11 @@ public class ClientHub : IClientHub
             OnNodeExecuted?.Invoke(taskId, nodeId, trigger);
         });
 
+        ws.On("DebugSnapshotsChanged", () =>
+        {
+            OnDebugSnapshotsChanged?.Invoke();
+        });
+
         ws.On(AdminHubEvents.PostListChanged, (string postType) =>
         {
             Console.WriteLine($"<<= PostListChanged:{postType}");
@@ -88,6 +93,11 @@ public class ClientHub : IClientHub
     public event ClietHubNodeTaskExecutionHandler OnNodeExecuted = default!;
 
     public event Action<int> OnNodeRunningTaskCountChanged = default!;
+
+    /// <summary>
+    /// Сервер записал новые debug-снимки — сигнал version-bump без данных, нужно перетянуть pull'ом.
+    /// </summary>
+    public event Action? OnDebugSnapshotsChanged = default!;
 
     /// <summary>
     /// Список постов изменился. Payload: имя типа поста.

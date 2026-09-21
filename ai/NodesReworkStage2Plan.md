@@ -1,6 +1,7 @@
 # План: этап 2 — контракты выходов нод и провайдер подсказок в поле значения
 
-> **Статус: фазы A–C сделаны (A/B 2026-09-17, C 2026-09-21 — коммит `9f3bead8`), в работе — D (`MarsPathInput`).**
+> **Статус: фазы A–D сделаны (A/B 2026-09-17, C 2026-09-21 — `9f3bead8`, D 2026-09-21 — `a0fa8aeb`),
+> фаза E (пересборка DebugMode) — сделана 2026-09-22, в работе остаток D (`MarsPathInput`) и дополнения.**
 > Задача-источник: запрос пользователя «как будем делать провайдера подсказок?» (2026-09-17).
 > Продолжение [NodesReworkPlan.md](./NodesReworkPlan.md): этапы 1–2 того плана (список полей в `InjectNode`,
 > ось «источник значения»: `ValueKind`, `InputValueResolver`, `FieldPathPicker`, `ValueSourceEditor`) выполнены,
@@ -273,6 +274,70 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
       Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (530 / 0 / 0); стенд — за пользователем.
       `MarsAppVersion` поднят до `0.8.3-alpha.16` (правлены `style.css` / `style.less`).
 
+## Фаза E — пересборка DebugMode и хранения значений (решения 2026-09-22)
+
+Задача-источник: пункт «Перелопатить DebugMode» (2026-09-21). Обсуждение развилок A–E с пользователем
+2026-09-22: взяты A1+A2, B1, C (auto-off), E (суженный pull); **отклонены** A3 (захват на входе ноды —
+семантика «что нода отдала дальше» сохранена) и D (история/кольцевой буфер — остаётся один последний
+снимок на ключ).
+
+Решения:
+
+1. **Синхронная сборка, копия сообщения убрана.** Отложенная сборка в `SmartThrottleByKey` гонялась с
+   мутациями payload: `e.Copy()` копирует `Context`, но payload — по ссылке, и снимок мог собраться
+   уже из изменённых данных. Теперь `NodeDebugStore.Save` строит снимок сразу; троттл — leading-edge
+   по timestamp на ключ (300 мс): сообщение внутри окна пропускается без сборки. Цена: в быстром
+   потоке снимок обновляется не чаще раза в 300 мс на пару «нода+порт».
+2. **Сервер отдаёт обе формы данных.** `NodeDebugSnapshotBuilder` за один проход производит обрезанное
+   дерево (JSON для `JsonObjectViewer`) и плоский `Values: path → value` (индексы `[N]`, агрегат
+   `[N items]`, invariant-культура для чисел). Клиентский `DebugSnapshotValues.cs` удалён — лимиты
+   обрезки теперь только в Core; провайдер режет значение до 80 для отображения
+   (`MsgValueRootProvider.MaxDisplayValueLength`).
+3. **Auto-off режима.** `DebugModeState` хранит окно `EnabledUntil` (30 минут, `AutoOffAfter`),
+   `Enabled` вычисляется лениво при чтении; вручную выключается как раньше. Не персистится.
+4. **Транспорт: pull + version-bump сигнал.** `BroadcastHub.DebugSnapshotsChanged()` — эфир без данных,
+   троттл 1 с в `NodeRuntime` (`SmartThrottleByKey`); клиент по сигналу перетягивает снимки. После
+   реконнекта — тоже pull (`OnWsReconnected`). Данные по эфиру не теряются.
+5. **Pull сужен до upstream-замыкания.** `DebugSnapshots(nodeIds)` — клиент считает замыкание
+   выбранной и редактируемой ноды по проводам (`NodeEditor1.DebugSnapshotScope`). Pull переехал из
+   `NodeEditContainer1` в `NodeEditor1.RefreshDebugSnapshots`: вызывается при открытии формы, смене
+   выбора (debounce 300 мс — INPUT-панель наполняется без открытия формы) и по сигналу хаба.
+   `HostValueHints.SetDebugSnapshots` теперь **мержит** (partial pull не должен затирать чужие ключи).
+6. **Часы — серверные.** DTO `NodeDebugSnapshotsResponse` (`Core/Contracts/Nodes/NodeResponse.cs`):
+   `ServerTimeUtc` + `DebugMode` + снимки. Stale-метка INPUT-панели считается через
+   `IHostValueHints.GetSnapshotAge` (серверный возраст + локальный интервал с момента pull),
+   `CapturedAt` — UTC, в UI отображается локальным. Тумблер DEBUG синхронизируется из ответа
+   (`DebugModeChanged`), после auto-off не залипает.
+7. **Исключения сборки логируются** (`ILogger` в `NodeDebugStore`), а не теряются в fire-and-forget.
+   Ключ `nodeId|port` — один хелпер `NodeDebugSnapshot.Key` (стор и клиентский кэш).
+
+- [x] Сервер: `NodeDebugStore` (синхронный Save → bool, leading-edge троттл, auto-off `DebugModeState`,
+      логгер), `NodeDebugSnapshotBuilder` (+`Flatten`, `capturedAtUtc`), `NodeDebugSnapshot` (+`Values`,
+      +`Key`), `NodeTaskJob.callbackNext` (без `Copy`, сигнал рантайму при записи), `NodeRuntime`
+      (+`DebugSnapshotsChanged` с троттлом 1 с), `INodeRuntime`, `BroadcastHub`, `NodeController.DebugSnapshots(nodeIds)`
+      (DTO с серверным временем; контроллер больше не ходит в `BaseNodes.Keys`).
+- [x] Клиент: `INodeServiceClient`/`NodeServiceClient` (nodeIds → DTO), `IHostValueHints`/`HostValueHints`
+      (мерж, `GetSnapshotAge`), `MsgValueRootProvider` (значения из `Values`, обрез 80),
+      `DebugSnapshotValues.cs` удалён, `NodeEditor1.RefreshDebugSnapshots` + скоуп + debounce на выбор,
+      `NodeEditContainer1` (pull убран), `NodeInputViewer` (серверный возраст, локальное время),
+      `ClientHub.OnDebugSnapshotsChanged`, подписки в `NodeRedPage.razor.cs` и девстенд
+      `NodeRedPageContent.razor.cs` (+ refresh на реконнекте).
+- [x] Тесты: `NodeDebugStoreTests` переписаны под синхронность (мутация payload после Save не протекает,
+      окно троттла через fake Clock, TTL, auto-off, manual off), `NodeDebugCaptureTests` без задержек
+      (+плоский `Values` из реального job), `ValueFieldProviderTests` — снимки через
+      `NodeDebugSnapshotBuilder.Build`, `DebugSnapshotValuesTests` удалены.
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (532 / 0 / 0). CSS/JS не правились —
+      `MarsAppVersion` не поднимался.
+
+Грабли фазы E:
+
+- **Троттл leading-edge**: в непрерывном потоке снимок — это первое сообщение окна, а не последнее
+  (старый `SmartThrottleByKey` давал trailing). После паузы > 300 мс следующее же сообщение обновляет снимок.
+- **Мерж в `HostValueHints`**: снимки удалённых/переподключённых нод не очищаются — живут до переполнения
+  словаря или перезагрузки страницы; срок годности виден по stale-метке.
+- **`RefreshDebugSnapshots` при пустом скоупе** (ничего не выбрано) не тянет ничего — INPUT-панель пуста
+  до первого выбора ноды.
+
 ## Грабли и риски
 
 - **Фаза D, внешний класс — только через параметр `Class`**: у `MarsValueInput`/`MarsPathInput` есть
@@ -343,17 +408,17 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 
-- **Перелопатить DebugMode и запись значений** (2026-09-21, запрос пользователя): текущая реализация фазы C
-  (глобальный флаг, захват в `NodeTaskJob.callbackNext`, стор `(nodeId, порт)` + троттл) пользователя
-  не устроила — до начала работ обсудить, что именно не так (семантика захвата, ключ/портность, троттл,
-  TTL, место хранения, pull-транспорт, что показывает INPUT-панель) и пересобрать решение.
-  Связано со следующим пунктом (что хранит `DebugNode`).
+- **Перелопатить DebugMode и запись значений** — **сделано 2026-09-22, фаза E** (см. ниже): синхронная
+  сборка снимка без `e.Copy()`, плоский вид `path → value` на сервере, auto-off режима, version-bump
+  по SignalR при сохранении pull-транспорта, суженный pull (upstream-замыкание вместо всего графа).
+  Связано со следующим пунктом (что хранит `DebugNode`) — он по-прежнему отложен.
 - **Отложено: что хранит `DebugNode`** (согласовано 2026-09-17). Сейчас запись делает исполнитель
   (`NodeTaskJob`), нода отладки не участвует. Отдельно решим, что она хранит сама: свой вход, свой выход,
   историю нескольких сообщений, отдельный вид в INPUT-панели — и не превратится ли это в дубль стора.
-- **Цена захвата при включённом режиме**: `e.Copy()` на каждое отданное сообщение (копия `Context`, payload
-  по ссылке) плюс сборка снимка в троттле (300 мс на пару «нода+порт»). Стор ограничен `число нод × портов`,
-  обрезка на входе. При выключенном режиме — одна проверка флага, копирования нет.
+- **Цена захвата при включённом режиме** (обновлено 2026-09-22, фаза E): `e.Copy()` убран — снимок
+  собирается синхронно в `Save` (обрезка ограничивает стоимость), вне окна троттла (300 мс на ключ)
+  сообщение пропускается без сборки. Стор ограничен `число нод × портов`. При выключенном режиме —
+  одна проверка флага.
 - **Разворачивать `object`-поля в подсказках глубже.** Сейчас часть путей останавливается на `object`:
   свойства с типом `object`/интерфейс/абстрактный класс не разворачиваются (`OutputValueSpecExpander.NoExpansionTypes`),
   примитивы вне `VarNode._typesDict` (`uint`, `short`, `byte`, `char`) дают `object`, enum — тоже `object`.

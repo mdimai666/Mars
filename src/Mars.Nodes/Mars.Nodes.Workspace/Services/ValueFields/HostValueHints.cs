@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Front.Abstractions.Services;
 
 namespace Mars.Nodes.Workspace.Services.ValueFields;
@@ -10,6 +11,9 @@ internal class HostValueHints : IHostValueHints
 
     IReadOnlyDictionary<string, OutputValueSpec[]> _outputSpecs = new Dictionary<string, OutputValueSpec[]>();
     readonly ConcurrentDictionary<string, NodeDebugSnapshot> _snapshots = new();
+
+    DateTime _serverTimeUtc;
+    DateTime _receivedAtUtc;
 
     public IReadOnlyCollection<string> GlobalVariableNames { get; private set; } = [];
 
@@ -27,16 +31,16 @@ internal class HostValueHints : IHostValueHints
         Version++;
     }
 
-    public void SetDebugSnapshots(IReadOnlyDictionary<string, NodeDebugSnapshot[]> snapshots)
+    public void SetDebugSnapshots(NodeDebugSnapshotsResponse response)
     {
-        _snapshots.Clear();
-
-        foreach (var (nodeId, nodeSnapshots) in snapshots)
+        foreach (var (nodeId, nodeSnapshots) in response.Snapshots)
         {
             foreach (var snapshot in nodeSnapshots)
-                _snapshots[Key(nodeId, snapshot.Port)] = snapshot;
+                _snapshots[NodeDebugSnapshot.Key(nodeId, snapshot.Port)] = snapshot;
         }
 
+        _serverTimeUtc = response.ServerTimeUtc;
+        _receivedAtUtc = DateTime.UtcNow;
         Version++;
     }
 
@@ -44,7 +48,10 @@ internal class HostValueHints : IHostValueHints
         => _outputSpecs.TryGetValue(nodeTypeId, out var specs) ? specs : Empty;
 
     public NodeDebugSnapshot? GetDebugSnapshot(string nodeId, int port)
-        => _snapshots.TryGetValue(Key(nodeId, port), out var snapshot) ? snapshot : null;
+        => _snapshots.TryGetValue(NodeDebugSnapshot.Key(nodeId, port), out var snapshot) ? snapshot : null;
 
-    static string Key(string nodeId, int port) => $"{nodeId}|{port}";
+    public TimeSpan GetSnapshotAge(DateTime capturedAtUtc)
+        => _receivedAtUtc == default
+            ? TimeSpan.MaxValue
+            : (_serverTimeUtc - capturedAtUtc) + (DateTime.UtcNow - _receivedAtUtc);
 }

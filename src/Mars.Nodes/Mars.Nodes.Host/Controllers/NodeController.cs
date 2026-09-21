@@ -66,9 +66,14 @@ public class NodeController : ControllerBase
     }
 
     [HttpGet(nameof(DebugSnapshots))]
-    public IReadOnlyDictionary<string, NodeDebugSnapshot[]> DebugSnapshots()
+    public NodeDebugSnapshotsResponse DebugSnapshots([FromQuery] string[]? nodeIds)
     {
-        return _debugStore.Get([.. _nodeService.BaseNodes.Keys]);
+        return new NodeDebugSnapshotsResponse
+        {
+            ServerTimeUtc = DateTime.UtcNow,
+            DebugMode = _debugMode.Enabled,
+            Snapshots = _debugStore.Get(nodeIds ?? []),
+        };
     }
 
     [HttpPost(nameof(SetDebugMode))]

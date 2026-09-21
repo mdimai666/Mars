@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace.Services.ValueFields;
 
@@ -11,6 +12,13 @@ public class ValueFieldProviderTests
 
     static ValueFieldProvider MsgProvider(IHostValueHints? hints = null)
         => new([new MsgValueRootProvider(hints ?? EmptyHostHints)]);
+
+    static NodeDebugSnapshotsResponse Snapshots(params NodeDebugSnapshot[] snapshots)
+        => new()
+        {
+            ServerTimeUtc = DateTime.UtcNow,
+            Snapshots = snapshots.GroupBy(s => s.NodeId).ToDictionary(g => g.Key, g => g.ToArray()),
+        };
 
     static ValueFieldContext Context(Node edited, params Node[] nodes)
     {
@@ -242,11 +250,9 @@ public class ValueFieldProviderTests
         Wire(inject, eval);
 
         var hints = new HostValueHints();
-        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
-        {
-            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 0, DateTime.Now,
-                """{"Payload":"hello","count":42}""")],
-        });
+        var msg = new NodeMsg { Payload = "hello" };
+        msg.Set("count", 42);
+        hints.SetDebugSnapshots(Snapshots(NodeDebugSnapshotBuilder.Build(msg, inject.Id, 0)));
 
         var fields = MsgProvider(hints).GetFields(Context(eval, inject));
 
@@ -263,11 +269,19 @@ public class ValueFieldProviderTests
         Wire(inject, eval);
 
         var hints = new HostValueHints();
-        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
+        var msg = new NodeMsg
         {
-            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 0, DateTime.Now,
-                """{"Payload":{"user":{"email":"a@b.c"},"items":[{"name":"one"},{"name":"two"}]}}""")],
-        });
+            Payload = new Dictionary<string, object?>
+            {
+                ["user"] = new Dictionary<string, object?> { ["email"] = "a@b.c" },
+                ["items"] = new List<object?>
+                {
+                    new Dictionary<string, object?> { ["name"] = "one" },
+                    new Dictionary<string, object?> { ["name"] = "two" },
+                },
+            }
+        };
+        hints.SetDebugSnapshots(Snapshots(NodeDebugSnapshotBuilder.Build(msg, inject.Id, 0)));
 
         var fields = MsgProvider(hints).GetFields(Context(eval, inject));
 
@@ -284,10 +298,8 @@ public class ValueFieldProviderTests
         Wire(inject, eval, fromPort: 0);
 
         var hints = new HostValueHints();
-        hints.SetDebugSnapshots(new Dictionary<string, NodeDebugSnapshot[]>
-        {
-            [inject.Id] = [new NodeDebugSnapshot(inject.Id, 1, DateTime.Now, """{"Payload":"other"}""")],
-        });
+        hints.SetDebugSnapshots(Snapshots(
+            NodeDebugSnapshotBuilder.Build(new NodeMsg { Payload = "other" }, inject.Id, 1)));
 
         var fields = MsgProvider(hints).GetFields(Context(eval, inject));
 

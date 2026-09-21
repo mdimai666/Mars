@@ -54,7 +54,7 @@ public readonly record struct ExpressionScope(IRuntimeNodeScope Rns, NodeMsg Msg
 public static class InputValueResolver
 {
     static readonly Regex RootPathRegex = new(
-        @"\b(msg|GlobalContext|FlowContext|VarNode)(?:\.[A-Za-z_][A-Za-z0-9_]*(?![A-Za-z0-9_(]))+",
+        $@"\b({string.Join("|", ValuePath.Roots)})(?:\.[A-Za-z_][A-Za-z0-9_]*(?![A-Za-z0-9_(]))+",
         RegexOptions.Compiled);
 
     public static Interpreter CreateInterpreter(IRuntimeNodeScope rns, NodeMsg? input = null)

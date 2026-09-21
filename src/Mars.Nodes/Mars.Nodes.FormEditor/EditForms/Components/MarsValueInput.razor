@@ -155,17 +155,17 @@
 </div>
 
 @code {
-    // Список корней дублирует InputValueResolver.RootPathRegex: пока поле живёт без ссылки
-    // на проект выражений, при появлении провайдера подсказок корни должны прийти из одного места.
+    static readonly string RootsPattern = string.Join("|", ValuePath.Roots);
+
     static readonly Regex TokenRegex = new(
-        "(\"(?:[^\"\\\\]|\\\\.)*\")|(@)|(\\b(?:msg|GlobalContext|FlowContext|VarNode)(?:\\.[A-Za-z_][A-Za-z0-9_]*)+)|(\\b\\d+(?:\\.\\d+)?)|([+\\-*/%(),.:<>=?!]+)",
+        $"(\"(?:[^\"\\\\]|\\\\.)*\")|(@)|(\\b(?:{RootsPattern})(?:\\.[A-Za-z_][A-Za-z0-9_]*)+)|(\\b\\d+(?:\\.\\d+)?)|([+\\-*/%(),.:<>=?!]+)",
         RegexOptions.Compiled);
 
     static readonly Regex TokenBeforeCaretRegex = new(
         @"(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_.]*)$", RegexOptions.Compiled);
 
     static readonly Regex PathLikeRegex = new(
-        @"^\s*(msg|GlobalContext|FlowContext|VarNode)\s*\.", RegexOptions.Compiled);
+        $@"^\s*({RootsPattern})\s*\.", RegexOptions.Compiled);
 
     static readonly string[] WeekDayLabels = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
@@ -357,7 +357,7 @@
         if (_tree is null || !ReferenceEquals(_candidatesSource, source))
         {
             _candidatesSource = source;
-            _tree = BuildTree(source);
+            _tree = ValueFieldTree.Build(source);
         }
     }
 
@@ -798,26 +798,7 @@
 
     bool IsCollapsed(string path) => _collapsed.Contains(path);
 
-    IEnumerable<(FieldTreeNode Node, int Depth, bool Branch)> TreeRows()
-    {
-        if (_tree is null)
-            yield break;
-
-        foreach (var (node, depth) in Walk(_tree, 0))
-            yield return (node, depth, node.Children.Count > 0);
-    }
-
-    IEnumerable<(FieldTreeNode Node, int Depth)> Walk(FieldTreeNode node, int depth)
-    {
-        foreach (var child in node.Children)
-        {
-            yield return (child, depth);
-
-            if (child.Children.Count > 0 && !_collapsed.Contains(child.Path))
-                foreach (var nested in Walk(child, depth + 1))
-                    yield return nested;
-        }
-    }
+    IEnumerable<(FieldTreeNode Node, int Depth, bool Branch)> TreeRows() => ValueFieldTree.Rows(_tree, _collapsed);
 
     IEnumerable<OpRow> OpsRows()
     {
@@ -830,34 +811,6 @@
             foreach (var op in group.Items)
                 yield return new OpRow(null, op, index++);
         }
-    }
-
-    static FieldTreeNode BuildTree(IEnumerable<ValueFieldInfo> fields)
-    {
-        var root = new FieldTreeNode();
-
-        foreach (var field in fields)
-        {
-            var parts = field.Path.Split('.');
-            var current = root;
-
-            for (var i = 0; i < parts.Length; i++)
-            {
-                var node = current.Children.FirstOrDefault(c => c.Name == parts[i]);
-                if (node is null)
-                {
-                    node = new FieldTreeNode { Name = parts[i], Path = string.Join('.', parts[..(i + 1)]) };
-                    current.Children.Add(node);
-                }
-
-                if (i == parts.Length - 1)
-                    node.Type = field.VarType;
-
-                current = node;
-            }
-        }
-
-        return root;
     }
 
     public async ValueTask DisposeAsync()
@@ -879,14 +832,6 @@
         }
 
         _selfRef?.Dispose();
-    }
-
-    sealed class FieldTreeNode
-    {
-        public string Name { get; init; } = "";
-        public string Path { get; init; } = "";
-        public string? Type { get; set; }
-        public List<FieldTreeNode> Children { get; } = [];
     }
 
     sealed record OpRow(string? Group, string? Op, int Index);

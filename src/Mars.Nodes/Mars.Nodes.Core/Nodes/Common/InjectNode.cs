@@ -50,7 +50,7 @@ public class InjectNode : Node, IValidatableObject, INodeOutputValueSpec
         foreach (var field in Fields)
         {
             if (!IsValidKey(field.Key))
-                yield return new ValidationResult($"Key '{field.Key}' must be an identifier (letter or underscore first).", [nameof(Fields)]);
+                yield return new ValidationResult($"Key '{field.Key}' must be an identifier or dot path (letter or underscore first per segment).", [nameof(Fields)]);
             else if (!keys.Add(field.Key))
                 yield return new ValidationResult($"Key '{field.Key}' is duplicated.", [nameof(Fields)]);
 
@@ -68,8 +68,9 @@ public class InjectNode : Node, IValidatableObject, INodeOutputValueSpec
 
     static bool IsValidKey(string? key)
         => !string.IsNullOrEmpty(key)
-           && (char.IsLetter(key[0]) || key[0] == '_')
-           && key.All(c => char.IsLetterOrDigit(c) || c == '_');
+           && key.Split('.').All(s => s.Length > 0
+                                      && (char.IsLetter(s[0]) || s[0] == '_')
+                                      && s.All(c => char.IsLetterOrDigit(c) || c == '_'));
 
     public InjectNode SetPayload(string payload)
     {

@@ -1,6 +1,6 @@
 # План: этап 2 — контракты выходов нод и провайдер подсказок в поле значения
 
-> **Статус: фазы A и B сделаны 2026-09-17 (`NodeOutputValueSpec` + провайдер подсказок), в работе — C.**
+> **Статус: фазы A–C сделаны (A/B 2026-09-17, C 2026-09-21 — коммит `9f3bead8`), в работе — D (`MarsPathInput`).**
 > Задача-источник: запрос пользователя «как будем делать провайдера подсказок?» (2026-09-17).
 > Продолжение [NodesReworkPlan.md](./NodesReworkPlan.md): этапы 1–2 того плана (список полей в `InjectNode`,
 > ось «источник значения»: `ValueKind`, `InputValueResolver`, `FieldPathPicker`, `ValueSourceEditor`) выполнены,
@@ -214,8 +214,73 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
       Проверка: `dotnet build Mars.slnx` + стенд + `Mars.Nodes.Tests.exe` (523 / 0 / 0).
       `MarsAppVersion` поднят до `0.8.3-alpha.15` (правлены `style.css` / `styles.css`).
 
+## Фаза D — `MarsPathInput`: поле пути свойства (решения 2026-09-21)
+
+Задача: компонент для выбора/ввода **пути к свойству** (`msg.Payload.User.Name`, `GlobalContext.var1`,
+относительный `Payload.User.Name`), в отличие от `MarsValueInput` — поля **значения**. Потребители:
+`TemplateNode.Property`, `DebugNode.PropertyPath`, поля `InjectNode`, `VariableSetNode.ValuePath`.
+`MarsValueInput` для этого не подходит: ось `const/@expr`, валидация значения и дата-пикер — шум для пути;
+`FieldPathPicker` — тупой dropdown без дерева, типов и debug-значений, кандидатов ему никто не передаёт.
+
+Решения:
+
+1. **Отдельный компонент `MarsPathInput`** (`Mars.Nodes.FormEditor/EditForms/Components/`), тот же HUD-стиль
+   и те же приёмы, что `MarsValueInput`; css/js переиспользуются (общий js-модуль `NodeFormEditorJsInterop`,
+   стили — общий префикс или `.mvi-*` там, где совпадает). Дерево подсказок (`FieldTreeNode` + tree-popup)
+   вынести в общую часть, чтобы не дублировать.
+2. **Путь без `@`, не выражение.** Чистый путь: `msg.Payload.x` или относительный `Payload.x`.
+   `DebugNode.PropertyPath` переводим с expr-формата (`@msg.Payload`) на путь; старые значения с ведущим `@`
+   impl понимает (снимает `@`) — совместимость flows.
+3. **Корни — параметр компонента:** `Roots` (список разрешённых, полный путь с корнем) либо `Root` +
+   `ShowRoot` (фиксированный корень-чип слева, ввод относительного пути — приём из `FieldPathPicker`).
+4. **Политика нод (согласовано 2026-09-21):** Template — только `msg` (относительный; запись в контексты —
+   работа `VariableSetNode`, у dataflow-ноды не должно быть невидимых сайд-эффектов: снимки фазы C
+   `(нода, порт)` и провайдер подсказок запись в контекст не видят; существующие значения `"Payload"`/`"Url"`
+   остаются валидными, миграция не нужна). Inject — только `msg` (относительный). VariableSet — все 4 корня
+   (рантайм `VariableSetNodeImpl` уже умеет). Debug — все 4 корня (чтение безопасно; в DebugMode в подсказках
+   видны значения). Расширение Template на контексты позже — дешёвое (маршрутизация по образцу
+   `VariableSetNodeImpl`), обратное — миграция flows, поэтому начинаем с ограничения.
+5. **Подсказки — тот же `IValueFieldProvider`** (кандидаты через `NodeEditContainer1.GetValueFields`,
+   `For`-адресация как у `MarsValueInput`), фильтр по разрешённым корням, дерево с типами; в DebugMode —
+   значения рядом с путём. **Свободный ввод несуществующего пути разрешён** (цель записи может ещё не
+   существовать); валидация только синтаксическая: сегменты-идентификаторы через точку, `VarNode` — ровно
+   два сегмента, индекс `[N]` допустим.
+6. **Массивы:** дерево показывает `[]`-узлы из специй, вставка без индекса; поддержка индексов/`[]`
+   в сеттерах записи — отдельная задача (см. «Дописано в план»).
+
+- [x] `MarsPathInput.razor` + стили; вынос общего из `MarsValueInput`: дерево — `Components/ValueFieldTree.cs`
+      (`FieldTreeNode` + `Build`/`Rows`), корни и синтаксис пути — `Mars.Nodes.Core/ValuePath.cs` (единый
+      источник: из него же строится `InputValueResolver.RootPathRegex` и регексы `MarsValueInput`).
+      Стили переиспользуют `.mars-value-input` (корневой класс компонента), добавлен только
+      `.mars-path-input { width:auto; flex:1 1 auto }`; js — те же `mvi_*`-методы `NodeFormEditorJsInterop`.
+- [x] Режимы: `Roots` (полный путь, чип «path») и `Root`+`ShowRoot` (чип корня + относительный путь);
+      фильтр кандидатов по корням (в относительном режиме префикс корня срезается).
+- [x] `DebugNode`: форма на `MarsPathInput` (все корни, значения в DebugMode), `PropertyPathPayloadDefault`
+      → `msg.Payload`, impl резолвит путь по корням без интерпретатора (`ReadByPath`: msg →
+      `DynamicNodeMsgWrapper.GetValueByPath`, контексты → `TryGetValue`, VarNode → `GetVarNodeVarible`),
+      legacy-`@` снимается.
+- [x] `TemplateNodeForm`: `Property` → `MarsPathInput Root="msg"`; `TemplateNodeImpl` пишет глубокий путь
+      через `SetValueByPath` (односегментные — как раньше, совместимость полная).
+- [x] `VariableSetNodeForm`: `ValuePath` → `MarsPathInput` (все корни) вместо `InputText`.
+- [x] `ValueSourceEditor` (Inject): msg-ветка на `MarsPathInput` (параметр `Candidates` удалён — компонент
+      сам тянет подсказки из контейнера); `InjectNodeForm`: поле `Key` → `MarsPathInput Root="msg"`
+      (запись по пути: `InjectNode.IsValidKey` разрешает dot-path, `InjectNodeImpl` пишет глубокие ключи
+      через `SetValueByPath`). `FieldPathPicker.razor` удалён вместе с `.fpp-*`-стилями.
+      **JsonNode исключён**: `JsonNodeImpl` не использует `Node.Property` (поле формы мертво) — чинить
+      отдельно от ввода путей.
+- [x] Тесты: Inject (dot-path валидация ×2, глубокая запись), Template (глубокая запись), Debug
+      (legacy `@msg.Payload`, msg-ключ контекста, `GlobalContext.*`).
+      Проверка: `dotnet build Mars.slnx` + `Mars.Nodes.Tests.exe` (530 / 0 / 0); стенд — за пользователем.
+      `MarsAppVersion` поднят до `0.8.3-alpha.16` (правлены `style.css` / `style.less`).
+
 ## Грабли и риски
 
+- **Фаза D, чтение контекстов по пути**: `DebugNodeImpl.ReadByPath` для `GlobalContext`/`FlowContext` читает
+  только ключ первого уровня (`TryGetValue(rest)`) — вложенный путь `GlobalContext.var1.x` вернёт null;
+  deep-read контекстов — вместе с задачей про массивы/индексы.
+- **Фаза D, запись по пути — только рефлексия**: `DynamicNodeMsgWrapper.SetValueByPath`/`SetProperty`
+  не работают со словарями и `JsonElement`/`DynamicJson` (те же ограничения у msg-ветки `VariableSetNodeImpl`);
+  промежуточные сегменты должны существовать (null по дороге — тихий отказ записи).
 - **Не называть папки в репо `Debug/`** — `.gitignore:23` (`[Dd]ebug/`) их молча игнорирует, файлы не попадут
   в коммит (поймано на `tests/Mars.Nodes.Tests/Debug/` → переименовано в `DebugMode/`).
 
@@ -273,6 +338,11 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 
+- **Перелопатить DebugMode и запись значений** (2026-09-21, запрос пользователя): текущая реализация фазы C
+  (глобальный флаг, захват в `NodeTaskJob.callbackNext`, стор `(nodeId, порт)` + троттл) пользователя
+  не устроила — до начала работ обсудить, что именно не так (семантика захвата, ключ/портность, троттл,
+  TTL, место хранения, pull-транспорт, что показывает INPUT-панель) и пересобрать решение.
+  Связано со следующим пунктом (что хранит `DebugNode`).
 - **Отложено: что хранит `DebugNode`** (согласовано 2026-09-17). Сейчас запись делает исполнитель
   (`NodeTaskJob`), нода отладки не участвует. Отдельно решим, что она хранит сама: свой вход, свой выход,
   историю нескольких сообщений, отдельный вид в INPUT-панели — и не превратится ли это в дубль стора.

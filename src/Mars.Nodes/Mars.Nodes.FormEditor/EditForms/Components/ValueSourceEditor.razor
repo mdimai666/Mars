@@ -16,7 +16,7 @@
     <div class="vse-value">
         @if (ValueKind == InputValueKind.Msg)
         {
-            <FieldPathPicker Root="msg" ShowRoot="false" Value="Value" ValueChanged="SetValue" Candidates="Candidates" />
+            <MarsPathInput Root="msg" ShowRoot="false" Value="Value" ValueChanged="SetValue" />
         }
         else if (ValueKind == InputValueKind.Expression)
         {
@@ -54,9 +54,6 @@
 
     [Parameter]
     public string VarType { get; set; } = "string";
-
-    [Parameter]
-    public IReadOnlyCollection<string> Candidates { get; set; } = [];
 
     string ConstPlaceholder => VarType == VarNode.TimestampTypeName ? "empty = now (unix millis)" : VarType;
 

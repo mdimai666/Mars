@@ -1,6 +1,7 @@
 @using Mars.Admin.Framework.Components
 @using Mars.Core.Extensions
 @using Mars.Core.Models
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Mars.Nodes.Front.Abstractions.Services
 @using MarsCodeEditor2
 @using Microsoft.Extensions.Caching.Memory
@@ -12,7 +13,7 @@
 
     <div class="vstack gap-2">
         <FormItem2 For="() => Node.Property">
-            <FluentTextField @bind-Value=@Node.Property />
+            <MarsPathInput Root="msg" @bind-Value=@Node.Property For="() => Node.Property" />
         </FormItem2>
         <FormItem2 For="() => Node.TemplateEngineId">
             <FluentSelect Items="_templateEngines"

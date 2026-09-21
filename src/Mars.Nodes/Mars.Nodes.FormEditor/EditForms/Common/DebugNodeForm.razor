@@ -11,7 +11,7 @@
 
     @if (!Node.CompleteInputMessage)
     {
-        <MarsValueInput @bind-Value=Node.PropertyPath For="() => Node.PropertyPath" />
+        <MarsPathInput @bind-Value=Node.PropertyPath For="() => Node.PropertyPath" />
     }
 
     <FluentCheckbox @bind-Value=Node.WriteToConsole Label="WriteToConsole" />

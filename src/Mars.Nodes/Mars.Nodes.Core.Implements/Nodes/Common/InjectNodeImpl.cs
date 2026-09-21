@@ -30,6 +30,8 @@ public class InjectNodeImpl : INodeImplement<InjectNode>
 
             if (IsPayload(field))
                 input.Payload = value;
+            else if (field.Key.Contains('.'))
+                new DynamicNodeMsgWrapper(input).SetValueByPath(field.Key, value);
             else
                 input.Set(field.Key, value!);
         }

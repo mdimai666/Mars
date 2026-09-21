@@ -24,68 +24,6 @@
     font-family: 'Cascadia Mono', monospace;
 }
 
-.field-path-picker {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    flex: 1 1 auto;
-    min-width: 0;
-
-    .fpp-root {
-        padding: 0 4px;
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-right: none;
-        border-radius: 4px 0 0 4px;
-        background: var(--neutral-fill-rest, #f5f5f5);
-        font-family: 'Cascadia Mono', monospace;
-        line-height: 28px;
-    }
-
-    .fpp-input {
-        flex: 1 1 auto;
-        min-width: 0;
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-radius: 0;
-        padding: 0 6px;
-        line-height: 26px;
-        font-family: 'Cascadia Mono', monospace;
-    }
-
-    .fpp-toggle {
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-left: none;
-        border-radius: 0 4px 4px 0;
-        background: var(--neutral-fill-rest, #f5f5f5);
-        padding: 0 6px;
-        line-height: 26px;
-        cursor: pointer;
-    }
-
-    .fpp-popup {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        z-index: 1050;
-        max-height: 240px;
-        overflow-y: auto;
-        border: 1px solid var(--neutral-stroke-rest, #767676);
-        border-radius: 4px;
-        background: var(--neutral-fill-solid, #fff);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
-
-        .fpp-item {
-            padding: 4px 8px;
-            font-family: 'Cascadia Mono', monospace;
-            cursor: pointer;
-
-            &:hover {
-                background: var(--neutral-fill-hover, #ebebeb);
-            }
-        }
-    }
-}
-
 .value-source-editor {
     display: inline-flex;
     align-items: center;
@@ -112,11 +50,6 @@
         display: flex;
         flex: 1 1 auto;
         min-width: 0;
-
-        .field-path-picker .fpp-input {
-            border-left: none;
-            border-radius: 0 4px 4px 0;
-        }
     }
 
     .vse-input {
@@ -580,6 +513,22 @@
         font-size: 11px;
         letter-spacing: .8px;
         text-transform: uppercase;
+    }
+}
+
+.mars-path-input {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-height: max-content;
+
+    // нет слоя .mvi-highlight — текст рисуется самим инпутом
+    .mvi-input {
+        color: var(--mvi-fg);
+
+        &::selection {
+            color: var(--mvi-fg);
+        }
     }
 }
 

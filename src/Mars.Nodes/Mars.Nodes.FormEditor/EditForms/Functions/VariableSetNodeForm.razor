@@ -21,7 +21,7 @@
             @* <label>setter - @(index + 1)</label> *@
             <div class="input-group">
                 <span class="input-group-text">[ @(index + 1) ]</span>
-                <InputText @bind-Value=@setter.ValuePath class="form-control" placeholder="ValuePath" aria-label="ValuePath" />
+                <MarsPathInput @bind-Value=@setter.ValuePath For="() => setter.ValuePath" />
                 <span class="input-group-text">=</span>
                 <InputText @bind-Value=@setter.Expression class="form-control" placeholder="Expression" aria-label="Expression" />
                 <div class="input-group-text py-0">

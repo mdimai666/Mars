@@ -57,16 +57,12 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
             }
             else
             {
-                var readProp = () =>
-                {
-                    var interpreter = InputValueResolver.CreateInterpreter(RNS, input);
-                    var value = InputValueResolver.Resolve(InputValueKind.Expression, Node.PropertyPath, VarNode.ObjectTypeName, interpreter, new ExpressionScope(RNS, input), Node, $"Field '{nameof(Node.PropertyPath)}'");
-                    return value;
-                };
+                // legacy flows stored the path in expression form ("@msg.Payload")
+                var path = (Node.PropertyPath ?? "").Trim().TrimStart('@').Trim();
 
-                var prop = (Node.PropertyPath == DebugNode.PropertyPathPayloadDefault || Node.PropertyPath.IsNullOrEmpty())
+                var prop = (path == DebugNode.PropertyPathPayloadDefault || path.IsNullOrEmpty())
                             ? input.Payload
-                            : readProp();
+                            : ReadByPath(path, input);
 
                 if (prop is not string && prop is object)
                 {
@@ -130,5 +126,30 @@ public class DebugNodeImpl : INodeImplement<DebugNode>
         }
 
         return Task.CompletedTask;
+    }
+
+    object? ReadByPath(string path, NodeMsg input)
+    {
+        var root = ValuePath.GetRoot(path);
+        var rest = ValuePath.GetRest(path);
+
+        if (root is null or ValuePath.MsgRoot)
+        {
+            if (root == ValuePath.MsgRoot && rest.Length == 0)
+                return input.AsFullDict();
+
+            return new DynamicNodeMsgWrapper(input).GetValueByPath(root is null ? path : rest);
+        }
+
+        if (root == nameof(IRuntimeNodeScope.GlobalContext))
+            return RNS.GlobalContext.TryGetValue(rest, out var global) ? global : null;
+
+        if (root == nameof(IRuntimeNodeScope.FlowContext))
+            return RNS.FlowContext is not null && RNS.FlowContext.TryGetValue(rest, out var flow) ? flow : null;
+
+        if (root == nameof(VarNode))
+            return RNS.GetVarNodeVarible(rest)?.Value;
+
+        return null;
     }
 }

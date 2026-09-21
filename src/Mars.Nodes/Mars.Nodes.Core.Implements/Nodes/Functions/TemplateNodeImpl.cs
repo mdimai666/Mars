@@ -1,6 +1,7 @@
 //#define DEBUG_TEMPLATOR_PERFOMANCE
 using Mars.TemplateEngine.Abstractions;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -34,6 +35,8 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, IDisposable
 
         if (Node.Property == "Payload")
             input.Payload = render.Content;
+        else if (Node.Property.Contains('.'))
+            new DynamicNodeMsgWrapper(input).SetValueByPath(Node.Property, render.Content);
         else
             input.Set(Node.Property, render.Content);
 

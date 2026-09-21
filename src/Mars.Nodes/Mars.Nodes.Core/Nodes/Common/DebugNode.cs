@@ -9,7 +9,7 @@ public class DebugNode : Node
 {
     public override string TypeId => "core.DebugNode";
 
-    public const string PropertyPathPayloadDefault = "@msg.Payload";
+    public const string PropertyPathPayloadDefault = "msg.Payload";
 
     public bool CompleteInputMessage { get; set; }
     public string PropertyPath { get; set; } = PropertyPathPayloadDefault;

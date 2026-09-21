@@ -503,5 +503,55 @@ public class InjectNodeTests : NodeServiceUnitTestBase
         results.Should().Contain(r => r.ErrorMessage!.Contains("path must not be empty"));
     }
 
+    [Fact]
+    public void Validate_KeyWithDotPath_HasNoErrors()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "Payload.User.Name" }] };
+
+        //Act
+        var results = node.Validate(new ValidationContext(node)).ToList();
+
+        //Assert
+        results.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_KeyWithBadPathSegment_ReportsError()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "Payload..Name" }, new() { Key = "Payload.1bad" }] };
+
+        //Act
+        var results = node.Validate(new ValidationContext(node)).ToList();
+
+        //Assert
+        results.Where(r => r.ErrorMessage!.Contains("identifier")).Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Execute_DeepPathKey_WritesNestedProperty()
+    {
+        //Arrange
+        var node = new InjectNode { Fields = [new() { Key = "Payload.User.Name", Value = "deep" }] };
+        var input = new NodeMsg { Payload = new DeepPayload() };
+
+        //Act
+        var msg = await ExecuteNode(node, input);
+
+        //Assert
+        ((DeepPayload)msg.Payload!).User!.Name.Should().Be("deep");
+    }
+
     record Person(string Name, int Age);
+
+    public class DeepPayload
+    {
+        public DeepUser? User { get; set; } = new();
+    }
+
+    public class DeepUser
+    {
+        public string? Name { get; set; }
+    }
 }

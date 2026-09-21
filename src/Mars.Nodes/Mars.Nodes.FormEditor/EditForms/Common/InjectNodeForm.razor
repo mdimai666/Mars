@@ -42,7 +42,7 @@
                 </div>
                 <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
                     <div class="d-grid align-items-center" style="grid-template-columns: 1fr 130px 1.5fr 33px; column-gap: 10px;">
-                        <FluentTextField @bind-Value="item.Key" Placeholder="Key" Class="w-100" />
+                        <MarsPathInput Root="msg" ShowRoot="false" @bind-Value="item.Key" For="() => item.Key" Placeholder="Key" />
                         <FluentSelect TOption="string" Items="@VarTypeItems" @bind-SelectedOption="item.VarType" Style="min-width: unset;" />
                         <ValueSourceEditor @bind-Value="item.Value" @bind-ValueKind="item.ValueKind" VarType="item.VarType" />
                         <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />

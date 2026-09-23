@@ -21,8 +21,8 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 | Проект | Назначение |
 |---|---|
-| `Mars.AiChat.Shared` | Чистые DTO/опции, общие для фронта и хоста: `AiChatOption`, `AiProviderConnection`, `AiChatMessageDto`, события `AiChatHubEvents` |
-| `Mars.AiChat.Host.Shared` | Серверные интерфейсы (`IAiChatSessionStore`, `IAiChatClientFactory`, `IAiChatRunCoordinator`) и модель `AiChatSessionState` — для внешнего переиспользования |
+| `Mars.AiChat.Contracts` | Wire-DTO/опции, общие для фронта и хоста: `AiChatOption`, `AiProviderConnection`, `AiChatMessageDto`, события `AiChatHubEvents` |
+| `Mars.AiChat.Abstractions` | Серверные интерфейсы (`IAiChatSessionStore`, `IAiChatClientFactory`, `IAiChatRunCoordinator`) и модель `AiChatSessionState` — для внешнего переиспользования |
 | `Mars.AiChat.Host` | Бэкенд: контроллер, SignalR-хаб, координатор запусков, harness-сервис агента, инструменты |
 | `Mars.AiChat.Front` | Blazor RCL: контейнер в `App.razor`, терминал, форма настроек подключений, SignalR-клиент |
 
@@ -53,7 +53,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 ### Подключения к ИИ-сервисам
 
-Опция `AiChatOption` (`Mars.AiChat.Shared/Options`), форма в админке: Настройки → «ИИ-чат (агент)».
+Опция `AiChatOption` (`Mars.AiChat.Contracts/Options`), форма в админке: Настройки → «ИИ-чат (агент)».
 
 - `AiProviderType`: `OpenAI`, `Qwen` (DashScope compatible-mode), `DeepSeek`, `Ollama`, `Custom`.
 - Пустой endpoint → значение по умолчанию (`AiProviderTypeExtensions.GetDefaultEndpoint`).
@@ -330,11 +330,11 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 ### Файлы фронта (MarsFrontFilesTools)
 
 `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs` — ИИ правит файлы фронта (Handlebars-шаблоны сайта)
-из редактора фронта (Фаза 6 фронт-рефакторинга, `ai/FrontReworkPlan.md`). Инструменты:
+из редактора фронта (фронт-рефакторинг, `ai/FrontsGuide.md`). Инструменты:
 `ListFrontFiles` (дерево файлов), `ReadFrontFile`, `WriteFrontFile` (создаёт/заменяет файл вместе
 с папками), `CreateFrontFile` (пустой файл/папка), `RenameFrontFile` (атомарное переименование/перемещение),
 `DeleteFrontFile`. Работают через `IFrontFilesService`
-(`Mars.Host.Shared/Services`, реализация `FrontFilesService` в `Mars.WebApp/Services`) — защита путей
+(`Mars.SiteEngine.Abstractions/Services`, реализация `FrontFilesService` в `Mars.SiteEngine.Host/Services`) — защита путей
 (только относительные, без выхода за корень фронта) наследуется; ошибки возвращаются модели строкой.
 
 Особенности подключения:
@@ -411,7 +411,7 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 ## Как добавить новое событие сервер → клиент
 
-1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
+1. Константа в `Mars.AiChat.Contracts/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
 2. Отправка в `AiChatAgentService`: `SendCoreAsync(group, AiChatHubEvents.Xxx, [chatId, runId, ...])`.
 3. Подписка в `Mars.AiChat.Front/Services/AiChatHubClient.cs`: `connection.On<...>` + событие.
 4. Обработка в `AiChatTerminal.razor.cs` (подписка в `SubscribeHub`, отписка в `Dispose`).
@@ -431,8 +431,9 @@ SQL-доступ к базам (схема/чтение/запись через 
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
 
-- **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
-  (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.
+- **Редактирование поста без страницы**: в работе — `ai/AiChatMetaFieldsPlan.md` (серверный
+  `UpdatePost` через `IPostJsonService` read-modify-write, метаполя в `CreatePost` и в мосте
+  открытой страницы, картинка поста).
 - **WYSIWYG-контент**: запись пока не поддерживается (нет публичного сеттера у `WysiwygEditor`);
   добавить `SetHTML` и подключить в `SetContentValue`.
 - **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).

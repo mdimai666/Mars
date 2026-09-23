@@ -8,7 +8,6 @@ using Mars.Cms.Host.Controllers;
 using Mars.Cms.Host.Handlers;
 using Mars.Cms.Host.Seeding;
 using Mars.Cms.Host.Services;
-using Mars.Cms.Host.Services.GallerySpace;
 using Mars.Cms.Host.XActions;
 using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Contracts.Resources;
@@ -40,7 +39,6 @@ public static class MainCms
         services.AddScoped<IPostCategoryService, PostCategoryService>();
         services.AddScoped<IPostCategoryTypeService, PostCategoryTypeService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
-        services.AddScoped<IGalleryService, GalleryService>();
 
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<IMetaQueryFieldResolver, MetaQueryFieldResolver>();

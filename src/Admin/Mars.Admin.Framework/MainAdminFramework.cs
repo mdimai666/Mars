@@ -90,7 +90,6 @@ public static class MainAdminFramework
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         services.TryAddScoped<DeveloperControlService>();
-        //services.TryAddScoped<GalleryService>();
         services.TryAddScoped<IActAppService, ActAppService>();
         services.TryAddScoped<IXActionFormPresenter, NullXActionFormPresenter>();
         services.TryAddSingleton<IXActionFormProvider, XActionFormProvider>();

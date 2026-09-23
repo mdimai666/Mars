@@ -13,14 +13,7 @@
     </SectionActions>
     <ChildContent>
 
-        @if (POSTTYPE == "NONE-gallery")
-        {
-            <div>
-                @* <Mars.Admin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
-                gallery
-            </div>
-        }
-        else if (_isSingle)
+        @if (_isSingle)
         {
             @if (_singlePostId != Guid.Empty)
             {

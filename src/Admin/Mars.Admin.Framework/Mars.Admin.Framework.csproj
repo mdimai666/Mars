@@ -35,14 +35,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Remove="Services\GallerySpace\GalleryService.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Services\GallerySpace\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;

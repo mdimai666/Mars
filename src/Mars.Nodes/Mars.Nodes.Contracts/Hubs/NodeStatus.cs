@@ -1,12 +1,6 @@
 using Mars.Core.Extensions;
 
-namespace Mars.Nodes.Core;
-
-//class additionsNodeProps
-//{
-//      category,
-//}
-
+namespace Mars.Nodes.Contracts.Hubs;
 
 public class NodeStatus
 {

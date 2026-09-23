@@ -1,6 +1,6 @@
 using Mars.Contracts.Hubs;
 using Mars.Contracts.Interfaces;
-using Mars.Nodes.Core;
+using Mars.Nodes.Contracts.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Mars.Admin.Framework.Hub;

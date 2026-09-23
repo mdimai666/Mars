@@ -1,4 +1,6 @@
-namespace Mars.Nodes.Core.Contracts.Nodes;
+using Mars.Nodes.Core;
+
+namespace Mars.Nodes.Contracts.Nodes;
 
 public record NodesDataResponse
 {

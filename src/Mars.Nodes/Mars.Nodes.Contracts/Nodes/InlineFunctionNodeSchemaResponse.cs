@@ -1,4 +1,7 @@
-namespace Mars.Nodes.Core.Contracts.Nodes;
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Functions;
+
+namespace Mars.Nodes.Contracts.Nodes;
 
 public record InlineFunctionNodeSchemaResponse
 {

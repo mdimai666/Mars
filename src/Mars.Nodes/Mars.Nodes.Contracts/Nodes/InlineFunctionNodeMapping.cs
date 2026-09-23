@@ -1,6 +1,6 @@
-using Mars.Nodes.Core.Contracts.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 
-namespace Mars.Nodes.Core.Nodes.Mappings.Nodes;
+namespace Mars.Nodes.Contracts.Nodes;
 
 public static class InlineFunctionNodeMapping
 {

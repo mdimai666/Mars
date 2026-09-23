@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.Contracts.Nodes;
 
 /// <summary>
 /// Truncated snapshot of the message a node sent out through one output port.

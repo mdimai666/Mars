@@ -3,8 +3,10 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Mars.Core.Extensions;
+using Mars.Nodes.Contracts.Nodes;
+using Mars.Nodes.Core;
 
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.Host.Services;
 
 /// <summary>
 /// Builds the debug snapshot JSON: strings are cut by length, structures — by depth and by the first items.

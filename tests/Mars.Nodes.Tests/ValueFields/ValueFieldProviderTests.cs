@@ -1,6 +1,6 @@
 using FluentAssertions;
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace.Services.ValueFields;
 

@@ -1,9 +1,9 @@
 using Mars.Admin.Framework.Hub;
 using Mars.Core.Models;
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
-using Mars.Nodes.Core.Nodes.Mappings.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace;

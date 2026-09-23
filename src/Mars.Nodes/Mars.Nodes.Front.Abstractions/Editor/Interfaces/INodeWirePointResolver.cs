@@ -1,4 +1,7 @@
-namespace Mars.Nodes.Core.Utils;
+using Mars.Nodes.Core;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
+
+namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 
 public interface INodeWirePointResolver
 {

@@ -1,4 +1,6 @@
-namespace Mars.Nodes.Core;
+using Mars.Nodes.Core;
+
+namespace Mars.Nodes.Front.Abstractions.Editor.Models;
 
 public class Wire
 {

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Front.Abstractions.Editor;
 using Mars.Nodes.Workspace.EditorParts;
 
 namespace Mars.Nodes.Tests.Utils;
@@ -204,7 +205,7 @@ public class NodeWireUtilTests
     [Fact]
     public void DrawWires_CreatesCorrectCoordinates()
     {
-        _ = nameof(NodeWireUtil.DrawWires);
+        _ = nameof(WireDrawUtil.DrawWires);
 
         //Arrange
         var nodeA = new Node { Id = "A", X = 10, Y = 20, Wires = [] };
@@ -225,7 +226,7 @@ public class NodeWireUtilTests
         var nodeWirePointResolver = new NodeWirePointResolver();
 
         //Act
-        var wires = NodeWireUtil.DrawWires(nodes, nodeWirePointResolver);
+        var wires = WireDrawUtil.DrawWires(nodes, nodeWirePointResolver);
 
         //Assert
         wires.Should().HaveCount(2);

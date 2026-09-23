@@ -1,18 +1,19 @@
 using System.Drawing;
 
-namespace Mars.Nodes.Core.Utils;
+namespace Mars.Nodes.Front.Abstractions.Editor.Models;
 
-public struct MovePoints
+public struct WirePoints
 {
     public PointF Start { get; set; }
     public PointF End { get; set; }
 
-    public MovePoints(PointF start, PointF end)
+    public WirePoints(PointF start, PointF end)
     {
         Start = start;
         End = end;
     }
 
+    // Дополнительные методы, если нужно
     public float Length()
     {
         return (float)Math.Sqrt(Math.Pow(End.X - Start.X, 2) + Math.Pow(End.Y - Start.Y, 2));

@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.Contracts.Hubs;
 
 public static class NodeConstants
 {

@@ -392,7 +392,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             return;
         }
 
-        _nodeWires = NodeWireUtil.DrawWires(FlowNodes, _nodeWirePointResolver)
+        _nodeWires = WireDrawUtil.DrawWires(FlowNodes, _nodeWirePointResolver)
                                     .GroupBy(s => s.Node1.NodeId)
                                     .ToDictionary(s => s.Key, s => new NodeWiresInfo
                                     {
@@ -407,7 +407,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         {
             if (_nodeWires.TryGetValue(d.node.Id, out var nodeWires))
             {
-                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+                WireDrawUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
             }
         }
 
@@ -415,7 +415,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         {
             if (_nodeWires.TryGetValue(d.Id, out var nodeWires))
             {
-                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+                WireDrawUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
             }
         }
     }

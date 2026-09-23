@@ -6,22 +6,19 @@ namespace Mars.Nodes.Front.Abstractions.Components.NodeViews;
 public partial class WireComponent
 {
     [Parameter]
-    public float y2 { get; set; }
+    public float X1 { get; set; }
     [Parameter]
-    public float x1 { get; set; }
+    public float Y1 { get; set; }
     [Parameter]
-    public float y1 { get; set; }
+    public float X2 { get; set; }
     [Parameter]
-    public float x2 { get; set; }
+    public float Y2 { get; set; }
 
-    public float X1 => x1 + 10;
-    public float Y1 => y1 + 8;
-
-    public string Path => FormattableString.Invariant($"M {x1} {y1} C {x1 + 75} {y1} {x2 - 75} {y2} {x2} {y2}");
+    public string Path => FormattableString.Invariant($"M {X1} {Y1} C {X1 + 75} {Y1} {X2 - 75} {Y2} {X2} {Y2}");
     [Parameter]
-    public bool selected { get; set; }
+    public bool Selected { get; set; }
     [Parameter]
-    public bool disable { get; set; }
+    public bool Disable { get; set; }
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseDown { get; set; }

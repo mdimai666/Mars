@@ -63,11 +63,11 @@
 
             @if (new_wire != null)
             {
-                <WireComponent selected
-                               x1="new_wire.X1"
-                               y1="new_wire.Y1"
-                               x2="new_wire.X2"
-                               y2="new_wire.Y2"
+                <WireComponent Selected
+                               X1="new_wire.X1"
+                               Y1="new_wire.Y1"
+                               X2="new_wire.X2"
+                               Y2="new_wire.Y2"
                                OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
             }
 
@@ -77,12 +77,12 @@
                 {
                     var wire = _wire;
                     <WireComponent @key=wire.Id
-                                   selected="wire.Selected"
-                                   disable="wire.Disable"
-                                   x1="wire.X1"
-                                   y1="wire.Y1"
-                                   x2="wire.X2"
-                                   y2="wire.Y2"
+                                   Selected="wire.Selected"
+                                   Disable="wire.Disable"
+                                   X1="wire.X1"
+                                   Y1="wire.Y1"
+                                   X2="wire.X2"
+                                   Y2="wire.Y2"
                                    OnMouseDown="e=>onWireMouseDown(e,wire)"
                                    OnContextMenu="e=>OnWireContextMenuEvent(e, wire)" />
                 }

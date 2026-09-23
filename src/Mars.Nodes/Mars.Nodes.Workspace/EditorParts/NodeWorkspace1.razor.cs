@@ -404,7 +404,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             return;
         }
 
-        _nodeWires = WireDrawUtil.DrawWires(FlowNodes, _nodeWirePointResolver)
+        var existingWires = _nodeWires.Values.SelectMany(s => s.wires.Values)
+                                      .ToDictionary(w => (w.Node1, w.Node2), w => w);
+
+        _nodeWires = WireDrawUtil.DrawWires(FlowNodes, _nodeWirePointResolver, existingWires)
                                     .GroupBy(s => s.Node1.NodeId)
                                     .ToDictionary(s => s.Key, s => new NodeWiresInfo
                                     {

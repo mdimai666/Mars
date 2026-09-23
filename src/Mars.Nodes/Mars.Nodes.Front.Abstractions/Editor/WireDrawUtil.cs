@@ -7,7 +7,8 @@ namespace Mars.Nodes.Front.Abstractions.Editor;
 public static class WireDrawUtil
 {
     public static Wire[] DrawWires(IReadOnlyDictionary<string, Node> nodes,
-                                    INodeWirePointResolver nodeWirePointResolver)
+                                    INodeWirePointResolver nodeWirePointResolver,
+                                    IReadOnlyDictionary<(NodeWire, NodeWire), Wire>? existingWires = null)
     {
         if (nodeWirePointResolver == null)
             throw new ArgumentNullException(nameof(nodeWirePointResolver));
@@ -30,19 +31,30 @@ public static class WireDrawUtil
 
                     var points = nodeWirePointResolver.GetPoints(node, outputIndex, targetNode, wire.PortIndex);
 
-                    var newWire = new Wire
+                    var node1Wire = new NodeWire(node.Id, outputIndex);
+
+                    // reuse keeps object identity across redraws: Blazor skips unchanged params, Selected survives
+                    if (existingWires is not null && existingWires.TryGetValue((node1Wire, wire), out var existing))
+                    {
+                        existing.X1 = points.Start.X;
+                        existing.Y1 = points.Start.Y;
+                        existing.X2 = points.End.X;
+                        existing.Y2 = points.End.Y;
+                        wires.Add(existing);
+                        continue;
+                    }
+
+                    wires.Add(new Wire
                     {
                         Id = $"{node.Id}#{outputIndex}->{wire}",
-                        Node1 = new NodeWire(node.Id, outputIndex),
+                        Node1 = node1Wire,
                         Node2 = wire,
 
                         X1 = points.Start.X,
                         Y1 = points.Start.Y,
                         X2 = points.End.X,
                         Y2 = points.End.Y
-                    };
-
-                    wires.Add(newWire);
+                    });
                 }
             }
         }

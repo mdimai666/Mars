@@ -2,6 +2,7 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Front.Abstractions.Editor;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Mars.Nodes.Workspace.EditorParts;
 
 namespace Mars.Nodes.Tests.Utils;
@@ -244,5 +245,49 @@ public class NodeWireUtilTests
         wireBC.Y1.Should().Be(nodeB.Y + 23);
         wireBC.X2.Should().Be(nodeC.X + 8);
         wireBC.Y2.Should().Be(nodeC.Y + 23);
+    }
+
+    [Fact]
+    public void DrawWires_WithExistingWires_ReusesObjectsAndUpdatesCoordinates()
+    {
+        _ = nameof(WireDrawUtil.DrawWires);
+
+        //Arrange
+        var nodeA = new Node { Id = "A", X = 10, Y = 20, Wires = [] };
+        var nodeB = new Node { Id = "B", X = 100, Y = 200, Wires = [] };
+        var nodeC = new Node { Id = "C", X = 300, Y = 400, Wires = [] };
+
+        nodeA.Wires.Add([new NodeWire("B", 0)]);   // A -> B
+
+        var nodes = new Dictionary<string, Node>
+        {
+            [nodeA.Id] = nodeA,
+            [nodeB.Id] = nodeB,
+            [nodeC.Id] = nodeC
+        };
+
+        var nodeWirePointResolver = new NodeWirePointResolver();
+
+        var oldWireAB = WireDrawUtil.DrawWires(nodes, nodeWirePointResolver).Single();
+        oldWireAB.Selected = true;
+        var existing = new Dictionary<(NodeWire, NodeWire), Wire> { [(oldWireAB.Node1, oldWireAB.Node2)] = oldWireAB };
+
+        //Act — ноду A сдвинули и добавили новое соединение A -> C
+        nodeA.X = 50;
+        nodeA.Wires[0].Add(new NodeWire("C", 0));
+        var wires = WireDrawUtil.DrawWires(nodes, nodeWirePointResolver, existing);
+
+        //Assert
+        wires.Should().HaveCount(2);
+
+        var wireAB = wires.Single(wr => wr.Node2.NodeId == "B");
+        wireAB.Should().BeSameAs(oldWireAB);
+        wireAB.Selected.Should().BeTrue();
+        wireAB.X1.Should().Be(nodeA.X + nodeA.BodyRectWidth + 15f);
+
+        var wireAC = wires.Single(wr => wr.Node2.NodeId == "C");
+        wireAC.Should().NotBeSameAs(oldWireAB);
+        wireAC.X2.Should().Be(nodeC.X + 8);
+        wireAC.Y2.Should().Be(nodeC.Y + 23);
     }
 }

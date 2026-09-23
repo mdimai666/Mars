@@ -137,8 +137,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
                 d.node.X = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
                 d.node.Y = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
 
-                //Console.WriteLine($"e.ClientY={e.ClientY}, d.nodeY={d.nodeY}, d.clickY={d.clickY}, ScrollInfo.ScrollTop={ScrollInfo.ScrollTop}");
-
                 if (!d.node.changed) d.node.changed = true;
             }
 
@@ -199,8 +197,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
         foreach (var _node in nodeList)
         {
-            //Console.WriteLine($"_node.X={_node.X}, _node.Y={_node.Y}, e.ClientX={e.ClientX}, e.ClientY={e.ClientY}");
-
             var drag = new DragElement
             {
                 node = _node,
@@ -234,10 +230,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         _drag = false;
 
         new_wire = null;
-        if (_sel_node != null)
-        {
-            OnNodeMoved(_sel_node);
-        }
         if (lasso.drag)
         {
             lasso.drag = false;
@@ -401,13 +393,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             }
         }
     }
-    void OnNodeMoved(Node node)
-    {
-    }
-
     void RecreateWires()
     {
-        //_nodeEditor?.AddDebugMessage(DebugMessage.ConsoleMessage(">RecreateWires"));
         _logger.LogTrace(">RecreateWires");
         if (FlowNodes is null || FlowNodes.None())
         {
@@ -520,13 +507,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         _js.ScrollToCoordinates(_containerRef, x, y);
     }
 
-    /// <summary>
-    /// on click palette new node
-    /// </summary>
-    /// <param name="e"></param>
-    /// <param name="clickedPaletteNode">palette clicked node</param>
-    /// <param name="instance">new instance</param>
-    public async Task OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
+    public async Task OnClickPaletteNewNode(MouseEventArgs e, Node instance)
     {
         DeselectAll();
         _isProcessPasteNewNode = true;

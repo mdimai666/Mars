@@ -20,7 +20,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly INodeEditorApi _nodeEditor;
     private readonly IServiceProvider _serviceProvider;
     private readonly HotKeysContext _hotkeysContext;
-    private readonly EditorActionLocator _edittorActionLocator;
+    private readonly EditorActionLocator _editorActionLocator;
     private readonly AdminJs _adminJs;
     private ILogger _logger;
     private IReadOnlyDictionary<Type, EditorActionType> _actions;
@@ -34,16 +34,16 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     public EditorActionManager(INodeEditorApi nodeEditorApi,
                                 IServiceProvider serviceProvider,
                                 HotKeysContext hotkeysContext,
-                                EditorActionLocator edittorActionLocator,
+                                EditorActionLocator editorActionLocator,
                                 AdminJs adminJs)
     {
         _nodeEditor = nodeEditorApi;
         _serviceProvider = serviceProvider;
         _hotkeysContext = hotkeysContext;
-        _edittorActionLocator = edittorActionLocator;
+        _editorActionLocator = editorActionLocator;
         _adminJs = adminJs;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
-        _actions = _edittorActionLocator.Actions.ToDictionary(s => s.ActionType);
+        _actions = _editorActionLocator.Actions.ToDictionary(s => s.ActionType);
         BuildActions();
     }
 

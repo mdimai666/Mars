@@ -38,7 +38,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
     [Inject] ILogger<NodeEditor1> _logger { get; set; } = default!;
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
-    [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
+    [Inject] EditorActionLocator _editorActionLocator { get; set; } = default!;
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
     [Inject] AdminJs _adminJs { get; set; } = default!;
     [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
@@ -158,7 +158,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
-        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _adminJs);
+        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _editorActionLocator, _adminJs);
         _actionManager.PropertyChanged += OnActionManagerPropertyChanged;
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();
@@ -250,7 +250,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         var paletteNode = e.Node;
 
         var instance = paletteNode.Copy(_jsonSerializerOptions);
-        //Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
         instance.Id = Guid.NewGuid().ToString();
         instance.Container = _activeFlow.Id;
 
@@ -259,7 +258,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         AllNodes.Add(instance);
         CalcFlowNodes();
-        _nodeWorkspace1?.OnClickPaletteNewNode(e.MouseEvent, paletteNode, instance);
+        _nodeWorkspace1?.OnClickPaletteNewNode(e.MouseEvent, instance);
     }
 
     ConfigNode CreateConfigNodeFromType(Type nodeType)
@@ -668,8 +667,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
                         .SelectMany(s => (IEnumerable<string>)[s.Node1.NodeId, s.Node2.NodeId])
                         .Except(nodeIds)
                         .Distinct();
-
-        //Console.WriteLine($"wires={linkNodesIds.Count()}");
 
         foreach (var id in linkNodesIds)
         {

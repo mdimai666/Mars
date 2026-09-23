@@ -17,7 +17,7 @@ public partial class WireComponent
     public float X1 => x1 + 10;
     public float Y1 => y1 + 8;
 
-    public string Path => $"M {x1} {y1} C {x1 + 75} {y1} {x2 - 75} {y2} {x2} {y2}".Replace(',', '.');
+    public string Path => FormattableString.Invariant($"M {x1} {y1} C {x1 + 75} {y1} {x2 - 75} {y2} {x2} {y2}");
     [Parameter]
     public bool selected { get; set; }
     [Parameter]

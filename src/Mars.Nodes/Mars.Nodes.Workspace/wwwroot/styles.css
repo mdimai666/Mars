@@ -435,6 +435,38 @@ g.red-ui-flow-link-ghost path.red-ui-flow-link-line {
     user-select: none
 }
 
+/* VarNode badges (global variables list in NodeEditor1) */
+.varnode-badge {
+    background-color: grey;
+
+    &[data-var-type^='string' i] {
+        background-color: #f49319;
+    }
+
+    &[data-var-type^='int' i],
+    &[data-var-type^='long' i] {
+        background-color: #3b61ff;
+    }
+
+    &[data-var-type^='decimal' i],
+    &[data-var-type^='double' i],
+    &[data-var-type^='float' i] {
+        background-color: #3b9dff;
+    }
+
+    &[data-var-type^='bool' i] {
+        background-color: #db4b35;
+    }
+
+    &[data-var-type^='Guid' i] {
+        background-color: #75c68a;
+    }
+
+    &[data-var-type^='DateTime' i] {
+        background-color: #285e94;
+    }
+}
+
 .NodeEditor1 {
     --red-ui-link-color: #999;
     --red-ui-link-link-color: #aaa;

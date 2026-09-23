@@ -48,8 +48,8 @@ public class AppAdminSpaHtmlScripts
             //new(new Uri(@"_content/mdimai666.Mars.Nodes.FormEditor/css/style.css", UriKind.Relative), placeInHead: true ,version:appVersion , order: defaultOrder),
 
             new(new Uri(@"css/style.css", UriKind.Relative), placeInHead: true, version:appVersion, order: defaultOrder),
-            new(new Uri(@"_content/Mars.Nodes.Workspace/styles.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
-            new(new Uri(@"_content/mdimai666.Mars.Nodes.FormEditor/css/style.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
+            new(new Uri(@"_content/Mars.Nodes.Workspace/styles.css", UriKind.Relative), placeInHead: true, version:appVersion, order: defaultOrder),
+            new(new Uri(@"_content/mdimai666.Mars.Nodes.FormEditor/css/style.css", UriKind.Relative), placeInHead: true, version:appVersion, order: defaultOrder),
             new(new Uri(@"Mars.Admin.styles.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
         ];
 

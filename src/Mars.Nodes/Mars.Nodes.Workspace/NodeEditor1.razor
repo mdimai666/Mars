@@ -101,7 +101,7 @@
                             @foreach (var _varNode in varNodes)
                             {
                                 var varNode = _varNode;
-                                <span class="badge dmodel-badge cursor-pointer"
+                                <span class="badge varnode-badge cursor-pointer"
                                       @ondblclick="e => StartEditNode(varNode)"
                                       title="@($"{varNode.Name}:{varNode.VarType}")"
                                       data-var-type="@varNode.VarType"

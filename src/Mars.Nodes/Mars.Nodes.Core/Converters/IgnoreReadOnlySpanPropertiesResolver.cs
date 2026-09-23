@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
-namespace Mars.Nodes.Core.Implements.JsonConverters;
+namespace Mars.Nodes.Core.Converters;
 
 /// <summary>
 /// ReadOnlySpan on serialize throw error

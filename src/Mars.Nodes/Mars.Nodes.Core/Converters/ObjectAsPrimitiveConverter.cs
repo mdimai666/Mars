@@ -2,7 +2,7 @@ using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mars.Nodes.Core.Implements.JsonConverters;
+namespace Mars.Nodes.Core.Converters;
 
 // https://stackoverflow.com/a/65974452/6723966
 /// <summary>

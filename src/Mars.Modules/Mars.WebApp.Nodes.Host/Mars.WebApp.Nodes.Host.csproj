@@ -5,13 +5,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AngleSharp" />
         <PackageReference Include="dotless.Core" />
         <!-- Пин: без него транзитивно подтягивается уязвимый System.Drawing.Common 4.5.0 (NU1904) -->
         <PackageReference Include="System.Drawing.Common" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.WebApp.Nodes\Mars.WebApp.Nodes.csproj" />
         <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />

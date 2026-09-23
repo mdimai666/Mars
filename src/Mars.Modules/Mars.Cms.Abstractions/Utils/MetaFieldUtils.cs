@@ -26,7 +26,7 @@ public static class MetaFieldUtils
             return mv with { StringShort = jsonValue.GetValue<string>() };
         else if (t == MetaFieldType.Text)
             return mv with { StringText = jsonValue.GetValue<string>() };
-        else if (t == MetaFieldType.Relation)
+        else if (t is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image)
             return mv with { ModelId = jsonValue.GetValue<Guid>() };
         else if (t == MetaFieldType.Select)
             return mv with { VariantId = jsonValue.GetValue<Guid>() };
@@ -90,7 +90,7 @@ public static class MetaFieldUtils
             return mv with { StringShort = stringValue };
         else if (t == MetaFieldType.Text)
             return mv with { StringText = stringValue };
-        else if (t == MetaFieldType.Relation)
+        else if (t is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image)
             return mv with { ModelId = Guid.Parse(stringValue) };
         else if (t == MetaFieldType.Select)
             return mv with { VariantId = Guid.Parse(stringValue) };
@@ -140,7 +140,7 @@ public static class MetaFieldUtils
             return mv with { StringShort = (string)value };
         else if (t == MetaFieldType.Text)
             return mv with { StringText = (string)value };
-        else if (t == MetaFieldType.Relation)
+        else if (t is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image)
             return mv with { ModelId = (Guid)value };
         else if (t == MetaFieldType.Select)
             return mv with { VariantId = (Guid)value };

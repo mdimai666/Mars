@@ -70,24 +70,104 @@
       (весь проект Mars.Forms.Tests).
 - [x] Сборка `Mars.slnx` — зелёная.
 
-### Фаза 2 — серверные инструменты (детализировать перед стартом)
+### Фаза 2 — серверные инструменты (детализирована 2026-09-23)
 
-Набросок (детали продумываются отдельно):
+#### Находки детализации — баги JSON-пути записи постов (публичный `PostJsonController`)
 
-- [ ] `MarsPostTools.CreatePost` + опциональный `metaJson` (JSON-объект «ключ поля → значение»):
-      перевод на `IPostJsonService.Create`; статус/язык/редактор контента — как сейчас, из
-      `GetEditModelBlank`; адаптация контента под редактор сохраняется.
-- [ ] Новый `UpdatePost(postId, …)`: `GetDetail` → `PostJsonDto`, патч только переданных полей
-      (title, contentText, tagsCsv, excerpt, status, metaJson — слияние по ключам, не замена
-      словаря) → `UpdatePostJsonQuery`. Описание инструмента — с предупреждением last-write-wins
-      и правилом «сначала прочитать».
-- [ ] `GetPost`: отдавать метаполя (`PostJsonDto.Meta`) и `imageFieldKey` типа.
-- [ ] Регистрация в `ContentToolset.Build`; DI — `IPostJsonService` уже зарегистрирован (проверить).
-- [ ] Открытые вопросы к детализации: как `PostJsonService` конвертирует `Meta` (JsonNode →
-      EAV) и какие у него валидаторы; нужен ли `FormValueText` на этом пути (модель отдаёт
-      JSON — вероятно, нет); формат `contentText` → контент по редактору при update
-      (переиспользовать `BuildBlockEditorJson`/`BuildHtml`); уведомление хаба
-      `PostListChanged` при update.
+- **B1. File/Image не пишутся**: `MetaFieldUtils.MetaValueFromJson`/`MetaValueFromString`
+  (`Mars.Cms.Abstractions/Utils/MetaFieldUtils.cs`) не имеют веток File(101)/Image(102) →
+  `NotImplementedException`; `MultiValuesFromJsonArray` в `PostJsonService` массивы для них
+  заявляет, но падает на элементе. Фикс: ветки → `ModelId` (как Relation);
+  `MetaFieldTypeToType` их уже маппит.
+- **B2. Мульти-значения не-ссылочных типов не пишутся**: `MultiValuesFromJsonArray` бросает
+  «array value supported only for Relation/File/Image». Фикс: разрешить массив любому типу
+  (индексация есть; валидатор «одинарное поле допускает только одно значение» защитит).
+- **B3. `PostJsonDto` теряет `Excerpt`/`LangCode`**: их нет в `PostSummary`/`PostJsonDto`,
+  а `UpdatePostJsonQuery` требует → read-modify-write через JSON-API молча затирает анонс и язык.
+  Фикс: добавить оба в `PostJsonDto` + `ToJsonDto`/`ToJsonDtoSummary` (`PostDetail` их имеет)
+  + `PostJsonResponse`/WebApiClient (расширение ответа; интеграционные тесты —
+  `tests/Mars.WebApiClient.Integration.Tests/Tests/PostJsons/`).
+- **B4 (семантика, не баг)**: Select/SelectMany на записи — Guid вариантов (`VariantId`),
+  чтение отдаёт `MetaFieldVariantValueDto {Id, Key, Title}`. Публичный API не меняем —
+  ключ → Guid резолвит инструмент AiChat по `IMetaModelTypesLocator.GetPostTypeByName(type)
+  .MetaFields[].Variants`.
+- **B5 (находка реализации 2.1, бэклог)**: SelectMany через wire-JSON публичного API не
+  записывается: JSON-массив под ключом SelectMany уходит в `MultiValuesFromJsonArray`
+  (строка на элемент → падение `GetValue<Guid[]>`), а CLR-узел `JsonValue(Guid[])` из wire
+  не получается. AI-нормализатор (2.2) это обходит — строит `JsonValue.Create(Guid[])`
+  (CLR-узел, `MetaValueFromJson` его читает). Починка wire-формы SelectMany — отдельная
+  задача CMS, в этой инициативе не делается.
+- Подтверждено: `IPostJsonService` — scoped, `IMetaModelTypesLocator` — singleton (MainCms);
+  create-валидатор требует значения обязательных полей без генератора (`requireAll: true`);
+  Query-поля на записи пропускаются; статус — slug, дефолт первого при пустом
+  (`ResolveStatus`), при выключенной фиче Status должен быть пустым.
+
+#### Решения фазы 2 (2026-09-23, пользователь)
+
+- Фиксы B1–B3 — в рамках фазы 2 (все три).
+- Discovery — отдельный инструмент `DescribePostType(type)` (паттерн `get_database_schema`),
+  не встраивать в GetPost.
+- `UpdatePost` сохраняет исходного автора (`UserId` = автор поста, не владелец чата).
+- Тесты: два новых unit-проекта — `tests/Mars.Cms.Tests` (MetaFieldUtils, конвертация
+  JSON-мета) и `tests/Mars.AiChat.Tests` (нормализатор metaJson); интеграционные PostJson —
+  расширяем существующий `Mars.WebApiClient.Integration.Tests`.
+
+#### Шаг 2.1 — фиксы CMS (B1–B3) + тесты ✅ (2026-09-23)
+
+- [x] `MetaFieldUtils`: ветки File/Image в `MetaValueFromJson`, `MetaValueFromString`,
+      `MetaValueFromObject` (объединены с Relation: `t is Relation or File or Image`).
+- [x] `PostJsonService.MultiValuesFromJsonArray` — массив для любого типа; `multiKeys`
+      в `UpdateJsonMetaValuesToModifyDto` — любое поле со значением-массивом.
+- [x] B3: `PostDetail` += `Excerpt`/`LangCode` (required) → маппинги `ToDetail`/
+      `ToDetailWithType` (`Mars.Data.Repositories/Mappings/PostMapping.cs`);
+      `PostJsonDto` += оба → `ToJsonDto`/`ToJsonDtoSummary`/`ToResponse`;
+      `PostJsonResponse` += оба (wire). WebApiClient не менялся — контракт общий.
+- [x] Новый `tests/Mars.Cms.Tests` (добавлен в `Mars.slnx`; `test-all.ps1` подхватывает
+      автоматически по скану `tests/*.csproj`) — `MetaFieldUtilsTests`, 19/19.
+- [x] Интеграционные: новый `tests/Mars.WebApiClient.Integration.Tests/Tests/PostJsons/
+      PostJsonMetaTests.cs` (Image → model_id; мульти-массив строк → строки с Index;
+      round-trip excerpt/lang через Get→Update) — 205/205 в проекте.
+- [x] `tests/Mars.Server.Tests`: переписан `CreateJsonMetaValues_ArrayForNonRelationField_Throws`
+      → `..._CreatesMultiValues` (осознанная смена поведения B2); в фикстуру
+      `MetaValuesGeneratorServiceTests.Post()` добавлены новые required-члены — 473/473.
+- [x] Сборка `Mars.slnx` зелёная.
+
+#### Шаг 2.2 — нормализатор metaJson (AiChat.Host)
+
+- [ ] Приватный хелпер рядом с `MarsPostTools`: терпимый вход модели → строгая форма
+      `MetaValueFromJson`. Форматы: String/Text — как есть; Bool — `true`/`"true"`;
+      Int/Long/Float/Decimal — число или строка-число → JSON-число (decimal числом — канон
+      JSON-пути, не форм); DateTime — ISO-строка; Relation/File/Image — Guid-строка,
+      при `IsMultiple` — JsonArray; Select — ключ варианта (или Guid) → Guid;
+      SelectMany — массив ключей/CSV → `JsonValue(Guid[])`; Query-ключи — снимать;
+      неизвестный ключ — ошибка со списком валидных. Ошибки — с именем поля и форматом.
+- [ ] Терпимость живёт в AiChat; CMS остаётся строгим. `FormValueText` здесь НЕ используется
+      (канон wire-форм различается: decimal строкой vs числом, Select ключ vs Guid).
+- [ ] Unit-тесты в новом `tests/Mars.AiChat.Tests`.
+
+#### Шаг 2.3 — инструменты (`MarsPostTools`, `ContentToolset`)
+
+- [ ] Конструктор `MarsPostTools` += `IPostJsonService`, `IMetaModelTypesLocator`
+      (прокинуть в `ContentToolset`; DI уже зарегистрирован).
+- [ ] `DescribePostType(type)`: фичи, ключ редактора контента (из `GetEditModelBlank`),
+      slug'и статусов, `imageFieldKey`, дескрипторы метаполей `{key, title, type, multiple,
+      required, variants[]}`.
+- [ ] `CreatePost` += `metaJson?`, `status?`; перевод на `IPostJsonService.Create`
+      (UserId — владелец чата, LangCode/редактор — из blank, адаптация контента сохраняется);
+      валидационные ошибки — строкой модели.
+- [ ] `UpdatePost(postId, title?, contentText?, tagsCsv?, excerpt?, status?, metaJson?)`:
+      `GetDetail(renderContent:false)` → наложить только переданное (meta — только ключи
+      патча, `UpdateJsonMetaValuesToModifyDto` сам смержит остальное) → `UpdatePostJsonQuery`
+      (UserId — исходный автор; CategoryIds/LangCode — из прочитанного) →
+      уведомление `PostListChanged` → ответ с итогом и ссылкой. Описание инструмента —
+      last-write-wins, «сначала прочитай».
+- [ ] `GetPost` → `IPostJsonService.GetDetail`: + meta компактно (Select — key/title,
+      File/Image — id/name/url, Relation — id/title, скаляры как есть), + excerpt/langCode,
+      + imageFieldKey.
+- [ ] Регистрация `DescribePostType`/`UpdatePost` в `ContentToolset.Build`.
+- [ ] Открытые детали реализации: `PostSummary.Status` — `KeyValuePair<string,string>`
+      (уточнить, что ключ: slug или title — при read-modify-write в `UpdatePostJsonQuery.Status`
+      идёт slug); `PostAuthor.Id` — источник исходного автора.
 
 ### Фаза 3 — мост открытой страницы (детализировать перед стартом)
 
@@ -133,3 +213,11 @@
   JSON-числами, decimal — строкой; «1» строкой для Int отклоняется. CSV-путь терпимый.
 - `MetaValueStore` молча превращает неизвестный ключ варианта в `Guid.Empty` — поэтому
   сверка с `Choices` сделана в `FormValueText`, а не оставлена стору.
+- **`JsonValue.GetValue<Guid>()` не работает на CLR-узле из строки** (`JsonValue.Create("guid")`
+  → `InvalidOperationException`): конвертация есть только у JsonElement-узлов (пришедших из
+  wire-JSON) и у `JsonValue.Create(Guid)`. Нормализатор 2.2 должен выдавать либо
+  `JsonValue.Create(guid)`, либо узел из `JsonNode.Parse("\"guid\"")`. То же касается
+  `GetValue<Guid[]>` для SelectMany (CLR-узел `JsonValue.Create(Guid[])` — работает).
+- Юнит-тесты internal-методов `PostJsonService` уже живут в `tests/Mars.Server.Tests/
+  Services/PostJsonServices/` (`PostJsonServiceTestBase`, InternalsVisibleTo) — новые тесты
+  конвертации класть туда, а не в Mars.Cms.Tests.

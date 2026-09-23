@@ -10,6 +10,10 @@ public record PostDetail : PostSummary
 {
     public required string? Content { get; init; }
 
+    public required string? Excerpt { get; init; }
+
+    public required string LangCode { get; init; }
+
     public required IReadOnlyDictionary<string, MetaValueDto> MetaValues { get; init; }
 }
 

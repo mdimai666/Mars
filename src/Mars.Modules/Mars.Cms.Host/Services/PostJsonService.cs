@@ -227,13 +227,10 @@ internal class PostJsonService : IPostJsonService
     }
 
     /// <summary>
-    /// Мульти-значения Relation/File/Image: массив ИД → строки значения с порядком
+    /// Мульти-значения: массив значений → строки значения с порядком
     /// </summary>
     static IEnumerable<ModifyMetaValueDetailQuery> MultiValuesFromJsonArray(MetaFieldDto metaField, JsonArray array)
     {
-        if (metaField.Type is not (MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image))
-            throw new InvalidOperationException($"array value supported only for Relation/File/Image fields, not '{metaField.Type}'");
-
         var index = 0;
         foreach (var element in array)
         {
@@ -261,9 +258,8 @@ internal class PostJsonService : IPostJsonService
             throw new InvalidOperationException($"fields '{diff.ToAdd.JoinStr(",")}' not exist for '{postTypeName}'");
         }
 
-        // мульти-значения Relation/File/Image заменяются целиком (старые строки уходят в диффе)
-        var multiKeys = mfDict.Where(kv => kv.Value.Type is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image
-                                        && meta.GetValueOrDefault(kv.Key) is JsonArray)
+        // поля со значением-массивом заменяются целиком (старые строки уходят в диффе)
+        var multiKeys = mfDict.Where(kv => meta.GetValueOrDefault(kv.Key) is JsonArray)
                               .Select(kv => kv.Key)
                               .ToHashSet();
 

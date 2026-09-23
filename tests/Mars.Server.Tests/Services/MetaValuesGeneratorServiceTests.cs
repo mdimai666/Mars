@@ -222,6 +222,8 @@ public class MetaValuesGeneratorServiceTests
             Status = status,
             Categories = null,
             Content = null,
+            Excerpt = null,
+            LangCode = "",
             MetaValues = value is null
                 ? []
                 : new Dictionary<string, MetaValueDto>

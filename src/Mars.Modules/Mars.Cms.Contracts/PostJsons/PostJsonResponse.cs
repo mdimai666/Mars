@@ -6,6 +6,10 @@ public record PostJsonResponse : PostSummaryResponse
 {
     public required string? Content { get; init; }
 
+    public required string? Excerpt { get; init; }
+
+    public required string? LangCode { get; init; }
+
     public required IReadOnlyDictionary<string, object?> Meta { get; init; }
 
 }

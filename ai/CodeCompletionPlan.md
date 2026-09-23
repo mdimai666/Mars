@@ -164,7 +164,14 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    в `Mars.Nodes.Contracts`; `FunctionNodeForm` — `OnInit="OnEditorInit"` → `ICodeCompletionAttacher.AttachAsync`
    (опциональный сервис через `IServiceProvider.GetService`, форма реализует `IAsyncDisposable`);
    `AddCodeCompletionFront()` в `Mars.Admin/Program.cs`. `dotnet build Mars.slnx` — зелёный, 8/8 тестов.
-7. [ ] Ручная проверка, bump `MarsAppVersion` (новый JS-ассет).
+7. [x] `MarsAppVersion` 0.8.3-alpha.20 → **0.8.3-alpha.21** (новый JS-ассет `codeCompletion.js`).
+   Сборка `Mars.slnx` зелёная; `Mars.Nodes.Tests` 566/566; `Mars.CodeCompletion.Tests` 8/8.
+   В тестовых хостах FeatureManagement не задан → CodeCompletion выключен, интеграционные тесты не затронуты.
+8. [ ] **Ручная проверка пользователем** (браузер — только по его команде):
+   dev-запуск WebApp (в `appsettings.Development.json` флаг уже `true`) → админка → форма
+   FunctionNode: Ctrl+Space / `msg.` → подсказки; hover; `Send(` → signature help; ошибка в коде →
+   красный маркер через ~0.5 c. С флагом `false`: `GET api/CodeCompletion/info` → 404,
+   провайдеры не регистрируются, Roslyn MEF не поднимается.
 
 ## Грабли
 

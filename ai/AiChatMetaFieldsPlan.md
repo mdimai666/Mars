@@ -176,23 +176,68 @@
 - [x] `DescribePostType`/`UpdatePost` зарегистрированы в `ContentToolset.Build`.
 - [x] Сборка `Mars.slnx` зелёная; `tests/Mars.AiChat.Tests` 23/23.
 
-### Фаза 3 — мост открытой страницы (детализировать перед стартом)
+### Фаза 3 — мост открытой страницы (детализирована 2026-09-24)
 
-Набросок (детали продумываются отдельно):
+#### Находки детализации
 
-- [ ] `EditPostView.GetInfo()`: дескрипторы полей `{key, title, type, multiple, required,
-      editor, variants[]}` из `f.Model.Form` (включая метаполя) + `imageFieldKey` + признак
-      фичи PostImage; `editableFields` — системные слоты + метаполя (+ status/lang).
-- [ ] `GetFields()`: значения метаполей через `PostFormValueStore` в каноническом виде
-      (Select — ключ варианта, ссылки — Guid, множественные — массив) + status/lang.
-- [ ] `SetField()`: ветка «метаполе» — дескриптор из формы → `FormValueText.TryToClr` →
-      `SetValue`/`SetList` стора; status/lang — через тот же стор; ошибки парсера возвращать
-      модели как есть (они человекочитаемые). Системные слоты и live-редакторы контента не ломать.
-- [ ] Открытые вопросы к детализации: как стор/дескрипторы соотносятся с `_commits`
-      (тяжёлые редакторы метаполей — WYSIWYG/код/блочный — пишутся отложенно: нужен ли
-      `CommitAllAsync` перед чтением, как писать через `FormLiveEditors`); превью картинки
-      после установки значения (перерендер плиток); ReadOnly/Hidden-поля — отклонять или
-      пропускать; категории — оставить как есть (Guid-CSV) или перевести на стор.
+- Форма edit-модели собирается сервером: `PostService.GetEditModel` →
+  `PostFormBuilder.Build(postType, normalizer)` (**client:false по умолчанию**) →
+  Hidden-метаполя в форму попадают (Hidden — только признак скрытия в рендере);
+  Disabled и Query исключаются всегда (`DefaultItems`).
+- Дескрипторы несут всё нужное: слот `status` — `Choices` slug→title (`SlotItem`);
+  мета-Select — `Choices` из Variants (`MetaFieldFormMapping.ToFormFieldDescriptor`);
+  `ReadOnly` проставлен у слотов (author, modified_at, created_at без фичи
+  ModifyCreatedDate); Editor — включая доменные `core.meta.*` для Relation/File/Image.
+- `PostFormValueStore` роутит метаполя в `MetaValueStore` (канон CLR: Select → ключ
+  варианта, Relation/File/Image → Guid, DateTime → DateTimeOffset, множественные → список);
+  системные слоты — типизированные свойства модели (title — с `AutoFillSlug`).
+- Тяжёлые редакторы: значение держит редактор, `FormCommitHooks` сливает в модель перед
+  сохранением/чтением; запись извне — `FormLiveEditors.Find(key)` (так работает content).
+- Протокол моста не меняется: `set_open_page_field` args `{field, value}` — строки
+  (`AiChatTerminal.HandleSetFieldAsync`); серверная часть (`MarsOpenPageTools`) не затрагивается.
+- `f.Model.PostType` (PostTypeEditModel) имеет `ImageFieldKey`, `FeatureActivated(...)`,
+  `MetaFields` — источник imageFieldKey для GetInfo.
+- `EditPostView.razor.cs` ~380 строк — впритык к лимиту компонента (400–500):
+  AI-хендлер выносится в partial-файл.
+
+#### Решения фазы 3 (2026-09-24)
+
+1. **Единый `SetField`**: дескриптор из `f.Model.Form.Field(key)` → ReadOnly — отклонить →
+   live-редактор (`_liveEditors.Find`) — путь редактора (content сохраняет нынешнюю семантику,
+   включая «WYSIWYG не поддерживается» и «редактор не инициализирован»; метаполе с тяжёлым
+   редактором БЕЗ live-регистрации — сообщение, не тихая запись в модель) → иначе
+   `FormValueText.TryToClr` → `store.SetValue`/`SetList`. Системные слоты (включая новые
+   status/lang и существующие categories/tags) идут через тот же стор — прямые записи модели
+   из старого switch убираются.
+2. **`GetFields`**: системные поля плоско (title/slug/excerpt/tags/categories/**status/lang**/
+   content/contentText/contentEditor), метаполя — отдельным объектом `meta` (защита от
+   коллизий: метаполе теоретически может называться `status`/`title`; при резолве ключа в
+   SetField приоритет у слота).
+3. **Hidden-метаполя редактируемы** мостом (осознанно: Hidden — про отображение).
+4. **Превью картинки**: ничего не делаем — плитки запрашивают файл сами (серверный батч
+   превью — «Отклонено» в MetaFieldsGuide); перерендер через `store.Changed → StateHasChanged`
+   (уже подключён в `FormContextOf`).
+
+#### Шаги
+
+- [x] Новый partial `src/Mars.Admin/Pages/PostsViews/EditPostView.AiChat.cs`: вся реализация
+      `IAiChatPageHandler` — `GetInfo` (дескрипторы `{key, title, type, multiple, required,
+      readOnly, editor, modelName, variants[], system}` + `imageFieldKey` + `postImageFeature`
+      + `editableFields` = !readOnly; title — `L[TitleKey]` с фолбэком `Title`),
+      `GetFields` (после `CommitAllAsync`; значения через стор; канон-сериализация:
+      Guid → «D» (пустой → null), DateTimeOffset → «O», Select → ключ, массивы), `SetField`
+      (единый путь: ReadOnly-отказ → live-редактор → WYSIWYG-сообщение → тяжёлый редактор
+      без live-регистрации «не инициализирован» → `FormValueText.TryToClr` → `SetValue`/`SetList`),
+      `Save` — без изменений; `ExtractPlainText`, `Dispose`/`OnAfterRender` (регистрация в
+      `AiChatPageHandlerHolder`) переехали сюда.
+- [x] `EditPostView.razor.cs` — AI-секция убрана (остались форма/раскладка/сохранение,
+      ~107 строк + partial AiChat ~240); `AgentEditableFields` удалён — состав полей
+      динамический из формы.
+- [x] Скилл `mars-posts`: секция открытой страницы — GetInfo с дескрипторами/imageFieldKey,
+      форматы значений SetOpenPageField (Select/status — ключ/slug, ссылки — Guid, даты ISO,
+      множественные — массив/CSV), картинка поста через мост.
+- [x] Сборка `Mars.slnx` зелёная (0 ошибок, без новых warning'ов); мост — вручную в админке
+      пользователем (headless неприменим: page bridge без браузера возвращает таймаут).
 
 ### Фаза 4 — скилл `mars-posts` (+ `mars-media`) ✅ (2026-09-24)
 

@@ -24,7 +24,7 @@ public class TemplateNode : Node
         Inputs = [new()];
         Color = "#ecb56a";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/template.svg";
     }
 
     public static TemplateNode PlainTextVariant(string template)

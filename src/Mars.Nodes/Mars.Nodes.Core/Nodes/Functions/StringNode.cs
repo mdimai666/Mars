@@ -20,7 +20,7 @@ public class StringNode : Node, INodeOutputValueSpec
         Inputs = [new()];
         Color = "#b2b2b2";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/string.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/string-ops.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

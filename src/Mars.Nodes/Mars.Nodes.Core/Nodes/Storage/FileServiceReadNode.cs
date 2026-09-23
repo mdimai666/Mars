@@ -21,7 +21,7 @@ public class FileServiceReadNode : Node, INodeOutputValueSpec
         Inputs = [new()];
         Color = "#ffea9f";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/file-service-read.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

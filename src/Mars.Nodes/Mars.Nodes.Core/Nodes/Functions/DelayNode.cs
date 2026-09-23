@@ -16,6 +16,6 @@ public class DelayNode : Node
         Inputs = [new()];
         Color = "#e6e0f8";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/hourglass-split.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/delay.svg";
     }
 }

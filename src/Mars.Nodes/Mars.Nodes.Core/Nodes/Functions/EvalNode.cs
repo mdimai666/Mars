@@ -17,6 +17,7 @@ public class EvalNode : Node
         Inputs = [new()];
         Color = "#d4eba1";
         Outputs = [new NodeOutput()];
+        Icon = "_content/Mars.Nodes.Workspace/nodes/eval.svg";
     }
 
 }

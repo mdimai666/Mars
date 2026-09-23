@@ -19,7 +19,7 @@ public class VariableSetNode : Node
         Inputs = [new()];
         Color = "#ecb56a";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/function-x.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/var-set.svg";
     }
 
 }

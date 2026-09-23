@@ -15,7 +15,7 @@ public class TerminateAllJobsNode : Node
     {
         Inputs = [new()];
         Color = "#e16538";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/terminate-all-jobs.svg";
     }
 }
 

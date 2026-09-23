@@ -79,8 +79,26 @@
   `comment.svg` (пузырь со строками), `var.svg` (ячейка с косым крестом),
   `catch-error.svg` (треугольник с «!», акцент `#FFC400`), `unknown.svg` (пунктирный
   квадрат с «?»). CallNode/CallResponseNode — отложены пользователем.
-- **Освободились**: `chat-left.svg` и `chat.svg` (потребителей нет);
-  `box-arrow-in-right.svg` — только CounterNode; `loop-start.svg` — только TaskNodes.
+- **Готово (2026-09-24), группа functions**: `csharp-code.svg` (страница + зелёный `#`,
+  акцент `#00A650`), `inline-function.svg` (ƒ), `eval.svg` (калькулятор),
+  `switch.svg` (форк 1→3 со стрелками), `string-ops.svg` (глиф «Aa»),
+  `template.svg` (страница с загнутым углом + чернильный слот + строки),
+  `var-set.svg` («x = ■»), `delay.svg` (аналоговый секундомер).
+  ExecNode — оставлен пользователем на `terminal-fill.svg`.
+  Первая итерация (фигурные скобки с `#`, `{{ }}`, радикал, кавычки, ячейка со стрелкой,
+  песочные часы) отклонена пользователем как страшная/нечитаемая — метафоры выше итоговые.
+- **Готово (2026-09-24), группа storage**: `file-read.svg`/`file-write.svg` (страница с
+  загнутым углом + стрелка наружу/вовнутрь), `dir-read.svg` (папка + стрелка наружу),
+  `file-service-read.svg`/`file-service-write.svg` (фронт драйва: слот + индикатор,
+  + стрелка наружу/вовнутрь). Язык направления общий: read = стрелка из глифа,
+  write = стрелка в глиф; локальный файл = страница, сервис = драйв, каталог = папка.
+- **Готово (2026-09-24), группа task**: `kill-task-job.svg` (шестерня с крестом),
+  `terminate-all-jobs.svg` (шестерня со стоп-квадратом); шестерня = job/worker.
+  Зубья шестерни — толстые штрихи (width 5) вплотную к ободу, иначе на 26px читается «солнцем».
+- **Освободились**: `chat-left.svg`, `chat.svg`, `file-48.png`, `loop-start.svg`,
+  `function-x.svg`, `string.svg`, `hourglass-split.svg` (потребителей нет);
+  `box-arrow-in-right.svg` — только CounterNode; `option.svg` — только Split/Join;
+  `scenario-48.png` — только Json/HtmlParse; `csproj-48.png` — только DevMicroschemeNode.
 - **Очередь**: legacy `*-48.png`/`*-64.*` и белые svg остальных групп
   (карта: grep `Icon = "` по `src/Mars.Nodes/Mars.Nodes.Core/Nodes/**`),
   затем CallNode/CallResponseNode.

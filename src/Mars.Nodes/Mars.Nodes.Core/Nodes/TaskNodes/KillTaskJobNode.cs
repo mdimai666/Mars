@@ -14,6 +14,6 @@ public class KillTaskJobNode : Node
         Inputs = [new()];
         Outputs = [new() { Label = "New task job" }];
         Color = "#e16538";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/kill-task-job.svg";
     }
 }

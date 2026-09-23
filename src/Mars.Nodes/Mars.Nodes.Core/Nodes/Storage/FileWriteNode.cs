@@ -21,7 +21,7 @@ public class FileWriteNode : Node
         Inputs = [new()];
         Color = "#deb887";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/file-write.svg";
     }
 
     public enum FileWriteMode

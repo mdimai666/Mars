@@ -16,7 +16,7 @@ public class FunctionNode : Node
         Inputs = [new()];
         Color = "#F8D0A3";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/csproj-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/csharp-code.svg";
     }
 
 }

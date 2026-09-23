@@ -28,7 +28,7 @@ public class DirReadNode : Node
         Inputs = [new()];
         Color = "#deb887";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/dir-read.svg";
     }
 
 }

@@ -24,7 +24,7 @@ public class SwitchNode : Node
         Inputs = [new()];
         Color = "#E0D870";
         Outputs = [new(), new(),];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/switch.svg";
     }
 
     public class Condition

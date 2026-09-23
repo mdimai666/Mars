@@ -24,7 +24,7 @@ public class FileServiceWriteNode : Node
         Inputs = [new()];
         Color = "#ffea9f";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/file-service-write.svg";
     }
 
 }

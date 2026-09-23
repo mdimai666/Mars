@@ -45,6 +45,11 @@
     <Project Path="src/Mars.Modules/Mars.Cms.Contracts/Mars.Cms.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Cms.Host/Mars.Cms.Host.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/CodeCompletion/">
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Contracts/Mars.CodeCompletion.Contracts.csproj" />
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Front/Mars.CodeCompletion.Front.csproj" />
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Host/Mars.CodeCompletion.Host.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/CommandLine/">
     <Project Path="src/Mars.Modules/Mars.CommandLine.Abstractions/Mars.CommandLine.Abstractions.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
     <Project Path="src/Mars.Modules/Mars.CommandLine/Mars.CommandLine.csproj" Id="6b088378-aa0e-4a8a-a220-3359c86d6106" />

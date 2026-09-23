@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <Product>Mars.CodeCompletion.Front</Product>
+        <Description>Mars Monaco editor IntelliSense front wiring: BlazorMonaco providers bridge.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BlazorMonaco" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
+        <ProjectReference Include="..\Mars.CodeCompletion.Contracts\Mars.CodeCompletion.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Product>Mars.CodeCompletion.Contracts</Product>
+        <Description>Mars code completion wire contracts: requests and results DTOs.</Description>
+    </PropertyGroup>
+
+</Project>

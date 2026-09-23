@@ -1,6 +1,6 @@
 # План: реворк полей нод — от одного `Payload` к источникам значений
 
-> **Статус: этап 1 выполнен (шаги 1–4 и 6), шаг 5 отложен; этап 2 — прототип выполнен целиком (шаги 1–4) — 2026-09-14, ветка `ai/nodes-rework`.**
+> **Статус: этап 1 выполнен полностью (шаги 1–6, шаг 5 — 2026-09-23); этап 2 — прототип выполнен целиком (шаги 1–4) — 2026-09-14, ветка `ai/nodes-rework`.**
 > Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
 > (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
 > ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
@@ -117,14 +117,17 @@
 строкой, двусторонняя привязка потребовала бы конвертеров); разворот в Monaco для массивов/объектов отложен
 до этапа 3; `timestamp` пока только unix-millis.
 
-### Шаг 5. Примеры и документация — ⏸ отложен
+### Шаг 5. Примеры и документация — ✅ (2026-09-23)
 
-Отложено пользователем 2026-09-14 («мы пока протипируем и смысла писать доки нет»). Когда вернёмся:
-
-- [ ] `Mars.Nodes.Core/Examples/Nodes/` — отдельный пример Inject с несколькими полями
-      (`Payload` + `status` + `timestamp`), а не только переписанные существующие.
-- [ ] `Mars.Nodes.FormEditor/wwwroot/docs/InjectNode/InjectNode.md` и `.ru.md` — список полей, типы,
-      семантика Context, CLI `node inject`. `NodesDocTests` проверяет только наличие файлов.
+- [x] `Mars.Nodes.Core/Examples/Nodes/` — два новых примера: `InjectNodeMultipleFieldsExample1`
+      (Payload-строка + `status` + `timestamp`) и `InjectNodeExpressionExample1`
+      (kind `expression`: `21 * 2`, конкатенация строк).
+- [x] `wwwroot/docs/InjectNode/InjectNode.md` и `.ru.md` — переписаны (были 4 строки): список полей
+      (Key/VarType/Value/ValueKind), семантика Context, типы включая `timestamp`, kind'ы
+      `const`/`msg`/`expression` и `@`-конвенция редактора значения, хоткеи `MarsValueInput`
+      (Ctrl+Space / Alt+Down / Alt+Up / F4), запуск при старте и расписание, JSON-пример,
+      CLI `node inject`, примечание об отсутствии миграции старых flows.
+- [x] Проверка: `dotnet build Mars.slnx` — 0 errors; `Mars.Nodes.Tests` — 565/565 (`NodesDocTests` в т.ч.).
 
 ### Шаг 6. Тесты и проверка ✅
 
@@ -135,7 +138,7 @@
       сообщение; json без `fields` даёт дефолтное поле; round-trip; валидация (дубликат ключа, плохой ключ,
       неизвестный тип, дефолтная нода без ошибок).
 - [x] Проверка: `dotnet build Mars.slnx` — 0 warnings / 0 errors; `Mars.Nodes.Tests` — **432/432**.
-- [ ] UI — визуально при ручной проверке (`/dev/nodered`), отдельным прогоном не гоняем.
+- [x] UI — подтверждено пользователем визуально (2026-09-23).
 
 ---
 
@@ -222,6 +225,13 @@ node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
    Остаток @-конвенции: аргументы `InlineFunctionNode` (`@expr` в `node.Arguments`) — отдельный
    механизм, не тронут (кандидат в добор этапа 3). Формы Switch/Eval/FileWrite/HttpRequest на
    `ValueSourceEditor` не переведены (свойства kind пока видны только в JSON) — следующим шагом.
+
+Фактическое состояние форм (2026-09-23): прототипные `ValueSourceEditor`/`FieldPathPicker` удалены и
+заменены компонентами `MarsValueInput`/`MarsPathInput` (`EditForms/Components`) с конвенцией ввода
+`@` = expression; отдельного контрола kind в формах нет — kind задаётся сеттером формы
+(`SetFieldValue`/`SetUrlValue`: любой `@...` сохраняется как `expression`, `msg` остаётся только
+в JSON и отображается как `@msg.<path>`). Подключены: Inject, Switch, Eval, FileWrite, FileRead,
+HttpRequest, MqttOut, EmailSend, VariableSet, DevAdminConnection.
 
 ## Этап 3 — UI источников: добор ➡️ перенесён
 

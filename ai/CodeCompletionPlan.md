@@ -136,7 +136,10 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    `HoverQueryService` (QuickInfoService, первая секция — code fence), `DiagnosticsQueryService`,
    `SignatureHelpQueryService` — вручную по SemanticModel (порт альфы: `SignatureHelpService`
    в Roslyn 5.9 internal), маппинг Roslyn tags → Monaco kinds.
-3. [ ] Контроллер, MainCodeCompletion, флаг CodeCompletion, appsettings, подключение в MarsWebAppStartup.
+3. [x] `CodeCompletionController` (`api/CodeCompletion/info` + `{contextId}/completion|hover|signature|diagnostics`,
+   `[FeatureGate]` + `[Authorize(Roles="Admin")]`), `MainCodeCompletion.AddMarsCodeCompletion()`,
+   флаг `FeatureFlags.CodeCompletion`, appsettings (prod false / dev true),
+   ProjectReference + `AddIfFeatureEnabled` в `MarsWebAppStartup`.
 4. [ ] Тесты серверной части (tests/Mars.CodeCompletion.Tests).
 5. [ ] Front: ICodeCompletionServiceClient в Mars.WebApiClient, attacher, JS-мост signature help.
 6. [ ] FunctionNodeContextProvider + wiring форм FunctionNode.

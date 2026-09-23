@@ -2,6 +2,7 @@ using EditorJsBlazored.Host;
 using Mars.Admin.Host;
 using Mars.AiChat.Host;
 using Mars.Cms.Host;
+using Mars.CodeCompletion.Host;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
@@ -118,6 +119,7 @@ public static class MarsWebAppStartup
             builder.AddMarsAiCms();
         });
         builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
+        builder.AddIfFeatureEnabled(FeatureFlags.CodeCompletion, b => b.Services.AddMarsCodeCompletion());
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuth());
 
         //------------------------------------------

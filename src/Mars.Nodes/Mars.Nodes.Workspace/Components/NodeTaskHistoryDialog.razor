@@ -1,11 +1,12 @@
 @using Mars.Nodes.Contracts.NodeTaskJob
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Workspace.Components.JobViews
 @using Mars.Nodes.Workspace.Components.SettingsViews
 @using Mars.Contracts.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-@implements IDialogContentComponent<string>
+@implements IDialogContentComponent<INodeEditorApi>
 
 <FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
     <div class="hstack">
@@ -29,15 +30,13 @@
     [Inject] IDialogService _dialogService { get; set; } = default!;
 
     [Parameter]
-    public string Content { get; set; } = default!;
-
-    private string StartMenuName => Content;
+    public INodeEditorApi Content { get; set; } = default!;
 
     private Task OkAsync() => Dialog.CloseAsync();
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
-    public static void ShowDialog(IDialogService _dialogService, string startMenuName = "")
+    public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor)
     {
         DialogParameters parameters = new()
         {
@@ -50,12 +49,12 @@
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(startMenuName, parameters);
+        _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(editor, parameters);
     }
 
     void OnClickItem(NodeTaskResultSummaryResponse task)
     {
-        NodeTaskJobResultDialog.ShowDialog(_dialogService, task.TaskId);
+        NodeTaskJobResultDialog.ShowDialog(_dialogService, task.TaskId, Content);
     }
 
 }

@@ -1,10 +1,11 @@
 @using Mars.Nodes.Contracts.NodeTaskJob
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Front.Abstractions.Services
 @using Mars.Nodes.Workspace.Components.JobViews
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-@implements IDialogContentComponent<Guid>
+@implements IDialogContentComponent<NodeTaskJobResultDialogModel>
 
 <FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
     <div class="hstack">
@@ -21,7 +22,7 @@
             }
             else if (_model is not null)
             {
-                <NodeTaskJobResultDetailView Model="_model" />
+                <NodeTaskJobResultDetailView Model="_model" Editor="Content.Editor" />
             }
             else
             {
@@ -39,9 +40,9 @@
     [Inject] INodeServiceClient _client { get; set; } = default!;
 
     [Parameter]
-    public Guid Content { get; set; } = default!;
+    public NodeTaskJobResultDialogModel Content { get; set; } = default!;
 
-    private Guid TaskId => Content;
+    private Guid TaskId => Content.TaskId;
 
     bool _busy;
     NodeTaskResultDetailResponse? _model;
@@ -66,7 +67,7 @@
         StateHasChanged();
     }
 
-    public static void ShowDialog(IDialogService _dialogService, Guid taskId)
+    public static void ShowDialog(IDialogService _dialogService, Guid taskId, INodeEditorApi editor)
     {
         DialogParameters parameters = new()
         {
@@ -79,7 +80,7 @@
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(taskId, parameters);
+        _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(new NodeTaskJobResultDialogModel(taskId, editor), parameters);
     }
 
 }

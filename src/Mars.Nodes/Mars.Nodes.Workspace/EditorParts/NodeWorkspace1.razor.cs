@@ -365,7 +365,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         //wire with self
         bool is_self = new_wire.Node1 == new_wire.Node2;
         bool same_slot = is_node1_set == output;
-        bool is_together_linkNodes = _flowNodes[new_wire.Node1.NodeId].IsLinkNode && _flowNodes[new_wire.Node2.NodeId].IsLinkNode;
+        bool is_together_linkNodes = _flowNodes.TryGetValue(new_wire.Node1.NodeId, out var node1)
+                                  && _flowNodes.TryGetValue(new_wire.Node2.NodeId, out var node2)
+                                  && node1.IsLinkNode && node2.IsLinkNode;
 
         if (!is_self && !same_slot && !is_together_linkNodes)
         {

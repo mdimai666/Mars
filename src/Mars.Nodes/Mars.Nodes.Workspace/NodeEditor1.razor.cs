@@ -29,8 +29,6 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
-    internal static NodeEditor1? Instance { get; private set; }
-
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
@@ -150,7 +148,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Instance = this;
 
         _hotKeysContext = HotKeys.CreateContext()
             .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
@@ -212,7 +209,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public async ValueTask DisposeAsync()
     {
-        Instance = null;
         if (_hotKeysContext is not null)
             await _hotKeysContext.DisposeAsync();
         if (_actionManager is not null)
@@ -361,13 +357,27 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     HashSet<string> DebugSnapshotScope()
     {
+        var upstream = new Dictionary<string, List<string>>();
+        foreach (var node in AllNodes.Values)
+        {
+            foreach (var port in node.Wires)
+            {
+                foreach (var wire in port)
+                {
+                    if (!upstream.TryGetValue(wire.NodeId, out var sources))
+                        upstream[wire.NodeId] = sources = [];
+                    sources.Add(node.Id);
+                }
+            }
+        }
+
         var scope = new HashSet<string>();
-        AddUpstreamClosure(scope, _selectedNode?.Id);
-        AddUpstreamClosure(scope, EditNode?.Id);
+        AddUpstreamClosure(scope, _selectedNode?.Id, upstream);
+        AddUpstreamClosure(scope, EditNode?.Id, upstream);
         return scope;
     }
 
-    void AddUpstreamClosure(HashSet<string> scope, string? startId)
+    static void AddUpstreamClosure(HashSet<string> scope, string? startId, IReadOnlyDictionary<string, List<string>> upstream)
     {
         if (startId is null) return;
 
@@ -379,15 +389,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             var id = queue.Dequeue();
             if (!scope.Add(id)) continue;
 
-            foreach (var node in AllNodes.Values)
+            if (upstream.TryGetValue(id, out var sources))
             {
-                for (var port = 0; port < node.Wires.Count; port++)
-                {
-                    foreach (var wire in node.Wires[port])
-                    {
-                        if (wire.NodeId == id) queue.Enqueue(node.Id);
-                    }
-                }
+                foreach (var source in sources) queue.Enqueue(source);
             }
         }
     }
@@ -501,11 +505,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         }
     }
 
-    async void OnWorkspaceDblClick(MouseEventArgs e)
+    void OnWorkspaceDblClick(MouseEventArgs e)
     {
         quickNodeAddMenu.Show(e);
-        await Task.Delay(100);
-        quickNodeAddMenu.Focus();
     }
 
     void CalcTabs()
@@ -834,13 +836,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void ShowSettingsDialog()
     {
-        NodeEditorSettingsDialog.ShowDialog(_dialogService);
+        NodeEditorSettingsDialog.ShowDialog(_dialogService, this);
         EnableHotkeys(false);
     }
 
     void OnJobListHistoryButtonClick()
     {
-        NodeTaskHistoryDialog.ShowDialog(_dialogService);
+        NodeTaskHistoryDialog.ShowDialog(_dialogService, this);
         EnableHotkeys(false);
     }
 

@@ -34,6 +34,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IFrontServiceClient Front { get; }
     public IAIServiceClient AITool { get; }
     public IAiChatServiceClient AiChat { get; }
+    public ICodeCompletionServiceClient CodeCompletion { get; }
 
     public MarsWebApiClient(IServiceProvider serviceProvider, IFlurlClient flurlClient)
     {
@@ -64,5 +65,6 @@ public class MarsWebApiClient : IMarsWebApiClient
         Front = new FrontServiceClient(serviceProvider, targetClient);
         AITool = new AIServiceClient(serviceProvider, targetClient);
         AiChat = new AiChatServiceClient(serviceProvider, targetClient);
+        CodeCompletion = new CodeCompletionServiceClient(serviceProvider, targetClient);
     }
 }

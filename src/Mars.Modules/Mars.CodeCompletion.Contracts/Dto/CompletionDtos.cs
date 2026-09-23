@@ -9,8 +9,8 @@ public class CompletionItemDto
 {
     public string Label { get; set; } = "";
 
-    /// <summary>Monaco CompletionItemKind (1=Text … 25=TypeParameter).</summary>
-    public int Kind { get; set; } = 1;
+    /// <summary>Имя вида Monaco CompletionItemKind: Method, Function, Property, Class, Keyword, …</summary>
+    public string Kind { get; set; } = "Text";
 
     public string? InsertText { get; set; }
 

@@ -147,7 +147,16 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    `isSubmission: true` (`RegularCompilationTracker`: `IsSubmission ? CreateSubmissionCompilation(..., HostObjectType) : CreateCompilation(...)`);
    плюс документ обязан иметь `DocumentInfo.Create(sourceCodeKind: Script)` — иначе document-level
    Regular перекрывает parse options проекта (CS8805, globals не видны).
-5. [ ] Front: ICodeCompletionServiceClient в Mars.WebApiClient, attacher, JS-мост signature help.
+5. [x] Front: `ICodeCompletionServiceClient`/`CodeCompletionServiceClient` + `CodeCompletion`
+   в `IMarsWebApiClient`; `Mars.CodeCompletion.Front`: `CodeCompletionRegistry` (singleton,
+   `ICodeCompletionAttacher`) — ленивая инициализация (GET info → флаг), глобальная регистрация
+   completion/hover провайдеров BlazorMonaco на `csharp`, реестр modelUri → (contextId, documentId),
+   hover-range считается из offsets на клиенте; JS-модуль `codeCompletion.js` (динамический import,
+   `?v=` cache-busting): signature help провайдер + snapshot (code/offset) + debounce-диагностика
+   (500 мс) + маркеры + очистка по onWillDispose. Kind в DTO — **строка** (имя Monaco-вида),
+   т.к. нумерация enum BlazorMonaco (Method=0…) отличается от LSP — парсится `Enum.TryParse`.
+   Graбли: `CompletionItemProvider` без параметренного ctor — `new CompletionItemProvider(null, ProvideDelegate)`;
+   `InsertText`/`Detail`/`SortText`/`FilterText` — plain string, `Label`/`Documentation` — JsonElement (AsString-хелперы).
 6. [ ] FunctionNodeContextProvider + wiring форм FunctionNode.
 7. [ ] Ручная проверка, bump `MarsAppVersion` (новый JS-ассет).
 

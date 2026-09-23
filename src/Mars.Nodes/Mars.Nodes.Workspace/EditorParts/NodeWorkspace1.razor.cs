@@ -109,6 +109,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         containerOffsetY = (float)bounds.Value.Top;
     }
 
+    internal float ContainerOffsetX => containerOffsetX;
+    internal float ContainerOffsetY => containerOffsetY;
+    internal Task RefreshContainerOffsetAsync() => UpdateContainerOffsetAsync();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -184,13 +188,16 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     /// <param name="startMoveUnderCursor">Это если истина перемещается под мышку, если нет относительно где был</param>
     void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor, float offsetX = 0, float offsetY = 0)
     {
+        var nodeList = nodes as IList<Node> ?? nodes.ToList();
+        if (nodeList.Count == 0) return;
+
         _dragElements.Clear();
         _allNodesInTheDragBundle.Clear();
 
-        var minX = nodes.Min(s => s.X);
-        var minY = nodes.Min(s => s.Y);
+        var minX = nodeList.Min(s => s.X);
+        var minY = nodeList.Min(s => s.Y);
 
-        foreach (var _node in nodes)
+        foreach (var _node in nodeList)
         {
             //Console.WriteLine($"_node.X={_node.X}, _node.Y={_node.Y}, e.ClientX={e.ClientX}, e.ClientY={e.ClientY}");
 
@@ -206,7 +213,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             _dragElements.Add(drag);
         }
 
-        _allNodesInTheDragBundle = nodes.SelectMany(s => NodeWireUtil.GetInputNodes(s, FlowNodes)).ToHashSet();
+        _allNodesInTheDragBundle = nodeList.SelectMany(s => NodeWireUtil.GetInputNodes(s, FlowNodes)).ToHashSet();
         _drag = true;
         OnDragNodesStarted?.Invoke(_dragElements.Select(s => s.node.Id));
     }
@@ -580,9 +587,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
         foreach (var node in FlowNodes.Values)
         {
-            Rectangle rect = new((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
+            Rectangle rect = new((int)node.X, (int)node.Y, (int)node.BodyRectWidth, (int)node.BodyRectHeight);
 
-            if (_lasso.Contains(rect))
+            if (_lasso.IntersectsWith(rect))
             {
                 node.selected = true;
             }

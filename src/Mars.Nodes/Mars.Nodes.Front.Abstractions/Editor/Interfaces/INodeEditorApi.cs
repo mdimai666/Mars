@@ -34,7 +34,7 @@ public interface INodeEditorApi
     void ChangeFlow(FlowNode flowNode);
     IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId);
     void StartEditNode(Node node);
-    void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
+    Task StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
     void EnableHotkeys(bool enable);
     void RedrawWires();
     void AddDebugMessage(DebugMessage msg);

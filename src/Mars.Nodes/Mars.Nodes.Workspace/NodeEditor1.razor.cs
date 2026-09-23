@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
@@ -114,6 +115,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     bool _showPaletteNodeContextMenu;
     FluentMenu _paletteNodeContextMenu = default!;
+    ElementReference _paletteSidebarRef;
+    // fallback until the first JS measurement of the palette sidebar position
+    float _paletteOffsetX = 48;
+    float _paletteOffsetY = 40;
 
     IReadOnlyDictionary<string, LinkInNode[]> _inboundLinkOutNodesDict = new Dictionary<string, LinkInNode[]>();
 
@@ -154,7 +159,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
         _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _adminJs);
-        _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
+        _actionManager.PropertyChanged += OnActionManagerPropertyChanged;
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();
 
@@ -210,8 +215,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         Instance = null;
         if (_hotKeysContext is not null)
             await _hotKeysContext.DisposeAsync();
-        _actionManager.PropertyChanged -= (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
+        if (_actionManager is not null)
+            _actionManager.PropertyChanged -= OnActionManagerPropertyChanged;
     }
+
+    void OnActionManagerPropertyChanged(object? sender, PropertyChangedEventArgs e) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
 
     void OnChildComponentPropertyChangedRepaint() => StateHasChanged();
 
@@ -398,7 +406,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         RefreshDebugSnapshots();
     }
 
-    public void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent)
+    public async Task StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent)
     {
         Type configNodeType = appendNewConfigNodeEvent.ConfigNodeType;
 
@@ -409,15 +417,12 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             return;
         }
         var instance = CreateConfigNodeFromType(found);
-        Task.Run(async () =>
-        {
-            await Task.Delay(10);
-            appendNewConfigNodeEvent.ConfigNodeSetter(instance);
-            EditNode = instance;
-            nodeEditContainer1.StartEditNode(instance);
-            RefreshDebugSnapshots();
-            StateHasChanged();
-        });
+        await Task.Delay(10);
+        appendNewConfigNodeEvent.ConfigNodeSetter(instance);
+        EditNode = instance;
+        nodeEditContainer1.StartEditNode(instance);
+        RefreshDebugSnapshots();
+        StateHasChanged();
     }
 
     void OnClickEditConfigNode(string id)
@@ -433,10 +438,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         RefreshDebugSnapshots();
     }
 
-    void OnClickNewConfigNode(AppendNewConfigNodeEvent e)
-    {
-        StartCreateNewConfigNode(e);
-    }
+    Task OnClickNewConfigNode(AppendNewConfigNodeEvent e)
+        => StartCreateNewConfigNode(e);
 
     void OnEditFormSaveNodeClick(Node node)
     {
@@ -451,8 +454,15 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         AllNodes[node.Id] = EditNode;
         EditNode.changed = changed;
 
-        AllNodesChanged.InvokeAsync(AllNodes).ContinueWith(async t =>
+        _ = OnNodeSavedAsync(node);
+    }
+
+    async Task OnNodeSavedAsync(Node node)
+    {
+        try
         {
+            await AllNodesChanged.InvokeAsync(AllNodes);
+
             if (node is FlowNode flow)
             {
                 CalcTabs();
@@ -466,7 +476,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             }
             _nodeWorkspace1.RedrawWires();
             StateHasChanged();
-        });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "SaveNode continuation failed for node {NodeId}", node.Id);
+        }
     }
 
     void DeleteNode(string nodeId)
@@ -737,9 +751,15 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     Task OnNodeContextMenu(NodeComponentMouseEventArgs e)
     {
         PrepareNodeExampleListForContextMenu(e.Node.GetType());
-        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                                                (int)e.MouseEvent.ClientX - 48 + _nodeWorkspace1.ScrollInfo.ScrollLeft,
-                                                (int)e.MouseEvent.ClientY - 40 + _nodeWorkspace1.ScrollInfo.ScrollTop);
+        return OpenWorkspaceContextMenuAsync(_workspaceContextMenu, e.MouseEvent);
+    }
+
+    async Task OpenWorkspaceContextMenuAsync(FluentMenu menu, MouseEventArgs e)
+    {
+        await _nodeWorkspace1.RefreshContainerOffsetAsync();
+        await menu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
+                             (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX + _nodeWorkspace1.ScrollInfo.ScrollLeft),
+                             (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY + _nodeWorkspace1.ScrollInfo.ScrollTop));
     }
 
     private static readonly Dictionary<string, string> NodeContextMenuItems = new()
@@ -760,9 +780,23 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     Task OnPaletteNodeContextMenu(NodeComponentMouseEventArgs e)
     {
         PrepareNodeExampleListForContextMenu(e.Node.GetType());
-        return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                                                (int)e.MouseEvent.ClientX - 48,
-                                                (int)e.MouseEvent.ClientY - 40);
+        return OpenPaletteContextMenuAsync(e.MouseEvent);
+    }
+
+    async Task OpenPaletteContextMenuAsync(MouseEventArgs e)
+    {
+        await UpdatePaletteOffsetAsync();
+        await _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
+                                                (int)(e.ClientX - _paletteOffsetX),
+                                                (int)(e.ClientY - _paletteOffsetY));
+    }
+
+    async Task UpdatePaletteOffsetAsync()
+    {
+        var bounds = await _js.GetElementBounds(_paletteSidebarRef);
+        if (bounds is null) return;
+        _paletteOffsetX = (float)bounds.Value.Left;
+        _paletteOffsetY = (float)bounds.Value.Top;
     }
 
     void PrepareNodeExampleListForContextMenu(Type nodeType)
@@ -783,11 +817,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     }
 
     Task OnWireContextMenu(SelWireEventArgs e)
-    {
-        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                                                (int)e.MouseEvent.ClientX - 48 + _nodeWorkspace1.ScrollInfo.ScrollLeft,
-                                                (int)e.MouseEvent.ClientY - 40 + _nodeWorkspace1.ScrollInfo.ScrollTop);
-    }
+        => OpenWorkspaceContextMenuAsync(_workspaceContextMenu, e.MouseEvent);
 
     private static readonly Dictionary<string, string> WireContextMenuItems = new()
     {

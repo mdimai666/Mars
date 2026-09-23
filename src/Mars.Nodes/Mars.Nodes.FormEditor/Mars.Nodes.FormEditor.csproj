@@ -41,6 +41,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.CodeCompletion.Front\Mars.CodeCompletion.Front.csproj" />
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />

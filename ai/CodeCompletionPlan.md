@@ -157,7 +157,13 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    т.к. нумерация enum BlazorMonaco (Method=0…) отличается от LSP — парсится `Enum.TryParse`.
    Graбли: `CompletionItemProvider` без параметренного ctor — `new CompletionItemProvider(null, ProvideDelegate)`;
    `InsertText`/`Detail`/`SortText`/`FilterText` — plain string, `Label`/`Documentation` — JsonElement (AsString-хелперы).
-6. [ ] FunctionNodeContextProvider + wiring форм FunctionNode.
+6. [x] Интеграция FunctionNode: `FunctionNodeContextProvider` в `Mars.Nodes.Host/Services`
+   (зеркалит ScriptOptions `FunctionNodeImpl`: `ScriptExecuteContext` как HostObjectType, те же
+   импорты, definedAssemblies + все сборки сервисов из DI; TPA-базу добавляет менеджер),
+   регистрация в `MainNodes.AddMarsNodes`; константа `NodeCompletionContexts.FunctionNode = "nodes.function"`
+   в `Mars.Nodes.Contracts`; `FunctionNodeForm` — `OnInit="OnEditorInit"` → `ICodeCompletionAttacher.AttachAsync`
+   (опциональный сервис через `IServiceProvider.GetService`, форма реализует `IAsyncDisposable`);
+   `AddCodeCompletionFront()` в `Mars.Admin/Program.cs`. `dotnet build Mars.slnx` — зелёный, 8/8 тестов.
 7. [ ] Ручная проверка, bump `MarsAppVersion` (новый JS-ассет).
 
 ## Грабли

@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using Mars.CodeCompletion.Host.Abstractions;
 using Mars.CommandLine.Abstractions;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Abstractions;
@@ -45,6 +46,7 @@ public static class MainNodes
         services.AddSingleton<MqttManager>();
         services.AddScoped<FunctionCodeSuggestService>();
         services.AddSingleton<CommandNodesActionProvider>();
+        services.AddSingleton<ICodeContextProvider, FunctionNodeContextProvider>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

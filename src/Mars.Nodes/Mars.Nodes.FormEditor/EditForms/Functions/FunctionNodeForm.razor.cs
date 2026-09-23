@@ -1,22 +1,42 @@
 using BlazorMonaco;
 using BlazorMonaco.Editor;
+using Mars.CodeCompletion.Front.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Functions;
+using Mars.Nodes.Contracts.Nodes;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.FormEditor.EditForms.Functions;
 
-public partial class FunctionNodeForm
+public partial class FunctionNodeForm : IAsyncDisposable
 {
     [CascadingParameter] Node Value { get; set; } = default!;
     FunctionNode Node { get => (FunctionNode)Value; set => Value = value; }
 
     CodeEditor2 editor1 = default!;
 
+    [Inject] IServiceProvider Services { get; set; } = default!;
+
+    private IAsyncDisposable? _completionAttachment;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
+    }
+
+    private async Task OnEditorInit()
+    {
+        var attacher = Services.GetService<ICodeCompletionAttacher>();
+        if (attacher != null)
+            _completionAttachment = await attacher.AttachAsync(editor1.Monaco, NodeCompletionContexts.FunctionNode);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_completionAttachment != null)
+            await _completionAttachment.DisposeAsync();
     }
 
     public override async Task OnEditSave()

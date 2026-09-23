@@ -19,7 +19,7 @@
 
         <MarsCodeEditor2.CodeEditor2 @ref=editor1
                                       HideToolbarComponents=true
-                                      Lang="csharp" Value="@Node.Code" OnSave="OnSave" ContainerCssStyle="">
+                                      Lang="csharp" Value="@Node.Code" OnSave="OnSave" OnInit="OnEditorInit" ContainerCssStyle="">
             <HeaderArea>
                 <CodeEditorFunctionNodeToolbar />
             </HeaderArea>

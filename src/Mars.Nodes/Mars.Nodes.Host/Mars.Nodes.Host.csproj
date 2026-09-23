@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.CodeCompletion.Host\Mars.CodeCompletion.Host.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />

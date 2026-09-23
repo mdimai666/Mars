@@ -4,6 +4,7 @@ using Mars.Admin.Components;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Startups;
 using Mars.AiChat.Front;
+using Mars.CodeCompletion.Front;
 using Mars.Datasource.Front;
 using Mars.Forms.Front;
 using Mars.Nodes.Workspace;
@@ -71,6 +72,7 @@ builder.Services.AddNodeWorkspace()
                 .AddDatasourceWorkspace()
                 .AddSemanticKernelFront()
                 .AddAiChatFront()
+                .AddCodeCompletionFront()
                 .AddMarsFormsFront();
 
 builder.ConfigureWebSockets(backendUrl);

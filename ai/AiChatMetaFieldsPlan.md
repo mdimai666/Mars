@@ -194,14 +194,17 @@
       после установки значения (перерендер плиток); ReadOnly/Hidden-поля — отклонять или
       пропускать; категории — оставить как есть (Guid-CSV) или перевести на стор.
 
-### Фаза 4 — скилл `mars-posts` (+ `mars-media` при необходимости)
+### Фаза 4 — скилл `mars-posts` (+ `mars-media`) ✅ (2026-09-24)
 
-- [ ] Метаполя: сначала `GetOpenPageInfo`/`GetPost` (типы, кратность, варианты), не угадывать;
-      Select — только ключи вариантов; формат множественных (JSON-массив / CSV).
-- [ ] Картинка поста: рецепт `AddMedia(url)` или `ListMedia` → file id → Image-поле
-      (`imageFieldKey` или явный ключ) — и на странице (`SetOpenPageField`), и без неё
-      (`CreatePost`/`UpdatePost` с metaJson).
-- [ ] Статус — slug из списка статусов типа; `UpdatePost` — читать перед записью (last-write-wins).
+- [x] `ai-skills/mars-posts/SKILL.md` переписан: DescribePostType перед записью
+      («не выдумывай ключи/варианты/статусы»), CreatePost/UpdatePost/GetPost/ListPosts,
+      форматы metaJson (Select — ключ, ссылки — Guid, множественные — массив, readOnly —
+      не передавать, required — при создании), картинка поста (AddMedia/ListMedia → Guid →
+      imageFieldKey через metaJson), last-write-wins и приоритет моста открытой страницы
+      над серверным UpdatePost при открытой форме.
+- [x] `ai-skills/mars-media/SKILL.md`: буллет «картинка поста — значение Image-поля (Guid),
+      не тег в контенте; рецепт — в mars-posts».
+- [x] Frontmatter-формат сохранён (name/description/tags) — каталог скиллов парсит его.
 
 ### Фаза 5 — проверка
 

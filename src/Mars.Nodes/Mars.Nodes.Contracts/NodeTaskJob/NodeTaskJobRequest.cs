@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
 
-namespace Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+namespace Mars.Nodes.Contracts.NodeTaskJob;
 
 public record ListNodeTaskJobQueryRequest : BasicListQueryRequest
 {

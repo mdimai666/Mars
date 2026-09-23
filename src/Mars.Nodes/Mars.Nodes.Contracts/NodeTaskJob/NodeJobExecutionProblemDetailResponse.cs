@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+namespace Mars.Nodes.Contracts.NodeTaskJob;
 
 public record NodeJobExecutionProblemDetailResponse
 {

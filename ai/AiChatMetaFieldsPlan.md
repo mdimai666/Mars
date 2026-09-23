@@ -153,29 +153,28 @@
       каждый успешный кейс проверяется round-trip'ом через `MetaFieldUtils.MetaValueFromJson`.
 - [x] Сборка `Mars.slnx` зелёная, без новых warning'ов.
 
-#### Шаг 2.3 — инструменты (`MarsPostTools`, `ContentToolset`)
+#### Шаг 2.3 — инструменты (`MarsPostTools`, `ContentToolset`) ✅ (2026-09-24)
 
-- [ ] Конструктор `MarsPostTools` += `IPostJsonService`, `IMetaModelTypesLocator`
-      (прокинуть в `ContentToolset`; DI уже зарегистрирован).
-- [ ] `DescribePostType(type)`: фичи, ключ редактора контента (из `GetEditModelBlank`),
-      slug'и статусов, `imageFieldKey`, дескрипторы метаполей `{key, title, type, multiple,
-      required, variants[]}`.
-- [ ] `CreatePost` += `metaJson?`, `status?`; перевод на `IPostJsonService.Create`
-      (UserId — владелец чата, LangCode/редактор — из blank, адаптация контента сохраняется);
-      валидационные ошибки — строкой модели.
-- [ ] `UpdatePost(postId, title?, contentText?, tagsCsv?, excerpt?, status?, metaJson?)`:
-      `GetDetail(renderContent:false)` → наложить только переданное (meta — только ключи
-      патча, `UpdateJsonMetaValuesToModifyDto` сам смержит остальное) → `UpdatePostJsonQuery`
-      (UserId — исходный автор; CategoryIds/LangCode — из прочитанного) →
-      уведомление `PostListChanged` → ответ с итогом и ссылкой. Описание инструмента —
-      last-write-wins, «сначала прочитай».
-- [ ] `GetPost` → `IPostJsonService.GetDetail`: + meta компактно (Select — key/title,
-      File/Image — id/name/url, Relation — id/title, скаляры как есть), + excerpt/langCode,
-      + imageFieldKey.
-- [ ] Регистрация `DescribePostType`/`UpdatePost` в `ContentToolset.Build`.
-- [ ] Открытые детали реализации: `PostSummary.Status` — `KeyValuePair<string,string>`
-      (уточнить, что ключ: slug или title — при read-modify-write в `UpdatePostJsonQuery.Status`
-      идёт slug); `PostAuthor.Id` — источник исходного автора.
+- [x] Конструктор `MarsPostTools` += `IPostJsonService`, `IMetaModelTypesLocator`
+      (прокинуты в `ContentToolset`; DI зарегистрирован в MainCms).
+- [x] `DescribePostType(type)`: фичи, статусы (slug/title, только при фиче Status),
+      редактор контента (`PostTypeDetail.ContentEditorKey()`), `imageFieldKey`,
+      дескрипторы метаполей `{key, title, type, multiple, required, hidden, readOnly,
+      modelName, variants[]}`; неизвестный тип — ошибка со списком типов (`PostTypesDict`).
+- [x] `CreatePost` += `metaJson?`, `status?`; переведён на `IPostJsonService.Create`
+      (UserId — владелец чата; LangCode/статус-дефолт — из `GetEditModelBlank`;
+      редактор контента — из blank-формы; `AdaptContent` вынесен из switch).
+- [x] `UpdatePost(postId, title?, contentText?, tagsCsv?, excerpt?, status?, metaJson?)`:
+      пустая строка = «не менять», `-` для tagsCsv/excerpt = «очистить»;
+      `GetDetail(renderContent:false)` → патч → `UpdatePostJsonQuery`
+      (UserId — исходный автор `dto.Author.Id`; CategoryIds/LangCode/Slug — из прочитанного;
+      Status — `dto.Status?.Key`, т.к. Key KVP = slug) → уведомление `PostListChanged`.
+      Описание инструмента — last-write-wins, «сначала прочитай».
+- [x] `GetPost` → `IPostJsonService.GetDetail`: + excerpt/langCode/imageFieldKey +
+      `meta` компактно (`CompactMetaValue`: варианты — key/title, FileDetail — id/name/url,
+      массивы рекурсивно, скаляры и dto связей — как есть).
+- [x] `DescribePostType`/`UpdatePost` зарегистрированы в `ContentToolset.Build`.
+- [x] Сборка `Mars.slnx` зелёная; `tests/Mars.AiChat.Tests` 23/23.
 
 ### Фаза 3 — мост открытой страницы (детализировать перед стартом)
 

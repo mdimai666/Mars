@@ -174,13 +174,20 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/e
 2. В `OnAfterRender(firstRender)` кладёт себя в `AiChatPageHandlerHolder.Current`,
    в `Dispose()` — снимает (паттерн тот же, что у `AiChatAppService.Setup`).
 
-Нюансы `EditPostView`:
+Нюансы `EditPostView` (хендлер целиком в partial-файле `EditPostView.AiChat.cs`):
 
-- Контент читается из активного редактора (`blockEditor1.ContentJson` / `codeEditor1.GetValue()` /
-  `editor1.GetHTML()`), для ИИ дополнительно отдаётся `contentText` (plain-text извлечение).
-- Запись контента — через экземпляр редактора, не через модель: BlockEditor получает Editor.js JSON
-  (текст бьётся на абзацы, `BuildBlockEditorJson`), Code — `SetValue`, PlainText — в модель.
-  WYSIWYG пока не поддерживается на запись (нет публичного сеттера).
+- Поля — дескрипторы общей формы (`Mars.Forms`): `GetInfo` отдаёт по каждому полю
+  тип/кратность/обязательность/readOnly/варианты/редактор + `imageFieldKey` и признак фичи
+  PostImage; `GetFields` — значения через `PostFormValueStore` (системные поля плоско,
+  метаполя — объектом `meta`; Select — ключ варианта, ссылки — Guid, пустая ссылка — null).
+- Тяжёлые редакторы (WYSIWYG, код, блочный) держат значение у себя: перед чтением полей
+  выполняется `FormCommitHooks.CommitAllAsync`, запись идёт в экземпляр редактора через
+  `FormLiveEditors.Find(key)`. WYSIWYG на запись не поддерживается (нет публичного сеттера);
+  тяжёлый редактор без live-регистрации — «ещё не инициализирован».
+- `SetField` — единый путь для системных слотов и метаполей: дескриптор из формы →
+  ReadOnly-отказ → live-редактор → `FormValueText.TryToClr` (парсинг строки по типу:
+  числа/даты invariant, Select — ключ варианта с валидацией, ссылки — Guid, множественные —
+  JSON-массив или CSV) → `SetValue`/`SetList` стора.
 - `SetOpenPageField` меняет форму БЕЗ сохранения (пользователь проверяет и жмёт «Сохранить»);
   `SaveOpenPage` — только по явной просьбе (правило задано в промпте).
 - Контекст «какая страница открыта» передаётся в send-запросе (`PageContext` = относительный URL)
@@ -277,25 +284,40 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 окружение, `IsRunningInDocker` и `IsPM2`, часовые поясы, аптайм и память. Реализация ничего не детектит сама —
 использует `IMarsSystemService` (`AboutSystem()`), поэтому источник данных тот же, что у страницы «Настройки → О системе».
 
-### Посты (создание без страницы)
+### Посты (серверные инструменты без страницы)
 
-`Mars.AiChat.Host/Tools/MarsPostTools.cs` — инструменты `CreatePost` / `GetPost` / `ListPosts`, работают через
-`IPostService` напрямую (страница не нужна). Экземпляр создаётся на каждый запуск с `userId` владельца чата —
-он становится автором поста.
+`Mars.AiChat.Host/Tools/MarsPostTools.cs` — инструменты `DescribePostType` / `CreatePost` /
+`GetPost` / `ListPosts` / `UpdatePost`, работают через JSON-путь CMS `IPostJsonService`
+(метаполя несёт целиком, поэтому серверный update безопасен для значений полей) и
+`IMetaModelTypesLocator` (определения типов). Экземпляр создаётся на каждый запуск с `userId`
+владельца чата — он становится автором новых постов (при update сохраняется исходный автор).
 
-- `CreatePost(type, title, contentText, tagsCsv, excerpt)`:
+- `DescribePostType(type)` — discovery перед записью: фичи, статусы (slug), редактор контента,
+  `imageFieldKey`, дескрипторы метаполей (ключ/тип/кратность/обязательность/readOnly/варианты Select).
+- `CreatePost(type, title, contentText, tagsCsv, excerpt, metaJson, status)`:
   - редактор контента берётся из `IPostService.GetEditModelBlank(type)` — ключ редактора системного
-    слота `content` читается **из дескриптора формы** (`blank.Form.Field(SystemFieldsCatalog.Content)?.Field?.Editor`,
-    сервер сводит туда параметры слота из `post_types.Options["systemFields"]`);
-  - текст адаптируется под редактор: BlockEditor → Editor.js JSON (абзацы, `BuildBlockEditorJson`),
-    WYSIWYG → `<p>…</p>`, обычный текст/код → как есть;
-  - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус — черновик;
+    слота `content` читается **из дескриптора формы**; текст адаптируется (`AdaptContent`):
+    BlockEditor → Editor.js JSON (абзацы), WYSIWYG → `<p>…</p>`, обычный текст/код → как есть;
+  - `metaJson` — JSON-объект «ключ поля: значение», нормализуется `MetaJsonNormalizer`
+    (`Tools/MetaJsonNormalizer.cs`): терпимый вход модели → строгая форма JSON-пути
+    (числа/даты из строк, Select — ключ варианта → Guid, SelectMany — CLR-узел `Guid[]`
+    в обход wire-ограничения JSON-API, множественные — массив или CSV); скаляры выдаются
+    wire-узлами `JsonNode.Parse` — CLR-узлы `GetValue<T>` не конвертирует;
+  - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус по умолчанию резолвит JSON-сервис;
   - в ответе агенту возвращается ссылка на страницу редактирования `/EditPost/{type}/{id}`.
-- `GetPost(id)` и `ListPosts(type, take)` — чтение; контент отдаётся и «как хранится», и plain-text (`ExtractPlainText`).
+- `UpdatePost(postId, title?, contentText?, tagsCsv?, excerpt?, status?, metaJson?)` —
+  read-modify-write в одном вызове: `GetDetail(renderContent:false)` → патч только переданных
+  полей (пустая строка = не менять, `-` = очистить теги/анонс; метаполя — только ключи патча,
+  остальные значения сервер смержит сам) → `UpdatePostJsonQuery`; last-write-wins (в описании
+  инструмента и скилле — правило «сначала прочитай»).
+- `GetPost(id)` — значения метаполей (`meta` компактно: варианты — key/title, файлы — id/name/url),
+  excerpt/lang, `imageFieldKey`, контент «как хранится» + plain-text (`ExtractPlainText`);
+  `ListPosts(type, take)` — список.
+- Create/Update уведомляют админку через `ChatHub` `PostListChanged` (грид постов обновляется).
 
-Обновление существующего поста сознательно не делается серверным инструментом (полный `UpdatePostQuery`
-затирал бы метаполя): редактирование идёт через мост открытой страницы (`SetOpenPageField`),
-а «создать» и «прочитать» — серверными инструментами.
+Правка поста при открытой странице приоритетнее серверного UpdatePost (правило скилла
+`mars-posts`): изменения через мост попадают в форму, пользователь их видит и сам сохраняет.
+Форматы metaJson и рецепт картинки поста — в скилле (`ai-skills/mars-posts/SKILL.md`).
 
 ### SQL-базы (MarsSqlTools)
 

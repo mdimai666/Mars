@@ -251,14 +251,20 @@
       не тег в контенте; рецепт — в mars-posts».
 - [x] Frontmatter-формат сохранён (name/description/tags) — каталог скиллов парсит его.
 
-### Фаза 5 — проверка
+### Фаза 5 — проверка (частично ✅ 2026-09-24)
 
-- [ ] `dotnet build Mars.slnx` + точечно: `tests/Mars.Forms.Tests` (парсер), затронутые
-      Cms-тесты при изменении JSON-пути.
-- [ ] Headless-полигон для серверных инструментов:
-      `Mars.dll aichat send -m "создай пост … с картинкой из url …"` (нужно настроенное
-      ИИ-подключение; page bridge без браузера не проверяется).
-- [ ] Мост — вручную в админке пользователем (браузер без прямой команды не открывать).
+- [x] `dotnet build Mars.slnx` зелёная; точечные прогоны: `Mars.Forms.Tests` 138/138,
+      `Mars.Cms.Tests` 19/19, `Mars.AiChat.Tests` 23/23, `Mars.Server.Tests` 473/473,
+      `Mars.WebApiClient.Integration.Tests` 205/205 (после шага 2.1).
+- [x] Headless-полигон, read-only прогон: `Mars.dll aichat send -m "DescribePostType('post') +
+      ListPosts"` на dev-БД — тулсет `content` собрался (28 инструментов), оба инструмента
+      отработали, модель получила фичи/статусы/`imageFieldKey`/дескрипторы метаполей.
+      (`--local` у `aichat send` не поддерживается — сабкоманда и так in-process.)
+- [x] `ai/AiChatGuide.md`: секция «Посты» переписана под JSON-путь и новые инструменты;
+      нюнсы `EditPostView` — под partial `EditPostView.AiChat.cs` и единый SetField.
+- [ ] Write-смоук на dev-БД (создать черновик с метаполями/картинкой через `CreatePost` —
+      меняет данные пользователя; запуск по решению пользователя).
+- [ ] Мост открытой страницы — вручную в админке пользователем (headless неприменим).
 
 ## Грабли
 

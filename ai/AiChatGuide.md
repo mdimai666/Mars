@@ -145,6 +145,7 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/e
 - `-p` — контекст страницы: по нему срабатывает `PageSkillRouter` (preload скиллов) и включаются
   page-зависимые тулсеты (файлы фронта);
 - `--skills` / `--access` — A/B-флаги (тулсет скиллов и рабочая папка file_access_*), по умолчанию on;
+- сабкоманда не принимает глобальные флаги сервера (`--local` и т.п.) — она и так выполняется in-process;
 - веб-сервер не стартует; инструменты page bridge (GetOpenPage*) без открытого браузера ждут таймаут
   (~20 с) и возвращают ошибку, остальные (файлы фронта, память, SQL, HTTP) работают;
 - использовать для A/B-проверок промптов/тулзов и воспроизведения багов: сборка → прогон → виден
@@ -319,6 +320,21 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 `mars-posts`): изменения через мост попадают в форму, пользователь их видит и сам сохраняет.
 Форматы metaJson и рецепт картинки поста — в скилле (`ai-skills/mars-posts/SKILL.md`).
 
+Инварианты и грабли (история инициативы — `git show 97a5f3f9:ai/AiChatMetaFieldsPlan.md`):
+
+- JSON-путь CMS остаётся строгим; терпимость к форматам входа модели — задача только
+  `MetaJsonNormalizer`. `FormValueText` (парсер моста открытой страницы) на серверном
+  JSON-пути не использовать — каноны wire-форм различаются (decimal: строка vs число;
+  Select: ключ варианта vs Guid).
+- Выходные узлы нормализатора — wire-based (`JsonNode.Parse`): `JsonValue.GetValue<T>()`
+  не конвертирует CLR-узла (`JsonValue.Create("guid")` → InvalidOperationException).
+  Исключение — SelectMany: CLR-узел `JsonValue(Guid[])`, единственная форма, которую
+  `MetaValueFromJson` читает как массив вариантов (wire-массив SelectMany — известный
+  пробел JSON-API, бэклог в `ai/MetaFieldsGuide.md`).
+- Тесты: `tests/Mars.AiChat.Tests` (нормализатор, round-trip через `MetaValueFromJson`),
+  `tests/Mars.Cms.Tests` (`MetaFieldUtils`), PostJson-интеграция —
+  `tests/Mars.WebApiClient.Integration.Tests/Tests/PostJsons/`.
+
 ### SQL-базы (MarsSqlTools)
 
 `Mars.AiChat.Host/Tools/MarsSqlTools.cs` — доступ к SQL через каноничный слой данных Mars
@@ -442,8 +458,10 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 ## Как развивать агента (roadmap-идеи)
 
-Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
-мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу),
+Реализовано: настройки сайта и любые опции, информация о системе, посты (описание типа,
+создание/чтение/список/обновление с метаполями и картинкой — см. «Посты»),
+мост открытой страницы редактирования поста (все поля формы, включая метаполя, status/lang;
+сохранение по запросу),
 SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
 файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`),
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
@@ -453,9 +471,6 @@ SQL-доступ к базам (схема/чтение/запись через 
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
 
-- **Редактирование поста без страницы**: в работе — `ai/AiChatMetaFieldsPlan.md` (серверный
-  `UpdatePost` через `IPostJsonService` read-modify-write, метаполя в `CreatePost` и в мосте
-  открытой страницы, картинка поста).
 - **WYSIWYG-контент**: запись пока не поддерживается (нет публичного сеттера у `WysiwygEditor`);
   добавить `SetHTML` и подключить в `SetContentValue`.
 - **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).

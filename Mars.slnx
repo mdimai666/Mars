@@ -219,6 +219,7 @@
     <Project Path="tests/Mars.Admin.Framework.Tests/Mars.Admin.Framework.Tests.csproj" />
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
     <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
+    <Project Path="tests/Mars.CodeCompletion.Tests/Mars.CodeCompletion.Tests.csproj" />
     <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.DockerImage.Tests/Mars.DockerImage.Tests.csproj" />

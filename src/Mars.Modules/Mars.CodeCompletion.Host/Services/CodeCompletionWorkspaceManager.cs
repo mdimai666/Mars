@@ -51,6 +51,7 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
                     var info = DocumentInfo.Create(
                         DocumentId.CreateNewId(ctx.ProjectId),
                         $"Doc_{documentId}",
+                        sourceCodeKind: ctx.SourceCodeKind,
                         loader: TextLoader.From(TextAndVersion.Create(SourceText.From("", Encoding.UTF8), VersionStamp.Create())));
                     ctx.Workspace.AddDocument(info);
                     docId = info.Id;
@@ -101,10 +102,12 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
             compilationOptions: compilationOptions,
             parseOptions: parseOptions,
             metadataReferences: references,
+            // globals (HostObjectType) применяются Roslyn только к submission-проектам
+            isSubmission: provider.IsScript,
             hostObjectType: provider.HostObjectType);
 
         var project = workspace.AddProject(projectInfo);
-        return new ContextWorkspace(workspace, project.Id);
+        return new ContextWorkspace(workspace, project.Id, parseOptions.Kind);
     }
 
     private static IEnumerable<MetadataReference> TrustedPlatformReferences()
@@ -138,10 +141,11 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
         _contexts.Clear();
     }
 
-    private sealed class ContextWorkspace(AdhocWorkspace workspace, ProjectId projectId)
+    private sealed class ContextWorkspace(AdhocWorkspace workspace, ProjectId projectId, SourceCodeKind sourceCodeKind)
     {
         public AdhocWorkspace Workspace { get; } = workspace;
         public ProjectId ProjectId { get; } = projectId;
+        public SourceCodeKind SourceCodeKind { get; } = sourceCodeKind;
         public ConcurrentDictionary<string, DocumentId> Documents { get; } = new(StringComparer.Ordinal);
     }
 }

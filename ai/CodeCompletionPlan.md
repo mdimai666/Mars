@@ -140,17 +140,25 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    `[FeatureGate]` + `[Authorize(Roles="Admin")]`), `MainCodeCompletion.AddMarsCodeCompletion()`,
    флаг `FeatureFlags.CodeCompletion`, appsettings (prod false / dev true),
    ProjectReference + `AddIfFeatureEnabled` в `MarsWebAppStartup`.
-4. [ ] Тесты серверной части (tests/Mars.CodeCompletion.Tests).
+4. [x] Тесты серверной части — `tests/Mars.CodeCompletion.Tests` (8 фактов: script top-level return,
+   globals в completion, импорты, диагностика с offsets/CS0103, hover, signature help + активный
+   параметр, NotFoundException на неизвестный контекст). Все зелёные.
+   **Ключевая находка:** Roslyn применяет `ProjectInfo.HostObjectType` (globals) ТОЛЬКО при
+   `isSubmission: true` (`RegularCompilationTracker`: `IsSubmission ? CreateSubmissionCompilation(..., HostObjectType) : CreateCompilation(...)`);
+   плюс документ обязан иметь `DocumentInfo.Create(sourceCodeKind: Script)` — иначе document-level
+   Regular перекрывает parse options проекта (CS8805, globals не видны).
 5. [ ] Front: ICodeCompletionServiceClient в Mars.WebApiClient, attacher, JS-мост signature help.
 6. [ ] FunctionNodeContextProvider + wiring форм FunctionNode.
 7. [ ] Ручная проверка, bump `MarsAppVersion` (новый JS-ассет).
 
 ## Грабли
 
+- **Script-контекст (НАЙДЕНО ЭМПИРИЧЕСКИ, тесты):** `isSubmission: true` + `hostObjectType`
+  в `ProjectInfo.Create` и `sourceCodeKind: Script` в `DocumentInfo.Create` — оба обязательны,
+  иначе globals (`msg`) не видны и/или top-level `return` даёт CS8805.
 - MEF: для `CompletionService`/QuickInfo/SignatureHelp нужны именно Features-сборки в
-  `MefHostServices.Create` (в альфе — `Assembly.Load`, у нас — честные PackageReference).
-- Script-режим: `ProjectInfo` с `hostObjectType` + `CSharpParseOptions(kind: SourceCodeKind.Script)`;
-  в альфе `scriptClassName` «not work» — проверять top-level `return` тестом в первую очередь.
+  `MefHostServices.Create` (у нас — `Assembly.Load` четырёх сборок, гарантированных
+  PackageReference; публичных типов-якорей у Features нет).
 - Completion-запросы идут из WASM (.NET-callback BlazorMonaco) — не спамить сервером:
   запрос только при открытии suggest-виджета/триггер-символе, диагностика — debounce.
 - `info` — под `[Authorize]`: список контекстов наружу не отдавать анонимам.

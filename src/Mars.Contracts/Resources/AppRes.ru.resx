@@ -300,42 +300,6 @@
   <data name="Gender" xml:space="preserve">
     <value>Пол</value>
   </data>
-  <data name="GeoLocation" xml:space="preserve">
-    <value>Населенный пункт</value>
-  </data>
-  <data name="GeoLocation.many" xml:space="preserve">
-    <value>Населенные пункты</value>
-  </data>
-  <data name="GeoLocationType" xml:space="preserve">
-    <value>Тип населенного пункта</value>
-  </data>
-  <data name="GeoLocationType.many" xml:space="preserve">
-    <value>Типы населенных пунктов</value>
-  </data>
-  <data name="GeoMunicipality" xml:space="preserve">
-    <value>Поселения</value>
-  </data>
-  <data name="GeoMunicipality.many" xml:space="preserve">
-    <value>Поселения</value>
-  </data>
-  <data name="GeoMunicType" xml:space="preserve">
-    <value>Тип поселения</value>
-  </data>
-  <data name="GeoMunicType.many" xml:space="preserve">
-    <value>Типы поселений</value>
-  </data>
-  <data name="GeoRegion" xml:space="preserve">
-    <value>Район</value>
-  </data>
-  <data name="GeoRegion.many" xml:space="preserve">
-    <value>Районы</value>
-  </data>
-  <data name="GeoRegionCenter" xml:space="preserve">
-    <value>Центр</value>
-  </data>
-  <data name="GeoRegionCenter.many" xml:space="preserve">
-    <value>Центры районов</value>
-  </data>
   <data name="Hidden" xml:space="preserve">
     <value>Скрытый</value>
   </data>

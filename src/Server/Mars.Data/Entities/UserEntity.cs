@@ -46,24 +46,6 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
 
     public string? AvatarUrl { get; set; }
 
-    //-------------GEO-----------
-
-    //[Comment("Регион")]
-    //[ForeignKey(nameof(GeoRegion))]
-    //public Guid? GeoRegionId { get; set; }
-    //public GeoRegion GeoRegion { get; set; }
-
-    //[Comment("Муниципалитет")]
-    //[ForeignKey(nameof(GeoMunicipality))]
-    //public Guid? GeoMunicipalityId { get; set; }
-    //public GeoMunicipality GeoMunicipality { get; set; }
-
-    //[Comment("Поселение")]
-    //[ForeignKey(nameof(GeoLocation))]
-    //public Guid? GeoLocationId { get; set; }
-    //public GeoLocation GeoLocation { get; set; }
-    //-------------end GEO-----------
-
     //-------------Relations-----------
 
     public virtual ICollection<PostEntity>? Posts { get; set; }

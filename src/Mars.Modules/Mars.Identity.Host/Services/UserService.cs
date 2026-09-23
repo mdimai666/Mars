@@ -276,10 +276,6 @@ internal class UserService : IUserService
 
         //user.About = profile.About;
 
-        //user.GeoRegionId = profile.GeoRegionId;
-        //user.GeoMunicipalityId = profile.GeoMunicipalityId;
-        //user.GeoLocationId = profile.GeoLocationId;
-
         //var metaFields = UserMetaFields(ef);
 
         //await UpdateUserMetaValues(ef, user.Id, user.MetaValues, profile.MetaValues, metaFields);

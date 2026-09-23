@@ -27,13 +27,4 @@ public class UserEditProfileDto
     public required string Type { get; init; }
     public required IReadOnlyDictionary<string, MetaValueDetailDto> MetaValues { get; init; }
 
-    //-------------GEO-----------
-
-    //public Guid? GeoRegionId { get; init; }
-
-    //public Guid? GeoMunicipalityId { get; init; }
-
-    //public Guid? GeoLocationId { get; init; }
-    //-------------end GEO-----------
-
 }

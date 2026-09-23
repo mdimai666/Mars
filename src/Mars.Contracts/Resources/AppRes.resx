@@ -300,42 +300,6 @@
   <data name="Gender" xml:space="preserve">
     <value>Gender</value>
   </data>
-  <data name="GeoLocation" xml:space="preserve">
-    <value>GeoLocation</value>
-  </data>
-  <data name="GeoLocation.many" xml:space="preserve">
-    <value>GeoLocations</value>
-  </data>
-  <data name="GeoLocationType" xml:space="preserve">
-    <value>GeoLocationType</value>
-  </data>
-  <data name="GeoLocationType.many" xml:space="preserve">
-    <value>GeoLocationTypes</value>
-  </data>
-  <data name="GeoMunicipality" xml:space="preserve">
-    <value>GeoMunicipality</value>
-  </data>
-  <data name="GeoMunicipality.many" xml:space="preserve">
-    <value>GeoMunicipalitys</value>
-  </data>
-  <data name="GeoMunicType" xml:space="preserve">
-    <value>GeoMunicType</value>
-  </data>
-  <data name="GeoMunicType.many" xml:space="preserve">
-    <value>GeoMunicTypes</value>
-  </data>
-  <data name="GeoRegion" xml:space="preserve">
-    <value>GeoRegion</value>
-  </data>
-  <data name="GeoRegion.many" xml:space="preserve">
-    <value>GeoRegions</value>
-  </data>
-  <data name="GeoRegionCenter" xml:space="preserve">
-    <value>GeoRegionCenter</value>
-  </data>
-  <data name="GeoRegionCenter.many" xml:space="preserve">
-    <value>GeoRegionCenters</value>
-  </data>
   <data name="Hidden" xml:space="preserve">
     <value>Hidden</value>
   </data>

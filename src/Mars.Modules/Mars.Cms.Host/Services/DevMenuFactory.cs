@@ -45,7 +45,6 @@ public static class DevMenuFactory
             Item("nav-menus", "Меню", d + "NavMenu", roles: adminRoles),
             Item(RazdelsId, "Разделы", "#razdels", roles: adminRoles),
                 Item("feedback", "Письма", d + "FeedbackList", parentId: RazdelsId),
-                //Item("geo", "Geo", d + "geo/GeoRegion", parentId: RazdelsId),
             Item(ManageId, "Управление", d + "Manage", roles: adminRoles),
                 //Item("anketa", "Анкета", d + "Manage/AnketaManage", parentId: ManageId),
                 Item("users", AppRes.Users, d + "Users", parentId: ManageId),

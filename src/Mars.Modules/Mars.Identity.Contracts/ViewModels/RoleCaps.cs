@@ -49,13 +49,6 @@ public static class RoleCaps
         public const string Delete = "ContactPerson.Delete";
     }
 
-    public static class GeoLocationCap
-    {
-        public const string Add = "GeoLocation.Add";
-        public const string Update = "GeoLocation.Update";
-        public const string Delete = "GeoLocation.Delete";
-    }
-
 }
 
 public class RoleCapElement

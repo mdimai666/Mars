@@ -132,18 +132,26 @@
       `MetaValuesGeneratorServiceTests.Post()` добавлены новые required-члены — 473/473.
 - [x] Сборка `Mars.slnx` зелёная.
 
-#### Шаг 2.2 — нормализатор metaJson (AiChat.Host)
+#### Шаг 2.2 — нормализатор metaJson (AiChat.Host) ✅ (2026-09-24)
 
-- [ ] Приватный хелпер рядом с `MarsPostTools`: терпимый вход модели → строгая форма
-      `MetaValueFromJson`. Форматы: String/Text — как есть; Bool — `true`/`"true"`;
-      Int/Long/Float/Decimal — число или строка-число → JSON-число (decimal числом — канон
-      JSON-пути, не форм); DateTime — ISO-строка; Relation/File/Image — Guid-строка,
-      при `IsMultiple` — JsonArray; Select — ключ варианта (или Guid) → Guid;
-      SelectMany — массив ключей/CSV → `JsonValue(Guid[])`; Query-ключи — снимать;
-      неизвестный ключ — ошибка со списком валидных. Ошибки — с именем поля и форматом.
-- [ ] Терпимость живёт в AiChat; CMS остаётся строгим. `FormValueText` здесь НЕ используется
+- [x] `Mars.AiChat.Host/Tools/MetaJsonNormalizer.cs` (internal): `TryParseObject`
+      (текст аргумента → словарь; пусто → нет мета) + `TryNormalize` (терпимый вход →
+      строгая форма JSON-пути). Форматы: String/Text — любой скаляр → строка;
+      Bool — true/false/«true»/«false»/1/0; Int/Long — число или строка-число
+      (Int — проверка диапазона); Float/Decimal — число или строка; DateTime — ISO-строка;
+      Relation/File/Image — Guid-строка; Select — ключ варианта или Guid известного варианта;
+      SelectMany — массив ключей или CSV → CLR-узел `JsonValue(Guid[])` (обход B5);
+      множественные — JSON-массив, CSV или одиночное значение (заворачивается в массив);
+      Query-поля и null-значения пропускаются; неизвестный ключ — ошибка со списком полей.
+      Ошибки — «поле 'key': …», с индексом элемента для массивов.
+- [x] Скаляры выдаются wire-узлами (`JsonNode.Parse`) — CLR-узлы не конвертируются в
+      `GetValue<T>` (см. «Грабли»); SelectMany — исключение (CLR `Guid[]`).
+- [x] Терпимость живёт в AiChat; CMS остаётся строгим. `FormValueText` здесь НЕ используется
       (канон wire-форм различается: decimal строкой vs числом, Select ключ vs Guid).
-- [ ] Unit-тесты в новом `tests/Mars.AiChat.Tests`.
+- [x] `InternalsVisibleTo(Mars.AiChat.Tests)` в `Mars.AiChat.Host.csproj`; новый
+      `tests/Mars.AiChat.Tests` (в `Mars.slnx`) — `MetaJsonNormalizerTests`, 23/23;
+      каждый успешный кейс проверяется round-trip'ом через `MetaFieldUtils.MetaValueFromJson`.
+- [x] Сборка `Mars.slnx` зелёная, без новых warning'ов.
 
 #### Шаг 2.3 — инструменты (`MarsPostTools`, `ContentToolset`)
 

@@ -91,9 +91,23 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     NodeWirePointResolver _nodeWirePointResolver = new();
     private DotNetObjectReference<IResizeObserver> _dotNetRef = default!;
     private DotNetObjectReference<IScrollObserver> _dotNetRef2 = default!;
+    // fallback until the first JS measurement of the container position
     float containerOffsetX = 48;
     float containerOffsetY = 40;
     //--------------------------------------
+
+    /// <summary>
+    /// Position of the container on the page (getBoundingClientRect), used as the origin
+    /// for converting page mouse coordinates into flow coordinates.
+    /// Viewport coords equal page coords while the window itself is not scrolled.
+    /// </summary>
+    async Task UpdateContainerOffsetAsync()
+    {
+        var bounds = await _js.GetElementBounds(_containerRef);
+        if (bounds is null) return;
+        containerOffsetX = (float)bounds.Value.Left;
+        containerOffsetY = (float)bounds.Value.Top;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -104,6 +118,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
             _dotNetRef2 = DotNetObjectReference.Create<IScrollObserver>(this);
             await _js.ObserveScrollAsync(_containerRef, _dotNetRef2);
+
+            await UpdateContainerOffsetAsync();
         }
     }
 
@@ -503,15 +519,12 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     /// <param name="e"></param>
     /// <param name="clickedPaletteNode">palette clicked node</param>
     /// <param name="instance">new instance</param>
-    public void OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
+    public async Task OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
     {
         DeselectAll();
         _isProcessPasteNewNode = true;
 
-        //_logger.LogTrace($"SCR={ScrollInfo.ScrollLeft},{ScrollInfo.ScrollTop}");
-
-        //_containerRef.getBoundingClientRect().x = 48
-        //_containerRef.getBoundingClientRect().y = 40
+        await UpdateContainerOffsetAsync();
 
         instance.X = (float)(e.PageX - containerOffsetX - e.OffsetX + ScrollInfo.ScrollLeft);
         instance.Y = (float)(e.PageY - containerOffsetY - e.OffsetY + ScrollInfo.ScrollTop);
@@ -591,6 +604,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     {
         Width = (int)width;
         Height = (int)height;
+        _ = UpdateContainerOffsetAsync();
     }
 
     [JSInvokable]

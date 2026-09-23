@@ -200,6 +200,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     protected override async Task OnParametersSetAsync()
     {
+        EnsureDefaultFlow();
+
         if (_editorSpaceOrientation is null)
         {
             var viewPort = await _js.GetViewportMetricsAsync();
@@ -512,11 +514,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void CalcTabs()
     {
-        flows = AllNodes.Values.Where(node => node is FlowNode).Select(s => s as FlowNode).OrderBy(s => s.Order).ToList()!;
+        flows = AllNodes.Values.OfType<FlowNode>().OrderBy(s => s.Order).ToList();
+    }
+
+    void EnsureDefaultFlow()
+    {
         if (flows.Count == 0)
-        {
             _actionManager.ExecuteAction<CreateFlowNodeAction>(addToHistory: false);
-        }
     }
 
     void CheckActiveTab()
@@ -527,7 +531,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
             string? flow = querystring["flow"];
 
-            if (string.IsNullOrEmpty(flow) == false)//NOT WORK
+            if (string.IsNullOrEmpty(flow) == false)
             {
                 _activeFlow = flows.FirstOrDefault(s => s.Id == flow);
             }
@@ -603,6 +607,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         CalcFlowNodes();
         CalcTabs();
+        EnsureDefaultFlow();
         CalcVarNodes();
         CheckActiveTab();
         CalcLinkNodesGraph();

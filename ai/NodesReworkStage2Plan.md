@@ -10,6 +10,15 @@
 > **Этот план поглощает этапы 3–4 соседнего плана** (UI источников и типизированные выходы) — их чек-листы
 > переезжают сюда, в `NodesReworkPlan.md` остаются только отсылки.
 
+> **Структурный рефакторинг 2026-09-23 (коммиты `5aff48de`…`8614a90a`):** wire-типы вынесены из `Core` —
+> проект `Mars.Nodes.Contracts` (`Nodes/`: `NodesDataResponse` и прочие ответы `Load`/debug, `NodeDebugSnapshot`
+> (+Full), `InlineFunctionNodeSchemaResponse` и её `ToModel`-маппинг; `Hubs/`: `DebugMessage`, `NodeStatus`,
+> `NodeExecutionTrigger`, `NodeConstants`; `NodeTaskJob/`); `NodeDebugSnapshotBuilder` — в
+> `Mars.Nodes.Host/Services`; редакторская wire-геометрия (`Wire`/`NewWire`/`NodeConnect`, `WirePoints`,
+> `MovePoints`, `INodeWirePointResolver`, `WireDrawUtil`) — в `Mars.Nodes.Front.Abstractions/Editor`;
+> JSON-конвертеры — в `Mars.Nodes.Core/Converters`. `Admin.Framework` вместо `Nodes.Core` ссылается на
+> `Nodes.Contracts`. Пути в чек-листах фаз ниже — на момент их выполнения.
+
 ## Принятые решения (2026-09-17)
 
 1. **Источник кандидатов — контракты выходов нод, а не наблюдённые данные.** Нода объявляет, что отдаёт:
@@ -27,6 +36,8 @@
    какие переменные есть в `flow`/`global`); сами значения не нужны. Позже — обновление списка переменных
    по SignalR.
 7. **Пакет контрактов** — если понадобится, контракты (провайдер, типы кандидатов) выносим отдельным проектом.
+   (2026-09-23: проект появился — `Mars.Nodes.Contracts`, wire-DTO живут там; контракты провайдера подсказок
+   остались в `Front.Abstractions`.)
 
 ### Форма контракта (уточнено 2026-09-17 после обсуждения)
 
@@ -62,7 +73,7 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
   обрез по глубине, защита от циклов, `[]` в пути = элемент массива; `Dictionary`/`JsonElement`/`JsonNode`/
   `NodeMsg` не разворачиваем (ключи неизвестны, свойства — шум). Оба в `Mars.Nodes.Core` (browser-safe).
 - **Транспорт — расширение `Load()`** (`INodeServiceClient.Load()` → `NodesDataResponse`,
-  `src/Mars.Nodes/Mars.Nodes.Core/Contracts/Nodes/NodeResponse.cs`; сервер — `NodeController.Load` →
+  `src/Mars.Nodes/Mars.Nodes.Contracts/Nodes/NodeResponse.cs`; сервер — `NodeController.Load` →
   `NodeService.GetNodesData`, `src/Mars.Nodes/Mars.Nodes.Host/Services/NodeService.cs:254`):
   - `OutputValueSpecs` — **сгруппировано по типу ноды** (`TypeId → OutputValueSpec[]`), только статика:
     для нод с интерфейсом данных нет, их считает клиент (у него есть инстанс). Источник статики — атрибуты
@@ -305,7 +316,7 @@ public record OutputValueSpec(string Path, string VarType, string? Description =
    `NodeEditContainer1` в `NodeEditor1.RefreshDebugSnapshots`: вызывается при открытии формы, смене
    выбора (debounce 300 мс — INPUT-панель наполняется без открытия формы) и по сигналу хаба.
    `HostValueHints.SetDebugSnapshots` теперь **мержит** (partial pull не должен затирать чужие ключи).
-6. **Часы — серверные.** DTO `NodeDebugSnapshotsResponse` (`Core/Contracts/Nodes/NodeResponse.cs`):
+6. **Часы — серверные.** DTO `NodeDebugSnapshotsResponse` (`Mars.Nodes.Contracts/Nodes/NodeResponse.cs`):
    `ServerTimeUtc` + `DebugMode` + снимки. Stale-метка INPUT-панели считается через
    `IHostValueHints.GetSnapshotAge` (серверный возраст + локальный интервал с момента pull),
    `CapturedAt` — UTC, в UI отображается локальным. Тумблер DEBUG синхронизируется из ответа
@@ -757,7 +768,9 @@ public class SomeNode : Node, INodeOutputValueSpec
 - **Проверить**: реализован ли flow-контекст полностью (`IRuntimeNodeScope.FlowContext`,
   `NodeRuntime.FlowContexts`, `NodeService.cs:418` передаёт `flowContext: null`) — от этого зависит, когда
   отдавать имена flow-переменных в `Load()`.
-- Нужен ли отдельный проект контрактов провайдера или хватит `Mars.Nodes.Front.Abstractions` (пока хватает).
+- Нужен ли отдельный проект контрактов провайдера или хватит `Mars.Nodes.Front.Abstractions` — после
+  2026-09-23 отдельный проект есть (`Mars.Nodes.Contracts`, wire-DTO); контракты провайдера
+  (`IValueFieldProvider` и др.) остаются в `Front.Abstractions`, переносить их пока незачем.
 
 ## Дописано в план (2026-09-17, в конец списка работ)
 

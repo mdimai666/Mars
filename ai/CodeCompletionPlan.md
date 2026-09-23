@@ -130,7 +130,12 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
 будут доработки.
 
 1. [x] Пины пакетов (Features/CSharp.Features 5.9.0), slnx, скелеты 3 проектов — собираются.
-2. [ ] Серверный core: workspace manager + 4 сервиса + DTO + маппинги из альфы.
+2. [x] Серверный core: DTO (Contracts), `ICodeContextProvider`, `CodeCompletionWorkspaceManager`
+   (ленивый MEF, персистентный workspace на контекст, документ на client DocumentId,
+   обновление текста через `TryApplyChanges(WithDocumentText)`), `CompletionQueryService`,
+   `HoverQueryService` (QuickInfoService, первая секция — code fence), `DiagnosticsQueryService`,
+   `SignatureHelpQueryService` — вручную по SemanticModel (порт альфы: `SignatureHelpService`
+   в Roslyn 5.9 internal), маппинг Roslyn tags → Monaco kinds.
 3. [ ] Контроллер, MainCodeCompletion, флаг CodeCompletion, appsettings, подключение в MarsWebAppStartup.
 4. [ ] Тесты серверной части (tests/Mars.CodeCompletion.Tests).
 5. [ ] Front: ICodeCompletionServiceClient в Mars.WebApiClient, attacher, JS-мост signature help.

@@ -49,7 +49,7 @@ public class EndpointNode : Node, INodeOutputValueSpec
     {
         Color = "#3c91de";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/azure-icon-service-Private-Endpoints.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/endpoint.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

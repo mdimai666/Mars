@@ -18,7 +18,7 @@ public class SplitNode : Node
     public SplitNode()
     {
         Color = "#E0D870";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/split.svg";
         Inputs = [new()];
         Outputs = [new()];
     }

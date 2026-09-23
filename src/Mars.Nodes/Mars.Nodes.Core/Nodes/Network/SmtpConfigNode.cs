@@ -25,4 +25,9 @@ public class SmtpConfigNode : ConfigNode
 
     [Display(Name = "Password")]
     public string Password { get; set; } = "";
+
+    public SmtpConfigNode()
+    {
+        Icon = "_content/Mars.Nodes.Workspace/nodes/smtp-config.svg";
+    }
 }

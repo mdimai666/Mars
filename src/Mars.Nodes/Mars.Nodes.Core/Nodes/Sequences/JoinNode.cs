@@ -17,7 +17,7 @@ public class JoinNode : Node
     public JoinNode()
     {
         Color = "#E0D870";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/join.svg";
         Inputs = [new(), new()];
         Outputs = [new() { Label = "on join" }, new() { Label = "on InputAggregation timeout" }];
     }

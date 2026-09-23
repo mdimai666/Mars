@@ -30,7 +30,7 @@ public class HttpInNode : Node, INodeOutputValueSpec
     {
         Color = "#e7e6af";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/http-in.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

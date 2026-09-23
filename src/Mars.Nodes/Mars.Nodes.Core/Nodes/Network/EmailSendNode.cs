@@ -28,7 +28,7 @@ public class EmailSendNode : Node
         Inputs = [new()];
         Color = "#cce8c0";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/envelope-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/email-send.svg";
     }
 
 }

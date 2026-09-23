@@ -33,6 +33,11 @@ public class AuthFlowConfigNode : ConfigNode
     // API Key
     public string? ApiKey { get; set; }
     public string? ApiKeyHeaderName { get; set; } = "X-API-Key";
+
+    public AuthFlowConfigNode()
+    {
+        Icon = "_content/Mars.Nodes.Workspace/nodes/auth-flow.svg";
+    }
 }
 
 public enum AuthFlowNodeMode

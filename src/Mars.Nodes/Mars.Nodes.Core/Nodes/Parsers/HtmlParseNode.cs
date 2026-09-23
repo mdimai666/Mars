@@ -21,7 +21,7 @@ public class HtmlParseNode : Node, INodeOutputValueSpec
         Inputs = [new()];
         Color = "#ecb56a";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/html-parse.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

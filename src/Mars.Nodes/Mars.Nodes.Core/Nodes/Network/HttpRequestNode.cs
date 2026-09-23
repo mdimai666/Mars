@@ -29,7 +29,7 @@ public class HttpRequestNode : Node, INodeOutputValueSpec
         Inputs = [new()];
         Color = "#e7e6af";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/http-request.svg";
     }
 
     /// <summary>Слот HttpRequestInfo объявлен атрибутом на impl (тип живёт в Implements).</summary>

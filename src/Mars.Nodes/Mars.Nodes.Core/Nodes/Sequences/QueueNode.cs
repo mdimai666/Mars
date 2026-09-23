@@ -25,7 +25,7 @@ public class QueueNode : Node
             new (){ Label = "Finish" },
             new (){ Label = "Iterate" },
         ];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/queue.svg";
     }
 
     public enum EQueueMode

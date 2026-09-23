@@ -25,7 +25,7 @@ public class ForeachNode : Node, INodeOutputValueSpec
             new NodeOutput(){ Label = "Finish" },
             new NodeOutput(){ Label = "Iterate" },
         ];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/foreach.svg";
     }
 
     /// <summary>Пути ForeachCycle объявлены вручную: у цикла public поля, а экспандер ходит только свойства.</summary>

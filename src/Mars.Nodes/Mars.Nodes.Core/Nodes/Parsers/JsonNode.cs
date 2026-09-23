@@ -18,7 +18,7 @@ public class JsonNode : Node, INodeOutputValueSpec
         Inputs = [new()];
         Color = "#debd5c";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/json.svg";
     }
 
     public IEnumerable<OutputValueSpec> GetOutputValueSpec()

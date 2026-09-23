@@ -19,7 +19,7 @@ public class HttpResponseNode : Node
         Color = "#e7e6af";
         Inputs = [new()];
         //Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/http-response.svg";
     }
 
     public static IReadOnlyDictionary<int, string> StatusCodes = new Dictionary<int, string>()

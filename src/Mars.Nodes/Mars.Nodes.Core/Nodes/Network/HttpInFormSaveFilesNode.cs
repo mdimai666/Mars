@@ -20,7 +20,7 @@ public class HttpInFormSaveFilesNode : Node, INodeOutputValueSpec
         Color = "#e7e6af";
         Inputs = [new()];
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/http-form-files.svg";
     }
 
     /// <summary>Пути FileListItem объявлены вручную: тип живёт в Mars.Media.Abstractions, из Core не виден.</summary>

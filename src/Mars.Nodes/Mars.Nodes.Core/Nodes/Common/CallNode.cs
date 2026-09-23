@@ -38,7 +38,6 @@ public class CallResponseNode : Node
     public CallResponseNode()
     {
         Inputs = [new()];
-        isInjectable = false;
         Color = "#7a78fe";
         Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }

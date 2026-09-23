@@ -28,7 +28,6 @@ public class HttpInNode : Node, INodeOutputValueSpec
 
     public HttpInNode()
     {
-        isInjectable = false;
         Color = "#e7e6af";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";

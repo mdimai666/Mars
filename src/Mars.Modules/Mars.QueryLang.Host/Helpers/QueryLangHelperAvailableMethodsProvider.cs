@@ -9,7 +9,7 @@ namespace Mars.QueryLang.Host.Helpers;
 internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailableMethodsProvider
 {
     private IReadOnlyCollection<TemplatorHelperInfoAttribute>? _items;
-    private IReadOnlyCollection<LinqMethodSignarute>? _signarutes;
+    private IReadOnlyCollection<LinqMethodSignature>? _signatures;
 
     public IReadOnlyCollection<TemplatorHelperInfoAttribute> AvailableMethods()
     {
@@ -21,9 +21,9 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
         return _items = methods.Select(x => x.Value.GetCustomAttribute<TemplatorHelperInfoAttribute>()).Where(x => x != null).ToList()!;
     }
 
-    public IReadOnlyCollection<LinqMethodSignarute> LinqMethodSignarutes()
+    public IReadOnlyCollection<LinqMethodSignature> LinqMethodSignatures()
     {
-        if (_signarutes != null) return _signarutes;
+        if (_signatures != null) return _signatures;
 
         var b = new EfStringQuery<IBasicEntity>(null!, null!);
         var methods = b.MethodsMapping();
@@ -31,9 +31,9 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
         var items = AvailableMethods();
         var dict = items.Select(s => new MethodHelperInfo(s.Shortcut, s.Example, s.Description)).GroupBy(x => x.Shortcut).ToDictionary(s => s.Key, s => s.First());
 
-        Func<string, LinqMethodParameter[], LinqMethodSignarute> ff = (name, param) => new(name, param, dict[name]!);
+        Func<string, LinqMethodParameter[], LinqMethodSignature> ff = (name, param) => new(name, param, dict[name]!);
 
-        List<LinqMethodSignarute> signarutes = [
+        List<LinqMethodSignature> signatures = [
             ff(nameof(b.Count),[ new() ]),
             ff(nameof(b.First),[ new() ]),
             ff(nameof(b.Last),[ new() ]),
@@ -54,6 +54,6 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
             ff(nameof(b.Table),[ new("@page"), new("@pageSize") ]),
         ];
 
-        return _signarutes = signarutes;
+        return _signatures = signatures;
     }
 }

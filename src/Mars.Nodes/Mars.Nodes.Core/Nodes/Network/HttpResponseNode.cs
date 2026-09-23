@@ -16,7 +16,6 @@ public class HttpResponseNode : Node
 
     public HttpResponseNode()
     {
-        isInjectable = false;
         Color = "#e7e6af";
         Inputs = [new()];
         //Outputs = new List<NodeOutput> { new NodeOutput() };

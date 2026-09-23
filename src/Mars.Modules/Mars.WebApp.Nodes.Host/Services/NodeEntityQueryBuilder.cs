@@ -6,7 +6,7 @@ namespace Mars.WebApp.Nodes.Host.Services;
 
 public class NodeEntityQueryBuilder
 {
-    private readonly IReadOnlyCollection<LinqMethodSignarute> _signarutes;
+    private readonly IReadOnlyCollection<LinqMethodSignature> _signatures;
     private readonly IReadOnlyDictionary<string, NodeEntityModelProviderInfo> _providers;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
@@ -17,7 +17,7 @@ public class NodeEntityQueryBuilder
     {
         _metaModelTypesLocator = metaModelTypesLocator;
         _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
-        _signarutes = queryLangHelperAvailableMethods.LinqMethodSignarutes();
+        _signatures = queryLangHelperAvailableMethods.LinqMethodSignatures();
         _providers = ListProviders().ToDictionary(s => s.EntityName);
     }
 
@@ -27,7 +27,7 @@ public class NodeEntityQueryBuilder
 
         foreach (var (key, postType) in _metaModelTypesLocator.PostTypesDict())
         {
-            list.Add(new() { EntityName = key, Group = "Post", Title = postType.Title, Methods = _signarutes });
+            list.Add(new() { EntityName = key, Group = "Post", Title = postType.Title, Methods = _signatures });
         }
 
         string[] publicTypes = ["Post", "User", "File", "NavMenu", "Option", "PostType", "Role", "UserType", "Feedback"];
@@ -41,7 +41,7 @@ public class NodeEntityQueryBuilder
                 EntityName = prop.EntityUri.Root!,
                 Group = groupName(prop.EntityUri.Root!),
                 Title = prop.EntityUri.Root!,
-                Methods = _signarutes
+                Methods = _signatures
             });
         }
 

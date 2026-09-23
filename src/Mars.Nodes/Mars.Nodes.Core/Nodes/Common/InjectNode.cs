@@ -31,7 +31,7 @@ public class InjectNode : Node, IValidatableObject, INodeOutputValueSpec
 
     public InjectNode()
     {
-        isInjectable = true;
+        IsInjectable = true;
         Color = "#A9BBCF";
         Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";

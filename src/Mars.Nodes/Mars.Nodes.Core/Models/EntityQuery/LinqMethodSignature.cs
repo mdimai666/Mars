@@ -2,14 +2,14 @@ using Mars.Core.Extensions;
 
 namespace Mars.Nodes.Core.Models.EntityQuery;
 
-public record LinqMethodSignarute
+public record LinqMethodSignature
 {
     public string Name { get; init; }
     public LinqMethodParameter[] Parameters { get; init; }
 
     public MethodHelperInfo Helper { get; init; }
 
-    public LinqMethodSignarute(string name, LinqMethodParameter[] parameters, MethodHelperInfo helper)
+    public LinqMethodSignature(string name, LinqMethodParameter[] parameters, MethodHelperInfo helper)
     {
         Name = name;
         Parameters = parameters;

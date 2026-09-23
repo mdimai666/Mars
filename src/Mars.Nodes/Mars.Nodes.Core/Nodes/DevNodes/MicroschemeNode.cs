@@ -11,7 +11,7 @@ public class MicroschemeNode : Node
 
     public MicroschemeNode()
     {
-        isInjectable = true;
+        IsInjectable = true;
         Color = "#A9BBCF";
         Outputs = [new()];
     }

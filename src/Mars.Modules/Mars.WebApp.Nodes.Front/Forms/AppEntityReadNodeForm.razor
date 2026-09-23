@@ -138,18 +138,18 @@
         return Task.CompletedTask;
     }
 
-    void AddItem(LinqMethodSignarute signarute)
+    void AddItem(LinqMethodSignature signature)
     {
-        BuilderModel!.CallChains = [.. BuilderModel.CallChains, new() { Method = signarute, Parameters = signarute.Parameters.Select(_ => "").ToList(), Disabled = false }];
+        BuilderModel!.CallChains = [.. BuilderModel.CallChains, new() { Method = signature, Parameters = signature.Parameters.Select(_ => "").ToList(), Disabled = false }];
     }
 
-    void AddItemAfterIndex(int index, LinqMethodSignarute signarute)
+    void AddItemAfterIndex(int index, LinqMethodSignature signature)
     {
         var list = BuilderModel!.CallChains.ToList();
         list.Insert(index, new NEQRM_MethodCallEditModel
         {
-            Method = signarute,
-            Parameters = signarute.Parameters.Select(_ => "").ToList(),
+            Method = signature,
+            Parameters = signature.Parameters.Select(_ => "").ToList(),
             Disabled = false,
         });
         BuilderModel.CallChains = list.ToArray();

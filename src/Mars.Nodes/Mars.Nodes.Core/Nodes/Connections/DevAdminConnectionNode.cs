@@ -24,7 +24,6 @@ public class DevAdminConnectionNode : Node
     {
         Inputs = [new()];
         Color = "#3b9c9c";
-        hasTailButton = false;
         Icon = "_content/Mars.Nodes.Workspace/nodes/info-circle.svg";
     }
 

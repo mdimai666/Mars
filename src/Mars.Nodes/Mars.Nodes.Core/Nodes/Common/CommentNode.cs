@@ -17,6 +17,6 @@ public class CommentNode : Node
     public CommentNode()
     {
         Color = "#f5f4f4";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/chat.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/comment.svg";
     }
 }

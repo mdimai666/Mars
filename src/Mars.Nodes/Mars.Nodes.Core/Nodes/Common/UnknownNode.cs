@@ -18,7 +18,7 @@ public class UnknownNode : Node
 
     public UnknownNode()
     {
-
+        Icon = "_content/Mars.Nodes.Workspace/nodes/unknown.svg";
     }
 
     public UnknownNode(NodeBasicObj basic, string jsonBody)

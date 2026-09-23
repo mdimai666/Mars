@@ -26,7 +26,7 @@ public class DebugNode : Node
         Inputs = [new()];
         Color = "#7AB073";
         HasTailButton = true;
-        Icon = "_content/Mars.Nodes.Workspace/nodes/chat-left.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/debug.svg";
     }
 
 }

@@ -30,7 +30,7 @@ public class VarNode : Node, IValidatableObject
     public VarNode()
     {
         Color = "#3b71ea";
-
+        Icon = "_content/Mars.Nodes.Workspace/nodes/var.svg";
     }
 
     public const string TimestampTypeName = "timestamp";

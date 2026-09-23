@@ -15,7 +15,7 @@ public class LinkInNode : Node
     {
         Color = "#dddddd";
         Inputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/link-in.svg";
     }
 }
 
@@ -29,6 +29,6 @@ public class LinkOutNode : Node
     {
         Color = "#dddddd";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/link-out.svg";
     }
 }

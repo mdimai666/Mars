@@ -18,7 +18,7 @@ public class CatchErrorNode : Node
     {
         Outputs = [new() { Label = "On error" }];
         Color = "#e77c6d";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/catch-error.svg";
 
     }
 }

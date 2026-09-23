@@ -34,7 +34,7 @@ public class InjectNode : Node, IValidatableObject, INodeOutputValueSpec
         IsInjectable = true;
         Color = "#A9BBCF";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/inject.svg";
     }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

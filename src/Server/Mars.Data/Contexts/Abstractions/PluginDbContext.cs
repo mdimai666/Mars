@@ -59,6 +59,7 @@ public abstract class PluginDbContextBase : IdentityDbContext<UserEntity, RoleEn
 
     //--------USER----------
     public virtual DbSet<UserMetaValueEntity> UserMetaValues { get; set; } = default!;
+    public virtual DbSet<UserApiKeyEntity> UserApiKeys { get; set; } = default!;
 
     //--------X----------
     public virtual DbSet<NavMenuEntity> NavMenus { get; set; } = default!;

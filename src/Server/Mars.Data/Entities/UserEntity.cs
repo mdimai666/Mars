@@ -67,4 +67,5 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
 
     //one to many
     public virtual ICollection<UserPasskeyEntity>? UserPasskeys { get; set; }
+    public virtual ICollection<UserApiKeyEntity>? UserApiKeys { get; set; }
 }

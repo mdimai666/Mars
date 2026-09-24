@@ -26,6 +26,14 @@ else if (!_isAlreadyAuth)
             <div class="spacer-1"></div>
             <FluentButton Appearance=@Appearance.Accent Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
 
+            @if (_passkeyAvailable)
+            {
+                <div class="mt-2">
+                    <FluentButton Class="w-100" OnClick="ExecutePasskeyLogin"
+                                  IconStart="@(new Icons.Regular.Size16.Fingerprint())">Войти с пасскеем</FluentButton>
+                </div>
+            }
+
             @if (Q.Site.SiteSettings.AllowUsersSelfRegister)
             {
                 <hr class="mx-auto my-4" style="width: 120px;" />

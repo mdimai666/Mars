@@ -3,6 +3,7 @@ using Flurl.Http;
 using Mars.Contracts.Common;
 using Mars.Data.Infrastructure;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Authentication;
 using Mars.Identity.Host.Models;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Options.Abstractions.Services;
@@ -10,6 +11,7 @@ using Mars.Server.Abstractions.Extensions;
 using Mars.Server.Abstractions.Features;
 using Mars.Server.Contracts.Options;
 using Mars.SSO.Host.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -59,6 +61,10 @@ internal static class MarsStartupPartCore
             {
                 options.ForwardDefaultSelector = context =>
                 {
+                    if (context.Request.Headers.ContainsKey(ApiKeyAuthenticationHandler.HeaderName))
+                    {
+                        return ApiKeyAuthenticationHandler.SchemeName;
+                    }
                     var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
                     if (authHeader?.ToLower().StartsWith("bearer ") == true)
                     {
@@ -68,7 +74,8 @@ internal static class MarsStartupPartCore
                 };
             })
             .AddCookie()
-            .AddJwtBearer();
+            .AddJwtBearer()
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, options => { });
 
         bool isSsoEnabled = configuration.GetSection(FeatureExtensions.SectionName).GetValue<bool>(FeatureFlags.SingleSignOn, false);
 

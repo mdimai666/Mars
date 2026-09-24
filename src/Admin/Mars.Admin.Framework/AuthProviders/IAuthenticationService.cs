@@ -7,6 +7,7 @@ public interface IAuthenticationService
 {
     Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userForRegistration);
     Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication);
+    Task LoginCallback(AuthResultResponse authData);
     Task Logout();
     Task MarkUserAsAuthenticated(string token, SsoUserInfoResponse? ssoUserInfo = null);
 }

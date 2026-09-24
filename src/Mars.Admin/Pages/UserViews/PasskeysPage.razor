@@ -1,0 +1,100 @@
+@page "/Passkeys"
+@using Mars.Identity.Contracts.Passkeys
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize]
+@attribute [Display(Name = "Пасскеи")]
+
+<ContentWrapper Title="Пасскеи">
+
+    <div class="hstack">
+        <FluentLabel>Пасскеи позволяют входить без пароля — через Windows Hello, Touch ID, Face ID или аппаратный ключ безопасности.</FluentLabel>
+        <div class="ms-auto">
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="OnClickAdd"
+                          Disabled="@(!_passkeyAvailable || !_passkeysEnabled)"
+                          IconStart="@(new Icons.Regular.Size16.Fingerprint())">Добавить пасскей</FluentButton>
+        </div>
+    </div>
+
+    @if (!_passkeysEnabled)
+    {
+        <div class="mt-2">
+            <FluentMessageBar Intent="@MessageIntent.Warning" AllowDismiss="false">
+                Пасскеи отключены администратором.
+            </FluentMessageBar>
+        </div>
+    }
+    else if (!_passkeyAvailable)
+    {
+        <div class="mt-2">
+            <FluentMessageBar Intent="@MessageIntent.Warning" AllowDismiss="false">
+                Браузер не поддерживает WebAuthn — добавление пасскеев недоступно.
+            </FluentMessageBar>
+        </div>
+    }
+
+    <div class="mt-4">
+        <FluentDataGrid ItemsProvider="dataProvider"
+                        @ref=table
+                        TGridItem="PasskeySummaryResponse"
+                        ShowHover="false"
+                        GenerateHeader="GenerateHeaderOption.Sticky"
+                        GridTemplateColumns="2fr 1fr 1fr auto">
+            <TemplateColumn Title="Название">
+                @(string.IsNullOrWhiteSpace(context.Name) ? "— без названия —" : context.Name)
+            </TemplateColumn>
+            <PropertyColumn Property="@(f => f.CreatedAt)" Title="Создан" Format="d" />
+            <TemplateColumn Title="Резервная копия">
+                @(context.IsBackedUp ? "да" : context.IsBackupEligible ? "возможна" : "нет")
+            </TemplateColumn>
+            <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <div class="hstack gap-2">
+                    <FluentButton Appearance="Appearance.Lightweight" OnClick=@(() => OnClickRename(context)) Title="Переименовать">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Edit())" />
+                    </FluentButton>
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.CredentialId))>
+                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                    </DFluentDeleteButton>
+                </div>
+            </TemplateColumn>
+        </FluentDataGrid>
+    </div>
+
+    <FluentDialog Hidden="@(!addVisible)" aria-label="Add passkey dialog"
+                  Modal="true"
+                  @ondialogdismiss="@(() => addVisible = false)"
+                  PreventScroll="true">
+        <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+            <div class="hstack">
+                <FluentLabel Typo="Typography.Header">Новый пасскей</FluentLabel>
+            </div>
+        </FluentDialogHeader>
+        <div class="vstack gap-2">
+            <FluentTextField @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
+            <FluentLabel>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentLabel>
+        </div>
+        <FluentDialogFooter>
+            <FluentButton Appearance="Appearance.Accent" OnClick="AddPasskey">Добавить</FluentButton>
+            <FluentButton OnClick="@(() => addVisible = false)">Отмена</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+
+    <FluentDialog Hidden="@(!renameVisible)" aria-label="Rename passkey dialog"
+                  Modal="true"
+                  @ondialogdismiss="@(() => renameVisible = false)"
+                  PreventScroll="true">
+        <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+            <div class="hstack">
+                <FluentLabel Typo="Typography.Header">Переименовать пасскей</FluentLabel>
+            </div>
+        </FluentDialogHeader>
+        <div class="vstack gap-2">
+            <FluentTextField @bind-Value="renameValue" Label="Название" AutoComplete="off" MaxLength="64" />
+        </div>
+        <FluentDialogFooter>
+            <FluentButton Appearance="Appearance.Accent" OnClick="RenamePasskey">Сохранить</FluentButton>
+            <FluentButton OnClick="@(() => renameVisible = false)">Отмена</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+
+</ContentWrapper>

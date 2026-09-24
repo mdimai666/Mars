@@ -13,6 +13,7 @@ public static class MainDataRepositories
         => services
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<IUserApiKeyRepository, UserApiKeyRepository>()
             .AddScoped<IUserTypeRepository, UserTypeRepository>()
             .AddScoped<IPostTypeRepository, PostTypeRepository>()
             .AddScoped<IUserManager, UserManager__ReplacedToUserId>()

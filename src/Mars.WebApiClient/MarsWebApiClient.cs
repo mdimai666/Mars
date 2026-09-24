@@ -11,6 +11,8 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IFlurlClient Client { get; }
 
     public IAccountServiceClient Account { get; }
+    public IApiKeyServiceClient ApiKey { get; }
+    public IPasskeyServiceClient Passkey { get; }
     public IPostTypeServiceClient PostType { get; }
     public IFeedbackServiceClient Feedback { get; }
     public IPostServiceClient Post { get; }
@@ -41,6 +43,8 @@ public class MarsWebApiClient : IMarsWebApiClient
         Client = targetClient.OnError(BasicServiceClient.OnError);
 
         Account = new AccountServiceClient(serviceProvider, targetClient);
+        ApiKey = new ApiKeyServiceClient(serviceProvider, targetClient);
+        Passkey = new PasskeyServiceClient(serviceProvider, targetClient);
         PostType = new PostTypeServiceClient(serviceProvider, targetClient);
         Feedback = new FeedbackServiceClient(serviceProvider, targetClient);
         Post = new PostServiceClient(serviceProvider, targetClient);

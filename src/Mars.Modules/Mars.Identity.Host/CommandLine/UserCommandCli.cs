@@ -3,10 +3,12 @@ using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Core.Utils;
 using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.ApiKeys;
 using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
 using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Identity.Host.CommandLine;
@@ -69,6 +71,27 @@ public class UserCommandCli : CommandCli
         var userSetNewPassword = new Command("setnewpassword") { argumentUsername };
         userSetNewPassword.SetAction((p, ct) => UserSetNewPassword(p.GetRequiredValue(argumentUsername), ct));
         userCommand.Subcommands.Add(userSetNewPassword);
+
+        //apikey
+        var apiKeyCommand = new Command("apikey", "user api keys management");
+
+        var optionKeyName = new Option<string>("--name") { Required = true, Description = "Key name" };
+        var optionKeyExpires = new Option<string>("--expires") { Description = "Expiration date (e.g. 2026-12-31)" };
+        var apiKeyNameOrIdArgument = new Argument<string>("key");
+
+        var apiKeyAddCommand = new Command("add", "create api key (full key is shown once)") { argumentUsername, optionKeyName, optionKeyExpires };
+        apiKeyAddCommand.SetAction((p, ct) => UserApiKeyAdd(p.GetRequiredValue(argumentUsername), p.GetRequiredValue(optionKeyName), p.GetValue(optionKeyExpires), ct));
+        apiKeyCommand.Subcommands.Add(apiKeyAddCommand);
+
+        var apiKeyListCommand = new Command("list", "list user api keys") { argumentUsername };
+        apiKeyListCommand.SetAction((p, ct) => UserApiKeyList(p.GetRequiredValue(argumentUsername), ct));
+        apiKeyCommand.Subcommands.Add(apiKeyListCommand);
+
+        var apiKeyDeleteCommand = new Command("delete", "revoke api key") { argumentUsername, apiKeyNameOrIdArgument };
+        apiKeyDeleteCommand.SetAction((p, ct) => UserApiKeyDelete(p.GetRequiredValue(argumentUsername), p.GetRequiredValue(apiKeyNameOrIdArgument), ct));
+        apiKeyCommand.Subcommands.Add(apiKeyDeleteCommand);
+
+        userCommand.Subcommands.Add(apiKeyCommand);
 
         cli.AddCommand(userCommand);
     }
@@ -198,6 +221,115 @@ public class UserCommandCli : CommandCli
         var password = Password.Generate(8, 2);
         await UserSetPassword(username, password, cancellationToken);
         Console.WriteLine($"New password: {password}");
+    }
+
+    public async Task UserApiKeyAdd(string username, string name, string? expires, CancellationToken cancellationToken)
+    {
+        using var scope = app.Services.CreateScope();
+        var user = await FindUserForApiKey(scope, username, cancellationToken);
+        if (user is null) return;
+
+        DateTimeOffset? expiresAt = null;
+        if (!string.IsNullOrWhiteSpace(expires))
+        {
+            if (!DateTimeOffset.TryParse(expires, out var parsed))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Invalid expires date: '{expires}'");
+                Console.ResetColor();
+                return;
+            }
+            expiresAt = parsed;
+        }
+
+        var apiKeyService = scope.ServiceProvider.GetRequiredService<IApiKeyService>();
+        var result = await apiKeyService.Create(new CreateApiKeyQuery
+        {
+            UserId = user.Id,
+            Name = name,
+            ExpiresAt = expiresAt,
+        }, cancellationToken);
+
+        if (!result.Ok)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(result.Message);
+            Console.ResetColor();
+            return;
+        }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"API key '{result.Data.Name}' created for user {username}");
+        Console.WriteLine($"Key (shown once): {result.Data.Key}");
+        Console.ResetColor();
+    }
+
+    public async Task UserApiKeyList(string username, CancellationToken cancellationToken)
+    {
+        using var scope = app.Services.CreateScope();
+        var user = await FindUserForApiKey(scope, username, cancellationToken);
+        if (user is null) return;
+
+        var apiKeyService = scope.ServiceProvider.GetRequiredService<IApiKeyService>();
+        var keys = await apiKeyService.ListByUser(user.Id, cancellationToken);
+
+        var rows = keys.Select(k => new[]
+        {
+            k.Id.ToString(),
+            k.Name,
+            k.KeyPrefix,
+            k.CreatedAt.ToString("yyyy-MM-dd"),
+            k.ExpiresAt?.ToString("yyyy-MM-dd") ?? string.Empty,
+        }).ToList();
+
+        var table = new ConsoleTable([
+            ["Id", "Name", "Key", "Created", "Expires"],
+            ..rows
+        ]);
+
+        Console.WriteLine(table);
+    }
+
+    public async Task UserApiKeyDelete(string username, string key, CancellationToken cancellationToken)
+    {
+        using var scope = app.Services.CreateScope();
+        var user = await FindUserForApiKey(scope, username, cancellationToken);
+        if (user is null) return;
+
+        var apiKeyService = scope.ServiceProvider.GetRequiredService<IApiKeyService>();
+        var keys = await apiKeyService.ListByUser(user.Id, cancellationToken);
+
+        var target = Guid.TryParse(key, out var keyId)
+            ? keys.FirstOrDefault(k => k.Id == keyId)
+            : keys.FirstOrDefault(k => k.Name == key);
+
+        if (target is null)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"API key '{key}' not found");
+            Console.ResetColor();
+            return;
+        }
+
+        if (Confirm($"Do you really want delete api key - {target.Name} ({target.KeyPrefix}) of user {username}"))
+        {
+            OutResult(await apiKeyService.Revoke(target.Id, user.Id, cancellationToken));
+        }
+    }
+
+    private static async Task<UserDetail?> FindUserForApiKey(IServiceScope scope, string username, CancellationToken cancellationToken)
+    {
+        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var user = await userRepo.GetDetailByUserName(username, cancellationToken);
+
+        if (user is null)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"User '{username}' not found");
+            Console.ResetColor();
+        }
+
+        return user;
     }
 
 }

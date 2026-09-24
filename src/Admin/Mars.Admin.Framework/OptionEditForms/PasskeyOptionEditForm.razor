@@ -1,0 +1,21 @@
+@using Mars.Identity.Contracts.Options
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [OptionEditFormForOptionAttribute(typeof(PasskeyOption))]
+@attribute [Display(Name = "Пасскеи")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="PasskeyOption">
+    <h3>Настройки пасскеев</h3>
+
+    <FormItem2 For="()=>context.Enabled" class="col">
+        <FluentSwitch @bind-Value="@context.Enabled" />
+    </FormItem2>
+
+    <FormItem2 For="()=>context.PasskeysMaxPerUser">
+        <FluentNumberField @bind-Value=@context.PasskeysMaxPerUser Width="250px" />
+    </FormItem2>
+</EditOptionForm>
+
+@code {
+    EditOptionForm<PasskeyOption>? form;
+}

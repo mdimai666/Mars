@@ -29,6 +29,7 @@ public class UserActionResult<TData> : IUserActionResult<TData>
     public static UserActionResult<TData> SuccessDeleted() => new() { Ok = true, Message = "Успешно удалено", Data = default! };
 
     public static UserActionResult<TData> Exception(Exception exception) => new() { Ok = false, Message = exception.Message, Data = default! };
+    public static UserActionResult<TData> Exception(string message) => new() { Ok = false, Message = message, Data = default! };
 }
 
 public class RenderActionResult<TData> : UserActionResult<TData>

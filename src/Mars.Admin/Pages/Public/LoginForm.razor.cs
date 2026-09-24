@@ -6,6 +6,7 @@ using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Exceptions;
 using Mars.Core.Utils;
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Options;
 using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Contracts.Options;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +20,7 @@ public partial class LoginForm
     [Inject] IAuthenticationService _authenticationService { get; set; } = default!;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] PasskeyJs _passkeyJs { get; set; } = default!;
 
     [Inject] IFlurlClient _client { get; set; } = default!;
 
@@ -33,6 +35,7 @@ public partial class LoginForm
 
     private bool _isAlreadyAuth;
     private bool _loginOverlayVisible;
+    private bool _passkeyAvailable;
 
     public string AuthProvider { get; set; } = "";
 
@@ -64,6 +67,9 @@ public partial class LoginForm
         }
 
         authVariantConstOption = Q.Site.GetOption<AuthVariantConstOption>();
+
+        _passkeyAvailable = Q.Site.GetOption<PasskeyOption>()?.Enabled != false && await _passkeyJs.IsAvailable();
+        StateHasChanged();
 
         if (DetectIsSsoAuthProcessingAndUrlHasStateCode())
         {
@@ -97,6 +103,41 @@ public partial class LoginForm
             {
                 _navigationManager.NavigateTo(ReturnUrl);
             }
+        }
+    }
+
+    public async Task ExecutePasskeyLogin()
+    {
+        Error = null;
+        ShowAuthError = false;
+        _loginOverlayVisible = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await _passkeyJs.LoginWithPasskey();
+
+            if (result.IsAuthSuccessful && result.Token is not null)
+            {
+                await _authenticationService.LoginCallback(result);
+                await Task.Delay(10);//из-за редиректа какя то бага и не переходит по ссылке
+
+                _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl);
+                return;
+            }
+
+            Error = result.ErrorMessage ?? "Ошибка входа по пасскею";
+            ShowAuthError = true;
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            ShowAuthError = true;
+        }
+        finally
+        {
+            _loginOverlayVisible = false;
+            StateHasChanged();
         }
     }
 

@@ -8,6 +8,8 @@ public interface IMarsWebApiClient
     IFlurlClient Client { get; }
 
     IAccountServiceClient Account { get; }
+    IApiKeyServiceClient ApiKey { get; }
+    IPasskeyServiceClient Passkey { get; }
     IPostTypeServiceClient PostType { get; }
     IFeedbackServiceClient Feedback { get; }
     IPostServiceClient Post { get; }

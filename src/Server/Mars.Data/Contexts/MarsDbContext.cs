@@ -49,6 +49,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
 
     //--------USER----------
     public virtual DbSet<UserMetaValueEntity> UserMetaValues { get; set; } = default!;
+    public virtual DbSet<UserApiKeyEntity> UserApiKeys { get; set; } = default!;
 
     //--------X----------
     public virtual DbSet<NavMenuEntity> NavMenus { get; set; } = default!;

@@ -1,8 +1,0 @@
-files: 120
-semanticTokenScopes - -join ', ')
-getTokenStylingRule - -join ', ')
-semanticHighlighting.enabled - -join ', ')
-defineTheme - -join ', ')
-registerDocumentSemanticTokensProvider - -join ', ')
-monaco-vscode-api - -join ', ')
-SemanticTokensStylingService - -join ', ')

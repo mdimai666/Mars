@@ -26,4 +26,17 @@ public class CompletionItemDto
     public string? Detail { get; set; }
 
     public string? Documentation { get; set; }
+
+    /// <summary>Правки, применяемые Monaco вместе со вставкой элемента
+    /// (completionItem.additionalTextEdits) — у нас: дописывание `using` для неимпортированных типов.</summary>
+    public IReadOnlyList<AdditionalTextEditDto>? AdditionalTextEdits { get; set; }
+}
+
+public class AdditionalTextEditDto
+{
+    public int OffsetFrom { get; set; }
+
+    public int OffsetTo { get; set; }
+
+    public string NewText { get; set; } = "";
 }

@@ -129,6 +129,67 @@ public class MassReferencesTests
     }
 
     [Fact]
+    public async Task Unimported_type_item_carries_using_edit()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var completion = new CompletionQueryService(manager, NullLogger<CompletionQueryService>.Instance);
+
+        var result = await completion.GetCompletionsAsync("test.mass",
+            new CodePositionRequest { DocumentId = "u1", Code = "StringBuil", Offset = 10 }, CancellationToken.None);
+
+        var item = result.Items.Single(i => i.Label == "StringBuilder");
+        var edit = Assert.Single(item.AdditionalTextEdits!);
+        Assert.Equal("using System.Text;\n", edit.NewText);
+        Assert.Equal(0, edit.OffsetFrom);
+        Assert.Equal(0, edit.OffsetTo);
+    }
+
+    [Fact]
+    public async Task Imported_type_item_has_no_using_edit()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var completion = new CompletionQueryService(manager, NullLogger<CompletionQueryService>.Instance);
+
+        var result = await completion.GetCompletionsAsync("test.mass",
+            new CodePositionRequest { DocumentId = "u2", Code = "Consol", Offset = 6 }, CancellationToken.None);
+
+        var item = result.Items.First(i => i.Label == "Console");
+        Assert.Null(item.AdditionalTextEdits);
+    }
+
+    [Fact]
+    public async Task Using_in_code_suppresses_using_edit()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var completion = new CompletionQueryService(manager, NullLogger<CompletionQueryService>.Instance);
+
+        var result = await completion.GetCompletionsAsync("test.mass",
+            new CodePositionRequest
+            {
+                DocumentId = "u3",
+                Code = "using System.Text;\nStringBuil",
+                Offset = 29,
+            }, CancellationToken.None);
+
+        var item = result.Items.Single(i => i.Label == "StringBuilder");
+        Assert.Null(item.AdditionalTextEdits);
+    }
+
+    [Fact]
+    public async Task Committed_unimported_type_with_using_compiles_clean()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var diagnostics = new DiagnosticsQueryService(manager, NullLogger<DiagnosticsQueryService>.Instance);
+
+        // результат применения additionalTextEdits + вставки имени
+        var code = "using System.Text;\nvar sb = new StringBuilder();";
+        var result = await diagnostics.GetDiagnosticsAsync("test.mass",
+            new CodePositionRequest { DocumentId = "u4", Code = code, Offset = code.Length }, CancellationToken.None);
+
+        Assert.DoesNotContain(result, d => d.Id == "CS0103");
+    }
+
+    [Fact]
     public async Task Completion_still_works_after_diagnostics()
     {
         using var manager = new CodeCompletionWorkspaceManager([new DynamicGlobalsContextProvider()]);

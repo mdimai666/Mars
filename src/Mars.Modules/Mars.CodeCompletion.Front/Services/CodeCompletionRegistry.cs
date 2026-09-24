@@ -169,6 +169,11 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
                 SortText = i.SortText,
                 Detail = i.Detail,
                 DocumentationAsString = i.Documentation,
+                AdditionalTextEdits = i.AdditionalTextEdits?.Select(e => new SingleEditOperation
+                {
+                    Range = OffsetsToRange(snapshot.Code, e.OffsetFrom, e.OffsetTo),
+                    Text = e.NewText,
+                }).ToList(),
             }).ToList();
 
             return new CompletionList { Suggestions = suggestions, Incomplete = response.Incomplete };

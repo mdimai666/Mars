@@ -258,6 +258,43 @@ Monaco (`CompletionList.Incomplete`) → при продолжении ввод�
 - WebApp пользователя на 5003 поднимался ДО фикса project-per-document — нужен перезапуск.
 - Тесты: `Mars.CodeCompletion.Tests` 18/18, `Mars.Nodes.Tests` 566/566, `dotnet build Mars.slnx` зелёный.
 
+## Auto-using для неимпортированных типов + урезка импортов (2026-09-25)
+
+Решения пользователя: база импортов — BCL-набор (как ImplicitUsings); рантайм режем в той же
+работе; обратную совместимость старых скриптов ломать разрешено.
+
+**Симптом-мотиватор:** пользователь вставил из completion `UserDetail` → CS0103 + hover пустой.
+Причина: Roslyn предлагает типы из ссылок без импорта (VS-механика «unimported types»), но мы
+не дописывали `using` при коммите — половина фичи.
+
+**Грабли разведки (проверено эмпирически):**
+- `SymbolCompletionItem` (Roslyn) — internal; `item.Properties` у unimported-элементов ПУСТЫЕ
+  (зонд-тест) — публичного пути «элемент → символ» нет.
+- `Compilation.GetSymbolsWithName` — только source-декларации (в скрипте их нет) → не годится.
+- Решение: свой `CompletionTypeIndex` (Host/Services) — обход
+  `compilation.SourceModule.ReferencedAssemblySymbols` → public-типы → словарь
+  MetadataName → namespaces[]; строится лениво ОДИН раз на контекст
+  (`ContextWorkspace.TypeIndex`, `GetTypeIndexAsync`).
+- BlazorMonaco 3.5: `CompletionItem.AdditionalTextEdits : List<SingleEditOperation>`
+  (`BlazorMonaco.Editor`, поля Range/Text) — форма совпадает с внутренней monaco
+  (suggestController читает `edit.range`/`edit.text`), JS-костыли не нужны.
+
+**Реализация:**
+- `CompletionItemDto.AdditionalTextEdits` (Contracts) + `AdditionalTextEditDto {OffsetFrom, OffsetTo, NewText}`.
+- `CompletionQueryService`: для элементов с type-тегами (`WellKnownTags.Class/Interface/Structure/Enum/Delegate`;
+  осторожно — именно `Structure`, не `Struct`) — namespace из индекса; правка вставляется ТОЛЬКО
+  когда имя однозначно (ровно один namespace во всех ссылках) и он не в effective imports
+  (CompilationOptions.Usings + `using X;` в тексте, regex multiline); вставка `using X;\n` в offset 0.
+- Фронт: маппинг в `SingleEditOperation` через существующий `OffsetsToRange`.
+- **Рантайм + контекст урезаны до BCL-набора** (breaking, подтверждён): `FunctionNodeImpl.ScriptOptions`
+  и `FunctionNodeContextProvider.Imports` = System, System.Collections.Generic, System.Linq,
+  System.Threading.Tasks, System.Threading (убраны System.Text, Mars.Nodes.Core, namespace Node, DI).
+  Зеркало рантайм↔редактор сохранено; старые скрипты на скрытых импортах лечатся явным using
+  (вручную или через completion).
+- Тесты (+4, всего 24/24): unimported-элемент несёт `using System.Text;\n` (0..0); импортированный
+  `Console` — без правки; `using` в коде подавляет правку; «using + new StringBuilder()» компилируется
+  без CS0103. `Mars.Nodes.Tests` 566/566 (урезка импортов тесты нод не сломала).
+
 ## Грабли
 
 - **FlurlClient мутирует общий HttpClient**: конструктор `FlurlClient(HttpClient)` ставит

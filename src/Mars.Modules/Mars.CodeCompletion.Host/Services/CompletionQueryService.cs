@@ -1,6 +1,9 @@
+using System.Text.RegularExpressions;
 using Mars.CodeCompletion.Contracts.Dto;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Tags;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.CodeCompletion.Host.Services;
@@ -48,18 +51,36 @@ public class CompletionQueryService(
                 .OrderBy(item => item.SortText, StringComparer.Ordinal)
                 .ThenBy(item => item.FilterText ?? item.DisplayText, StringComparer.Ordinal);
 
-            var items = filtered.Take(MaxCompletionItems + 1).Select(item => new CompletionItemDto
-            {
-                Label = item.DisplayText,
-                Kind = MonacoCompletionKinds.FromRoslynTags(item.Tags),
-                InsertText = item.DisplayText,
-                FilterText = item.FilterText,
-                SortText = item.SortText,
-            }).ToList();
-
-            var incomplete = items.Count > MaxCompletionItems;
+            var capped = filtered.Take(MaxCompletionItems + 1).ToList();
+            var incomplete = capped.Count > MaxCompletionItems;
             if (incomplete)
-                items.RemoveAt(items.Count - 1);
+                capped.RemoveAt(capped.Count - 1);
+
+            var imports = GetEffectiveImports(document, request.Code);
+            CompletionTypeIndex? typeIndex = null;
+
+            var items = new List<CompletionItemDto>(capped.Count);
+            foreach (var item in capped)
+            {
+                var dto = new CompletionItemDto
+                {
+                    Label = item.DisplayText,
+                    Kind = MonacoCompletionKinds.FromRoslynTags(item.Tags),
+                    InsertText = item.DisplayText,
+                    FilterText = item.FilterText,
+                    SortText = item.SortText,
+                };
+
+                if (IsTypeItem(item))
+                {
+                    typeIndex ??= await workspaceManager.GetTypeIndexAsync(contextId, document, ct);
+                    var usingEdit = TryBuildUsingEdit(item, typeIndex, imports);
+                    if (usingEdit != null)
+                        dto.AdditionalTextEdits = [usingEdit];
+                }
+
+                items.Add(dto);
+            }
 
             return new CompletionResponseDto { Items = items, Incomplete = incomplete };
         }
@@ -77,5 +98,53 @@ public class CompletionQueryService(
         while (start > 0 && (char.IsLetterOrDigit(code[start - 1]) || code[start - 1] == '_'))
             start--;
         return code[start..end];
+    }
+
+    private static bool IsTypeItem(CompletionItem item)
+        => item.Tags.Contains(WellKnownTags.Class)
+            || item.Tags.Contains(WellKnownTags.Interface)
+            || item.Tags.Contains(WellKnownTags.Structure)
+            || item.Tags.Contains(WellKnownTags.Enum)
+            || item.Tags.Contains(WellKnownTags.Delegate);
+
+    /// <summary>
+    /// VS-поведение для неимпортированных типов: вместе с вставкой имени дописать `using`.
+    /// Правка создаётся только когда имя однозначно (ровно один namespace во всех ссылках)
+    /// и он ещё не импортирован — иначе не угадываем.
+    /// </summary>
+    private static AdditionalTextEditDto? TryBuildUsingEdit(
+        CompletionItem item, CompletionTypeIndex typeIndex, HashSet<string> imports)
+    {
+        var name = item.DisplayText;
+        var generic = name.IndexOf('<');
+        if (generic >= 0)
+            name = name[..generic];
+
+        var namespaces = typeIndex.GetNamespaces(name);
+        if (namespaces.Count != 1 || imports.Contains(namespaces[0]))
+            return null;
+
+        return new AdditionalTextEditDto
+        {
+            OffsetFrom = 0,
+            OffsetTo = 0,
+            NewText = $"using {namespaces[0]};\n",
+        };
+    }
+
+    private static HashSet<string> GetEffectiveImports(Document document, string code)
+    {
+        var imports = new HashSet<string>(StringComparer.Ordinal);
+
+        if (document.Project.CompilationOptions is CSharpCompilationOptions options)
+        {
+            foreach (var usingDirective in options.Usings)
+                imports.Add(usingDirective);
+        }
+
+        foreach (Match match in Regex.Matches(code, @"^[ \t]*using[ \t]+([A-Za-z_][\w.]*)[ \t]*;", RegexOptions.Multiline))
+            imports.Add(match.Groups[1].Value);
+
+        return imports;
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.CodeCompletion.Host.Services;
 
@@ -31,12 +32,16 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
     ];
 
     private readonly IReadOnlyDictionary<string, ICodeContextProvider> _providers;
+    private readonly ILogger? _logger;
     private readonly ConcurrentDictionary<string, Lazy<ContextWorkspace>> _contexts = new(StringComparer.Ordinal);
     private readonly Lazy<MefHostServices> _hostServices = new(() => MefHostServices.Create(MefAssemblies));
 
-    public CodeCompletionWorkspaceManager(IEnumerable<ICodeContextProvider> providers)
+    public CodeCompletionWorkspaceManager(
+        IEnumerable<ICodeContextProvider> providers,
+        ILogger<CodeCompletionWorkspaceManager>? logger = null)
     {
         _providers = providers.ToDictionary(p => p.ContextId, StringComparer.Ordinal);
+        _logger = logger;
     }
 
     public IReadOnlyList<string> ContextIds => _providers.Keys.ToList();
@@ -93,6 +98,19 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
         var ctx = lazy.Value;
         if (ctx.Documents.TryRemove(documentId, out var ids))
             ctx.Workspace.TryApplyChanges(ctx.Workspace.CurrentSolution.RemoveProject(ids.ProjectId));
+    }
+
+    /// <summary>Индекс «имя типа → namespaces» по ссылкам контекста; строится один раз (лениво).</summary>
+    public Task<CompletionTypeIndex> GetTypeIndexAsync(string contextId, Document document, CancellationToken ct)
+    {
+        if (!_contexts.TryGetValue(contextId, out var lazy) || !lazy.IsValueCreated)
+            throw new NotFoundException($"Code completion context '{contextId}' is not registered");
+
+        var ctx = lazy.Value;
+        lock (ctx)
+        {
+            return ctx.TypeIndex ??= CompletionTypeIndex.CreateAsync(document.Project, _logger, ct);
+        }
     }
 
     private ContextWorkspace CreateContext(string contextId)
@@ -181,5 +199,6 @@ public sealed class CodeCompletionWorkspaceManager : IDisposable
         public AdhocWorkspace Workspace { get; } = workspace;
         public ContextSettings Settings { get; } = settings;
         public ConcurrentDictionary<string, DocumentIds> Documents { get; } = new(StringComparer.Ordinal);
+        public Task<CompletionTypeIndex>? TypeIndex;
     }
 }

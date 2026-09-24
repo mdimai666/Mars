@@ -26,12 +26,8 @@ public class FunctionNodeContextProvider(IServiceCollection services) : ICodeCon
         "System",
         "System.Collections.Generic",
         "System.Linq",
-        "System.Text",
         "System.Threading.Tasks",
         "System.Threading",
-        "Mars.Nodes.Core",
-        typeof(Node).Namespace!,
-        "Microsoft.Extensions.DependencyInjection",
     ];
 
     public IReadOnlyCollection<MetadataReference> GetMetadataReferences()

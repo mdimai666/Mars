@@ -14,4 +14,6 @@ public interface ICodeCompletionServiceClient
     Task<SignatureHelpResponseDto?> GetSignatureHelp(string contextId, CodePositionRequest request);
 
     Task<IReadOnlyList<DiagnosticDto>> GetDiagnostics(string contextId, CodePositionRequest request);
+
+    Task RemoveDocument(string contextId, string documentId);
 }

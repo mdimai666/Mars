@@ -184,9 +184,28 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
 - [x] Консольная диагностика цепочки (префикс `[CodeCompletion]`): attacher null / info ответ /
   init failed / model not available / attached. Ошибка info-проверки больше не кэшируется
   (`_enabledTask = null` → ретрай на следующем attach).
+- [x] **КОРЕНЬ БАГА «0 подсказок» (найден на стенде curl-зондами, воспроизведён тестами):**
+  Roslyn submission-проект с НЕСКОЛЬКИМИ документами не поддерживается — completion работает
+  только для первого документа, остальные молча возвращают пустой список (цепочка submissions
+  строится через project references, не через соседние документы). В альфе-декабре был один
+  документ на запрос, поэтому она «работала». Фикс: **проект на каждый клиентский DocumentId**
+  (один документ в проекте), текст обновляется на месте; `RemoveDocument` (DELETE-эндпоинт +
+  вызов с фронта при detach/dispose модели) удаляет проект. Регресс-тесты:
+  `CompletionPoisonBisection` (A–E), `Completion_still_works_after_diagnostics` — 18/18 зелёные.
+- [x] Логирование тихих веток: `GetCompletionsAsync == null` (с состоянием compilation),
+  `compilation == null`, исключения сервисов (LogError) — раньше проглатывались.
+- Проверено curl на стенде (5288): `Console.` → 50, `RNS.` → 24, hover `(field) string NodeId`,
+  signature `void ScriptExecuteContext.Send(object msgOrPayload, int output = 0)`,
+  CS0103 sev8 на мусорном коде, чистый код → 0 диагностик.
+- [ ] **ОТКРЫТЫЙ ВОПРОС — `msg.` → 0 подсказок:** `ScriptExecuteContext.msg` — `dynamic`
+  (рантайм оборачивает NodeMsg в DynamicNodeMsgWrapper), Roslyn не дополняет dynamic.
+  Варианты: (a) синтетический globals-тип для completion с `NodeMsg msg` (риск расхождения
+  с рантаймом, но `msg.Payload` — центральный сценарий); (b) оставить как есть. Ждём решения.
 
 ## Грабли
 
+- **Submission-проект = РОВНО ОДИН документ** (см. доработки 2026-09-25): несколько документов
+  в одном submission-проекте молча ломают completion для всех, кроме первого.
 - **Script-контекст (НАЙДЕНО ЭМПИРИЧЕСКИ, тесты):** `isSubmission: true` + `hostObjectType`
   в `ProjectInfo.Create` и `sourceCodeKind: Script` в `DocumentInfo.Create` — оба обязательны,
   иначе globals (`msg`) не видны и/или top-level `return` даёт CS8805.

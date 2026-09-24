@@ -12,7 +12,7 @@ public class CodeCompletionTests : IDisposable
     private CompletionQueryService Completion => new(_manager, NullLogger<CompletionQueryService>.Instance);
     private HoverQueryService Hover => new(_manager, NullLogger<HoverQueryService>.Instance);
     private SignatureHelpQueryService SignatureHelp => new(_manager);
-    private DiagnosticsQueryService Diagnostics => new(_manager);
+    private DiagnosticsQueryService Diagnostics => new(_manager, NullLogger<DiagnosticsQueryService>.Instance);
 
     public void Dispose() => _manager.Dispose();
 

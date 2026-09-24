@@ -1,4 +1,5 @@
 using Mars.CodeCompletion.Contracts.Dto;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.Extensions.Logging;
 
@@ -19,19 +20,36 @@ public class CompletionQueryService(
             return new CompletionResponseDto();
         }
 
-        var completions = await service.GetCompletionsAsync(document, request.Offset, cancellationToken: ct);
-        if (completions == null)
-            return new CompletionResponseDto();
-
-        var items = completions.ItemsList.Select(item => new CompletionItemDto
+        try
         {
-            Label = item.DisplayText,
-            Kind = MonacoCompletionKinds.FromRoslynTags(item.Tags),
-            InsertText = item.DisplayText,
-            FilterText = item.FilterText,
-            SortText = item.SortText,
-        }).ToList();
+            var completions = await service.GetCompletionsAsync(document, request.Offset, cancellationToken: ct);
+            if (completions == null)
+            {
+                var compilation = await document.Project.GetCompilationAsync(ct);
+                logger.LogWarning(
+                    "GetCompletionsAsync returned null for context '{ContextId}' (compilation null: {CompilationNull}, refs: {Refs}, errors: {Errors})",
+                    contextId,
+                    compilation == null,
+                    compilation?.References.Count() ?? -1,
+                    compilation == null ? -1 : compilation.GetDiagnostics(ct).Count(d => d.Severity == DiagnosticSeverity.Error));
+                return new CompletionResponseDto();
+            }
 
-        return new CompletionResponseDto { Items = items };
+            var items = completions.ItemsList.Select(item => new CompletionItemDto
+            {
+                Label = item.DisplayText,
+                Kind = MonacoCompletionKinds.FromRoslynTags(item.Tags),
+                InsertText = item.DisplayText,
+                FilterText = item.FilterText,
+                SortText = item.SortText,
+            }).ToList();
+
+            return new CompletionResponseDto { Items = items };
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Code completion failed for context '{ContextId}'", contextId);
+            return new CompletionResponseDto();
+        }
     }
 }

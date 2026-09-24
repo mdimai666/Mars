@@ -96,7 +96,7 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
 
     private async Task DetachAsync(string uri)
     {
-        if (!_editors.TryRemove(uri, out _))
+        if (!_editors.TryRemove(uri, out var attached))
             return;
 
         try
@@ -110,6 +110,8 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
         catch (JSDisconnectedException)
         {
         }
+
+        await TryRemoveServerDocumentAsync(attached);
     }
 
     private async Task EnsureInitializedAsync()
@@ -250,8 +252,23 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
     }
 
     [JSInvokable]
-    public void RemoveDocument(string modelUri)
-        => _editors.TryRemove(Normalize(modelUri), out _);
+    public async Task RemoveDocument(string modelUri)
+    {
+        if (_editors.TryRemove(Normalize(modelUri), out var attached))
+            await TryRemoveServerDocumentAsync(attached);
+    }
+
+    private async Task TryRemoveServerDocumentAsync(AttachedEditor attached)
+    {
+        try
+        {
+            await Client.RemoveDocument(attached.ContextId, attached.DocumentId);
+        }
+        catch
+        {
+            // серверный документ рано или поздно пересоздаётся; утечка проекта некритична
+        }
+    }
 
     private async Task<ModelSnapshot?> GetSnapshotAsync(AttachedEditor attached, Position? position)
     {

@@ -102,6 +102,33 @@ public class MassReferencesTests
     }
 
     [Fact]
+    public async Task Empty_prefix_completion_is_capped_and_incomplete()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var completion = new CompletionQueryService(manager, NullLogger<CompletionQueryService>.Instance);
+
+        var result = await completion.GetCompletionsAsync("test.mass",
+            new CodePositionRequest { DocumentId = "d6", Code = "var x = 1; ", Offset = 11 }, CancellationToken.None);
+
+        Assert.Equal(200, result.Items.Count);
+        Assert.True(result.Incomplete);
+    }
+
+    [Fact]
+    public async Task Prefixed_completion_is_filtered_and_complete()
+    {
+        using var manager = new CodeCompletionWorkspaceManager([new MassReferencesContextProvider()]);
+        var completion = new CompletionQueryService(manager, NullLogger<CompletionQueryService>.Instance);
+
+        var result = await completion.GetCompletionsAsync("test.mass",
+            new CodePositionRequest { DocumentId = "d7", Code = "Consol", Offset = 6 }, CancellationToken.None);
+
+        Assert.Contains(result.Items, i => i.Label == "Console");
+        Assert.True(result.Items.Count < 200);
+        Assert.False(result.Incomplete);
+    }
+
+    [Fact]
     public async Task Completion_still_works_after_diagnostics()
     {
         using var manager = new CodeCompletionWorkspaceManager([new DynamicGlobalsContextProvider()]);

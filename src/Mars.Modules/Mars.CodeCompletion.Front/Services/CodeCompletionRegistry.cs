@@ -171,7 +171,7 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
                 DocumentationAsString = i.Documentation,
             }).ToList();
 
-            return new CompletionList { Suggestions = suggestions, Incomplete = false };
+            return new CompletionList { Suggestions = suggestions, Incomplete = response.Incomplete };
         }
         catch
         {

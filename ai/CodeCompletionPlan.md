@@ -235,11 +235,19 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
 `StandNodesApp.Client/Program.cs`. Повторных конструкторов `FlurlClient` поверх общего
 `HttpClient` больше нет; любой будущий singleton-со-скоупом потребитель тоже защищён.
 
-**Блокер №2 (пользователь отложил: «пока отложим») — swagger `code:"string", offset:0` вешает вкладку.**
-НЕ дедлок: сервер отвечает 200 за ~2 с, но **13 910 элементов / 3 МБ JSON** (глобальное
-дополнение = все публичные типы ~300 сборок) — Swagger UI рендерит это намертво. Замерено curl;
-сервер после запроса жив (следующий — 0.3 с). Предложенный фикс: серверная фильтрация по слову
-слева от курсора + кап (~1000–2000) с `incomplete: true`.
+**Блокер №2 — ЗАКРЫТ (2026-09-25): swagger/глобальный completion отдавал 13 910 элементов / 3 МБ и вешал вкладку.**
+Фикс по стандартной схеме удалённых completion-серверов (clangd `--limit-results`, дефолт 100;
+LSP `CompletionList.isIncomplete`): кап **200** элементов в `CompletionQueryService`
+(`MaxCompletionItems`) + `Incomplete=true` в `CompletionResponseDto`, фронт пробрасывает флаг в
+Monaco (`CompletionList.Incomplete`) → при продолжении ввода Monaco перезапрашивает сервер
+вместо локальной фильтрации. ВАЖНО (эмпирика, тесты): Roslyn `ItemsList` **не отсортирован и
+не отфильтрован по префиксу** (SortText = просто имя, приоритетных бакетов нет — алфавитный
+порядок как в VS Code C# Dev Kit), поэтому сервер сам: фильтр `FilterText.StartsWith(префикс
+слева от курсора, OrdinalIgnoreCase)` → сортировка SortText/FilterText → кап. Пустая строка =
+топ-200 по алфавиту + incomplete; `Send`/`localVar` появляются при наборе префикса (дозапрос).
+Прогрев на attach пользователь отклонил («подождать первый — гуд»). Тесты:
+`Empty_prefix_completion_is_capped_and_incomplete`, `Prefixed_completion_is_filtered_and_complete`,
+`Script_completion_includes_globals_methods_and_locals` переписан на префиксы — 20/20 зелёные.
 
 **Окружение (обновлено 2026-09-25, вторая сессия):**
 - Ветка `ai/node-rework-stage3-CodeCompletion`; коммиты: `90778c2e`, `b21ab9df`,

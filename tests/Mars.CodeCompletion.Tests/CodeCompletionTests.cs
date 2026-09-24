@@ -48,13 +48,18 @@ public class CodeCompletionTests : IDisposable
     [Fact]
     public async Task Script_completion_includes_globals_methods_and_locals()
     {
-        var completions = await Completion.GetCompletionsAsync(
-            TestCodeContextProvider.Id, Request("var localVar = 1; |"), CancellationToken.None);
+        // пустой префикс обрезается до топ-200 по алфавиту (incomplete) — члены проверяем с префиксом
+        var send = await Completion.GetCompletionsAsync(
+            TestCodeContextProvider.Id, Request("var localVar = 1; Se|"), CancellationToken.None);
+        Assert.Contains(send.Items, i => i.Label == "Send");
 
-        var labels = completions.Items.Select(i => i.Label).ToList();
-        Assert.Contains("Send", labels);
-        Assert.Contains("Add", labels);
-        Assert.Contains("localVar", labels);
+        var add = await Completion.GetCompletionsAsync(
+            TestCodeContextProvider.Id, Request("var localVar = 1; Ad|"), CancellationToken.None);
+        Assert.Contains(add.Items, i => i.Label == "Add");
+
+        var local = await Completion.GetCompletionsAsync(
+            TestCodeContextProvider.Id, Request("var localVar = 1; local|"), CancellationToken.None);
+        Assert.Contains(local.Items, i => i.Label == "localVar");
     }
 
     [Fact]

@@ -3,6 +3,10 @@ namespace Mars.CodeCompletion.Contracts.Dto;
 public class CompletionResponseDto
 {
     public IReadOnlyList<CompletionItemDto> Items { get; set; } = [];
+
+    /// <summary>Список обрезан сервером (LSP isIncomplete) — при продолжении ввода клиент
+    /// должен перезапросить сервер, а не фильтровать полученное локально.</summary>
+    public bool Incomplete { get; set; }
 }
 
 public class CompletionItemDto

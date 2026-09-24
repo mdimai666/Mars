@@ -6,6 +6,7 @@ using Mars.CodeCompletion.Host;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
+using Mars.CommandLine.Scripting;
 using Mars.Datasource.Front;
 using Mars.Datasource.Host;
 using Mars.Docker.Host;
@@ -192,6 +193,10 @@ public static class MarsWebAppStartup
         app.UseMarsSwagger();
         app.MapControllers();
         app.MapRazorPages();
+
+        // регистрация fn ДО старта CLI-сокета: удалённые исполнения лениво загружают
+        // типы команд один раз, к первому запросу дерево должно быть полным
+        app.UseMarsCommandLineScripting();
 
         app.UseMarsCliSocket(Instance);
 

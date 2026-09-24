@@ -16,6 +16,8 @@ public class CommandLineApi : ICommandLineApi
     WebApplication _app = default!;
     public WebApplication app => _app;
 
+    public bool InRemoteInvocation => Remote.InRemoteInvocation;
+
     public bool IsContinueRun = false;
 
     private readonly List<Type> _modules = [];

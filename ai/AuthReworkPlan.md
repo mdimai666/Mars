@@ -98,22 +98,56 @@
 - SPA front template (`Res/front_templates/default/wwwroot/js/app.js`) всё ещё logout'ится
   удалением cookie через `document.cookie` — правится в этапе 3.
 
-## Этап 3 — Переход на A1 (cookie-first)
+## Этап 3 — Переход на A1 (cookie-first) ✅ (2026-09-25, ждёт коммита)
 
-- [ ] Сервер: cookie `ExpireTimeSpan` = 3 дня; `JWTSettings.expiryInMinutes` 43200 → 4320 (3 дня).
-- [ ] Логин-эндпоинты: JWT в теле только для не-браузерных клиентов (решить при реализации:
-      убрать из ответа или оставить — клиент его больше не хранит).
-- [ ] Клиент: не писать JWT в localStorage (оба формата); `CookieOrLocalStorageAuthStateProvider` →
-      cookie-провайдер (состояние из `InitialUserPrimaryInfo` / me-эндпоинта); удалить мёртвый
-      fallback на cookie `authToken`, закомментированный refresh, `TryRefreshAccessTokenAsync`.
-- [ ] `PasskeyJsInterop.js` / `PasskeyJs.cs`: fetch с `credentials: 'include'` без Bearer-заголовка.
-- [ ] SSO callback: внешний id_token в localStorage не класть (cookie уже ставится SignInAsync).
-- [ ] Хабы: `[Authorize]` на `ChatHub`/`AiChatHub`; `AccessTokenProvider` у клиента AiChat убрать
-      (cookie приезжает в WS-рукопожатии сама) либо оставить с `OnMessageReceived` — решить по факту.
-- [ ] Чек-пойнт: админские сервисы редактирования юзеров (роли, блокировка, данные) вызывают
-      `UpdateSecurityStampAsync`; при отсутствии — добавить.
-- [ ] SPA front template (`Res/front_templates/default/wwwroot/js/app.js`): тот же паттерн
-      localStorage — привести к cookie.
+- [x] Сервер: `JWTSettings.expiryInMinutes` 43200 → 4320 (3 дня) в `appsettings.json` —
+      cookie `ExpireTimeSpan` следует той же настройке (`MarsStartupPartCore`), sliding уже включён.
+- [x] Логин-эндпоинты продолжают возвращать JWT в теле (Swagger UI, WebApiClient, внешние
+      клиенты) — браузерные клиенты его больше не сохраняют.
+- [x] Клиент: `CookieOrLocalStorageAuthStateProvider` удалён → `CookieAuthStateProvider`:
+      состояние из `InitialUserPrimaryInfo` server-rendered хост-страницы (для анонимуса сервер
+      отдаёт null — `RequestContext.User`); сам грузит VM через `ViewModelService`
+      (снимает гонку с `App.OnInitializedAsync`); `_loggedOut`-флаг до force-reload;
+      Q.User обновляется через `UpdateUserByInitialVM`. Claims: NameIdentifier/Name/Email/
+      GivenName/Surname/Role из `UserPrimaryInfo`, authenticationType "cookie".
+- [x] `AuthenticationService`: убраны `LoginStage`/`LoginCallback`/`MarkUserAsAuthenticated`
+      (интерфейс `IAuthenticationService` ужат до Login/Logout/RegisterUser), localStorage не
+      трогается; Logout — серверный вызов + `MarkUserAsLoggedOut`.
+- [x] Все навигации после смены сессии — `NavigateTo(..., forceLoad: true)`: LoginForm
+      (пароль/пасскей/SSO-callback), LogoutPage, 401-перехватчик в App.razor.cs. Хост-страница
+      перерендеривается с актуальной cookie.
+- [x] `PasskeyJsInterop.js`: убран `authHeaders()`/Bearer из localStorage — только
+      `credentials: 'include'` (cookie).
+- [x] Хабы: `[Authorize]` на `ChatHub` и `AiChatHub`; у `AiChatHubClient` убран
+      `AccessTokenProvider` (и зависимость IJSRuntime) — cookie приезжает в negotiate и
+      WS-рукопожатии сама. Анонимный старт хаба со страницы логина теперь получает 401 и
+      замолкает (без ретраев до успеха); после логина force-reload создаёт новое соединение.
+- [x] SSO callback: внешний id_token в localStorage не кладётся ( force-reload после обмена;
+      cookie ставит серверный `ExperimentalSignInService`).
+- [x] Чек-пойнт SecurityStamp: УЖЕ закрыт — `UserRepository.Update` (:134), `SetRoles` (:410)
+      и `RemoteUserUpsert` (:498) вызывают `UpdateSecurityStampAsync`. Правки не потребовались.
+- [x] Мёртвый код: `GenerateRefreshToken` удалён из `ITokenService`/`TokenService`
+      (вызывающих не осталось); fallback на cookie `authToken` и закомментированный refresh
+      ушли вместе со старым провайдером.
+- [x] SPA front template `app.js`: Login не пишет токен в localStorage; Logout — серверный
+      `POST /api/Account/Logout` (fetch, credentials include) вместо document.cookie-хака.
+- [x] Bump `MarsAppVersion` 0.8.3-alpha.31 (PasskeyJsInterop.js, app.js).
+- [x] Проверка: build slnx зелёный; Mars.Integration.Tests — все зелёные (exit 0);
+      `LoginAccountTests` 3/3; `HandlebarsAppFrontTests` (Docker) зелёные.
+      UI-потоки (логин/логаут/пасскей/SSO в админке) — живая проверка пользователем;
+      E2E-сьют по умолчанию выключен.
+
+Грабли этапа 3:
+- **Dev-стенд `Dev/DevAdmin.DevServer` (WASM на 5185 → backend 5003)**: cross-origin —
+  Identity-cookie в запросы не попадёт (fetch не шлёт куки кросс-доменно без CORS
+  `AllowCredentials` + `credentials: include`). Прод-путь (`/dev` с того же origin) работает.
+  Если стенд ещё используется — чинить отдельно (CORS-политика с явным origin).
+- `[Authorize]` на хабах: админка стартует `/_ws/admin` сразу (в т.ч. на странице логина) —
+  анонимное соединение теперь падает с 401 (fire-and-forget, один раз, без ретраев);
+  лечится force-reload после логина.
+- После деплоя: существующие сессии на 30-дневных cookie/JWT живут до своего `exp`
+  (cookie sliding перевыпускается со старым сроком, пока не перелогинятся); JWT на 30 суток
+  остаются валидными до истечения — при желании разово перегенерировать `jwt_private.pem`.
 
 ## Этап 4 — Гигиена (по пунктам, каждый обсуждается отдельно)
 

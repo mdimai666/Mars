@@ -4,18 +4,16 @@ using Mars.AiChat.Contracts.SignalR;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 
 namespace Mars.AiChat.Front.Services;
 
 /// <summary>
 /// SignalR-клиент хаба /_ws/aichat: события выполнения агента.
+/// Авторизация — Identity-cookie (A1): браузер шлёт её сам и в negotiate,
+/// и в WS-рукопожатии (same-origin).
 /// </summary>
 public class AiChatHubClient : IAsyncDisposable
 {
-    private const string AuthTokenKey = "authToken";
-
-    private readonly IJSRuntime _js;
     private readonly SemaphoreSlim _lock = new(1, 1);
     private HubConnection? _connection;
     private Guid? _joinedChatId;
@@ -36,11 +34,6 @@ public class AiChatHubClient : IAsyncDisposable
     /// </summary>
     public event Action? OnReconnected;
 
-    public AiChatHubClient(IJSRuntime js)
-    {
-        _js = js;
-    }
-
     public async Task EnsureStartedAsync()
     {
         await _lock.WaitAsync();
@@ -52,7 +45,6 @@ public class AiChatHubClient : IAsyncDisposable
                 .WithUrl($"{Q.BackendUrl}{AiChatHubEvents.HubPath}", options =>
                 {
                     options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
-                    options.AccessTokenProvider = GetAccessTokenAsync;
                 })
                 .WithAutomaticReconnect(RetryPolicy.Instance)
                 .AddJsonProtocol(options =>
@@ -124,18 +116,6 @@ public class AiChatHubClient : IAsyncDisposable
         catch
         {
             // соединение могло оборваться — сервер отвалится по таймауту
-        }
-    }
-
-    private async Task<string?> GetAccessTokenAsync()
-    {
-        try
-        {
-            return await _js.InvokeAsync<string?>("localStorage.getItem", AuthTokenKey);
-        }
-        catch
-        {
-            return null;
         }
     }
 

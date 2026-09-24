@@ -11,6 +11,7 @@ public partial class LogoutPage
     protected override async Task OnInitializedAsync()
     {
         await AuthenticationService.Logout();
-        NavigationManager.NavigateTo("/dev/Login");
+        // forceLoad: хост-страница должна отрендериться анонимной (cookie снята на сервере)
+        NavigationManager.NavigateTo("/dev/Login", forceLoad: true);
     }
 }

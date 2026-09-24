@@ -1,5 +1,6 @@
 using Mars.Contracts.Interfaces;
 using Mars.Nodes.Abstractions.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +9,7 @@ namespace Mars.Nodes.Abstractions.Hubs;
 /// <summary>
 /// Хаб только получает сообщение  от клиента и вызывает метод в сервисе
 /// </summary>
+[Authorize]
 public class ChatHub : Hub<IClientHub>
 {
     private readonly INodeService _nodeService;

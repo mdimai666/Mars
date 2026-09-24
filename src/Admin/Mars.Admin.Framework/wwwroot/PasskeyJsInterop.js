@@ -53,24 +53,8 @@ function serializeCredential(credential) {
     });
 }
 
-// Токен пишется в localStorage двумя путями: Blazored (JSON-строка в кавычках) и raw (SSO-путь).
-function authHeaders() {
-    const headers = {};
-    let token = localStorage.getItem('authToken');
-    if (token) {
-        try {
-            const parsed = JSON.parse(token);
-            if (typeof parsed === 'string') {
-                token = parsed;
-            }
-        } catch {
-            // raw-токен, оставляем как есть
-        }
-        headers['Authorization'] = 'bearer ' + token;
-    }
-    return headers;
-}
-
+// Cookie-схема (A1): авторизация — Identity-cookie, уходит same-origin запросом
+// благодаря credentials: 'include'; токенов в localStorage больше нет.
 async function fetchJson(url, options) {
     const response = await fetch(url, { credentials: 'include', ...options });
     const text = await response.text();
@@ -97,27 +81,25 @@ export function isAvailable() {
 }
 
 export async function registerPasskey(optionsUrl, submitUrl, name) {
-    const headers = authHeaders();
-    const optionsJson = await fetchJson(optionsUrl, { method: 'POST', headers });
+    const optionsJson = await fetchJson(optionsUrl, { method: 'POST' });
     const options = PublicKeyCredential.parseCreationOptionsFromJSON(optionsJson);
     const credential = await navigator.credentials.create({ publicKey: options });
 
     return await fetchJson(submitUrl, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credentialJson: serializeCredential(credential), name }),
     });
 }
 
 export async function loginWithPasskey(optionsUrl, loginUrl) {
-    const headers = authHeaders();
-    const optionsJson = await fetchJson(optionsUrl, { method: 'POST', headers });
+    const optionsJson = await fetchJson(optionsUrl, { method: 'POST' });
     const options = PublicKeyCredential.parseRequestOptionsFromJSON(optionsJson);
     const credential = await navigator.credentials.get({ publicKey: options });
 
     return await fetchJson(loginUrl, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credentialJson: serializeCredential(credential) }),
     });
 }

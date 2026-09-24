@@ -38,6 +38,11 @@ internal class CodeCompletionServiceClient : BasicServiceClient, ICodeCompletion
                     .PostJsonAsync(request)
                     .ReceiveJson<IReadOnlyList<DiagnosticDto>>();
 
+    public Task<AnalyzeResponseDto> GetAnalyze(string contextId, CodePositionRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", contextId, "analyze")
+                    .PostJsonAsync(request)
+                    .ReceiveJson<AnalyzeResponseDto>();
+
     public Task RemoveDocument(string contextId, string documentId)
         => _client.Request($"{_basePath}{_controllerName}", contextId, "document", documentId)
                     .OnError(OnStatus404ReturnNull)

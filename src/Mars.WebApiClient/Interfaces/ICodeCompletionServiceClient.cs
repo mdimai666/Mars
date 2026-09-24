@@ -15,5 +15,8 @@ public interface ICodeCompletionServiceClient
 
     Task<IReadOnlyList<DiagnosticDto>> GetDiagnostics(string contextId, CodePositionRequest request);
 
+    /// <summary>Диагностика + семантические токены одним запросом (debounce-тик фронта).</summary>
+    Task<AnalyzeResponseDto> GetAnalyze(string contextId, CodePositionRequest request);
+
     Task RemoveDocument(string contextId, string documentId);
 }

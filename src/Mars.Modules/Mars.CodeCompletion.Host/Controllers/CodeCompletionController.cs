@@ -23,7 +23,8 @@ public class CodeCompletionController(
     CompletionQueryService completionService,
     HoverQueryService hoverService,
     SignatureHelpQueryService signatureHelpService,
-    DiagnosticsQueryService diagnosticsService) : ControllerBase
+    DiagnosticsQueryService diagnosticsService,
+    SemanticTokensQueryService semanticTokensService) : ControllerBase
 {
     [HttpGet("info")]
     public CodeCompletionInfo GetInfo()
@@ -48,6 +49,14 @@ public class CodeCompletionController(
     [HttpPost("{contextId}/diagnostics")]
     public Task<IReadOnlyList<DiagnosticDto>> Diagnostics(string contextId, CodePositionRequest request, CancellationToken ct)
         => diagnosticsService.GetDiagnosticsAsync(contextId, request, ct);
+
+    [HttpPost("{contextId}/analyze")]
+    public async Task<AnalyzeResponseDto> Analyze(string contextId, CodePositionRequest request, CancellationToken ct)
+        => new()
+        {
+            Diagnostics = await diagnosticsService.GetDiagnosticsAsync(contextId, request, ct),
+            SemanticTokensData = await semanticTokensService.GetSemanticTokensDataAsync(contextId, request, ct),
+        };
 
     [HttpDelete("{contextId}/document/{documentId}")]
     public void RemoveDocument(string contextId, string documentId)

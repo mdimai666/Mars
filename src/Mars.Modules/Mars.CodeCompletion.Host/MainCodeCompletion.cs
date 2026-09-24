@@ -12,6 +12,7 @@ public static class MainCodeCompletion
         services.AddSingleton<HoverQueryService>();
         services.AddSingleton<SignatureHelpQueryService>();
         services.AddSingleton<DiagnosticsQueryService>();
+        services.AddSingleton<SemanticTokensQueryService>();
         return services;
     }
 }

@@ -119,6 +119,9 @@ public partial class CodeEditor2 : IDisposable
             Language = Lang,
             //Language = "html",
             Value = Value,
+            // semantic tokens провайдер в standalone monaco выключен по умолчанию;
+            // опция работает ТОЛЬКО как construction-опция (не через updateOptions)
+            SemanticHighlightingEnabled = true,
         };
     }
 

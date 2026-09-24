@@ -295,8 +295,57 @@ Monaco (`CompletionList.Incomplete`) → при продолжении ввод�
   `Console` — без правки; `using` в коде подавляет правку; «using + new StringBuilder()» компилируется
   без CS0103. `Mars.Nodes.Tests` 566/566 (урезка импортов тесты нод не сломала).
 
+## Семантическая подсветка (semantic tokens, 2026-09-25)
+
+Мотиватор: типы (`UserDetail`) в редакторе чёрные — monaco красит C# только монарх-грамматикой
+(ключевые слова/строки/комментарии); типы в редакторах красит слой semantic tokens от Roslyn.
+**Проверка альфы** (`features/MonacoRoslynCompletionProvider`): рабочей подсветки там НЕ было —
+в `MySemantic.cs` лежал только незаwire'нный маппинг классификаций (порт OmniSharp
+`SemanticTokensFeature`), git grep — ноль потребителей; в JS — только completion/signature/hover/codeCheck.
+
+Решения пользователя: объединить с диагностикой в один `analyze`-запрос; тема — светлая,
+палитра — готовая из сети (VS Code `light_plus`, `extensions/theme-defaults/themes/light_plus.json`):
+типы `#267f99`, методы `#795e26`, переменные/параметры/property/event `#001080`,
+enumMember/constant `#0070c1`, keyword `#0000ff`, string `#a31515`, comment `#008000`, number `#098658`.
+
+Реализация:
+- **Проверено**: в dll BlazorMonaco 3.5 семантики нет (нужен наш JS); в бандле monaco
+  `registerDocumentSemanticTokensProvider` есть; standalone-раскраска семантики — через
+  **правила темы** (`token` = имя semantic-типа), `semanticTokenColors` в данных темы НЕТ.
+- Host: `SemanticTokensQueryService` — `Classifier.GetClassifiedSpansAsync` → маппинг
+  `ClassificationTypeNames` → легенда (16 типов: namespace/class/enum/interface/struct/typeParameter/
+  parameter/variable/property/enumMember/event/method/keyword/string/comment/number) →
+  delta-кодирование `[deltaLine, deltaStartChar, length, tokenType, modifiers]`.
+  Грабли: `StaticSymbol`/`StringEscapeCharacter` перекрывают другие спаны (в маппинг не берём) +
+  guard «пропускать span, начинающийся раньше конца предыдущего» (у monaco overlappingTokenSupport=false).
+  XmlDocComment* → comment. Модификаторы (static/declaration) — фаза 2.
+- Контроллер: `POST {contextId}/analyze` → `AnalyzeResponseDto { Diagnostics, SemanticTokensData }`
+  (диагностика+токены одним debounce-тиком); старый `diagnostics` оставлен (тесты/swagger).
+- Клиент: `ICodeCompletionServiceClient.GetAnalyze`.
+- Фронт: `RunDiagnostics` → `RunAnalyze` (setMarkers + setSemanticTokens в JS);
+  `codeCompletion.js`: `registerDocumentSemanticTokensProvider` (кэш data по uri +
+  `monaco.Emitter` → monaco перезабирает токены после analyze), тема `mars-light`
+  (base `vs`, inherit, semantic-правила light_plus) + `monaco.editor.setTheme('mars-light')`,
+  в watchModel — `editor.updateOptions({semanticHighlighting:{enabled:true}})`.
+- **Грабля темы**: `setTheme` глобальный — `logview` (лог-редакторы CodeEditor2) и `mars-light`
+  конфликтуют, если оба редактора на одной странице (последний поставивший побеждает). На v1 приемлемо.
+- Легенда продублирована в `SemanticTokensQueryService.TokenTypes` и `codeCompletion.js` —
+  менять ТОЛЬКО синхронно (комментарии в обоих файлах).
+- `MarsAppVersion` → **0.8.3-alpha.23** (изменён `codeCompletion.js`).
+- Тесты (+4, всего 28/28): 5 int на токен, keyword+string, namespace+class+method
+  (`System.Console.WriteLine`), delta-кодирование первой строки.
+
 ## Грабли
 
+- **Semantic tokens в standalone monaco ВЫКЛЮЧЕНЫ по умолчанию** (найдено 2026-09-25, когда
+  «классы не подсвечивались»): гейт — `isSemanticColoringEnabled` читает setting
+  `editor.semanticHighlighting.enabled` из configurationService, а standalone-тема хардкодит
+  `semanticHighlighting = false`. Включается ТОЛЬКО construction-опцией
+  `'semanticHighlighting.enabled': true` (официальный playground-семпл semantic-tokens-provider);
+  `editor.updateOptions({semanticHighlighting:...})` — НОЛЬ-эффект (ключа нет в editorOptions).
+  У нас: `CodeEditor2.EditorConstructionOptions` → `SemanticHighlightingEnabled = true`
+  (BlazorMonaco: `[JsonPropertyName("semanticHighlighting.enabled")]`). Раскраска типов —
+  правилами темы (`token` = имя semantic-типа, `getTokenStyleMetadata` → `tokenTheme._match(type.modifiers)`).
 - **FlurlClient мутирует общий HttpClient**: конструктор `FlurlClient(HttpClient)` ставит
   `httpClient.Timeout = InfiniteTimeSpan`; после первого запроса HttpClient бросает на любой
   сеттер `net_http_operation_started`. Поэтому в WASM-хостах `IFlurlClient` — один eager-инстанс

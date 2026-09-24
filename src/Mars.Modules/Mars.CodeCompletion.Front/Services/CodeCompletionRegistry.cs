@@ -88,7 +88,7 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
         _editors[uri] = new AttachedEditor(uri, contextId, Guid.NewGuid().ToString("N"));
 
         await _module.InvokeVoidAsync("watchModel", uri);
-        _ = RunDiagnostics(uri);
+        _ = RunAnalyze(uri);
 
         Console.WriteLine($"[CodeCompletion] attached '{contextId}' to {uri}");
         return new Attachment(this, uri);
@@ -232,7 +232,7 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
     }
 
     [JSInvokable]
-    public async Task RunDiagnostics(string modelUri)
+    public async Task RunAnalyze(string modelUri)
     {
         var uri = Normalize(modelUri);
         if (!_editors.TryGetValue(uri, out var attached) || _module == null)
@@ -244,15 +244,16 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
             if (snapshot == null)
                 return;
 
-            var diagnostics = await Client.GetDiagnostics(attached.ContextId, ToRequest(attached, snapshot));
-            await _module.InvokeVoidAsync("setMarkers", uri, diagnostics);
+            var response = await Client.GetAnalyze(attached.ContextId, ToRequest(attached, snapshot));
+            await _module.InvokeVoidAsync("setMarkers", uri, response.Diagnostics);
+            await _module.InvokeVoidAsync("setSemanticTokens", uri, response.SemanticTokensData);
         }
         catch (JSDisconnectedException)
         {
         }
         catch
         {
-            // диагностика — фоновая проверка, ошибки не должны ломать редактирование
+            // фоновая проверка, ошибки не должны ломать редактирование
         }
     }
 

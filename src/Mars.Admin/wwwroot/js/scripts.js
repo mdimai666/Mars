@@ -218,10 +218,6 @@ function set_theme_darklight(setdark) {
     }
 }
 
-function d_cookie_remove(key) {
-    docCookies.removeItem(key)
-}
-
 window.affix = function (elementRef, id, offsetTop) {
     const element = document.getElementById(id);
     const rect = element.getBoundingClientRect();

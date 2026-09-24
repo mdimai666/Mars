@@ -6,6 +6,7 @@ using Mars.Data.Contexts;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Contracts.Options;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Interfaces;
 using Mars.Options.Abstractions.Services;
@@ -151,6 +152,8 @@ public class E2EServerFixture : IAsyncLifetime
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
         optionService.GetOption<SiteSettings>().SiteUrl = BaseUrl;
         optionService.SaveOption(optionService.GetOption<SiteSettings>());
+        // E2E много раз логинится с одного IP (localhost) — поднять лимит, боевой дефолт не менять
+        optionService.SetOptionOnMemory(new AuthProtectionOption { RateMaxRequestsPerWindow = 10000 });
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

@@ -78,8 +78,8 @@ public class AccountController : ControllerBase
         return Unauthorized(result.ToResponse());
     }
 
+    // без [Authorize]: выход должен снимать cookie даже с протухшим bearer; SignOutAsync безопасен
     [HttpPost("Logout")]
-    [Authorize]
     public Task Logout()
     {
         return _accountsService.Logout();

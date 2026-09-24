@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using Flurl.Http;
 using Mars.Identity.Contracts.Auth;
 using Mars.SSO.Contracts.Dto;
 using Mars.WebApiClient.Interfaces;
@@ -11,14 +12,12 @@ public class AuthenticationService : IAuthenticationService
     protected readonly IMarsWebApiClient _client;
     protected readonly CookieOrLocalStorageAuthStateProvider _authStateProvider;
     protected readonly ILocalStorageService _localStorage;
-    protected AdminJs _js;
 
-    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage, AdminJs adminJs)
+    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage)
     {
         _client = client;
         _authStateProvider = authStateProvider;
         _localStorage = localStorage;
-        _js = adminJs;
     }
 
     public virtual async Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication)
@@ -52,7 +51,15 @@ public class AuthenticationService : IAuthenticationService
 
     public virtual async Task Logout()
     {
-        await _js.CookieRemove(".AspNetCore.Identity.Application");
+        try
+        {
+            await _client.Account.Logout();
+        }
+        catch (FlurlHttpException)
+        {
+            // сервер недоступен — снимаем только локальную сессию
+        }
+
         await _localStorage.RemoveItemAsync("authToken");
         await _authStateProvider.MarkUserAsLoggedOut();
         _client.Client.HttpClient.DefaultRequestHeaders.Authorization = null;

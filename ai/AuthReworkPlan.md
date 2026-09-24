@@ -75,10 +75,28 @@
   но при новых путях создания держать в голове.
 - `ValidateUserCredentials` ищет только по username (в отличие от Login — name||email); не менять.
 
-## Этап 2 — Logout
+## Этап 2 — Logout ✅ (2026-09-25)
 
-- [ ] Клиент (`AuthenticationService.Logout`) вызывает серверный `POST /api/Account/Logout`
-      (SignOutAsync реально снимает cookie); убрать мёртвый `CookieRemove('.AspNetCore.Identity.Application')`.
+- [x] Клиент (`AuthenticationService.Logout`) вызывает серверный `POST /api/Account/Logout`
+      (best-effort: `FlurlHttpException` глушится — сервер может быть недоступен, локальная
+      сессия снимается в любом случае); мёртвый `CookieRemove('.AspNetCore.Identity.Application')`
+      удалён вместе с `AdminJs.CookieRemove` и `d_cookie_remove` в `scripts.js`.
+- [x] Сервер: с `AccountController.Logout` снят `[Authorize]` — иначе при протухшем Bearer
+      (основной сценарий 401-перехватчика) smart-схема отдаёт 401 и cookie не снимается;
+      `SignOutAsync` безопасен (удаляет только cookie вызывающего).
+- [x] `IAccountServiceClient.Logout()` + реализация в `AccountServiceClient` (`AllowAnyHttpStatus`).
+- [x] Тест: `LoginAccountTests.Logout_WithoutAuthorization_ReturnsOk` (WebApiClient.Integration.Tests,
+      3/3 зелёные вместе с Login valid/invalid — логин теперь через `PasswordSignInAsync`).
+- [x] Bump `MarsAppVersion` 0.8.3-alpha.30 (правка `scripts.js`).
+- [x] E2E-лимиты: `E2EServerFixture.Seed` поднимает `RateMaxRequestsPerWindow` до 10000 через
+      `SetOptionOnMemory` (браузерные тесты логинятся много раз с одного localhost; боевой
+      дефолт 10/мин не меняется).
+
+Грабли этапа 2:
+- `AuthenticationService` больше не зависит от `AdminJs` (конструктор без него) — DI-регистрация
+  `TryAddScoped<IAuthenticationService, AuthenticationService>` не затронута.
+- SPA front template (`Res/front_templates/default/wwwroot/js/app.js`) всё ещё logout'ится
+  удалением cookie через `document.cookie` — правится в этапе 3.
 
 ## Этап 3 — Переход на A1 (cookie-first)
 

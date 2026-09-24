@@ -21,6 +21,11 @@ internal class AccountServiceClient : BasicServiceClient, IAccountServiceClient
                     .PostJsonAsync(authCredentials)
                     .ReceiveJson<AuthResultResponse>();
 
+    public async Task Logout()
+        => await _client.Request($"{_basePath}{_controllerName}", "Logout")
+                    .AllowAnyHttpStatus()
+                    .PostAsync();
+
     public async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData)
     {
         try

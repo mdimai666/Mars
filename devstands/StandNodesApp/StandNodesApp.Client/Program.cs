@@ -14,8 +14,11 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var backendUrl = builder.HostEnvironment.BaseAddress.TrimEnd('/');
 
 var httpClient = new HttpClient() { BaseAddress = new Uri(backendUrl) };
+// FlurlClient в конструкторе мутирует httpClient.Timeout; после первого запроса HttpClient
+// запрещает менять настройки (net_http_operation_started) — поэтому один инстанс на приложение.
+var flurlClient = new FlurlClient(httpClient);
 builder.Services.AddScoped(sp => httpClient);
-builder.Services.AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient));
+builder.Services.AddScoped<IFlurlClient>(sp => flurlClient);
 
 builder.Services.AddLocalization();
 builder.ConfigureAppLanguage();

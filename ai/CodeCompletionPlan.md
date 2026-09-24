@@ -205,8 +205,57 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
   Варианты: (a) синтетический globals-тип для completion с `NodeMsg msg` (риск расхождения
   с рантаймом, но `msg.Payload` — центральный сценарий); (b) оставить как есть. Ждём решения.
 
+### Статус на паузе (2026-09-25) — продолжать отсюда
+
+**Блокер №1 — ЗАКРЫТ (2026-09-25): `net_http_operation_started` в браузере, attach не выполнялся.**
+Симптом (консоль стенда у пользователя):
+
+```
+[CodeCompletion] info check failed: net_http_operation_started
+[CodeCompletion] attach skipped for 'nodes.function': feature disabled on server
+```
+
+Сервер при этом живой: `curl /api/CodeCompletion/info` → `{"enabled":true,"contexts":["nodes.function"]}`.
+
+**Корень (подтверждён по исходникам runtime и Flurl):** к JS-interop кадру отношения НЕ имеет
+(гипотеза паузы про interop-continuation — неверна, `Task.Yield` не нужен).
+`net_http_operation_started` бросает `HttpClient.CheckDisposedOrStarted()` — сеттеры
+`BaseAddress/Timeout/DefaultRequestVersion/...` запрещены после первого отправленного запроса.
+Конструктор `FlurlClient(HttpClient)` **всегда** делает `httpClient.Timeout = Timeout.InfiniteTimeSpan`
+(Flurl src/Flurl.Http/FlurlClient.cs:83). Оба WASM-хоста регистрировали
+`AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient))` на ОДИН общий `HttpClient`,
+созданный в Program.cs. В WASM скоуп один на приложение, поэтому штатный `IFlurlClient`
+создаётся рано (до первого запроса) и всё работает; а `CodeCompletionRegistry` (singleton)
+создаёт **собственный скоуп** → второй `new FlurlClient(общий httpClient)` уже после первых
+запросов приложения → сеттер Timeout → исключение → `IsEnabledAsync` = false → attach skipped.
+(Сообщение — сырой ключ ресурса из-за инвариантной глобализации/тримминга WASM.)
+
+**Фикс:** `IFlurlClient` создаётся eagerly ОДИН раз в Program.cs и регистрируется готовым
+инстансом (`AddScoped(sp => flurlClient)`) — `Mars.Admin/Program.cs` и
+`StandNodesApp.Client/Program.cs`. Повторных конструкторов `FlurlClient` поверх общего
+`HttpClient` больше нет; любой будущий singleton-со-скоупом потребитель тоже защищён.
+
+**Блокер №2 (пользователь отложил: «пока отложим») — swagger `code:"string", offset:0` вешает вкладку.**
+НЕ дедлок: сервер отвечает 200 за ~2 с, но **13 910 элементов / 3 МБ JSON** (глобальное
+дополнение = все публичные типы ~300 сборок) — Swagger UI рендерит это намертво. Замерено curl;
+сервер после запроса жив (следующий — 0.3 с). Предложенный фикс: серверная фильтрация по слову
+слева от курсора + кап (~1000–2000) с `incomplete: true`.
+
+**Окружение (обновлено 2026-09-25, вторая сессия):**
+- Ветка `ai/node-rework-stage3-CodeCompletion`; коммиты: `90778c2e`, `b21ab9df`,
+  `4e4534bc` (фикс блокера №1 + alpha.22 + emmet-guard; пользователь проверил — работает).
+  Рабочее дерево чистое.
+- Стенд StandNodesApp (background task отменён по завершении проверки); перезапуск:
+  `dotnet run --project devstands\StandNodesApp\StandNodesApp --urls http://localhost:5288`.
+- WebApp пользователя на 5003 поднимался ДО фикса project-per-document — нужен перезапуск.
+- Тесты: `Mars.CodeCompletion.Tests` 18/18, `Mars.Nodes.Tests` 566/566, `dotnet build Mars.slnx` зелёный.
+
 ## Грабли
 
+- **FlurlClient мутирует общий HttpClient**: конструктор `FlurlClient(HttpClient)` ставит
+  `httpClient.Timeout = InfiniteTimeSpan`; после первого запроса HttpClient бросает на любой
+  сеттер `net_http_operation_started`. Поэтому в WASM-хостах `IFlurlClient` — один eager-инстанс
+  в Program.cs, зарегистрированный готовым; НИКАКИХ фабрик `sp => new FlurlClient(sharedHttp)`.
 - **Submission-проект = РОВНО ОДИН документ** (см. доработки 2026-09-25): несколько документов
   в одном submission-проекте молча ломают completion для всех, кроме первого.
 - **Script-контекст (НАЙДЕНО ЭМПИРИЧЕСКИ, тесты):** `isSubmission: true` + `hostObjectType`

@@ -32,6 +32,16 @@
         background-color: #f8f9fa;
     }
 
+    .docker-state-badge[data-container-state="exited"][data-exit-code="0"] {
+        color: #198754;
+        background-color: #e6f7ee;
+    }
+
+    .docker-state-badge[data-container-state="exited"][data-exit-code]:not([data-exit-code="0"]) {
+        color: #dc3545;
+        background-color: #fce8e8;
+    }
+
     .docker-state-badge[data-container-state="dead"] {
         color: #dc3545;
         background-color: #fce8e8;

@@ -1,0 +1,31 @@
+.docker-group-name {
+    font-weight: 600;
+    margin-inline-end: 8px;
+}
+
+.docker-group-count {
+    font-size: 12px;
+    opacity: 0.7;
+    border: 1px solid var(--neutral-stroke-2, #ccc);
+    border-radius: 10px;
+    padding: 0 8px;
+}
+
+.docker-container-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.docker-cell-ports {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.docker-cell-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}

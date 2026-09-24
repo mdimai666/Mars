@@ -1,0 +1,24 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Docker.Contracts.Nodes
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DockerPullNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.Image">
+            <FluentTextField @bind-Value="Node.Image" Class="w-100" Placeholder="python" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Tag">
+            <FluentTextField @bind-Value="Node.Tag" Class="w-100" Placeholder="latest" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    DockerPullNode Node { get => (DockerPullNode)Value!; set => Value = value; }
+}

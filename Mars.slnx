@@ -220,6 +220,7 @@
     <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Tests/Mars.Datasource.Tests.csproj" />
+    <Project Path="tests/Mars.Docker.Tests/Mars.Docker.Tests.csproj" />
     <Project Path="tests/Mars.DockerImage.Tests/Mars.DockerImage.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />
     <Project Path="tests/Mars.Forms.Tests/Mars.Forms.Tests.csproj" />

@@ -1,0 +1,30 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Docker.Contracts.Nodes
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DockerStateNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.ContainerName">
+            <FluentTextField @bind-Value="Node.ContainerName" Class="w-100" Placeholder="my-container" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Action">
+            <FluentSelect TOption="DockerStateAction"
+                          Items="_actions"
+                          OptionText="a => a.ToString()"
+                          @bind-SelectedOption="Node.Action"
+                          Class="w-100" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    DockerStateNode Node { get => (DockerStateNode)Value!; set => Value = value; }
+
+    readonly DockerStateAction[] _actions = Enum.GetValues<DockerStateAction>();
+}

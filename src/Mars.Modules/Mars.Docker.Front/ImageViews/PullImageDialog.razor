@@ -1,0 +1,81 @@
+@using Flurl.Http
+@using Mars.Contracts.Resources
+@using Mars.Docker.Contracts
+@using Mars.Docker.Front.Services
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Pull image")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-column gap-3">
+        <FluentTextField Label="Image *" Placeholder="alpine" Disabled="_busy" @bind-Value="_image" />
+        <FluentTextField Label="Tag" Placeholder="latest" Disabled="_busy" @bind-Value="_tag" />
+
+        @if (_busy)
+        {
+            <div class="hstack gap-2">
+                <FluentProgressRing />
+                <span class="fz14px text-secondary">Pulling… this can take a while</span>
+            </div>
+        }
+
+        @if (_error is not null)
+        {
+            <div class="alert alert-warning mb-0 fz14px">@_error</div>
+        }
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" Disabled="@(string.IsNullOrWhiteSpace(_image) || _busy)" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" Disabled="_busy" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    string _image = "";
+    string _tag = "latest";
+    bool _busy;
+    string? _error;
+
+    Task CancelAsync() => Dialog.CancelAsync();
+
+    async Task OkAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            await client.Docker().PullImage(new PullImageRequest
+            {
+                Image = _image.Trim(),
+                Tag = string.IsNullOrWhiteSpace(_tag) ? "latest" : _tag.Trim(),
+            });
+            await Dialog.CloseAsync(true);
+            return;
+        }
+        catch (FlurlHttpException ex)
+        {
+            var body = await ex.GetResponseStringAsync();
+            _error = string.IsNullOrEmpty(body) ? ex.Message : body;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+
+        _busy = false;
+    }
+}

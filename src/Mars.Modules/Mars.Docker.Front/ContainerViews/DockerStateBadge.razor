@@ -1,13 +1,15 @@
 @using System.Drawing
 
-<div class="docker-state-badge" data-container-state="@State" title="@GetStateText()">
+<div class="docker-state-badge" data-container-state="@State" data-exit-code="@ExitCode" title="@GetStateText()">
     <i class="@GetIconClass()"></i>
 </div>
 
 @code {
     [Parameter] public string State { get; set; } = "";
-     
+
     [Parameter] public string? CustomText { get; set; }
+
+    [Parameter] public long? ExitCode { get; set; }
 
     private string GetIconClass()
     {

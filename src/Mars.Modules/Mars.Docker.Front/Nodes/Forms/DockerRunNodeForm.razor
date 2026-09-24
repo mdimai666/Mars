@@ -1,0 +1,36 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Docker.Contracts.Nodes
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DockerRunNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.Image">
+            <FluentTextField @bind-Value="Node.Image" Class="w-100" Placeholder="alpine:3.20" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Command">
+            <FluentTextField @bind-Value="Node.Command" Class="w-100" Placeholder="sh -c 'echo hello'" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Env">
+            <FluentTextArea @bind-Value="Node.Env" Rows="3" Class="w-100" Placeholder="KEY=VALUE" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Stdin">
+            <FluentTextArea @bind-Value="Node.Stdin" Rows="3" Class="w-100" Placeholder="empty = msg payload" />
+        </FormItem2>
+        <FormItem2 For="() => Node.TimeoutSeconds">
+            <FluentNumberField TValue="int" @bind-Value="Node.TimeoutSeconds" Min="0" Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="() => Node.KeepContainer">
+            <FluentSwitch @bind-Value="Node.KeepContainer" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    DockerRunNode Node { get => (DockerRunNode)Value!; set => Value = value; }
+}

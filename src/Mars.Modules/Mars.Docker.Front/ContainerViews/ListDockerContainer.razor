@@ -1,108 +1,106 @@
 @using Mars.Admin.Framework.Components
-@using Mars.Core.Extensions
 @using Mars.Contracts.Resources
+@using Mars.Core.Extensions
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 @using Mars.Docker.Contracts;
 
-
 <ErrorBoundary>
     <ChildContent>
-    @* <div class="card border-0">
-        <div class="card-body">
-
-            <h1 class="fz24px">Scheduler</h1>
-
-            <div class="hstack gap-3">
-                <div class="hstack gap-3">
-                    <span>status: </span>
-                    <div class="text-success fw-bold">online</div>
-                </div>
-                <div class="hstack gap-2">
-                    <FluentButton aria-label="play all" Title="Play all" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="PlayAll" />
-                    <FluentButton aria-label="pause all" Title="Pause all" IconEnd="@(new Icons.Regular.Size16.Pause())" OnClick="PauseAll" />
-                    <FluentDivider Orientation="@Orientation.Vertical" />
-                    <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="RefreshClick" />
-                </div>
+        <div class="hstack gap-2">
+            <FluentSearch @bind-Value=_searchText
+                          @bind-Value:after=HandleSearchInput
+                          Immediate
+                          ImmediateDelay="300"
+                          Appearance="FluentInputAppearance.Filled"
+                          AriaLabel="Search" />
+            <FluentSwitch Label="Running only" @bind-Value="_runningOnly" @bind-Value:after="HandleSearchInput" />
+            <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+            <div class="ms-auto">
+                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())" OnClick="ShowCreateDialog">@AppRes.Create</FluentButton>
             </div>
-
         </div>
-    </div> *@
 
-    <div class="hstack gap-2">
-        <FluentSearch @bind-Value=_searchText
-                      @bind-Value:after=HandleSearchInput
-                      Immediate
-                      ImmediateDelay="300"
-                      Appearance="FluentInputAppearance.Filled"
-                      AriaLabel="Search" />
-        <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="HandleSearchInput" />
-        <div class="ms-auto">
-            @* <a href="@urlEditPage">
-                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-            </a> *@
-        </div>
-    </div>
-
-    <div class="mt-4">
-        <div style="height: 534px; overflow:auto;">
-            <FluentDataGrid ItemsProvider="dataProvider"
-                            @ref=table
-                            ItemSize="46"
-                            Virtualize
-                            ResizableColumns
-                            GridTemplateColumns="0.5fr 2fr 1fr 2fr 1fr 1fr 1fr"
-                            GenerateHeader="GenerateHeaderOption.Sticky"
-                            TGridItem="ContainerListResponse1">
-                <TemplateColumn SortBy="@(GridSort<ContainerListResponse1>.ByDescending(f=>f.State))"
-                                Title="S"
-                                Sortable="true">
-                    <DockerStateBadge State="@context.State" />
-                </TemplateColumn>
-                <TemplateColumn SortBy="@(GridSort<ContainerListResponse1>.ByDescending(f=>f.Names))"
-                                Title="@AppRes.Name"
-                                Sortable="true">
-                    <div class="position-relative">
-                        <div class="text-accent">
-                            @context.Names.JoinStr("; ")
-                        </div>
-                        <a href="@urlEditPage/@context.ID" class="stretched-link"></a>
-                    </div>
-                </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.ID) Sortable="true" />
-                <PropertyColumn Property=@(f=>f.Image) Sortable="true" />
-                <TemplateColumn Title="Ports">
-                    <FluentOverflow Style="width: 100%;">
-                        @foreach (var port in context.Ports)
+        <div class="mt-3">
+            @if (IsBusy)
+            {
+                <SharedLoader1 />
+            }
+            else if (_items.Count == 0)
+            {
+                <SharedContentNoRecords />
+            }
+            else
+            {
+                <FluentDataGrid Items="@_items.Where(i => !i.IsHidden).AsQueryable()" TGridItem="DockerGridItem" ShowHover="true">
+                    <TemplateColumn Title="Name" HierarchicalToggle="true" Width="4fr">
+                        @if (context.Item.GroupName is not null)
                         {
-                            <div>
-                                <a>@port.PublicPort</a>:<a>@port.PrivatePort</a>
+                            <span class="docker-group-name">@context.Item.GroupName</span>
+                            <span class="docker-group-count">@context.Item.Containers.Count</span>
+                        }
+                        else
+                        {
+                            var container = context.Item.Container!;
+                            <div class="docker-container-name">
+                                <DockerStateBadge State="@container.State" CustomText="@container.Status" />
+                                <div class="position-relative">
+                                    <span class="text-accent">@DisplayName(context.Item)</span>
+                                    <a href="@UrlEditPage/@container.ID" class="stretched-link"></a>
+                                </div>
                             </div>
                         }
-                    </FluentOverflow>
-                </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.Created) Title="@AppRes.CreatedAt"
-                                Format="d"
-                                Sortable="true"
-                                InitialSortDirection="SortDirection.Descending"
-                                IsDefaultSortColumn="true"
-                                Tooltip
-                                TooltipText=@(f=>f.Created.ToString("g"))
-                                Align="Align.End" />
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                    @* <DFluentDeleteButton OnConfirm=@(e=>Delete(context.ID)) /> *@
-                    <FluentButton aria-label="play item" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="@(e => StartContainer(context))" />
-                    <FluentButton aria-label="pause item" IconEnd="@(new Icons.Regular.Size16.Stop())" OnClick="@(e => StopContainer(context))" />
-                </TemplateColumn>
-            </FluentDataGrid>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Image" Width="2fr">
+                        @context.Item.Container?.Image
+                    </TemplateColumn>
+                    <TemplateColumn Title="Ports" Width="1fr">
+                        <div class="docker-cell-ports">
+                            @foreach (var port in (context.Item.Container?.Ports ?? []).Where(p => p.PublicPort > 0))
+                            {
+                                <span>@port.PublicPort:@port.PrivatePort</span>
+                            }
+                        </div>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Started" Width="1fr">
+                        @if (context.Item.Container is { } started)
+                        {
+                            var date = started.StartedAt ?? started.Created;
+                            <span title="@date.ToString("g")">@date.ToString("d")</span>
+                        }
+                    </TemplateColumn>
+                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End" Width="auto">
+                        <div class="docker-cell-actions">
+                            @if (context.Item.GroupName is not null)
+                            {
+                                @if (GroupIsRunning(context.Item))
+                                {
+                                    <FluentButton aria-label="stop-all" Title="Stop all" IconEnd="@(new Icons.Regular.Size16.Stop())" OnClick="@(e => ToggleGroup(context))" />
+                                }
+                                else
+                                {
+                                    <FluentButton aria-label="start-all" Title="Start all" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="@(e => ToggleGroup(context))" />
+                                }
+                            }
+                            else
+                            {
+                                var container = context.Item.Container!;
+                                @if (container.State == "running")
+                                {
+                                    <FluentButton aria-label="stop" Title="Stop" IconEnd="@(new Icons.Regular.Size16.Stop())" OnClick="@(e => ToggleContainer(container))" />
+                                    <FluentButton aria-label="restart" Title="Restart" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="@(e => RestartContainer(container))" />
+                                }
+                                else
+                                {
+                                    <FluentButton aria-label="start" Title="Start" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="@(e => ToggleContainer(container))" />
+                                }
+                                <FluentButton aria-label="delete" Title="Delete" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(e => DeleteContainer(container))" />
+                            }
+                        </div>
+                    </TemplateColumn>
+                </FluentDataGrid>
+            }
         </div>
-        <br />
-        <div class="hstack">
-            <TotalResultsFound TotalCount="@data.TotalCount" />
-            <div class="ms-auto">
-            </div>
-        </div>
-    </div>
     </ChildContent>
     <ErrorContent>
         <h2>500</h2>

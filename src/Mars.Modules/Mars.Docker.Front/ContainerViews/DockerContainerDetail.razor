@@ -1,8 +1,13 @@
+@using System.Globalization
 @using Mars.Admin.Framework.Components
+@using Mars.Admin.Framework.Extensions
 @using Mars.Core.Extensions
 @using Mars.Docker.Contracts
 @using Mars.Docker.Front.Services
 @using Mars.WebApiClient.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 @using System.Text.Json
 
 <div>
@@ -12,17 +17,112 @@
     }
     else if (container is not null)
     {
-        <div>
-            <h2>@container.Names.JoinStr("; ")</h2>
-            <label>@container.ID</label>
-            <hr />
-            <div class="spacer-2"></div>
-            <MarsCodeEditor2.CodeEditor2 Value="@json" Lang="json" />
+        <div class="hstack gap-2">
+            <FluentButton aria-label="back" Title="Back to containers" IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" OnClick="Back" />
+            <h2 class="mb-0">@DisplayName</h2>
+            <DockerStateBadge State="@container.State" CustomText="@container.Status" ExitCode="@(container.State is "exited" or "dead" ? inspect?.State.ExitCode : null)" />
+            <div class="ms-auto hstack gap-1">
+                @if (container.State == "running")
+                {
+                    <FluentButton aria-label="stop" Title="Stop" IconEnd="@(new Icons.Regular.Size16.Stop())" OnClick="ToggleRunState" />
+                    <FluentButton aria-label="restart" Title="Restart" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Restart" />
+                }
+                else
+                {
+                    <FluentButton aria-label="start" Title="Start" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="ToggleRunState" />
+                }
+                <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowSync())" OnClick="Refresh" />
+                <FluentButton aria-label="delete" Title="Delete" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="Delete" />
+            </div>
         </div>
+
+        <div class="docker-detail-meta">
+            <span class="meta-label">id</span>
+            <code>@container.ID</code>
+            <span class="meta-label">image</span>
+            <span>@container.Image</span>
+            <span class="meta-label">command</span>
+            <code>@Command</code>
+            @if (container.State is "exited" or "dead" && inspect is not null)
+            {
+                <span class="meta-label">exit code</span>
+                <span>@inspect.State.ExitCode@(inspect.State.OOMKilled ? " (OOM killed)" : "")</span>
+            }
+            @if (!string.IsNullOrEmpty(inspect?.State.Error))
+            {
+                <span class="meta-label">error</span>
+                <span class="docker-detail-error">@inspect!.State.Error</span>
+            }
+            @if (Ports.Length > 0)
+            {
+                <span class="meta-label">ports</span>
+                <span>@string.Join(", ", Ports)</span>
+            }
+            <span class="meta-label">created</span>
+            <span>@CreatedText</span>
+            @if (StartedText is not null)
+            {
+                <span class="meta-label">started</span>
+                <span>@StartedText</span>
+            }
+            @if (FinishedText is not null)
+            {
+                <span class="meta-label">finished</span>
+                <span>@FinishedText</span>
+            }
+        </div>
+        @if (IsWaiting)
+        {
+            <div class="hstack gap-2 mt-2 docker-waiting">
+                <FluentProgressRing Width="16" />
+                <span>Waiting for the container to finish…</span>
+            </div>
+        }
+        <hr />
+
+        <FluentTabs>
+            <FluentTab Label="Logs">
+                <ContainerLogsPanel ContainerId="@ID" ContainerState="@container.State" ReloadToken="_reloadToken" />
+            </FluentTab>
+            <FluentTab Label="Inspect">
+                <div class="mt-2" style="height: 480px;">
+                    <MarsCodeEditor2.CodeEditor2 Value="@json" Lang="json" ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+                </div>
+            </FluentTab>
+        </FluentTabs>
+    }
+    else if (runResult is not null)
+    {
+        <div class="hstack gap-2">
+            <FluentButton aria-label="back" Title="Back to containers" IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" OnClick="Back" />
+            <h2 class="mb-0">Run result</h2>
+            <DockerStateBadge State="@(runResult.TimedOut ? "restarting" : "exited")"
+                              ExitCode="@(runResult.TimedOut ? null : runResult.ExitCode)"
+                              CustomText="@(runResult.TimedOut ? "Timed out (still running)" : $"Exited ({runResult.ExitCode})")" />
+        </div>
+
+        <div class="docker-detail-meta">
+            <span class="meta-label">id</span>
+            <code>@ID</code>
+            <span class="meta-label">note</span>
+            <span>Container was removed after exit (auto-remove). Output below was captured before removal.</span>
+        </div>
+        <hr />
+
+        <div class="docker-run-output-label">stdout</div>
+        <pre class="docker-run-output">@(string.IsNullOrEmpty(runResult.Stdout) ? "(empty)" : runResult.Stdout)</pre>
+        @if (!string.IsNullOrEmpty(runResult.Stderr))
+        {
+            <div class="docker-run-output-label">stderr</div>
+            <pre class="docker-run-output">@runResult.Stderr</pre>
+        }
     }
     else
     {
-        <SharedContentNoRecords />
+        <div class="mt-3">
+            <p class="text-secondary">Container not found — it may have been removed or auto-removed after exit.</p>
+            <FluentButton Appearance="Appearance.Accent" IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" OnClick="Back">Back to containers</FluentButton>
+        </div>
     }
 </div>
 
@@ -30,12 +130,56 @@
 
     [Parameter, EditorRequired] public string ID { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] NavigationManager navigation { get; set; } = default!;
+    [Inject] IDialogService dialogService { get; set; } = default!;
 
     ContainerListResponse1? container;
+    ContainerInspectResponse1? inspect;
+    DockerRunResultResponse? runResult;
     string? json;
+    int _reloadToken;
+
+    const int OnceWaitTimeoutSeconds = 30;
 
     string? _prevId;
     bool IsBusy { get; set; }
+    bool IsWaiting { get; set; }
+    bool _onceRequested;
+
+    string DisplayName => inspect is not null
+        ? inspect.Name.TrimStart('/')
+        : container?.Names.JoinStr("; ") ?? ID;
+
+    string Command => inspect is not null
+        ? (inspect.Args.Count > 0 ? $"{inspect.Path} {string.Join(' ', inspect.Args)}" : inspect.Path)
+        : container?.Command ?? "";
+
+    string[] Ports => (container?.Ports ?? [])
+        .Where(p => p.PublicPort > 0)
+        .Select(p => $"{p.PublicPort}:{p.PrivatePort}/{p.Type}")
+        .ToArray();
+
+    string CreatedText => inspect?.Created.ToString("g") ?? container?.Created.ToString("g") ?? "—";
+
+    string? StartedText => FormatDockerDate(inspect?.State.StartedAt);
+
+    string? FinishedText => FormatDockerDate(inspect?.State.FinishedAt);
+
+    static string? FormatDockerDate(string? raw)
+    {
+        if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var date)
+            && date > DateTime.MinValue)
+        {
+            return date.ToLocalTime().ToString("g");
+        }
+
+        return null;
+    }
+
+    protected override void OnInitialized()
+    {
+        _onceRequested = navigation.ToAbsoluteUri(navigation.Uri).Query.Contains("once=1");
+    }
 
     protected override void OnParametersSet()
     {
@@ -44,19 +188,130 @@
         if (_prevId != ID)
         {
             _prevId = ID;
-            Load();
+            _ = LoadOnceFlow();
         }
     }
 
-    public async void Load()
+    async Task LoadOnceFlow()
+    {
+        await Load();
+
+        if (!_onceRequested)
+        {
+            return;
+        }
+
+        _onceRequested = false;
+
+        if (container is null)
+        {
+            // авто-удалённый разовый контейнер: вывод перехвачен сервером до удаления
+            IsBusy = true;
+            StateHasChanged();
+            try
+            {
+                runResult = await client.Docker().GetRunResult(ID);
+            }
+            catch (Exception)
+            {
+                runResult = null;
+            }
+
+            IsBusy = false;
+            StateHasChanged();
+            return;
+        }
+
+        if (container.State is not ("created" or "running" or "restarting"))
+        {
+            return;
+        }
+
+        IsWaiting = true;
+        StateHasChanged();
+
+        try
+        {
+            await client.Docker().WaitContainer(ID, OnceWaitTimeoutSeconds);
+        }
+        catch (Exception)
+        {
+            // контейнер мог быть удалён — Load ниже это отрисует
+        }
+
+        await Load();
+        IsWaiting = false;
+        StateHasChanged();
+    }
+
+    public async Task Load()
     {
         IsBusy = true;
         StateHasChanged();
 
-        container = await client.Docker().GetContainer(ID);
-        json = JsonSerializer.Serialize(container, new JsonSerializerOptions { WriteIndented = true });
+        try
+        {
+            container = await client.Docker().GetContainer(ID);
+        }
+        catch (Exception)
+        {
+            container = null;
+        }
+
+        try
+        {
+            inspect = container is null ? null : await client.Docker().InspectContainer(ID);
+        }
+        catch (Exception)
+        {
+            inspect = null;
+        }
+
+        json = JsonSerializer.Serialize(inspect ?? (object?)container, new JsonSerializerOptions { WriteIndented = true });
+        _reloadToken++;
 
         IsBusy = false;
         StateHasChanged();
+    }
+
+    public Task Refresh() => Load();
+
+    async Task ToggleRunState()
+    {
+        var task = container?.State == "running"
+            ? client.Docker().StopContainer(ID)
+            : client.Docker().StartContainer(ID);
+
+        if (await task.SmartSuccess())
+        {
+            await Load();
+        }
+    }
+
+    async Task Restart()
+    {
+        if (await client.Docker().RestartContainer(ID).SmartSuccess())
+        {
+            await Load();
+        }
+    }
+
+    void Back() => navigation.NavigateTo("/dev/builder/docker");
+
+    async Task Delete()
+    {
+        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
+            (MarkupString)$"Delete container <b>{DisplayName}</b>?",
+            new DialogParameters { Title = "Delete container", Modal = true });
+        var result = await dialog.Result;
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        if (await client.Docker().DeleteContainer(ID).SmartDelete())
+        {
+            Back();
+        }
     }
 }

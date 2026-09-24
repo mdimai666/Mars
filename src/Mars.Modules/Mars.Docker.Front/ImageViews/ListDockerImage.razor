@@ -1,0 +1,67 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Contracts.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
+@using Mars.Docker.Contracts;
+
+<ErrorBoundary>
+    <ChildContent>
+        <div class="hstack gap-2">
+            <FluentSearch @bind-Value=_searchText
+                          @bind-Value:after=HandleSearchInput
+                          Immediate
+                          ImmediateDelay="300"
+                          Appearance="FluentInputAppearance.Filled"
+                          AriaLabel="Search" />
+            <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+            <div class="ms-auto">
+                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDownload())" OnClick="ShowPullDialog">Pull</FluentButton>
+            </div>
+        </div>
+
+        <div class="mt-3 docker-groups">
+            @if (IsBusy)
+            {
+                <SharedLoader1 />
+            }
+            else
+            {
+                @foreach (var group in Groups)
+                {
+                    <div class="docker-group">
+                        <div class="docker-group-header" @onclick="() => ToggleGroup(group.Name)">
+                            <FluentIcon Class="@ChevronClass(group.Name)"
+                                        Value="@(new Icons.Regular.Size16.ChevronDown())" />
+                            <span class="docker-group-name">@group.Name</span>
+                            <span class="docker-group-count">@group.Items.Count</span>
+                        </div>
+                        @if (!IsCollapsed(group.Name))
+                        {
+                            <div class="docker-group-body">
+                                @foreach (var item in group.Items)
+                                {
+                                    <div class="docker-row docker-row-image">
+                                        <div class="docker-cell docker-cell-name">@item.Tag</div>
+                                        <div class="docker-cell docker-cell-image" title="@item.Image.ID">@ShortId(item.Image.ID)</div>
+                                        <div class="docker-cell docker-cell-image">@HumanSize(item.Image.Size)</div>
+                                        <div class="docker-cell docker-cell-created" title="@item.Image.Created.ToString("g")">@item.Image.Created.ToString("d")</div>
+                                        <div class="docker-cell docker-cell-actions">
+                                            <FluentButton aria-label="delete" Title="Delete" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(e => DeleteImage(item))" />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                @if (Groups.Count == 0)
+                {
+                    <SharedContentNoRecords />
+                }
+            }
+        </div>
+    </ChildContent>
+    <ErrorContent>
+        <h2>500</h2>
+    </ErrorContent>
+</ErrorBoundary>

@@ -29,8 +29,13 @@ public partial class FunctionNodeForm : IAsyncDisposable
     private async Task OnEditorInit()
     {
         var attacher = Services.GetService<ICodeCompletionAttacher>();
-        if (attacher != null)
-            _completionAttachment = await attacher.AttachAsync(editor1.Monaco, NodeCompletionContexts.FunctionNode);
+        if (attacher == null)
+        {
+            Console.WriteLine("[CodeCompletion] ICodeCompletionAttacher is not registered in this app");
+            return;
+        }
+
+        _completionAttachment = await attacher.AttachAsync(editor1.Monaco, NodeCompletionContexts.FunctionNode);
     }
 
     public async ValueTask DisposeAsync()

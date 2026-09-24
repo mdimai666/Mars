@@ -173,6 +173,18 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
    красный маркер через ~0.5 c. С флагом `false`: `GET api/CodeCompletion/info` → 404,
    провайдеры не регистрируются, Roslyn MEF не поднимается.
 
+## Доработки по первой проверке (2026-09-25)
+
+- Симптом: форма открыта, подсказок нет, сетевых запросов нет. Причины тихого провала в цепочке:
+  attacher не зарегистрирован в хосте → `GetService` = null (молча); `IsEnabledAsync` глотал
+  любое исключение и **кэшировал false навсегда**.
+- [x] `devstands/StandNodesApp` не был подключён вообще (ни client, ни server) — добавлено:
+  `AddCodeCompletionFront()` (Client), `AddFeatureManagement` + `AddMarsCodeCompletion()` (Server),
+  `FeatureManagement.CodeCompletion: true` в appsettings стенда.
+- [x] Консольная диагностика цепочки (префикс `[CodeCompletion]`): attacher null / info ответ /
+  init failed / model not available / attached. Ошибка info-проверки больше не кэшируется
+  (`_enabledTask = null` → ретрай на следующем attach).
+
 ## Грабли
 
 - **Script-контекст (НАЙДЕНО ЭМПИРИЧЕСКИ, тесты):** `isSubmission: true` + `hostObjectType`

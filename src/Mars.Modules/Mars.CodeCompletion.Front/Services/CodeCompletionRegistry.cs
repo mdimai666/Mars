@@ -45,10 +45,13 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
         try
         {
             var info = await Client.GetInfo();
+            Console.WriteLine($"[CodeCompletion] info: enabled={info?.Enabled}, contexts=[{string.Join(", ", info?.Contexts ?? [])}]");
             return info?.Enabled == true;
         }
-        catch
+        catch (Exception e)
         {
+            Console.WriteLine($"[CodeCompletion] info check failed: {e.Message}");
+            _enabledTask = null;
             return false;
         }
     }
@@ -56,15 +59,30 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
     public async Task<IAsyncDisposable?> AttachAsync(StandaloneCodeEditor editor, string contextId)
     {
         if (!await IsEnabledAsync())
+        {
+            Console.WriteLine($"[CodeCompletion] attach skipped for '{contextId}': feature disabled on server");
             return null;
+        }
 
-        await EnsureInitializedAsync();
+        try
+        {
+            await EnsureInitializedAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[CodeCompletion] init failed: {e}");
+            return null;
+        }
+
         if (_module == null)
             return null;
 
         var model = await editor.GetModel();
         if (string.IsNullOrEmpty(model?.Uri))
+        {
+            Console.WriteLine($"[CodeCompletion] attach skipped for '{contextId}': editor model not available yet");
             return null;
+        }
 
         var uri = Normalize(model.Uri);
         _editors[uri] = new AttachedEditor(uri, contextId, Guid.NewGuid().ToString("N"));
@@ -72,6 +90,7 @@ public sealed class CodeCompletionRegistry : ICodeCompletionAttacher, IAsyncDisp
         await _module.InvokeVoidAsync("watchModel", uri);
         _ = RunDiagnostics(uri);
 
+        Console.WriteLine($"[CodeCompletion] attached '{contextId}' to {uri}");
         return new Attachment(this, uri);
     }
 

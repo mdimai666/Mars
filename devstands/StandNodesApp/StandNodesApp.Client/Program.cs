@@ -2,6 +2,7 @@ using Flurl.Http;
 using Mars.Admin.Contracts.ViewModels;
 using Mars.Admin.Framework;
 using Mars.Admin.Framework.Features;
+using Mars.CodeCompletion.Front;
 using Mars.Nodes.Workspace;
 using Mars.Server.Contracts.Options;
 using Mars.XActions.Contracts;
@@ -22,6 +23,7 @@ builder.ConfigureAppLanguage();
 builder.ConfigureWebSockets(backendUrl);
 builder.Services.AddMarsAdminFramework(builder.Configuration, typeof(Program));
 builder.Services.AddNodeWorkspace();
+builder.Services.AddCodeCompletionFront();
 
 var vm = new InitialSiteDataViewModel()
 {

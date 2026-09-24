@@ -187,7 +187,10 @@ dotnet build tests/Mars.CodeCompletion.Tests && tests\Mars.CodeCompletion.Tests\
 - [x] **КОРЕНЬ БАГА «0 подсказок» (найден на стенде curl-зондами, воспроизведён тестами):**
   Roslyn submission-проект с НЕСКОЛЬКИМИ документами не поддерживается — completion работает
   только для первого документа, остальные молча возвращают пустой список (цепочка submissions
-  строится через project references, не через соседние документы). В альфе-декабре был один
+  строится через project references, не через соседние документы; стек с сервера:
+  `CSharpCompilation.IsSubmissionSyntaxTree` → `Enumerable.SingleOrDefault` →
+  «Sequence contains more than one element» при втором дереве в submission-компиляции).
+  В альфе-декабре был один
   документ на запрос, поэтому она «работала». Фикс: **проект на каждый клиентский DocumentId**
   (один документ в проекте), текст обновляется на месте; `RemoveDocument` (DELETE-эндпоинт +
   вызов с фронта при detach/dispose модели) удаляет проект. Регресс-тесты:

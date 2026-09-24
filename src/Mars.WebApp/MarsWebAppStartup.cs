@@ -43,6 +43,8 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
 using Mars.XActions.Host;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -87,6 +89,14 @@ public static class MarsWebAppStartup
         if (!disableLogs && !IsTesting)
         {
             builder.MarsAddLogging();
+        }
+
+        if (commandsApi.CheckGlobalOption<bool>("--quiet", args))
+        {
+            builder.Logging.AddFilter<ConsoleLoggerProvider>(null, LogLevel.None);
+            // PluginManager логирует автономной LoggerFactory (создан в AddPlugins до Build) —
+            // фильтр выше на него не действует, тихий режим передаём через конфигурацию
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Cli:Quiet"] = bool.TrueString });
         }
 
         //------------------------------------------

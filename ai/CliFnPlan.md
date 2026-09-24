@@ -108,6 +108,43 @@ cat setup.cs | mars fn -f -             # stdin
    `-f файл.cs` (remote через UDS + `--local`), ошибка компиляции (exit 2), pipe+stdin,
    аргументы `-- a b`.
 
+## Quiet + JSON-конверт (2026-09-25, вторая итерация)
+
+Мотивация: для автоматизации в выводе мешали платформенный шум (in-process: консоль-логи сборки,
+`HelloText()`, инфо-таблица; remote: заголовок `mars cli → remote exec...`) и не было
+машиночитаемого ответа. Решения пользователя: quiet — ГЛОБАЛЬНАЯ опция корня (полезна всем
+командам), формат ответа — маркер + JSON-строка, консоль-логи при quiet глушатся полностью.
+
+- **Глобальный `--quiet` / `-q`** (rootCommand, рядом с `--local`/`--no-uds`):
+  - `Program.cs`: не печатает `HelloText()`, `ShowInfoCommand()`, `start in:`/`>RUN`;
+    на окно `ConfigureApp` консоль перехватывается на `TextWriter.Null` — глушит ПРЯМЫЕ
+    `Console.WriteLine` стартапа мимо ILogger (`PluginManager.UsePlugins` список плагинов,
+    `MarsDbStartup`, и т.п.), которые фильтром логгера не берутся;
+  - `MarsWebAppStartup.ConfigureBuilder`: `builder.Logging.AddFilter<ConsoleLoggerProvider>(null, None)`
+    — глушит консоль-логи in-process (фильтр ставится ДО `Build()`, поэтому лог сборки тоже тихий);
+  - `CliRemoteCommands.TryExecOnRunningServerAsync`: заголовок remote-exec под `CheckGlobalOption("--quiet")`;
+  - флаг работает в ЛЮБОЙ позиции (`mars fn -q ...` тоже парсится — проверено эмпирически
+    пользователем: root-опция читается `CheckGlobalOption` по полным args);
+  - **ГРАБЛЯ (найдена пользователем 2026-09-25): `PluginManager` логирует АВТОНОМНОЙ
+    `LoggerFactory.Create(b => b.AddConsole())`** (`ApplicationPluginExtensions.AddPlugins`,
+    создаётся до `Build()`, живёт весь срок приложения) — фильтры `builder.Logging` на неё
+    НЕ действуют, `info: ...PluginManager` лез в stdout при `-q`. Фикс: quiet пробрасывается
+    конфигурационным ключом `Cli:Quiet` (in-memory, ставит `MarsWebAppStartup`), `AddPlugins`
+    при нём создаёт фабрику без консоль-провайдера. Другие автономные фабрики в src/ не найдены
+    (`MarsLogger` берёт фабрику из корня).
+- **`fn --json`**: печатает `FnCommandCli.ResultMarker` (`#MARS-FN-RESULT#`) и одну JSON-строку
+  `{"ok":bool,"exitCode":int,"result":<JSON ReturnValue|null>,"error":string|null}`; конверт
+  печатается и при ошибках (usage=1, compile=2 с текстами диагностик, runtime=1 с ToString
+  исключения); в json-режиме сырой ReturnValue НЕ печатается (заменяется конвертом).
+  `result` — `JsonSerializer.SerializeToElement`, при циклических ссылках fallback `ToString()`.
+  Типовой сценарий: `mars -q fn --json -f setup.cs` → stdout = ровно 2 строки.
+- **`fn --examples`**: печатает `FnCommandCli.UsageExamples` (inline/файл/args+json/stdin+--local/
+  FnContext-globals с кодом) и выходит с кодом 0, источник кода не требуется.
+  Описание команды в help упрощено до «run a C# script once inside the running Mars instance».
+- Тесты (+6, всего 23/23): конверт успех/строка/compile-error/runtime-error/usage-error
+  (перехват `Console.SetOut`), отсутствие маркера без `--json`, примеры покрывают основные формы.
+  `Mars.Cli.EndToEnd.Tests` 6/6, `dotnet build Mars.slnx` зелёный.
+
 ## Грабли (найдено при реализации 2026-09-25)
 
 - **`CSharpScript.RunAsync` БЕЗ `catchException`-предиката перебрасывает runtime-исключения**

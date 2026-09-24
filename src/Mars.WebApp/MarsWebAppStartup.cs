@@ -178,6 +178,7 @@ public static class MarsWebAppStartup
         app.UseCors();
         //app.UseIdentityServer();
         app.UseRouting();
+        app.UseRateLimiter();
         //app.UseAntiforgery();
         app.UseAuthentication();
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSO());

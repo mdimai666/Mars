@@ -45,24 +45,28 @@
 - Несанитизированные `MarkupString`: Markdig в `FluentMarkdownSection`, имена Docker-сущностей
   в диалогах. CORS `AllowAnyOrigin().AllowAnyHeader()` (`//not check`). ASP0001 подавлен прагмой.
 
-## Этап 1 — Rate limiting + lockout ⬅ текущий
+## Этап 1 — Rate limiting + lockout ✅ (2026-09-25)
 
-- [ ] Опция `AuthProtectionOption` (`Mars.Identity.Contracts/Options`, паттерн `PasskeyOption`):
+- [x] Опция `AuthProtectionOption` (`Mars.Identity.Contracts/Options`, паттерн `PasskeyOption`):
       `Enabled` (true), окно/лимит запросов на IP, `LockoutMaxFailedAccessAttempts` (5),
       `LockoutDefaultLockoutTimeSpanMinutes` (5). Регистрация в `UseMarsIdentity`
       (`RegisterOption`, без initial site data — серверная).
-- [ ] `AddRateLimiter` в `AddMarsIdentity`: политика `auth` — fixed window, партиция по IP,
+- [x] `AddRateLimiter` в `AddMarsIdentity`: политика `auth` — fixed window, партиция по IP,
       лимиты читаются из опции на запрос; `Enabled=false` → NoLimiter.
-- [ ] `app.UseRateLimiter()` в `MarsWebAppStartup.ConfigureApp` (после `UseRouting`).
-- [ ] `[EnableRateLimiting("auth")]`: `AccountController.Login`, `PasskeyController` login,
+- [x] `app.UseRateLimiter()` в `MarsWebAppStartup.ConfigureApp` (после `UseRouting`).
+- [x] `[EnableRateLimiting("auth")]`: `AccountController.Login`, `PasskeyController` login,
       `OAuthPageController` POST auth, `OAuthHostController` POST token. Убрать `//TODO: rate limit`.
-- [ ] Lockout: `AccountsService.Login` → `PasswordSignInAsync(user, pwd, true, lockoutOnFailure: true)`
+      (В SSO-контроллерах — литерал `"auth"`: Mars.SSO.Host.OAuth не ссылается на Identity.Contracts.)
+- [x] Lockout: `AccountsService.Login` → `PasswordSignInAsync(user, pwd, true, lockoutOnFailure: true)`
       (заодно заменяет отдельный `SignInAsync`); `ValidateUserCredentials` (OAuth password grant) →
       `CheckPasswordSignInAsync(..., lockoutOnFailure: true)`. Ответ при `IsLockedOut` — отдельное
-      сообщение.
-- [ ] `IdentityOptions.Lockout` ← из `AuthProtectionOption` (Configure<IOptionService>).
-- [ ] Тесты: lockout-поведение `AccountsService.Login` (N неверных → locked out), если
-      Identity-фикстура в `tests/Mars.Server.Tests` позволяет.
+      сообщение. Заодно удалена мёртвая генерация `GenerateRefreshToken()` в Login.
+- [x] Lockout-настройки Identity применяются из опции в `UseMarsIdentity` (`ApplyLockoutSettings`
+      мутирует singleton `IdentityOptions.Lockout` + `onChangeHook` на сохранение опции —
+      обновление без рестарта).
+- [x] Тесты: `tests/Mars.Integration.Tests/Services/AccountsServiceTests.cs` (7 шт. — lockout,
+      неверный пароль, неизвестный юзер, успех, ValidateUserCredentials).
+      Проверка: `Mars.Integration.Tests` 423/423 (4 skipped — Docker-гейт), build slnx зелёный.
 
 Грабли этапа 1:
 - `PasswordSignInAsync` учитывает `SignIn.RequireConfirmedAccount = true` (стоит в

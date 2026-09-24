@@ -119,7 +119,7 @@ public static class MarsWebAppStartup
             builder.AddMarsAiCms();
         });
         builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
-        builder.AddIfFeatureEnabled(FeatureFlags.CodeCompletion, b => b.Services.AddMarsCodeCompletion());
+        builder.AddIfFeatureEnabled(FeatureFlags.CodeCompletion, b => b.Services.AddMarsCodeCompletion(b.Configuration));
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuth());
 
         //------------------------------------------

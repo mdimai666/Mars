@@ -8,7 +8,8 @@ public class SignatureHelpQueryService(CodeCompletionWorkspaceManager workspaceM
 {
     public async Task<SignatureHelpResponseDto?> GetSignatureHelpAsync(string contextId, CodePositionRequest request, CancellationToken ct)
     {
-        var document = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        using var lease = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        var document = lease.Document;
         var invocation = await InvocationContext.GetInvocationAsync(document, request.Offset, ct);
         if (invocation == null)
             return null;

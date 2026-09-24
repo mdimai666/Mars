@@ -72,6 +72,9 @@ public class CompletionPoisonBisection
         Assert.NotEqual(0, await Complete(manager, "e2"));
     }
 
-    private static Task<Microsoft.CodeAnalysis.Document> GetDoc(CodeCompletionWorkspaceManager manager, string docId, string code)
-        => manager.GetDocumentAsync("test.dynamic", docId, code);
+    private static async Task<Microsoft.CodeAnalysis.Document> GetDoc(CodeCompletionWorkspaceManager manager, string docId, string code)
+    {
+        using var lease = await manager.GetDocumentAsync("test.dynamic", docId, code);
+        return lease.Document;
+    }
 }

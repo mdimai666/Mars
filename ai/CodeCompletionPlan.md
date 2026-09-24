@@ -344,8 +344,8 @@ enumMember/constant `#0070c1`, keyword `#0000ff`, string `#a31515`, comment `#00
   метаданные/compilation-цепочки между запросами. Имело бы смысл на документах 1000+ строк.
   Если понадобится — самый дешёвый путь серверный дифф (`newText.GetTextChanges(oldText)` →
   `WithChanges`), клиент не меняется; LSP-путь — дельты из monaco `onDidChangeContent`.
-- **Idle-освобождение контекста — НЕ сейчас; делать при выводе фичи в prod.** TTL-эвикция
-  отдельных документов НЕ нужна: замер показал <1 МБ на документ (в пределах шума) — утёкшие
+- **Idle-освобождение контекста — СДЕЛАНО (2026-09-25)**, см. секцию «Idle-освобождение контекста»
+  ниже. TTL-эвикция отдельных документов НЕ нужна: замер показал <1 МБ на документ (в пределах шума) — утёкшие
   документы почти ничего не стоят, штатная очистка есть (dispose формы + JS `onWillDispose` →
   RemoveDocument). Реальная проблема по тому же замеру: инфраструктура контекста
   (+108 МБ managed / +962 МБ private одноразово на первый документ) не выгружается НИКОГДА —
@@ -378,6 +378,43 @@ enumMember/constant `#0070c1`, keyword `#0000ff`, string `#a31515`, comment `#00
 текста память не растят (кэши Roslyn переиспользуются). ~1 ГБ private на первый запрос —
 заметная величина для dev-инстанса; возможные смягчения на будущее: урезать набор ссылок
 контекста, держать флаг выключенным в prod (уже так).
+
+## Idle-освобождение контекста (2026-09-25)
+
+Решения пользователя: MEF-хост сбрасывать при эвикции всех контекстов; таймаут — 30 минут
+через appsettings. Критерий эвикции — **чисто временной** (нет запросов к контексту N минут),
+утёкшие документы (браузер закрыли без detach → RemoveDocument не вызвался) эвикцию НЕ
+блокируют — сброс безопасен: клиент в каждом запросе шлёт полный текст, следующий attach
+пересоздаёт проект/документ.
+
+Реализация (всё в `Mars.CodeCompletion.Host`):
+- `CodeCompletionOptions` (`IdleTimeoutMinutes`, дефолт 30, секция `CodeCompletion`);
+  `AddMarsCodeCompletion(IConfiguration)` — `Configure<>` по конвенции `MainIdentity`;
+  call-sites обновлены (`MarsWebAppStartup`, StandNodesApp), в `Mars.WebApp/appsettings.json`
+  секция `"CodeCompletion": { "IdleTimeoutMinutes": 30 }`.
+- `CodeCompletionWorkspaceManager`:
+  - **Lease-паттерн**: `GetDocumentAsync` возвращает `DocumentLease : IDisposable`
+    (Document + in-flight-счётчик контекста). Все 5 query-сервисов держат lease через `using`
+    на всё тело запроса — эвикция возможна только при `InFlight == 0`.
+  - **`_evictionLock`** (один короткий лок): создание контекста (включая `lazy.Value` →
+    ~300 `MetadataReference.CreateFromFile`), Acquire/Release, эвикция, `RemoveDocument`
+    (иначе гонка: dispose workspace во время TryApplyChanges).
+  - **Sweep-таймер** (`System.Threading.Timer`): стартует лениво при первом запросе, период
+    `clamp(timeout/4, 50мс, 1мин)`; останавливается когда контекстов не осталось. Эвикция:
+    `TryRemove` из словаря под локом (новые запросы создают свежий контекст), `Workspace.Dispose()`
+    — вне лока. Заодно вычищает exception-кэшированные `Lazy` (неизвестный контекст → следующий
+    запрос пересоздаёт, а не перебрасывает кэш).
+  - **Сброс MEF**: `_hostServices` — не readonly `Lazy`; когда после эвикции `_contexts` пуст —
+    пересоздаётся (генерация в `HostServicesGeneration`, internal для тестов). `MefHostServices`
+    не реализует IDisposable — освобождается GC после потери ссылки; Features-сборки/JIT остаются
+    в процессе (десятки МБ, одноразово). Следующая активация платит полную цену первого запроса.
+  - Internal-конструктор с `TimeSpan idleTimeout` для тестов (мс-таймауты); internal-аксессоры
+    `ActiveContextCount` / `HostServicesGeneration` (InternalsVisibleTo уже был).
+- Тесты: `IdleEvictionTests` (+4, всего 32/32) — эвикция+пересоздание (completion снова работает),
+  активный lease блокирует эвикцию, утёкшие документы не блокируют + поздний RemoveDocument —
+  тихий no-op, MEF-поколение инкрементируется и hover после сброса работает.
+- Проверено: `Mars.CodeCompletion.Tests` 32/32, `Mars.Nodes.Tests` 566/566, `dotnet build Mars.slnx`
+  и StandNodesApp — зелёные. Фронт/JS не менялись — bump `MarsAppVersion` не нужен.
 
 ## Грабли
 

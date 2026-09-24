@@ -17,7 +17,8 @@ public class CompletionQueryService(
 
     public async Task<CompletionResponseDto> GetCompletionsAsync(string contextId, CodePositionRequest request, CancellationToken ct)
     {
-        var document = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        using var lease = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        var document = lease.Document;
 
         var service = CompletionService.GetService(document);
         if (service == null)

@@ -10,7 +10,8 @@ public class DiagnosticsQueryService(
 {
     public async Task<IReadOnlyList<DiagnosticDto>> GetDiagnosticsAsync(string contextId, CodePositionRequest request, CancellationToken ct)
     {
-        var document = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        using var lease = await workspaceManager.GetDocumentAsync(contextId, request.DocumentId, request.Code, ct);
+        var document = lease.Document;
 
         try
         {

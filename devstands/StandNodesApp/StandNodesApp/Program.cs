@@ -40,7 +40,7 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddNodeWorkspace();
 builder.Services.AddMarsNodes();
 builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
-builder.Services.AddMarsCodeCompletion();
+builder.Services.AddMarsCodeCompletion(builder.Configuration);
 
 var app = builder.Build();
 

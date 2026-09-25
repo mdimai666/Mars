@@ -8,6 +8,7 @@ using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Host.Endpoints;
 using Mars.SiteEngine.Host.Services;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -49,7 +50,7 @@ public class FrontRenderErrorTests : IDisposable
 
     HandlebarsWebRenderEngine CreateEngine(MarsAppFront appFront)
     {
-        var engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), appFront);
+        var engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), new HandlebarsEngineFactory([]), appFront);
         engine.Setup();
 
         // как WebRenderEngineLocator.Build: WebTemplateService создаётся Host'ом, не движком
@@ -66,7 +67,7 @@ public class FrontRenderErrorTests : IDisposable
     {
         Directory.CreateDirectory(dir);
         var missing = Path.Combine(dir, "missing");
-        var engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), CreateAppFront(missing));
+        var engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), new HandlebarsEngineFactory([]), CreateAppFront(missing));
 
         var act = () => engine.Setup();
 

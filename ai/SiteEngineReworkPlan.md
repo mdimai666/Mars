@@ -85,27 +85,36 @@ QueryLang. Старт 2026-09-26.
 
 ## Фаза 2 — контрибьюторы в Providers.Handlebars + перестройка сайт-движка
 
-- [ ] 2.1 `Mars.TemplateEngine.Providers.Handlebars`: фабрика настроенного `IHandlebars`
-      (UseJson/UseNewtonsoftJson/HtmlEncoder/форматтеры — одна точка конфигурации) +
+- [x] 2.1 `Mars.TemplateEngine.Providers.Handlebars`: фабрика настроенного `IHandlebars`
+      (UseJson/UseNewtonsoftJson — одна точка конфигурации) +
       `IHandlebarsBuilderContributor { string? Scope; void Configure(IHandlebars hb); }`
-      (DI IEnumerable, фильтрация по scope). `HandlebarsTemplateEngine` переводится на фабрику;
-      scope ноды (`Core.Handlebars`) — без Mars-хелперов (поведение ноды не меняется).
-- [ ] 2.2 `Mars.SiteEngine.Handlebars`: удалить `MyHandlebars` и `IMarsHtmlTemplator`
-      (интерфейс в Abstractions + мёртвая transient-регистрация в `MainSiteEngineHandlebars`).
-      Хелперы — классы-контрибьюторы со scope "site": `BasicHelpersContributor`
-      (MyHandlebarsBasicFunctions), `ContextHelpersContributor` (MyHandlebarsContextFunctions:
-      mobile/context/L/raw_block/iff/RenderPostContent), `SitePartsContributor` (site_head/
-      site_footer), `HelpContributor`. Регистрация контекстных хелперов — один раз на инстанс
-      движка (rctx и так приходит через `options.Data["rctx"]`), убрать
-      `RegisterContextFunctions()` из цикла рендера.
-- [ ] 2.3 `HandlebarsWebRenderEngine` — получает инстанс `IHandlebars` из фабрики
-      (scope "site"); partials (`RegisterTemplate` блоков/лейаутов) и кэш compiled-делегатов
-      остаются в движке (на фронт).
-- [ ] 2.4 Типы `IXTFunctionContext`/`TemplatorRegisterFunction`/`XInterpreter`/
-      `TemplatorHelperInfoAttribute` остаются в Abstractions (их использует QueryLang и Nodes).
-- [ ] 2.5 Тесты: переписать `MyFunctionsTests`/`MyHandlebarsContextFunctionsTests`/
-      `BasicExpressionTests` на контрибьюторов; контракт-тесты `Mars.Server.Tests/TemplateEngines`
-      расширить на фабрику/контрибьюторов; `HandlebarsAppFrontTests` (Docker, полный рендер фронта).
+      (DI IEnumerable, фильтрация по scope, `HandlebarsScopes.Core/Site`, null-scope = все).
+      `HandlebarsTemplateEngine` переведён на фабрику (один общий инстанс вместо создания на
+      каждый `CreateTemplate()`; scope core — без Mars-хелперов, TextEncoder=HtmlEncoder сохранён;
+      беспараметрический конструктор оставлен для тестов/бенчмарков). Регистрация фабрики —
+      в `AddMarsTemplateEngines()`.
+- [x] 2.2 `Mars.SiteEngine.Handlebars`: `MyHandlebars` и `IMarsHtmlTemplator` удалены
+      (включая мёртвую transient-регистрацию). Хелперы — контрибьюторы scope "site" в
+      `Extensions/`: `SiteBasicHelpersContributor` (условия/даты/текст/циклы/site_head/site_footer/help
+      + CustomDateTimeFormatter) и `SiteContextHelpersContributor` (mobile/!mobile/context/L/
+      raw_block/iff/RenderPostContent). Контекстные хелперы регистрируются один раз на инстанс
+      движка (rctx приходит через options.Data) — `RegisterContextFunctions()` на каждый рендер
+      устранён. `ParseStringTimespan` перенесён в `MyHandlebarsContextFunctions`.
+- [x] 2.3 `HandlebarsWebRenderEngine` получает `IHandlebars` из фабрики (scope "site") через
+      конструктор (`IHandlebarsEngineFactory` резолвит `ActivatorUtilities` из rootServices);
+      partials (`RegisterTemplate`) и кэш compiled-делегатов (30 мин) остались в движке.
+      `AddMarsSiteEngineHandlebars` — `TryAddSingleton<IHandlebarsEngineFactory>` + регистрация
+      контрибьюторов. Disposal движка при evict не добавляли (in-flight рендеры; вместе с
+      отложенным кэш-реворком).
+- [x] 2.4 Типы `IXTFunctionContext`/`TemplatorRegisterFunction`/`XInterpreter`/
+      `TemplatorHelperInfoAttribute` остались в Abstractions (их использует QueryLang и Nodes).
+- [x] 2.5 Тесты: `SiteHandlebarsTestFactory` (Mars.SiteEngine.Tests) вместо `new MyHandlebars()`;
+      новые контракт-тесты фабрики/контрибьюторов `HandlebarsEngineFactoryTests`
+      (Mars.Server.Tests) — scope-фильтрация, null-scope, case-insensitivity, NoEscape-колбэк
+      (грабли: отсутствующий хелпер Handlebars.Net рендерит пустой строкой, не бросает).
+      `Mars.SiteEngine.Tests` 62/62; `Mars.Server.Tests` (TemplateEngines) 57/57;
+      `Mars.Integration.Tests` (Services) 97/97; `Mars.SiteEngine.Integration.Tests` (Docker,
+      полный рендер фронта) 19/19.
 
 ## Фаза 3 — Scriban как движок сайта + QueryLang-адаптер
 

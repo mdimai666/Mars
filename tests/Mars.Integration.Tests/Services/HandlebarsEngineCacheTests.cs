@@ -8,6 +8,7 @@ using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Host.Services;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +59,10 @@ v1
         };
 
         // как WebRenderEngineLocator.Build: движок создаётся фабрикой, WebTemplateService — Host'ом
-        engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), appFront);
+        engine = new HandlebarsWebRenderEngine(
+            services.GetRequiredService<IMemoryCache>(),
+            new HandlebarsEngineFactory([]),
+            appFront);
         engine.Setup();
 
         var wts = new WebTemplateService(services, hub, appFront);

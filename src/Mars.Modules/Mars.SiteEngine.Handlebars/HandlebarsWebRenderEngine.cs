@@ -1,11 +1,12 @@
 using System.Text;
+using HandlebarsDotNet;
 using Mars.SiteEngine.Abstractions.Models;
-using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.SiteEngine.Handlebars;
@@ -13,13 +14,14 @@ namespace Mars.SiteEngine.Handlebars;
 public class HandlebarsWebRenderEngine : IWebRenderEngine
 {
     protected MarsAppFront AppFront = default!;
-    private IMemoryCache? _memoryCache;
-    private IMarsHtmlTemplator? _marsHtmlTemplator;
+    private readonly IMemoryCache? _memoryCache;
+    private readonly IHandlebars _handlebars;
 
-    public HandlebarsWebRenderEngine(IMemoryCache? memoryCache, MarsAppFront marsAppFront)
+    public HandlebarsWebRenderEngine(IMemoryCache? memoryCache, IHandlebarsEngineFactory handlebarsEngineFactory, MarsAppFront marsAppFront)
     {
         AppFront = marsAppFront;
         _memoryCache = memoryCache;
+        _handlebars = handlebarsEngineFactory.Create(HandlebarsScopes.Site);
     }
 
     public virtual void Setup()
@@ -57,7 +59,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
     {
         var af = MarsAppFront;
 
-        IMarsHtmlTemplator.MarsHtmlTemplate<object, object>? template_compiled;
+        HandlebarsTemplate<object, object>? template_compiled;
 
         if (ctx.RenderParam.UseCache && _memoryCache?.TryGetValue(AppCacheKey(af, page, ctx.RenderParam), out template_compiled) == true)
         {
@@ -109,17 +111,14 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
             Stopwatch stopwatch = Stopwatch.StartNew();
 #endif
 
-            IMarsHtmlTemplator handlebars = _marsHtmlTemplator ??= new MyHandlebars();
-            handlebars.RegisterContextFunctions();
-
             if (parts is not null)
             {
                 foreach (var block in parts.Where(s => s.Type == WebSitePartType.Block || s.Type == WebSitePartType.Layout))
                 {
-                    handlebars.RegisterTemplate(block.Name, block.Content);
+                    _handlebars.RegisterTemplate(block.Name, block.Content);
                 }
             }
-            template_compiled = handlebars.Compile(combined_html.ToString());
+            template_compiled = _handlebars.Compile(combined_html.ToString());
             _memoryCache?.Set(AppCacheKey(af, page, ctx.RenderParam), template_compiled, DateTimeOffset.Now.AddMinutes(30));
 
 #if DEBUG2

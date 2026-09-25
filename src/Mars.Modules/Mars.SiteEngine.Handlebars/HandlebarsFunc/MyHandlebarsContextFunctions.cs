@@ -107,7 +107,7 @@ public static class MyHandlebarsContextFunctions
 
                 IEnumerable<KeyValuePair<string, object>> diff = dCopy.Except(dResult).Concat(dResult.Except(dCopy));
 
-                var tsCache = MyHandlebars.ParseStringTimespan(cache ?? "10m");
+                var tsCache = ParseStringTimespan(cache ?? "10m");
                 memoryCache?.Set(cacheKey, diff, tsCache ?? TimeSpan.FromMinutes(5));
             }
 
@@ -245,5 +245,19 @@ public static class MyHandlebarsContextFunctions
         }
 
         output.WriteSafeString(content);
+    }
+
+    public static TimeSpan? ParseStringTimespan(string simespanString)
+    {
+        string[] formats = { @"m\m", @"h\h\m\m", @"s\s" };
+        TimeSpan ts;
+        if (TimeSpan.TryParseExact(simespanString, formats, null, out ts))
+        {
+            return ts;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

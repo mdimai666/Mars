@@ -195,7 +195,7 @@ FileRead, HttpRequest, MqttOut, EmailSend, VariableSet, DevAdminConnection.
   перезаписывается), но переменные накапливаются; число ограничено distinct-путями выражений ноды.
 - **Один runner арендуется одним воркером**; несколько одновременных `NodeTaskJob` одного flow →
   несколько runner'ов на ноду — это норма, мешок пула растёт до фактического параллелизма.
-- **Приоритет свойств payload над Context** в `DynamicNodeMsgWrapper` (см. NodesReworkPlan «Грабли») —
+- **Приоритет свойств payload над Context** в `DynamicNodeMsgWrapper` (см. `ai/NodesGuide.md` «Грабли») —
   hot path фазы 2 для `msg.<key>` должен соблюдать ТОТ ЖЕ приоритет (сначала свойства NodeMsg/Payload,
   потом Context) — иначе расхождение с DE-путём.
 - **NCalc-коэрция**: без `StrictTypeMatching` `'1' == 1` → true; с флагом → false (C# бросил бы

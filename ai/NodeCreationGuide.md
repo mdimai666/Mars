@@ -8,8 +8,8 @@
 > Проверено по коду: 2026-09-26 (в т.ч. экспериментом 2026-09-25: агент с одним этим гайдом
 > создал ноду `UpperNode` полным комплектом — сборка 0 errors, 573 теста зелёных; сама
 > экспериментальная нода удалена, её проверенный код сохранён в «Скелете» ниже).
-> История и статус реворка полей/значений — `ai/NodesReworkPlan.md`, `ai/NodesReworkStage2Plan.md`
-> (планы открыты; контракты выходов, DebugMode, `MarsValueInput`/`MarsPathInput` — там).
+> Подсистема Nodes — состав, поток исполнения, контракты выходов, DebugMode, грабли и бэклог:
+> `ai/NodesGuide.md`.
 > Иконки — `ai/NodeIconsGuide.md`. Ноды в плагине — `ai/PluginCreationGuide.md`.
 > Документация для людей — `docs/dev_docs/Nodes/` (`CreateFirstNode.md`, `NodeAnatomy.md`).
 

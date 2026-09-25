@@ -6,7 +6,7 @@
 > стиль как в киберпанке, со всеми уголками и линиями»; «я планирую редизайн и хочу рассмотреть подобный
 > стиль»; «сделай такой же html, где основные компоненты обрисованы, я хочу посмотреть»; «интерфейс в
 > Железном человеке нравится, но там перегружено; в Eagle Eye 2008 и Crysis 2007 — классный».
-> Связанные документы: `ai/NodesReworkPlan.md` (реворк полей нод, этап 3 — провайдер подсказок),
+> Связанные документы: `ai/NodesGuide.md` (подсистема Nodes: провайдер подсказок, компоненты полей),
 > `ai/Prompts/NodesInputFieldPrompt.md` (спека поля значения), `ai/PlanLifecycleGuide.md` (когда план
 > схлопывается в гайд).
 
@@ -218,4 +218,4 @@
   `Operations`), JS — `.../NodeFormEditorJsInterop.cs` (`ValueInput_GetCaret`/`SetCaret`/`SyncScroll`) и
   `.../wwwroot/nodeFormJsInterop.js` (`mvi_*`), стили — `.../wwwroot/css/style.{less,css}`.
 - Демо-точка поля: `.../EditForms/Common/InjectNodeForm.razor` (поля `Email`, `Count`, `DueDate`).
-- Спека поля: `ai/Prompts/NodesInputFieldPrompt.md`; реворк полей нод: `ai/NodesReworkPlan.md`.
+- Спека поля: `ai/Prompts/NodesInputFieldPrompt.md`; подсистема Nodes: `ai/NodesGuide.md`.

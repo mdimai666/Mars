@@ -1,7 +1,16 @@
+using Microsoft.CodeAnalysis.CSharp;
+
 namespace Mars.MetaModelGenerator;
 
 public static class GenSourceCodeMasterHelper
 {
+    /// <summary>
+    /// Имя C#-свойства из ключа метаполя: ключевые слова экранируются '@'
+    /// (runtime-имя свойства остаётся исходным ключом).
+    /// </summary>
+    public static string EscapeCSharpKeyword(string name)
+        => SyntaxFacts.GetKeywordKind(name) != SyntaxKind.None ? "@" + name : name;
+
     public static string GetFormattedName(Type type)
     {
         var nullableUnderlying = Nullable.GetUnderlyingType(type);
@@ -57,8 +66,15 @@ public static class GenSourceCodeMasterHelper
             lines.Select((line, index) => index == 0 ? line : tabs + line));
     }
 
+    /// <summary>
+    /// Имя Mto-класса из имени пост-типа: сегменты через не-буквенно-цифровые символы
+    /// поднимаются в PascalCase ("temp-page" → "TempPageMto") — дефис валиден в TypeName,
+    /// но невалиден в имени C#-класса.
+    /// </summary>
     public static string GetNormalizedTypeName(string typeName, string suffix = "Mto")
     {
-        return char.ToUpper(typeName[0]) + typeName.Substring(1) + suffix;
+        var separators = typeName.Where(c => !char.IsAsciiLetterOrDigit(c)).Distinct().ToArray();
+        var parts = typeName.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        return string.Concat(parts.Select(p => char.ToUpper(p[0]) + p.Substring(1))) + suffix;
     }
 }

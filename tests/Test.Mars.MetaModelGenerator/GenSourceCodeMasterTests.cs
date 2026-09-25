@@ -17,6 +17,43 @@ public class GenSourceCodeMasterTests
         _fixture = new Fixture();
     }
 
+    [Theory]
+    [InlineData("mytype", "MytypeMto")]
+    [InlineData("temp-page", "TempPageMto")]
+    [InlineData("MyType", "MyTypeMto")]
+    [InlineData("a_b-c", "A_bCMto")]
+    public void GetNormalizedTypeName_InvalidChars_PascalCasesSegments(string typeName, string expected)
+    {
+        GenSourceCodeMasterHelper.GetNormalizedTypeName(typeName).Should().Be(expected);
+    }
+
+    [Fact]
+    public void Generate_CSharpKeywordKey_EscapedAndCompiles()
+    {
+        //Arrange — ключ метаполя становится именем свойства; ключевое слово C# должно экранироваться '@'
+        MetaFieldEntity[] metaFields = [
+            new ()
+            {
+                Key = "int",
+                Title = "int",
+                Type = EMetaFieldType.Int,
+            }];
+
+        var master = new GenSourceCodeMaster();
+        var newClassName = GenSourceCodeMasterHelper.GetNormalizedTypeName("MyType");
+
+        //Act
+        var code = master.Generate(newClassName, typeof(PostEntity), metaFields, new(), null);
+
+        //Assert
+        code.Should().Contain("public int? @int { get; set; }");
+        code.Should().Contain("@int = post.MetaValues!");
+        code.Should().Contain("f.MetaField.Key == \"int\"");
+
+        var metaType = TestingScriptCompiler.Compile(code, newClassName);
+        metaType.GetProperty("int", BindingFlags.Instance | BindingFlags.Public).Should().NotBeNull();
+    }
+
     [Fact]
     public void Generate_PrimitiveTypes_Succeeds()
     {

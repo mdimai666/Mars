@@ -3,6 +3,7 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Attributes
 @using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(DockerRunNode))]
@@ -10,16 +11,28 @@
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-3">
         <FormItem2 For="() => Node.Image">
-            <FluentTextField @bind-Value="Node.Image" Class="w-100" Placeholder="alpine:3.20" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="alpine:3.20"
+                            Value="@DockerNodeFormUtil.KindValue(Node.ImageKind, Node.Image)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.ImageKind = k, x => Node.Image = x))"
+                            For="() => Node.Image" />
         </FormItem2>
         <FormItem2 For="() => Node.Command">
-            <FluentTextField @bind-Value="Node.Command" Class="w-100" Placeholder="sh -c 'echo hello'" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="sh -c 'echo hello'"
+                            Value="@DockerNodeFormUtil.KindValue(Node.CommandKind, Node.Command)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.CommandKind = k, x => Node.Command = x))"
+                            For="() => Node.Command" />
         </FormItem2>
         <FormItem2 For="() => Node.Env">
-            <FluentTextArea @bind-Value="Node.Env" Rows="3" Class="w-100" Placeholder="KEY=VALUE" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="3" Placeholder="KEY=VALUE"
+                            Value="@DockerNodeFormUtil.KindValue(Node.EnvKind, Node.Env)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.EnvKind = k, x => Node.Env = x))"
+                            For="() => Node.Env" />
         </FormItem2>
         <FormItem2 For="() => Node.Stdin">
-            <FluentTextArea @bind-Value="Node.Stdin" Rows="3" Class="w-100" Placeholder="empty = msg payload" />
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="3" Placeholder="empty = msg payload"
+                            Value="@DockerNodeFormUtil.KindValue(Node.StdinKind, Node.Stdin)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.StdinKind = k, x => Node.Stdin = x))"
+                            For="() => Node.Stdin" />
         </FormItem2>
         <FormItem2 For="() => Node.TimeoutSeconds">
             <FluentNumberField TValue="int" @bind-Value="Node.TimeoutSeconds" Min="0" Class="w-100" />

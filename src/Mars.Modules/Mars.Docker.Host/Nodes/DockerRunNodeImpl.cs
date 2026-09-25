@@ -1,14 +1,17 @@
 using Mars.Docker.Abstractions.Dto;
+using Mars.Docker.Contracts;
 using Mars.Docker.Contracts.Nodes;
 using Mars.Docker.Host.Services;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Contracts.Hubs;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
+using Mars.Nodes.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Docker.Host.Nodes;
 
+[NodeOutputValueSpec(typeof(DockerRunResultResponse))]
 public class DockerRunNodeImpl : INodeImplement<DockerRunNode>
 {
     public DockerRunNode Node { get; }
@@ -23,7 +26,9 @@ public class DockerRunNodeImpl : INodeImplement<DockerRunNode>
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        if (string.IsNullOrWhiteSpace(Node.Image))
+        var (image, command, env, stdin) = ResolveFields();
+
+        if (string.IsNullOrWhiteSpace(image))
         {
             throw new NodeExecuteException(Node, "image is not configured");
         }
@@ -31,10 +36,10 @@ public class DockerRunNodeImpl : INodeImplement<DockerRunNode>
         var service = RNS.ServiceProvider.GetRequiredService<IDockerService>();
         var query = new RunContainerQuery
         {
-            Image = Node.Image.Trim(),
-            Cmd = DockerNodeHelper.SplitCommand(Node.Command),
-            Env = DockerNodeHelper.SplitEnv(Node.Env),
-            Stdin = string.IsNullOrEmpty(Node.Stdin) ? input.Payload?.ToString() : Node.Stdin,
+            Image = image.Trim(),
+            Cmd = DockerNodeHelper.SplitCommand(command),
+            Env = DockerNodeHelper.SplitEnv(env),
+            Stdin = string.IsNullOrEmpty(stdin) ? input.Payload?.ToString() : stdin,
             TimeoutSeconds = Node.TimeoutSeconds,
             KeepContainer = Node.KeepContainer,
         };
@@ -45,5 +50,16 @@ public class DockerRunNodeImpl : INodeImplement<DockerRunNode>
         input.Payload = result;
         RNS.Status(new NodeStatus(result.TimedOut ? "timed out" : $"exit {result.ExitCode}"));
         callback(input);
+
+        // прогон контейнера — долгий I/O: аренда runner'а сужена до резолвинга полей
+        (string Image, string Command, string Env, string Stdin) ResolveFields()
+        {
+            using var expr = RNS.Expressions(Node);
+            return (
+                (string)expr.Resolve(Node.ImageKind, Node.Image, "string", input, Node, "Image")!,
+                (string)expr.Resolve(Node.CommandKind, Node.Command, "string", input, Node, "Command")!,
+                (string)expr.Resolve(Node.EnvKind, Node.Env, "string", input, Node, "Env")!,
+                (string)expr.Resolve(Node.StdinKind, Node.Stdin, "string", input, Node, "Stdin")!);
+        }
     }
 }

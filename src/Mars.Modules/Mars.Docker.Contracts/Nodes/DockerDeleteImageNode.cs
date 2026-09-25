@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Docker.Contracts.Nodes;
 
@@ -13,6 +14,7 @@ public class DockerDeleteImageNode : Node
     [Display(Name = "image (name:tag or id)")]
     [Required]
     public string Image { get; set; } = "";
+    public string ImageKind { get; set; } = InputValueKind.Const;
 
     public DockerDeleteImageNode()
     {

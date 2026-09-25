@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Docker.Contracts.Nodes;
 
@@ -13,9 +14,11 @@ public class DockerPullNode : Node
     [Display(Name = "image")]
     [Required]
     public string Image { get; set; } = "";
+    public string ImageKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "tag")]
     public string Tag { get; set; } = "latest";
+    public string TagKind { get; set; } = InputValueKind.Const;
 
     public DockerPullNode()
     {

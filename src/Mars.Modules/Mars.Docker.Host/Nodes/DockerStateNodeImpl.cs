@@ -3,10 +3,12 @@ using Mars.Docker.Host.Services;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Contracts.Hubs;
 using Mars.Nodes.Core;
+using Mars.Nodes.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Docker.Host.Nodes;
 
+[NodeOutputValueSpec(typeof(string), Description = "container state (container id on delete)")]
 public class DockerStateNodeImpl : INodeImplement<DockerStateNode>
 {
     public DockerStateNode Node { get; }
@@ -21,9 +23,10 @@ public class DockerStateNodeImpl : INodeImplement<DockerStateNode>
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
+        var containerName = ResolveContainerName();
         var service = RNS.ServiceProvider.GetRequiredService<IDockerService>();
         var ct = parameters.CancellationToken;
-        var containerId = await DockerNodeHelper.ResolveContainerId(service, Node, Node.ContainerName, ct);
+        var containerId = await DockerNodeHelper.ResolveContainerId(service, Node, containerName, ct);
 
         switch (Node.Action)
         {
@@ -54,5 +57,11 @@ public class DockerStateNodeImpl : INodeImplement<DockerStateNode>
         input.Payload = state;
         RNS.Status(new NodeStatus($"{Node.Action}: {state}"));
         callback(input);
+
+        string ResolveContainerName()
+        {
+            using var expr = RNS.Expressions(Node);
+            return (string)expr.Resolve(Node.ContainerNameKind, Node.ContainerName, "string", input, Node, "ContainerName")!;
+        }
     }
 }

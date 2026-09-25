@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Docker.Contracts.Nodes;
 
@@ -16,6 +17,7 @@ public class DockerStateNode : Node
     [Display(Name = "container (id or name)")]
     [Required]
     public string ContainerName { get; set; } = "";
+    public string ContainerNameKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "action")]
     public DockerStateAction Action { get; set; } = DockerStateAction.Start;

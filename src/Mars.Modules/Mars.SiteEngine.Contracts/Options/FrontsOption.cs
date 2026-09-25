@@ -23,6 +23,7 @@ public class FrontsOption
 public class FrontItem
 {
     public const string HandlebarsEngine = "handlebars";
+    public const string ScribanEngine = "scriban";
 
     string _url = "";
 

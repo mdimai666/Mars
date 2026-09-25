@@ -1,11 +1,11 @@
 using System.Text;
 using HandlebarsDotNet;
 using Mars.SiteEngine.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.SiteEngine.Handlebars.TemplateData;
 using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -129,10 +129,10 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         }
 
         var tmpFillers = (ITemplateContextVariablesFiller[])[
-            new HandlebarsTmpCtxBasicDataContext(),
-            new HandlebarsTmpCtxLanguageDataFiller(),
-            new HandlebarsTmpCtxAppThemeFiller(),
-            new HandlebarsTmpCtxErrorsListFiller(),
+            new SiteTmpCtxBasicDataContext(),
+            new SiteTmpCtxLanguageDataFiller(),
+            new SiteTmpCtxAppThemeFiller(),
+            new SiteTmpCtxErrorsListFiller(),
         ];
 
         foreach (var filler in tmpFillers)

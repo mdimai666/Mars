@@ -118,26 +118,54 @@ QueryLang. Старт 2026-09-26.
 
 ## Фаза 3 — Scriban как движок сайта + QueryLang-адаптер
 
-- [ ] 3.1 `Mars.TemplateEngine.Providers.Scriban`: зеркальный механизм — фабрика
-      `Scriban.Template`/`TemplateContext` + `IScribanObjectContributor` (глобальный
-      `ScriptObject` с функциями).
-- [ ] 3.2 Парсер тела `#context` (`HandlebarsContextHelperFunctionBodyParser`,
-      key=value строки) обобщить и перенести в `SiteEngine.Abstractions` — он движко-независим.
-- [ ] 3.3 Новый модуль `src/Mars.Modules/Mars.SiteEngine.Scriban` (плоско; виртуальная папка
-      в `Mars.slnx`): `ScribanRenderEngineFactory : IWebRenderEngineFactory` (Id "scriban",
-      `[Display]`) + `ScribanWebRenderEngine : IWebRenderEngine`. Partials/блоки/лейауты —
-      через кастомный `IIncludeHandler` поверх `WebSiteTemplate.Parts`; сборка root+layout —
-      аналог `{{#>layout}}` (контент страницы как переменная/include).
-- [ ] 3.4 Сайт-функции Scriban — контрибьюторами (scope "site"): базовый набор (эквиваленты
-      eq/date/text-хелперов), `context` (QueryLang-адаптер: multiline-строка аргументом →
-      общий парсер 3.2 → `IQueryLangProcessing`), `L`, `mobile`, `site_head`, `site_footer`.
-- [ ] 3.5 Админка не меняется (выбор движка строкой `FrontItem.EngineId`, список из
-      `FrontController.Engines()`). Проверить отображение "Scriban" в UI выбора движка.
-- [ ] 3.6 Тесты: unit (ScribanWebRenderEngine на тестовой теме), интеграционные — аналог
-      `HandlebarsAppFrontTests` на минимальном Scriban-фронте; контракт-тесты провайдеров.
-- [ ] 3.7 NuGet: PackageId по конвенции модулей; проверить, что `nuget-publish.yml` подхватывает
-      новый пакет (и что удаление `Mars.SiteEngine.Templators` из 1.3 не ломает публикацию —
-      у него не было PackageId).
+- [x] 3.1 `Mars.TemplateEngine.Providers.Scriban`: `ScribanScopes` (Core/Site),
+      `IScribanObjectContributor { Scope; Configure(ScriptObject) }`,
+      `IScribanEngineFactory.CreateGlobalObject(scope)` + реализация;
+      `ScribanTemplateEngine` переведён на фабрику (общий global ScriptObject, scope core —
+      пустой; беспараметрический конструктор сохранён). Регистрация фабрики —
+      в `AddMarsTemplateEngines()`.
+- [x] 3.2 Парсер тела `#context` обобщён: `DataQueryBodyParser` (FunctionBodyParse +
+      ParseTimespan) и `ContextQueryProcessor` — в `Mars.QueryLang/Services` (НЕ в
+      SiteEngine.Abstractions: QueryLang сам ссылается на Abstractions, была бы циркулярка).
+      Handlebars `ContextBlock` переведён на них; старые `HandlebarsContextHelperFunctionBodyParser`
+      и `HandlebarsContextBlockProcessor` удалены. Филлеры TemplateData переехали в
+      `SiteEngine.Abstractions/TemplateData` и переименованы `HandlebarsTmpCtx*` → `SiteTmpCtx*`
+      (общие для обоих движков).
+- [x] 3.3 Новый модуль `src/Mars.Modules/Mars.SiteEngine.Scriban` (плоско, в slnx — папка
+      SiteEngine): `ScribanRenderEngineFactory` (Id "scriban", `[Display(Name="Scriban")]`) +
+      `ScribanWebRenderEngine` — двухстадийный рендер: страница → layout-обёртка,
+      конвенция layout'ов — переменная `{{ body }}`; include блоков/лейаутов через
+      `WebSitePartsTemplateLoader` (ITemplateLoader поверх WebSiteTemplate.Parts);
+      кэш скомпилированных Template (30 мин, как у Handlebars); rctx — через
+      `TemplateContext.Tags` (`ScribanRenderContext`). Host сканирует шаблоны `*.sbn`
+      наравне с `*.hbs` (WebFilesReadFilesystemService, watcher, _updateFile).
+- [x] 3.4 Сайт-функции — `SiteScribanFunctionsContributor` (scope "site"):
+      `context(query, key?, cache?)` (QueryLang-адаптер поверх общих 3.2), `L` (vararg через
+      IScriptCustomFunction), `iff`, `raw_block`, `render_post_content`, `site_head`,
+      `site_footer`, текст/даты (`text_excerpt`, `text_ellipsis`, `nl2br`, `youtube_id`,
+      `striphtml`, `encode`, `tojson`, `to_humanized_size`, `date_format`, `parsedateandformat`).
+      Условия/циклы не дублируются — в Scriban нативные (`if`/`for`/`==`/`>`).
+      Переменная `mobile` — bool в данных рендера.
+      Грабли: `$errors`/`$maui` в Scriban НЕ читаются из глобалов (`$name` — локальная
+      переменная) — движок дублирует `$`-ключи алиасами без префикса (`errors`, `maui`).
+      Грабли: списки — встроенный list-аксессор, размер `{{ x.size }}`, не `.Count`.
+      Грабли: ParameterCount у IScriptCustomFunction — максимум 64 (int.MaxValue падает).
+- [x] 3.5 Админка без изменений: `FrontSettingsPage` — `FluentSelect Items="engines"` из
+      `FrontController.Engines()` → `GetAvailableEngines()` → `[Display]` фабрик; "Scriban"
+      появляется автоматически. `FrontItem.ScribanEngine = "scriban"` добавлен в Contracts.
+- [x] 3.6 Тесты: `ScribanRenderEngineTests` (Mars.SiteEngine.Tests, 11 unit: if/переменные/
+      layout-body/include/mobile/errors/context/L/iff/raw_block/text-хелперы) +
+      `ScribanAppFrontTests` (Mars.SiteEngine.Integration.Tests, Docker: фронт sbnTheme на
+      маунте /sbn — index/second/include/404). Все сьюты зелёные: SiteEngine.Tests 73/73,
+      SiteEngine.Integration.Tests 22/22, Integration.Tests Services 97/97,
+      Server.Tests TemplateEngines 57/57.
+      Грабли тестовой темы: у маунт-фронтов страницы матчатся ПОЛНЫМ url (Host не срезает
+      маунт) — `@page "/sbn"`, `@page "/sbn/second"`; index детектится по имени файла
+      `index.sbn` (Url != "/"); Page404 у маунта не детектится (ищется Url == "/404") —
+      fallback на index со статусом 404.
+- [x] 3.7 NuGet: PackageId НЕ добавляли — движки SiteEngine (Handlebars/Host) не пакуются
+      (CI пакует только csproj с явным `<PackageId>`); новый проект следует конвенции.
+      Удаление `Mars.SiteEngine.Templators` публикацию не ломает (PackageId не было).
 
 ## Фаза 4 — WebPage-чистка и закрытие
 
@@ -164,6 +192,13 @@ QueryLang. Старт 2026-09-26.
 - Sync-over-async в `#context`/`RenderPostContent` (`.GetAwaiter().GetResult()`) — упирается
   в синхронный контракт `IWebRenderEngine.RenderPage`; асинхронизация — отдельная инициатива.
 - `@data`-запросы в заголовке страницы как дополнение к `#context` (движко-независимый уровень).
+- **Маунт-фронты** (найдено в фазе 3): Host не срезает префикс маунта перед матчингом страниц —
+  страницы маунт-фронтов должны объявлять полный url (`@page "/sbn/second"`); index с `@page "/"`
+  на маунте недостижим (детектится только по имени файла `index`); Page404 ищется лишь по
+  `Url == "/404"`. Кандидат на фикс: срезка маунта в `WebSiteRequestProcessor.RenderRequest`
+  и нормализация "" → "/".
+- Disposal сайт-движков при evict из кэша `WebRenderEngineLocator` (in-flight рендеры) —
+  вместе с кэш-реворком.
 
 ## Проверка (шпарлейка)
 

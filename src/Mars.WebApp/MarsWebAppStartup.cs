@@ -32,6 +32,7 @@ using Mars.TemplateEngine.Host;
 using Mars.Server.Startup;
 using Mars.Setup;
 using Mars.SiteEngine.Handlebars;
+using Mars.SiteEngine.Scriban;
 using Mars.SiteEngine.Host;
 using Mars.SSO.Host;
 using Mars.SSO.Host.OAuth;
@@ -108,6 +109,7 @@ public static class MarsWebAppStartup
                         .AddMarsTemplateEngines()
                         .AddMarsSiteEngine()
                         .AddMarsSiteEngineHandlebars()
+                        .AddMarsSiteEngineScriban()
                         .AddEditorJsBlazored();
 
         builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker(b.Configuration));

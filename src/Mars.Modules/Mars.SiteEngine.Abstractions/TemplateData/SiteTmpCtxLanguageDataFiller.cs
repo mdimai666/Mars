@@ -1,9 +1,9 @@
 using Mars.Core.Extensions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Abstractions.TemplateData;
 
-public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariablesFiller
+public class SiteTmpCtxLanguageDataFiller : ITemplateContextVariablesFiller
 {
     public const string LanguageParamKey = "_lang";
 

@@ -8,7 +8,7 @@ using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars;
-using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Host.Endpoints;
 using Mars.SiteEngine.Host.Services;
 using Mars.Test.Common.Constants;
@@ -112,7 +112,7 @@ public class RenderEngineRenderTests
         var context = GetRenderContext(content);
         var renderEngine = new HandlebarsWebRenderEngine(null, SiteHandlebarsTestFactory.CreateFactory(), context.AppFront);
 
-        _ = nameof(HandlebarsTmpCtxBasicDataContext);
+        _ = nameof(SiteTmpCtxBasicDataContext);
         var dict = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             ["_user.FullName"] = context.PageContext.User.FullName,

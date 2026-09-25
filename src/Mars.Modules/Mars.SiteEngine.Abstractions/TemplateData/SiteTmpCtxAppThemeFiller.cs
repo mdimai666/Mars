@@ -1,8 +1,8 @@
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Abstractions.TemplateData;
 
-public class HandlebarsTmpCtxAppThemeFiller : ITemplateContextVariablesFiller
+public class SiteTmpCtxAppThemeFiller : ITemplateContextVariablesFiller
 {
     public const string AppThemeParamKey = "appTheme";
     public const string AppThemeCookiesKey = "AppTheme";

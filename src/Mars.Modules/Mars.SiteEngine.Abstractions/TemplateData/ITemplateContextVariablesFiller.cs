@@ -1,6 +1,6 @@
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Abstractions.TemplateData;
 
 public interface ITemplateContextVariablesFiller
 {

@@ -1,8 +1,12 @@
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.Parsers;
+namespace Mars.QueryLang.Services;
 
-public static class HandlebarsContextHelperFunctionBodyParser
+/// <summary>
+/// Парсер тела запросов данных (key = value строки) — общий для всех движков сайта
+/// (Handlebars {{#context}}, Scriban context-функция).
+/// </summary>
+public static class DataQueryBodyParser
 {
     public static DataQueryRequest FunctionBodyParse(string rows, string? key = null)
     {
@@ -25,6 +29,20 @@ public static class HandlebarsContextHelperFunctionBodyParser
         return dataQuery;
     }
 
+    public static TimeSpan? ParseTimespan(string simespanString)
+    {
+        string[] formats = { @"m\m", @"h\h\m\m", @"s\s" };
+        TimeSpan ts;
+        if (TimeSpan.TryParseExact(simespanString, formats, null, out ts))
+        {
+            return ts;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     #region Tools
     static List<KeyValuePair<string, string>> ParseBodyStringToKeyValuePairs(string body)
     {
@@ -43,5 +61,4 @@ public static class HandlebarsContextHelperFunctionBodyParser
         return list;
     }
     #endregion
-
 }

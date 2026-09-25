@@ -6,7 +6,7 @@ using Mars.Server.Abstractions.Models;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Host.Templators;
 using Mars.Test.Common.Constants;
 using NSubstitute;
@@ -33,7 +33,7 @@ public class QueryLangProcessingTests
             RenderParam = new RenderParam(),
             IsDevelopment = true,
         };
-        var dataFiller = new HandlebarsTmpCtxBasicDataContext();
+        var dataFiller = new SiteTmpCtxBasicDataContext();
         dataFiller.FillTemplateDictionary(_pageContext, _pageContext.TemplateContextVariables);
 
         tfLocator = new TemplatorFeaturesLocator();

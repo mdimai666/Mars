@@ -120,6 +120,7 @@
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Contracts/Mars.SiteEngine.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Handlebars/Mars.SiteEngine.Handlebars.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Host/Mars.SiteEngine.Host.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Scriban/Mars.SiteEngine.Scriban.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/SSO/">
     <Project Path="src/Mars.Modules/Mars.SSO.Abstractions/Mars.SSO.Abstractions.csproj" />

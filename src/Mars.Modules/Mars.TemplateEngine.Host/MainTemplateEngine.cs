@@ -12,6 +12,7 @@ public static class MainTemplateEngine
     {
         return services
             .AddSingleton<IHandlebarsEngineFactory, HandlebarsEngineFactory>()
+            .AddSingleton<IScribanEngineFactory, ScribanEngineFactory>()
             .AddSingleton<ITemplateManager, TemplateManager>()
             .AddSingleton<ITemplateEngine, PlainTextTemplateEngine>()
             .AddSingleton<ITemplateEngine, TextReplaceTemplateEngine>()

@@ -1,8 +1,8 @@
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Abstractions.TemplateData;
 
-public class HandlebarsTmpCtxErrorsListFiller : ITemplateContextVariablesFiller
+public class SiteTmpCtxErrorsListFiller : ITemplateContextVariablesFiller
 {
     public const string ErrorsParamKey = "$errors";
 

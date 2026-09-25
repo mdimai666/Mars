@@ -1,9 +1,9 @@
 using Mars.Core.Extensions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Abstractions.TemplateData;
 
-public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariablesFiller
+public class SiteTmpCtxBasicDataContext : ITemplateContextVariablesFiller
 {
     public const string UserParamKey = "_user";
     public const string RequestParamKey = "_req";

@@ -13,6 +13,17 @@ public class ScribanTemplateEngine : ITemplateEngine
     string ITemplateEngine.Id => Id;
 
     private readonly ConcurrentDictionary<string, CachedTemplateItem> _cache = new();
+    private readonly ScriptObject _globalObject;
+
+    public ScribanTemplateEngine()
+        : this(new ScribanEngineFactory([]))
+    {
+    }
+
+    public ScribanTemplateEngine(IScribanEngineFactory engineFactory)
+    {
+        _globalObject = engineFactory.CreateGlobalObject(ScribanScopes.Core);
+    }
 
     private class CachedTemplateItem
     {
@@ -64,10 +75,11 @@ public class ScribanTemplateEngine : ITemplateEngine
 
         var templateContext = new TemplateContext
         {
-            // 2. Переименование при выполнении шаблона (чтобы вложенные свойства 
+            // 2. Переименование при выполнении шаблона (чтобы вложенные свойства
             // вроде User.Name и User.Age не искали name и age в snake_case)
             MemberRenamer = member => member.Name
         };
+        templateContext.PushGlobal(_globalObject);
         templateContext.PushGlobal(contextScriptObject);
 
         return parsedTemplate.Render(templateContext);

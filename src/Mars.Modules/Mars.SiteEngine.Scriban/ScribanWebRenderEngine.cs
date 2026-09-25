@@ -91,6 +91,8 @@ public class ScribanWebRenderEngine : IWebRenderEngine
             filler.FillTemplateDictionary(ctx, ctx.TemplateContextVariables);
         }
 
+        ctx.TemplateContextVariables[SiteTmpCtxBasicDataContext.SiteBaseParamKey] = SiteBaseHref.FromFrontUrl(appFront.Front?.Url);
+
         var dataObject = new ScriptObject();
         foreach (var (key, val) in ctx.TemplateContextVariables)
         {

@@ -140,6 +140,8 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
             filler.FillTemplateDictionary(ctx, ctx.TemplateContextVariables);
         }
 
+        ctx.TemplateContextVariables[SiteTmpCtxBasicDataContext.SiteBaseParamKey] = SiteBaseHref.FromFrontUrl(af.Front?.Url);
+
         _ = nameof(HandlebarsHelperFunctionContext.HelperFunctionContextKey);
 
         // Без принудительного =null шаблонизатор не отпускает объекты.

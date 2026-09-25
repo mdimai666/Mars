@@ -95,6 +95,23 @@ public class QueryLangProcessingTests
     }
 
     [Fact]
+    public async Task Process_QueryStringParse_Repro()
+    {
+        // Arrange
+        var queries = new Dictionary<string, string>()
+        {
+            ["page"] = @"= int.Parse(_req.Query[""page""]??""1"")",
+        };
+
+        // Act
+        var result = await _handler.Process(_pageContext, queries, null, default);
+
+        // Assert
+        _pageContext.Errors.Should().BeEmpty();
+        result["page"].Should().Be(1);
+    }
+
+    [Fact]
     public async Task Process_FunctionCall_Success()
     {
         // Arrange

@@ -9,7 +9,7 @@ post = ef.post.First(post.Slug.ToLower() == Slug.ToLower())
     <article>
         <h1>{{ post.Title }}</h1>
 
-        <img src="/img/image_placeholder.svg" alt="" style="max-height: 300px;">
+        <img src="img/image_placeholder.svg" alt="" style="max-height: 300px;">
 
         <div class="mt-4 content">
             {{ render_post_content post.Id }}

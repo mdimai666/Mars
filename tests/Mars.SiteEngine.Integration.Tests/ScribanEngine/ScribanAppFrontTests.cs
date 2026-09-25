@@ -55,6 +55,7 @@ public class ScribanAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
         //Assert
         render.Should().Contain("Hello, world! from sbnTheme!");
         render.Should().Contain("desktop", "переменная mobile доступна в Scriban-шаблоне");
+        render.Should().Contain("<base href=\"/sbn/\" />", "site_base маунт-фронта — префикс маунта с trailing slash");
     }
 
     [IntegrationFact]

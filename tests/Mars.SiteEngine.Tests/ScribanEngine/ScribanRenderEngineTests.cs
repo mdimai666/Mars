@@ -139,6 +139,14 @@ public class ScribanRenderEngineTests
     }
 
     [Fact]
+    public void Render_SiteBaseConcat_BuildsFrontRelativeUrl()
+    {
+        var template = BuildTemplate("{{ url = site_base + 'posts' }}{{ url }}");
+
+        Render(template).Should().Be("/posts");
+    }
+
+    [Fact]
     public void ContextFunction_AddsQueryResultsToTemplate()
     {
         var queryLangProcessing = Substitute.For<IQueryLangProcessing>();

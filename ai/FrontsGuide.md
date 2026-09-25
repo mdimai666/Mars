@@ -96,6 +96,17 @@
   страницы объявляют url ОТНОСИТЕЛЬНО маунта (`@page "/"`, `@page "/second"`) — префикс срезается
   `WebSiteRequestProcessor.StripMount` перед матчингом (`_req.Path`, кэш-ключ и route-переменные
   тоже фронто-относительные). API by-url принимает и полный, и относительный url.
+- **`site_base`** — переменная данных рендера для `<base href="{{site_base}}">`: `""`/null (корень) →
+  `/`, маунт `/sbn` → `/sbn/` (trailing slash обязателен — без него браузер режет последний сегмент
+  base). Заполняют оба движка из `appFront.Front?.Url` после филлеров, нормализация —
+  `SiteBaseHref.FromFrontUrl` (`SiteEngine.Abstractions/TemplateData`). Статика фронта уже
+  обслуживается под маунтом (`RequestPath = front.Url` в `WebRenderEngineLocator.BuildStaticFiles`),
+  так что относительные ассеты (`css/app.css`) с правильным base работают на маунте без правок.
+  Фронтовые ссылки в шаблонах — относительные, БЕЗ ведущего слеша (`posts`, `img/...`, home — `./`):
+  их резолвит `<base>`; `/posts` ушёл бы в корень домена мимо маунта. Системные роуты
+  (`/dev`, `/mars/js/*`, `/api/*`) — всегда от корня, со слешем. Грабля относительных ссылок:
+  на вложенных страницах (`posts/{slug}`) `posts` даст `posts/posts` — для ссылок с глубоких
+  страниц использовать `{{site_base}}posts` (hbs) / `{{ site_base + 'posts' }}` (sbn).
 
 ## Шаблоны и hot-reload
 

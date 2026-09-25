@@ -13,6 +13,8 @@ public class SiteTmpCtxBasicDataContext : ITemplateContextVariablesFiller
     public const string BodyClassParamKey = "bodyClass";
     public const string BodyAttrsParamKey = "bodyAttrs";
 
+    public const string SiteBaseParamKey = "site_base";
+
     public const string MarsAppHeaderKey = "mars-app";
     public const string MauiPlatformHeaderKey = "maui-platform";
     public const string MauiIdiomHeaderKey = "maui-idiom";

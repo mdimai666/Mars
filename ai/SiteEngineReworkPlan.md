@@ -237,6 +237,35 @@ QueryLang. Старт 2026-09-26.
         (Scriban-фронт на /sbn с относительными url, включая page_404_sbn),
         Integration Services 102/102.
 
+## Фаза 6 — `site_base` для маунт-фронтов (запрос пользователя 2026-09-26)
+
+- [x] 6.1 Проблема: `<base href="/">` захардкожен в стартовых шаблонах — на маунт-фронте
+      относительные ссылки/ассеты резолвятся от корня домена. Статика уже обслуживается под
+      маунтом (`RequestPath = front.Url`), ломался только генерируемый HTML.
+- [x] 6.2 Переменная данных рендера `site_base` (`SiteTmpCtxBasicDataContext.SiteBaseParamKey`):
+      `SiteBaseHref.FromFrontUrl` (SiteEngine.Abstractions/TemplateData) — ""/null → "/",
+      "/sbn" → "/sbn/" (trailing slash обязателен). Заполняется в обоих движках
+      (`HandlebarsWebRenderEngine`/`ScribanWebRenderEngine.RenderPage`) из `appFront.Front?.Url`
+      после филлеров — через `ITemplateContextVariablesFiller` нельзя (в контракте нет фронта).
+- [x] 6.3 Стартовые шаблоны: `<base href="{{site_base}}" />` в default/landing `_root.hbs`
+      и `<base href="{{ site_base }}" />` в scriban `_root.sbn`. Существующие фронты
+      пользователей не трогаем — переменная просто доступна, правят сами.
+- [x] 6.4 Тесты: `SiteBaseHrefTests` (нормализация + site_base в рендере обоих движков,
+      mount/null); интеграционные фикстуры appTheme/sbnTheme — `<base>` в `_root`, assert'ы
+      `"/"` (root) и `"/sbn/"` (маунт). Итог: SiteEngine.Tests 85/85,
+      SiteEngine.Integration.Tests (Docker) 22/22, Integration.Tests 430/430 (4 skipped),
+      `dotnet build Mars.slnx` — 0 ошибок. `MarsAppVersion` не bumpали — шаблоны файловые
+      (Res/front_templates), не браузерная статика. `ai/FrontsGuide.md` дополнен.
+- [x] 6.5 Ссылки в стартовых шаблонах — относительные, без ведущего слеша (решение пользователя;
+      префикс `{{site_base}}` в ссылках отклонён): header1 (`./`, `posts`, `help`, `login`/`logout`,
+      `img/...`), index, posts_page (`posts/{{Slug}}`, `img/...`), post_detail, 404/500 (`./`) —
+      default+scriban+landing. Резолвит `<base href="{{site_base}}">`. Пагинаторы не тронуты
+      (порядок `{{url}}{{url2}}` исходный, `url='/posts'`). Системные роуты (`/dev`, `/mars/js/*`)
+      остались от корня. Грабля относительных ссылок на вложенных страницах (`posts/{slug}` →
+      `posts/posts`) зафиксирована в FrontsGuide (лечение — `{{site_base}}posts`).
+      Тест `Render_SiteBaseConcat_BuildsFrontRelativeUrl`; SiteEngine.Tests 86/86,
+      Integration Services 102/102 (StarterFrontTemplates — парсинг hbs/sbn).
+
 ## Отложенный бэклог (не в этом реворке)
 
 - `WebTemplateService.ClearCache()` чистит весь глобальный MemoryCache — нужна точечная

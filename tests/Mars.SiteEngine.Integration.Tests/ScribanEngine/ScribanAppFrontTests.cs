@@ -74,9 +74,8 @@ public class ScribanAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
         //Act
         var (html, status) = await RenderRequestPageEx($"{Mount}/non_exist_pageUrl_for_404");
 
-        //Assert — страница 404 у маунт-фронтов не детектится (WebSiteTemplate ищет Url == "/404"),
-        //рендерится fallback на index со статусом 404
+        //Assert — url страниц фронто-относительные (маунт срезается StripMount), Page404 детектится
+        html.Should().Contain("page_404_sbn");
         status.Should().Be(StatusCodes.Status404NotFound);
-        html.Should().Contain("Hello, world! from sbnTheme!");
     }
 }

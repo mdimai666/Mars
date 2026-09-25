@@ -216,6 +216,26 @@ QueryLang. Старт 2026-09-26.
       Итог: SiteEngine.Tests 76/76, Integration Services 99/99+1 flake (DataContextTests,
       JWT iat на границе секунды — перезапуск 2/2 зелёный). `MarsAppVersion` → 0.8.3-alpha.32
       (cache-busting админки).
+- [x] 5.5 Фикс маунт-фронтов (репорт пользователя 2026-09-26: «Url без слеша — ошибка при
+      рендере; сайт в подпути рисует первый сайт»):
+      - `FrontItem.Url` нормализуется в сеттере: ведущий `/` добавляется автоматически,
+        `"/"` → `""` (корень). Без слеша `GetFrontForUrl` никогда не матчил маунт (падал
+        на root-фронт), а `PathString` (RequestPath статики) бросал ArgumentException
+        при построении фронта по slug. Сохранённые ранее кривые значения нормализуются
+        при чтении опции (биндинг через сеттер).
+      - `WebSiteRequestProcessor.StripMount(mountUrl, path)` — срезка префикса маунта
+        (по границе сегмента) перед матчингом страниц; применена в `RenderRequest`
+        (включая `WebClientRequest.replacePath` → `_req.Path`, кэш-ключ и
+        `FillRouteVariables` — всё фронто-относительное) и в `PageRenderService.RenderUrl`
+        (API by-url принимает и полный, и относительный url).
+      - Страницы маунт-фронтов теперь объявляют url ОТНОСИТЕЛЬНО маунта (`@page "/"`,
+        `@page "/second"`) — index/404/500 детектятся штатно; sbnTheme переведён на
+        относительные url.
+      - Тесты: `FrontItem_Url_NormalizesToLowerAndTrimsSlash` (расширен),
+        `GetFrontForUrl_MatchesMount_SavedWithoutLeadingSlash`,
+        `StripMount_CutsFrontPrefix_BySegmentBoundary`; Docker-сьют 22/22
+        (Scriban-фронт на /sbn с относительными url, включая page_404_sbn),
+        Integration Services 102/102.
 
 ## Отложенный бэклог (не в этом реворке)
 
@@ -224,11 +244,6 @@ QueryLang. Старт 2026-09-26.
 - Sync-over-async в `#context`/`RenderPostContent` (`.GetAwaiter().GetResult()`) — упирается
   в синхронный контракт `IWebRenderEngine.RenderPage`; асинхронизация — отдельная инициатива.
 - `@data`-запросы в заголовке страницы как дополнение к `#context` (движко-независимый уровень).
-- **Маунт-фронты** (найдено в фазе 3): Host не срезает префикс маунта перед матчингом страниц —
-  страницы маунт-фронтов должны объявлять полный url (`@page "/sbn/second"`); index с `@page "/"`
-  на маунте недостижим (детектится только по имени файла `index`); Page404 ищется лишь по
-  `Url == "/404"`. Кандидат на фикс: срезка маунта в `WebSiteRequestProcessor.RenderRequest`
-  и нормализация "" → "/".
 - Disposal сайт-движков при evict из кэша `WebRenderEngineLocator` (in-flight рендеры) —
   вместе с кэш-реворком.
 

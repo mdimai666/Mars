@@ -33,8 +33,12 @@ public class WebSiteRequestProcessor
     {
         var appFront = (httpContext.Items[nameof(MarsAppFront)] as MarsAppFront)!;
 
-        WebPage? page = template.WebPageRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
-        var request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
+        // страницы в шаблонах объявляют url относительно маунта ("@page /second"),
+        // поэтому матчим и раскладываем route-переменные по фронто-относительному пути
+        var path = StripMount(appFront.Front?.Url, httpContext.Request.Path);
+
+        WebPage? page = template.WebPageRouteMatcher.Match(path, out var routeValues);
+        var request = new WebClientRequest(httpContext.Request, replacePath: path, routeValues: routeValues);
 
         try
         {
@@ -187,6 +191,21 @@ public class WebSiteRequestProcessor
     }
 
     string GetPageCacheKey(WebPage page, WebClientRequest request) => $"{page.Name}+{request.Path}";
+
+    /// <summary>
+    /// Срезает префикс маунта фронта с пути запроса ("/sbn/x" при маунте "/sbn" → "/x",
+    /// "/sbn" → "/"). Для корневого фронта (Url пуст) возвращает путь как есть.
+    /// </summary>
+    public static PathString StripMount(string? mountUrl, PathString path)
+    {
+        if (string.IsNullOrEmpty(mountUrl) || !mountUrl.StartsWith('/'))
+            return path;
+
+        if (path.StartsWithSegments(mountUrl, out var remaining))
+            return remaining.HasValue && remaining.Value.Length > 0 ? remaining : "/";
+
+        return path;
+    }
 
 }
 

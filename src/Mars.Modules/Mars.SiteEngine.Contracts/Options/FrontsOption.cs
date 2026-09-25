@@ -36,8 +36,20 @@ public class FrontItem
 
     /// <summary>
     /// Точка маунта: "" (корень), "/app2" и т.д.
+    /// Нормализуется: нижний регистр, ведущий '/' добавляется, хвостовые '/' убираются ("/" → "").
     /// </summary>
-    public string Url { get => _url; set => _url = value?.ToLowerInvariant().TrimEnd('/') ?? ""; }
+    public string Url { get => _url; set => _url = NormalizeUrl(value); }
+
+    static string NormalizeUrl(string? value)
+    {
+        var url = value?.ToLowerInvariant().Trim() ?? "";
+        if (url.Length == 0) return "";
+
+        if (!url.StartsWith('/'))
+            url = "/" + url;
+
+        return url.TrimEnd('/');
+    }
 
     /// <summary>
     /// Пусто = папка по умолчанию data/fronts/&lt;Slug&gt;, иначе внешняя папка (абсолютный путь)

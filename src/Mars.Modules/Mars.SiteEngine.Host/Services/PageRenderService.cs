@@ -107,6 +107,10 @@ internal class PageRenderService : IPageRenderService
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
 
         var tsv = af.Features.Get<IWebTemplateService>();
+
+        // url может быть передан как полным (с префиксом маунта), так и фронто-относительным
+        url = WebSiteRequestProcessor.StripMount(af.Front?.Url, url);
+
         WebPage? page = tsv.Template.WebPageRouteMatcher.Match(url, out var routeValues);
 
         if (page is null)

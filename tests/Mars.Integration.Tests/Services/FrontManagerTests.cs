@@ -39,6 +39,41 @@ public class FrontManagerTests
 
         item.Url = null!;
         item.Url.Should().BeEmpty();
+
+        // ведущий слеш добавляется автоматически: без него PathString (RequestPath статики)
+        // бросал ArgumentException при рендере, а GetFrontForUrl никогда не матчил маунт
+        item.Url = "sbn";
+        item.Url.Should().Be("/sbn");
+
+        item.Url = " Sbn2 ";
+        item.Url.Should().Be("/sbn2");
+
+        item.Url = "/";
+        item.Url.Should().BeEmpty("\"/\" — это корневой фронт");
+    }
+
+    [Fact]
+    public void GetFrontForUrl_MatchesMount_SavedWithoutLeadingSlash()
+    {
+        var root = new FrontItem { Slug = "default", Url = "" };
+        var mount = new FrontItem { Slug = "sbn", Url = "sbn" }; // сохранён без ведущего слеша
+
+        var manager = CreateManager(new FrontsOption { Fronts = [root, mount] }, out _, out _);
+
+        manager.GetFrontForUrl("/sbn").Should().BeSameAs(mount);
+        manager.GetFrontForUrl("/sbn/page").Should().BeSameAs(mount);
+        manager.GetFrontForUrl("/").Should().BeSameAs(root);
+    }
+
+    [Fact]
+    public void StripMount_CutsFrontPrefix_BySegmentBoundary()
+    {
+        WebSiteRequestProcessor.StripMount("/sbn", "/sbn").Value.Should().Be("/");
+        WebSiteRequestProcessor.StripMount("/sbn", "/sbn/").Value.Should().Be("/");
+        WebSiteRequestProcessor.StripMount("/sbn", "/sbn/page").Value.Should().Be("/page");
+        WebSiteRequestProcessor.StripMount("/sbn", "/sbnx").Value.Should().Be("/sbnx", "граница сегмента — не маунт");
+        WebSiteRequestProcessor.StripMount("", "/any").Value.Should().Be("/any", "корневой фронт не срезает ничего");
+        WebSiteRequestProcessor.StripMount(null, "/any").Value.Should().Be("/any");
     }
 
     [Fact]

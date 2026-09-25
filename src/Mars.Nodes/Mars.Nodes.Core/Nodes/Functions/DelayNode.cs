@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Functions;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DelayNode/DelayNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/DelayNode/DelayNode{.lang}.md")]
 [Display(GroupName = "functions")]
 public class DelayNode : Node
 {
@@ -16,6 +16,6 @@ public class DelayNode : Node
         Inputs = [new()];
         Color = "#e6e0f8";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/hourglass-split.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/delay.svg";
     }
 }

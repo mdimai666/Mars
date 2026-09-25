@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Functions;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/FunctionNode/FunctionNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/FunctionNode/FunctionNode{.lang}.md")]
 [Display(GroupName = "functions")]
 public class FunctionNode : Node
 {
@@ -16,7 +16,7 @@ public class FunctionNode : Node
         Inputs = [new()];
         Color = "#F8D0A3";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/csproj-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/csharp-code.svg";
     }
 
 }

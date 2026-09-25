@@ -4,16 +4,18 @@ using Flurl.Http;
 using Mars.Core.Extensions;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Mapping;
 using Mars.Nodes.Core.Implements.Models;
-using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Nodes.Network;
+using Mars.Nodes.Expressions;
 using static Mars.Nodes.Core.Nodes.Network.HttpRequestNode;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;
 
+[NodeOutputValueSpec(typeof(HttpRequestInfo), Name = nameof(HttpRequestInfo))]
 public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
 {
     private readonly AuthClientManager _authClientManager;
@@ -42,10 +44,8 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
             ? _authClientManager.GetOrCreateClient(MapConfig())
             : new FlurlClient(RNS.GetHttpClient());
 
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
-
         var method = Node.Method?.Trim().ToUpperInvariant() ?? "GET";
-        var requestUrl = VariableSetNodeImpl.ReadFieldAsExpression(Node.Url, ppt);
+        var requestUrl = ResolveUrl();
 
         if (string.IsNullOrEmpty(requestUrl))
             throw new NodeExecuteException(Node, "Url is empty");
@@ -101,6 +101,12 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
                 client.HttpClient?.Dispose();
                 client?.Dispose();
             }
+        }
+
+        string ResolveUrl()
+        {
+            using var expr = RNS.Expressions(Node);
+            return (string)expr.Resolve(Node.UrlKind, Node.Url, "string", input, Node, "Url")!;
         }
     }
 

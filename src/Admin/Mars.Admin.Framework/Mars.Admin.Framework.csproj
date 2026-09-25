@@ -36,7 +36,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
-		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Contracts\Mars.Nodes.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
 		<ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />

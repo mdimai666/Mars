@@ -11,7 +11,7 @@ public class DevAdminConnectionNodeInjectMessageExample : INodeExample<DevAdminC
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "Hello!" })
+            .AddNext(new InjectNode().SetPayload("Hello!"))
             .AddNext(new DevAdminConnectionNode()
             {
                 MessageRecipient = MessageRecipientType.All,

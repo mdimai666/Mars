@@ -6,7 +6,7 @@ namespace Mars.Nodes.Core.Nodes.Common;
 /// <summary>
 /// Special type for not found types
 /// </summary>
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/UnknownNode/UnknownNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/UnknownNode/UnknownNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class UnknownNode : Node
 {
@@ -18,7 +18,7 @@ public class UnknownNode : Node
 
     public UnknownNode()
     {
-
+        Icon = "_content/Mars.Nodes.Workspace/nodes/unknown.svg";
     }
 
     public UnknownNode(NodeBasicObj basic, string jsonBody)

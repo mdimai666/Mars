@@ -1,4 +1,6 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core.Exceptions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
 
@@ -16,11 +18,25 @@ public class InjectNodeImpl : INodeImplement<InjectNode>
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
+        using var expr = RNS.Expressions(Node);
 
-        input.Payload = string.IsNullOrEmpty(Node.Payload) ? DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() : Node.Payload;
+        foreach (var field in Node.Fields)
+        {
+            var value = expr.Resolve(field.ValueKind, field.Value, field.VarType, input, Node, $"Field '{field.Key}'");
+
+            if (IsPayload(field))
+                input.Payload = value;
+            else if (field.Key.Contains('.'))
+                new DynamicNodeMsgWrapper(input).SetValueByPath(field.Key, value);
+            else
+                input.Set(field.Key, value!);
+        }
 
         callback(input);
 
         return Task.CompletedTask;
     }
+
+    static bool IsPayload(InjectNodeField field)
+        => string.Equals(field.Key, InjectNode.PayloadKey, StringComparison.OrdinalIgnoreCase);
 }

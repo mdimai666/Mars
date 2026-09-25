@@ -1,0 +1,859 @@
+@using System.Globalization
+@using System.Linq.Expressions
+@using System.Text.RegularExpressions
+@using Mars.Nodes.Front.Abstractions.Services
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject IServiceProvider Services
+@implements IAsyncDisposable
+
+<div @ref="_root" class="@RootClass" @attributes="RootAttributes">
+    <div @ref="_body" class="mvi-body">
+        <span class="mvi-tag">@ModeLabel</span>
+
+        <div class="mvi-field">
+            @if (Multiline)
+            {
+                <textarea @ref="_input" class="mvi-input" rows="@Rows" spellcheck="false" autocomplete="off"
+                          role="combobox" aria-autocomplete="list"
+                          aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
+                          aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
+                          aria-describedby="@(IsInvalid ? ErrorId : null)"
+                          disabled="@Disabled" readonly="@ReadOnly"
+                          placeholder="@EffectivePlaceholder"
+                          @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove">@Value</textarea>
+            }
+            else
+            {
+                <pre class="mvi-highlight" aria-hidden="true">@Highlight</pre>
+                <input @ref="_input" class="mvi-input" type="text" spellcheck="false" autocomplete="off"
+                       role="combobox" aria-autocomplete="list"
+                       aria-expanded="@AriaExpanded" aria-invalid="@AriaInvalid"
+                       aria-controls="@(ListOpen ? ListId : null)" aria-activedescendant="@ActiveOptionId"
+                       aria-describedby="@(IsInvalid ? ErrorId : null)"
+                       disabled="@Disabled" readonly="@ReadOnly"
+                       value="@Value" placeholder="@EffectivePlaceholder"
+                       @oninput="OnInput" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onclick="OnCaretMove" />
+            }
+        </div>
+
+        @if (CanEdit)
+        {
+            <div class="mvi-actions">
+                @if (ShowDatePicker)
+                {
+                    <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaDate"
+                            aria-label="Pick date (F4)"
+                            @onmousedown:preventDefault="true" @onclick="ToggleDate">▦</button>
+                }
+                <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaPicker"
+                        aria-label="Pick from context (Alt+Down)"
+                        @onmousedown:preventDefault="true" @onclick="TogglePicker">◈</button>
+                @if (IsExpression)
+                {
+                    <button type="button" class="mvi-btn" tabindex="-1" aria-expanded="@AriaOps"
+                            aria-label="Operations (Alt+Up)"
+                            @onmousedown:preventDefault="true" @onclick="ToggleOps">ƒ</button>
+                }
+            </div>
+        }
+
+        <span class="mvi-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+        @if (_pickerOpen)
+        {
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-tree"
+                 role="listbox" aria-label="Available fields">
+                @{ var rows = TreeRows().ToList(); }
+                @for (var i = 0; i < rows.Count; i++)
+                {
+                    var index = i;
+                    var row = rows[index];
+                    var active = index == _activeIndex;
+                    var selected = active ? "true" : "false";
+                    <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(index)" role="option"
+                         aria-selected="@selected" style="padding-left:@(6 + row.Depth * 12)px"
+                         @onmousedown:preventDefault="true" @onclick="() => OnTreeRowClick(row)">
+                        <span class="mvi-bullet">@(row.Branch ? (IsCollapsed(row.Node.Path) ? "▸" : "▾") : "·")</span>
+                        <span class="mvi-name">@row.Node.Name</span>
+                        @if (row.Node.Type is not null)
+                        {
+                            <span class="mvi-type">@row.Node.Type</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_dateOpen)
+        {
+            <div @ref="_popup" popover="manual" class="mvi-popup mvi-popup-date" role="group" aria-label="Calendar">
+                <div class="mvi-date-head">
+                    <button type="button" class="mvi-date-nav" tabindex="-1" aria-label="Previous month"
+                            @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(-1)">‹</button>
+                    <span class="mvi-date-title">@_cursor.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</span>
+                    <button type="button" class="mvi-date-nav" tabindex="-1" aria-label="Next month"
+                            @onmousedown:preventDefault="true" @onclick="() => ShiftMonth(1)">›</button>
+                </div>
+                <div class="mvi-date-grid">
+                    @foreach (var label in WeekDayLabels)
+                    {
+                        <span class="mvi-date-dow" @key="label">@label</span>
+                    }
+                    @foreach (var cell in MonthCells())
+                    {
+                        var current = cell.Today ? "date" : null;
+                        <button type="button" @key="cell.Date"
+                                class="mvi-date-cell @(cell.Other ? "is-other" : null) @(cell.Today ? "is-today" : null) @(cell.Selected ? "is-selected" : null) @(cell.Focused ? "is-focus" : null)"
+                                tabindex="-1" aria-current="@current"
+                                aria-label="@cell.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture)"
+                                @onmousedown:preventDefault="true" @onclick="() => PickDate(cell.Date)">@cell.Date.Day</button>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (_suggestOpen && _suggestions.Count > 0)
+        {
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-suggest"
+                 role="listbox" aria-label="Suggestions">
+                @for (var i = 0; i < _suggestions.Count; i++)
+                {
+                    var item = _suggestions[i];
+                    var active = i == _activeIndex;
+                    var selected = active ? "true" : "false";
+                    <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(i)" role="option"
+                         aria-selected="@selected" @key="item.Path"
+                         @onmousedown:preventDefault="true" @onclick="() => InsertSuggestion(item.Path)">
+                        <span class="mvi-name">@item.Path</span>
+                        @if (!string.IsNullOrEmpty(item.Value))
+                        {
+                            <span class="mvi-value" title="@item.Value">@item.Value</span>
+                        }
+                        <span class="mvi-type">@item.VarType</span>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_opsOpen)
+        {
+            <div @ref="_popup" popover="manual" id="@ListId" class="mvi-popup mvi-popup-ops"
+                 role="listbox" aria-label="Operations">
+                @foreach (var row in OpsRows())
+                {
+                    if (row.Group is not null)
+                    {
+                        <div class="mvi-group" @key="row.Group">@row.Group</div>
+                    }
+                    else
+                    {
+                        var active = row.Index == _activeIndex;
+                        var selected = active ? "true" : "false";
+                        var op = row.Op!;
+                        <div class="mvi-row @(active ? "is-active" : null)" id="@OptionId(row.Index)" role="option"
+                             aria-selected="@selected" @key="op"
+                             @onmousedown:preventDefault="true" @onclick="() => InsertSnippet(op)">
+                            <span class="mvi-name">@op</span>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+
+    @if (ValidationMessage is string message)
+    {
+        <div id="@ErrorId" class="mvi-error" role="alert">@message</div>
+    }
+</div>
+
+@code {
+    static readonly string RootsPattern = string.Join("|", ValuePath.Roots);
+
+    static readonly Regex TokenRegex = new(
+        $"(\"(?:[^\"\\\\]|\\\\.)*\")|(@)|(\\b(?:{RootsPattern})(?:\\.[A-Za-z_][A-Za-z0-9_]*)+)|(\\b\\d+(?:\\.\\d+)?)|([+\\-*/%(),.:<>=?!]+)",
+        RegexOptions.Compiled);
+
+    static readonly Regex TokenBeforeCaretRegex = new(
+        @"(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_.]*)$", RegexOptions.Compiled);
+
+    static readonly Regex PathLikeRegex = new(
+        $@"^\s*({RootsPattern})\s*\.", RegexOptions.Compiled);
+
+    static readonly string[] WeekDayLabels = ["mo", "tu", "we", "th", "fr", "sa", "su"];
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public string VarType { get; set; } = "string";
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    /// <summary>Textarea вместо однострочного инпута; слой подсветки выражения в этом режиме не рисуется.</summary>
+    [Parameter]
+    public bool Multiline { get; set; }
+
+    [Parameter]
+    public int Rows { get; set; } = 3;
+
+    [Parameter]
+    public IReadOnlyCollection<ValueFieldInfo>? Candidates { get; set; }
+
+    /// <summary>Модель-член, в который пишет поле: по нему подсказки берутся из контейнера и адресуется поле.</summary>
+    [Parameter]
+    public Expression<Func<object?>>? For { get; set; }
+
+    [CascadingParameter]
+    public NodeEditContainer1? NodeEditContainer { get; set; }
+
+    /// <summary>Дополнительный класс на корень компонента; биндится с атрибута class/Class и не мешает основным.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    ElementReference _root;
+    ElementReference _body;
+    ElementReference _input;
+    ElementReference _popup;
+    readonly string _uid = Guid.NewGuid().ToString("N")[..6];
+    string _prefix = "";
+    bool _suggestOpen;
+    bool _pickerOpen;
+    bool _opsOpen;
+    bool _dateOpen;
+    bool _forceSuggest;
+    bool _disposed;
+    int _activeIndex;
+    int? _pendingCaret;
+    DateTime _cursor = DateTime.Today;
+    DateTime _focusDay = DateTime.Today;
+    List<ValueFieldInfo> _suggestions = [];
+    readonly HashSet<string> _collapsed = [];
+    IReadOnlyCollection<ValueFieldInfo>? _candidatesSource;
+    IReadOnlyCollection<ValueFieldInfo>? _hostFields;
+    string? _hostFieldsKey;
+    FieldTreeNode? _tree;
+    DotNetObjectReference<MarsValueInput>? _selfRef;
+
+    NodeFormEditorJsInterop? _js;
+    bool _ownsJs;
+    string? _popupKey;
+    NodeFormEditorJsInterop Js => _js ??= ResolveJs();
+
+    NodeFormEditorJsInterop ResolveJs()
+    {
+        if (Services.GetService(typeof(NodeFormEditorJsInterop)) is NodeFormEditorJsInterop shared)
+            return shared;
+
+        _ownsJs = true;
+        return new NodeFormEditorJsInterop(JS);
+    }
+
+    string ListId => $"mvi-list-{_uid}";
+    string ErrorId => $"mvi-err-{_uid}";
+
+    bool IsExpression => Value?.StartsWith('@') ?? false;
+    bool CanEdit => !Disabled && !ReadOnly;
+    bool ListOpen => _pickerOpen || _opsOpen || _suggestOpen;
+    bool AnyPopupOpen => ListOpen || _dateOpen;
+    bool PopupVisible => _pickerOpen || _dateOpen || _opsOpen || _suggestOpen && _suggestions.Count > 0;
+    bool ShowDatePicker => VarType == "DateTime" && !IsExpression;
+    bool IsInvalid => ValidationMessage is not null;
+    string AriaExpanded => PopupVisible ? "true" : "false";
+    string AriaInvalid => IsInvalid ? "true" : "false";
+    string AriaDate => _dateOpen ? "true" : "false";
+    string AriaPicker => _pickerOpen ? "true" : "false";
+    string AriaOps => _opsOpen ? "true" : "false";
+    string? ActiveOptionId => ListOpen && _activeIndex >= 0 ? OptionId(_activeIndex) : null;
+
+    string ModeLabel => IsExpression ? "@" : TypeLabel;
+
+    string TypeLabel => VarType switch
+    {
+        "string" => "str",
+        "DateTime" => "date",
+        VarNode.TimestampTypeName => "ts",
+        _ => VarType,
+    };
+
+    string EffectivePlaceholder => Placeholder ?? VarType switch
+    {
+        VarNode.TimestampTypeName => "empty = now (unix millis)",
+        "DateTime" => "yyyy-MM-dd",
+        _ => VarType,
+    };
+
+    IReadOnlyCollection<ValueFieldInfo> EffectiveCandidates => Candidates ?? _hostFields ?? [];
+
+    string? FieldName => For?.Body switch
+    {
+        MemberExpression member => member.Member.Name,
+        UnaryExpression { Operand: MemberExpression member } => member.Member.Name,
+        _ => null
+    };
+
+    static IReadOnlyList<ValueOpGroup> OpsGroups => MarsValueInputMocks.Operations;
+    static int OpsItemCount => MarsValueInputMocks.Operations.Sum(g => g.Items.Count);
+
+    string RootClass
+    {
+        get
+        {
+            var css = IsExpression ? "mars-value-input mvi-expr" : "mars-value-input mvi-const";
+
+            if (Multiline)
+                css += " mvi-multiline";
+
+            if (Disabled)
+                css += " mvi-disabled";
+
+            if (ReadOnly)
+                css += " mvi-readonly";
+
+            if (IsInvalid)
+                css += " mvi-invalid";
+
+            return Class is { Length: > 0 } extra ? $"{css} {extra}" : css;
+        }
+    }
+
+    IReadOnlyDictionary<string, object>? RootAttributes => AdditionalAttributes;
+
+    string? ValidationMessage => ValidateConst(Value ?? "");
+
+    string? ValidateConst(string value)
+    {
+        if (IsExpression || value.Length == 0 || VarType == "string")
+            return null;
+
+        if (VarType == VarNode.TimestampTypeName)
+            return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)
+                ? null
+                : $"Empty or unix millis expected, got '{value}'";
+
+        var valid = VarType switch
+        {
+            "int" or "long" => long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _),
+            "float" or "double" => double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _),
+            "decimal" => decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out _),
+            "bool" => bool.TryParse(value, out _),
+            "DateTime" => DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out _),
+            "Guid" => Guid.TryParse(value, out _),
+            _ => true,
+        };
+
+        return valid ? null : $"Not a valid {VarType}: '{value}'";
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Candidates is null)
+        {
+            var node = NodeEditContainer?.Node;
+            var key = node is null ? null : $"{node.Id}|{FieldName}|{NodeEditContainer?.ValueFieldsVersion}";
+
+            if (_hostFieldsKey != key)
+            {
+                _hostFieldsKey = key;
+                _hostFields = node is null ? null : NodeEditContainer!.GetValueFields(FieldName);
+            }
+        }
+
+        var source = EffectiveCandidates;
+
+        if (_tree is null || !ReferenceEquals(_candidatesSource, source))
+        {
+            _candidatesSource = source;
+            _tree = ValueFieldTree.Build(source);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _selfRef = DotNetObjectReference.Create(this);
+            await Js.ValueInput_Bind(_root, _input, _selfRef, nameof(OnOutsideClick), nameof(OnPasteText));
+        }
+
+        var popupKey = PopupVisible ? PopupKind : null;
+        if (popupKey != _popupKey)
+        {
+            _popupKey = popupKey;
+
+            if (popupKey is not null)
+                await Js.ValueInput_PopupOpen(_popup, _body, _dateOpen ? "left" : "right");
+        }
+
+        if (_pendingCaret is int pos)
+        {
+            _pendingCaret = null;
+            await Js.ValueInput_SetCaret(_input, pos);
+        }
+    }
+
+    string? PopupKind => _pickerOpen ? "picker" : _opsOpen ? "ops" : _suggestOpen ? "suggest" : _dateOpen ? "date" : null;
+
+    [JSInvokable]
+    public void OnOutsideClick()
+    {
+        if (!AnyPopupOpen)
+            return;
+
+        ClosePopups();
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnPasteText(string text)
+    {
+        if (!CanEdit || _disposed || string.IsNullOrEmpty(text))
+            return;
+
+        await InsertText(text, replacePrefix: false);
+    }
+
+    RenderFragment Highlight => builder =>
+    {
+        var value = Value ?? "";
+
+        if (!IsExpression)
+        {
+            builder.AddContent(0, value);
+            return;
+        }
+
+        var pos = 0;
+        foreach (Match match in TokenRegex.Matches(value))
+        {
+            if (match.Index > pos)
+                builder.AddContent(1, value[pos..match.Index]);
+
+            builder.OpenElement(2, "span");
+            builder.AddAttribute(3, "class", TokenCss(match));
+            builder.AddContent(4, match.Value);
+            builder.CloseElement();
+
+            pos = match.Index + match.Length;
+        }
+
+        if (pos < value.Length)
+            builder.AddContent(5, value[pos..]);
+    };
+
+    static string TokenCss(Match match) => match.Groups[1].Success ? "tk-str"
+        : match.Groups[2].Success ? "tk-at"
+        : match.Groups[3].Success ? "tk-path"
+        : match.Groups[4].Success ? "tk-num"
+        : "tk-op";
+
+    string OptionId(int index) => $"mvi-opt-{_uid}-{index}";
+
+    async Task OnInput(ChangeEventArgs e)
+    {
+        if (!CanEdit)
+            return;
+
+        await SetValue(e.Value?.ToString() ?? "");
+
+        _pickerOpen = false;
+        _opsOpen = false;
+        _dateOpen = false;
+
+        if (!IsExpression && !_suggestOpen)
+            return;
+
+        await RefreshPrefixAsync();
+        UpdateSuggestions();
+    }
+
+    async Task OnCaretMove()
+    {
+        if (Disabled || !IsExpression && !_suggestOpen)
+            return;
+
+        await RefreshPrefixAsync();
+        UpdateSuggestions();
+    }
+
+    static readonly string[] CaretMoveKeys =
+        ["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
+
+    async Task OnKeyUp(KeyboardEventArgs e)
+    {
+        if (Array.IndexOf(CaretMoveKeys, e.Key) < 0)
+            return;
+
+        await OnCaretMove();
+    }
+
+    async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (Disabled)
+            return;
+
+        if (e.Key == "Escape")
+        {
+            ClosePopups();
+            return;
+        }
+
+        if (e.CtrlKey && e.Code == "Space")
+        {
+            if (!CanEdit)
+                return;
+
+            _forceSuggest = true;
+            await RefreshPrefixAsync();
+            UpdateSuggestions();
+            return;
+        }
+
+        if (e.AltKey && e.Key == "ArrowDown")
+        {
+            if (CanEdit)
+                TogglePicker();
+
+            return;
+        }
+
+        if (e.AltKey && e.Key == "ArrowUp")
+        {
+            if (CanEdit && IsExpression)
+                ToggleOps();
+
+            return;
+        }
+
+        if (e.Key == "F4")
+        {
+            if (CanEdit && ShowDatePicker)
+                ToggleDate();
+
+            return;
+        }
+
+        if (_dateOpen)
+        {
+            switch (e.Key)
+            {
+                case "ArrowLeft":
+                    MoveFocusDay(-1);
+                    return;
+                case "ArrowRight":
+                    MoveFocusDay(1);
+                    return;
+                case "ArrowUp":
+                    MoveFocusDay(-7);
+                    return;
+                case "ArrowDown":
+                    MoveFocusDay(7);
+                    return;
+                case "Enter" or " ":
+                    await PickDate(_focusDay);
+                    return;
+            }
+        }
+
+        if (!ListOpen)
+            return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                MoveActive(1);
+                break;
+            case "ArrowUp":
+                MoveActive(-1);
+                break;
+            case "Tab" or "Enter":
+                await ActivateActive();
+                break;
+            case " ":
+                ClosePopups();
+                break;
+        }
+    }
+
+    void MoveActive(int delta)
+    {
+        var count = _suggestOpen ? _suggestions.Count
+            : _pickerOpen ? TreeRows().Count()
+            : _opsOpen ? OpsItemCount
+            : 0;
+
+        if (count == 0)
+            return;
+
+        _activeIndex = Math.Clamp(_activeIndex + delta, 0, count - 1);
+    }
+
+    async Task ActivateActive()
+    {
+        if (_suggestOpen && _suggestions.Count > 0)
+        {
+            await InsertSuggestion(_suggestions[Math.Clamp(_activeIndex, 0, _suggestions.Count - 1)].Path);
+            return;
+        }
+
+        if (_pickerOpen)
+        {
+            var rows = TreeRows().ToList();
+            if (rows.Count == 0)
+                return;
+
+            await OnTreeRowClick(rows[Math.Clamp(_activeIndex, 0, rows.Count - 1)]);
+            return;
+        }
+
+        if (_opsOpen)
+        {
+            var items = OpsRows().Where(r => r.Op is not null).Select(r => r.Op!).ToList();
+            if (items.Count == 0)
+                return;
+
+            await InsertSnippet(items[Math.Clamp(_activeIndex, 0, items.Count - 1)]);
+        }
+    }
+
+    async Task OnTreeRowClick((FieldTreeNode Node, int Depth, bool Branch) row)
+    {
+        if (row.Branch)
+        {
+            if (!_collapsed.Remove(row.Node.Path))
+                _collapsed.Add(row.Node.Path);
+
+            return;
+        }
+
+        await InsertText(row.Node.Path, replacePrefix: false);
+    }
+
+    void TogglePicker()
+    {
+        if (!CanEdit)
+            return;
+
+        _pickerOpen = !_pickerOpen;
+        _suggestOpen = false;
+        _opsOpen = false;
+        _dateOpen = false;
+        _activeIndex = 0;
+    }
+
+    void ToggleOps()
+    {
+        if (!CanEdit)
+            return;
+
+        _opsOpen = !_opsOpen;
+        _pickerOpen = false;
+        _dateOpen = false;
+        _suggestOpen = false;
+        _activeIndex = 0;
+    }
+
+    void ToggleDate()
+    {
+        if (!CanEdit)
+            return;
+
+        _dateOpen = !_dateOpen;
+        _pickerOpen = false;
+        _suggestOpen = false;
+        _opsOpen = false;
+
+        if (_dateOpen)
+        {
+            _focusDay = TryGetDate(out var current) ? current.Date : DateTime.Today;
+            _cursor = new DateTime(_focusDay.Year, _focusDay.Month, 1);
+        }
+    }
+
+    void ShiftMonth(int delta) => _cursor = _cursor.AddMonths(delta);
+
+    void MoveFocusDay(int days)
+    {
+        _focusDay = _focusDay.AddDays(days);
+        _cursor = new DateTime(_focusDay.Year, _focusDay.Month, 1);
+    }
+
+    async Task PickDate(DateTime date)
+    {
+        var text = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        _dateOpen = false;
+        await SetValue(text);
+
+        _pendingCaret = text.Length;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    bool TryGetDate(out DateTime date) =>
+        DateTime.TryParse(Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+
+    IEnumerable<(DateTime Date, bool Other, bool Today, bool Selected, bool Focused)> MonthCells()
+    {
+        var first = new DateTime(_cursor.Year, _cursor.Month, 1);
+        var start = first.AddDays(-(((int)first.DayOfWeek + 6) % 7));
+        var selected = TryGetDate(out var current) ? current.Date : (DateTime?)null;
+
+        for (var i = 0; i < 42; i++)
+        {
+            var date = start.AddDays(i);
+            yield return (date, date.Month != first.Month, date == DateTime.Today, date == selected, date == _focusDay.Date);
+        }
+    }
+
+    void ClosePopups()
+    {
+        _suggestOpen = false;
+        _pickerOpen = false;
+        _opsOpen = false;
+        _dateOpen = false;
+        _forceSuggest = false;
+    }
+
+    void UpdateSuggestions()
+    {
+        _activeIndex = 0;
+
+        if (!CanEdit)
+        {
+            _suggestOpen = false;
+            _suggestions = [];
+            return;
+        }
+
+        _suggestOpen = IsExpression && (_forceSuggest || _prefix.Contains('.'));
+
+        _suggestions = !_suggestOpen
+            ? []
+            : [.. EffectiveCandidates
+                .Where(c => c.Path.StartsWith(_prefix, StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(c.Path, _prefix, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(c => c.Path, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    async Task InsertSuggestion(string path) => await InsertText(path, replacePrefix: true);
+
+    async Task InsertSnippet(string text) => await InsertText(text, replacePrefix: false);
+
+    async Task InsertText(string text, bool replacePrefix)
+    {
+        if (!CanEdit)
+            return;
+
+        var value = Value ?? "";
+        var (start, end) = await GetSelectionAsync();
+        start = Math.Clamp(start, 0, value.Length);
+        end = Math.Clamp(end, start, value.Length);
+
+        var paste = text;
+        if (IsPathLike(text))
+        {
+            paste = text.StartsWith('@') ? text[1..].Trim() : text.Trim();
+
+            if (!value.StartsWith('@'))
+            {
+                value = "@" + value;
+                start++;
+                end++;
+            }
+        }
+
+        if (end > start)
+            replacePrefix = false;
+        else if (replacePrefix)
+            start = Math.Max(0, end - _prefix.Length);
+
+        var caret = start + paste.Length;
+        await SetValue(value[..start] + paste + value[end..]);
+
+        ClosePopups();
+        _pendingCaret = caret;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    static bool IsPathLike(string text) =>
+        text.StartsWith('@') || PathLikeRegex.IsMatch(text);
+
+    async Task<(int Start, int End)> GetSelectionAsync()
+    {
+        if (Disabled)
+            return (0, 0);
+
+        var range = await Js.ValueInput_GetSelection(_input);
+        return (range.Start, range.End);
+    }
+
+    async Task RefreshPrefixAsync()
+    {
+        var value = Value ?? "";
+        var (_, end) = await GetSelectionAsync();
+        var match = TokenBeforeCaretRegex.Match(value[..Math.Clamp(end, 0, value.Length)]);
+        _prefix = match.Success ? match.Groups[1].Value : "";
+    }
+
+    async Task SetValue(string value)
+    {
+        if (value == Value)
+            return;
+
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    bool IsCollapsed(string path) => _collapsed.Contains(path);
+
+    IEnumerable<(FieldTreeNode Node, int Depth, bool Branch)> TreeRows() => ValueFieldTree.Rows(_tree, _collapsed);
+
+    IEnumerable<OpRow> OpsRows()
+    {
+        var index = 0;
+
+        foreach (var group in OpsGroups)
+        {
+            yield return new OpRow(group.Title, null, -1);
+
+            foreach (var op in group.Items)
+                yield return new OpRow(null, op, index++);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+
+        if (_js is not null)
+        {
+            try
+            {
+                await _js.ValueInput_Dispose(_root, _input, _body);
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+
+            if (_ownsJs)
+                await _js.DisposeAsync();
+        }
+
+        _selfRef?.Dispose();
+    }
+
+    sealed record OpRow(string? Group, string? Op, int Index);
+}

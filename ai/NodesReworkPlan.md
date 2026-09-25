@@ -1,0 +1,310 @@
+# План: реворк полей нод — от одного `Payload` к источникам значений
+
+> **Статус: этап 1 выполнен полностью (шаги 1–6, шаг 5 — 2026-09-23); этап 2 — прототип выполнен целиком (шаги 1–4) — 2026-09-14, ветка `ai/nodes-rework`.**
+> Задача-источник: запрос пользователя «придумать систему использования переменной или полей входящих данных»
+> (2026-09-14) — у каждого входного поля ноды должно быть не только константное значение, но и выражение /
+> ссылка на поле сообщения (как `typedInput` в Node-RED и UI-mapper в n8n). Черновик `InputSource<T>` и
+> `enum InputType` уже лежали неиспользуемыми в `InjectNode.cs`.
+> Дизайн-обсуждение 2026-09-14 (три раунда): эталоны Node-RED / n8n / Power Automate, две ортогональные оси
+> («тип значения» vs «источник значения»), варианты семантики полей A/B/C.
+> **Этап 1 — «издалека»:** у `InjectNode` вместо одного `Payload` появился список полей
+> (`Key` / `VarType` / `Value`) с drag&drop; значения пока только константы. Механика обкатана на Inject,
+> обобщение на другие ноды — этапы 2+.
+
+## Принятые решения (2026-09-14)
+
+1. **Семантика полей — вариант A («Context»)**: поле с `Key == "Payload"` (без учёта регистра) уходит в
+   `msg.Payload`, все остальные — в `msg.Set(key, value)` (Context). Почему не все поля в объект `Payload`
+   (вариант B): `FileWriteNodeImpl`, `TemplateNodeImpl`, `HttpRequestNodeImpl` ждут в `Payload`
+   скаляр/строку/поток, а `NodeMsg.AsFullDict()` и `DynamicNodeMsgWrapper` уже читают Context как
+   свойства `msg.<key>` — вариант B сломал бы их и существующие flows.
+2. **Типы значений — словарь `VarNode`** (`int/long/float/double/decimal/bool/string/DateTime/Guid` +
+   массивы, `VarNode.ListTypesSelect()`) **плюс `timestamp`**. Новый enum типов не заводим: `enum InputType`
+   (`String, Number, Boolean, DateTime, Flow, Global`) смешивал две оси — «тип значения» и «источник
+   значения»; `Flow/Global` — источники, `String/Number` — типы. Оси фиксируем как ортогональные, тип берём
+   у `VarNode`, enum удалён.
+3. **Legacy `Payload` удалён полностью** (решение пользователя 2026-09-14: «уберем легаси Payload, меня бесит
+   столько кода ради него»). В `InjectNode` нет ни свойства `Payload`, ни JSON-хуков, ни fallback в impl;
+   дефолт ноды — `Fields = [Payload]` типа `timestamp`, то есть «Inject без настройки отдаёт текущее время»
+   сохранено, но уже явным типом, а не магией «пустая строка → сейчас».
+   **Последствие:** у flows, сохранённых до этапа 1, ключ `payload` при чтении игнорируется (неизвестное
+   свойство) — такая нода получит дефолтный `[Payload / timestamp]`. Миграции нет, решено сознательно.
+4. **Порядок полей — только визуальный.** Drag&drop как UI-удобство и единообразие с `HtmlParseNodeForm`
+   / `SwitchNodeForm` / `VariableSetNodeForm`; семантики порядок не несёт (Context — словарь).
+5. **Имена элемента: `Key`, `VarType`, `Value`** — нейтральные, переживут добавление оси «источник»
+   (этап 2): `Value` остаётся строкой, рядом появляется `ValueKind` (решения 9–10).
+6. **Этап 1 — только `InjectNode`.** `TemplateNode`/`SwitchNode`/`StringNode` и остальные не трогаем.
+7. **Тесты нод — с секциями `//Arrange` / `//Act` / `//Assert`** (указание пользователя 2026-09-14).
+8. **Набор kind этапа 2 — `const | msg | flow | global | expression`** (позже `var`, `env`): дискретные
+   источники полей дают дом `FieldPathPicker`, `expression` — свободные выражения вида
+   `msg.Payload.Count() + 1`. Полный набор Node-RED (JSON/buffer/cred/…) не берём: большинство видов
+   пока нечем наполнить.
+9. **Хранение режима — плоско, строками: `ValueKind` + `Value`** (`ValueKind` — string в стиле `VarType`),
+   без `InputSource<T>`. **Обратная совместимость не нужна** (решение пользователя 2026-09-14): ни
+   `@`-алиаса в резолвере, ни миграций; `@`-конвенция умирает целиком при переезде нод на `ValueKind`.
+10. **Редактор expression на старте — строка с автокомплит-попапом** и вставкой полей из пикера;
+    Monaco — позже, вместе со схемой.
+
+## Как было (до этапа 1)
+
+- `InjectNode` — `src/Mars.Nodes/Mars.Nodes.Core/Nodes/Common/InjectNode.cs`: одно строковое `Payload`
+  (пустая строка = «подставить timestamp»), `RunAtStartup`, `StartupDelayMillis`, `IsSchedule`,
+  `ScheduleCronMask`, `[Display(GroupName = "common")]`. В файле же лежали неиспользуемые черновики
+  (`InputSource<T>` с `get()`/`sdsd()`, `InputSource`, `enum InputType`, `public class DrawNode`).
+- `InjectNodeImpl` — `.../Mars.Nodes.Core.Implements/Nodes/Common/InjectNodeImpl.cs`: единственное действие —
+  `input.Payload = string.IsNullOrEmpty(Node.Payload) ? DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() : Node.Payload`
+  и `callback(input)`.
+- Расписание/старт читают другие поля и не зависят от payload: `RunAtStartup`/`StartupDelayMillis` —
+  `Mars.Nodes.Host/Services/NodeService.cs:399-403`; `IsSchedule`/`ScheduleCronMask` —
+  `Mars.Nodes.Host/Scheduler/NodeSchedulerService.cs:31-61`.
+- CLI `mars.exe node inject <IdOrName>` payload **не читает** — запускает ноду с пустым `NodeMsg`
+  (`Mars.Nodes.Host/CommandLine/NodesCli.cs:79`), т.е. переход на список полей CLI не ломает.
+- Форма — `.../Mars.Nodes.FormEditor/EditForms/Common/InjectNodeForm.razor`: один `FormItem2` на `Node.Payload`
+  + чекбоксы. Единственная форма в проекте с `IStringLocalizer`, и её ключи (`delay millis`, `cron mask`,
+  `RunAtStartup`, `IsSchedule`) в resx отсутствуют — локализация фактически не работает (вне объёма этапа 1).
+- Готовые образцы списков: `FluentSortableList` + `ArrayUtil.MoveItem` (`Mars.Core/Utils/ArrayUtil.cs`) —
+  `HtmlParseNodeForm.razor` (`Node.InputMappings`), `SwitchNodeForm.razor` (`Node.Conditions`),
+  `VariableSetNodeForm.razor` (`Node.Setters`, с `IValidatableObject` и `[ValidateComplexType]`).
+
+---
+
+## Этап 1 — `InjectNode`: список полей
+
+### Шаг 1. Модель ✅
+
+- [x] `InjectNodeField` — в `InjectNode.cs`: `Key`, `VarType` (дефолт `"string"`), `Value` (дефолт `""`),
+      `[Display]` на каждом; `[Required]` на `Key`.
+- [x] `InjectNode.Fields` — `InjectNodeField[]` через backing-поле: геттер отдаёт массив, сеттер
+      нормализует `null` в `[]` (защита от `"fields": null` в json без хуков десериализации);
+      дефолт — `[new() { Key = PayloadKey, VarType = VarNode.TimestampTypeName }]`; `[ValidateComplexType]`.
+- [x] `InjectNode : IValidatableObject` — непустой список, уникальность `Key` (OrdinalIgnoreCase), формат
+      `Key` (идентификатор: буква/`_`, далее буквы-цифры-`_`), допустимость `VarType` (`VarNode.IsValidVarType`).
+- [x] Черновики `InputSource<T>`, `InputSource`, `InputType`, `DrawNode` и `#pragma` вокруг них удалены.
+- [x] `timestamp` — добавлен в `VarNode` (`public const string TimestampTypeName`, запись
+      `[TimestampTypeName] = typeof(long)` в `_typesDict`, `TimestampTypeName => 0L` в `GetTypeDefault`);
+      из массиво-вариантов `ListTypesSelect()` исключён (`timestamp[]` бессмыслен).
+
+### Шаг 2. Legacy `Payload` — ✅ удалён (не разворачиваем)
+
+- [x] Свойство `Payload`, три JSON-хука (`IJsonOnDeserializing`/`IJsonOnSerializing`/`IJsonOnDeserialized`)
+      и `using System.Text.Json.Serialization` из ноды убраны.
+- [x] Примеры в `Mars.Nodes.Core/Examples/Nodes/` (9 мест в 8 файлах), задававшие `Payload = "..."`,
+      переведены на новый формат: `Fields = [new() { Key = "Payload", Value = "..." }]`.
+- [x] Проверено, что других потребителей `InjectNode.Payload` нет: `InjectNodeImpl` переписан, CLI payload
+      не читает, плагинов с этим свойством нет (отсутствие выявила сборка — 9 ошибок только в примерах).
+
+### Шаг 3. Исполнение (`InjectNodeImpl`) ✅
+
+- [x] Итерация по `Node.Fields`: `Key == "Payload"` (OrdinalIgnoreCase) → `input.Payload`, иначе
+      `input.Set(Key, value)`.
+- [x] Конвертация по `VarType`: `string` — литерал «как есть»; числовые/`bool`/`DateTime`/`Guid`/массивы —
+      `JsonSerializer.Deserialize` по `VarNode.ResolveClrType`; `timestamp` — пусто → «сейчас», иначе unix-millis.
+- [x] Ошибка разбора → `NodeExecuteException` с именем поля и значением.
+- [x] Спец-случаев нет: пустая строка остаётся пустой строкой, пустой `Fields` ничего не делает,
+      `Payload` в списке отсутствует — `input.Payload` не трогается.
+
+### Шаг 4. Форма ✅
+
+- [x] `FluentSortableList` по `Node.Fields` (`Handle=true`, `OnUpdate` → `ArrayUtil.MoveItem`, `@key=item`):
+      колонки хендл · `Key` · `VarType` (селект из `VarNode.ListTypesSelect()`) · `Value` · удалить.
+- [x] Редактор `Value` по типу: `bool` — селект `true/false`; остальные — текст с placeholder по типу
+      (`timestamp` — «empty = now (unix millis)»).
+- [x] Строки валидации на элемент: `FluentValidationMessage` для `Key`, `VarType`, `Value`; кнопка «Add».
+- [x] Подсказка в форме: `Payload` → `msg.Payload`, остальные ключи → `msg.<key>`.
+- [x] Существующие контролы (`RunAtStartup`, `StartupDelayMillis`, `IsSchedule`, `ScheduleCronMask`) не тронуты.
+
+Отличия от исходного наброска: для `bool` выбран `FluentSelect` вместо `FluentCheckbox` (значение хранится
+строкой, двусторонняя привязка потребовала бы конвертеров); разворот в Monaco для массивов/объектов отложен
+до этапа 3; `timestamp` пока только unix-millis.
+
+### Шаг 5. Примеры и документация — ✅ (2026-09-23)
+
+- [x] `Mars.Nodes.Core/Examples/Nodes/` — два новых примера: `InjectNodeMultipleFieldsExample1`
+      (Payload-строка + `status` + `timestamp`) и `InjectNodeExpressionExample1`
+      (kind `expression`: `21 * 2`, конкатенация строк).
+- [x] `wwwroot/docs/InjectNode/InjectNode.md` и `.ru.md` — переписаны (были 4 строки): список полей
+      (Key/VarType/Value/ValueKind), семантика Context, типы включая `timestamp`, kind'ы
+      `const`/`msg`/`expression` и `@`-конвенция редактора значения, хоткеи `MarsValueInput`
+      (Ctrl+Space / Alt+Down / Alt+Up / F4), запуск при старте и расписание, JSON-пример,
+      CLI `node inject`, примечание об отсутствии миграции старых flows.
+- [x] Проверка: `dotnet build Mars.slnx` — 0 errors; `Mars.Nodes.Tests` — 565/565 (`NodesDocTests` в т.ч.).
+
+### Шаг 6. Тесты и проверка ✅
+
+- [x] `tests/Mars.Nodes.Tests/Nodes/InjectNodeTests.cs` — 14 тестов (`//Arrange`/`//Act`/`//Assert`):
+      `Payload` → `msg.Payload`; прочие ключи → Context; типы (`int`/`double`/`bool`/`int[]`);
+      дефолтная нода → timestamp; `timestamp` пустой → now и с значением → это значение; пустая строка
+      остаётся пустой строкой; отсутствие поля `Payload` не трогает payload; пустой `Fields` не меняет
+      сообщение; json без `fields` даёт дефолтное поле; round-trip; валидация (дубликат ключа, плохой ключ,
+      неизвестный тип, дефолтная нода без ошибок).
+- [x] Проверка: `dotnet build Mars.slnx` — 0 warnings / 0 errors; `Mars.Nodes.Tests` — **432/432**.
+- [x] UI — подтверждено пользователем визуально (2026-09-23).
+
+---
+
+## Этап 2 — ось «источник значения» (дизайн согласован 2026-09-14, не в работе)
+
+Два кастомных компонента (FluentUI не подходит: нужен гибрид input и дерева/попапа), оба тупые и
+node-agnostic, место — `Mars.Nodes.FormEditor/EditForms/Components/`:
+
+- **`FieldPathPicker`** — выбор поля. Пропсы: `Root` (сейчас только `msg`, позже `flow`/`global`),
+  `Value` — путь без префикса (`Payload`, `items[0].name`), `Schema` (дерево, опционально),
+  `ExpectedType` (фильтр по типу). UI: input + собственный попап (дерево из Schema + свободный ввод).
+  Применения: правая часть kind=`msg`/`flow`/`global`, вставка в expression-редактор; целевая сторона
+  (Key нод, VariableSet) — позже, `InjectNodeField.Key` пока остаётся простым идентификатором.
+- **`ValueSourceEditor`** — источник значения. Слева кнопка-селект kind, справа редактор по kind:
+  `const` — редактор по `VarType` (логика этапа 1), `msg`/`flow`/`global` — `FieldPathPicker`
+  с фиксированным корнем, `expression` — строка с автокомплит-попапом и вставкой полей.
+  `VarType` ортогонален: ожидаемый тип на выходе (конвертация/валидация); он же `ExpectedType` пикера.
+
+Хранение: плоско, строками — `ValueKind` (`const|msg|flow|global|expression`) + `Value`; никакого
+`InputSource<T>` (решение 9). Обратная совместимость не нужна: резолвер без `@`-алиаса, миграций нет;
+`@`-конвенция (`VariableSetNodeImpl.ReadFieldAsExpression`, сейчас `FileWriteNodeImpl.FilePath` и
+`HttpRequestNodeImpl.Url`) удаляется при переезде нод на `ValueKind`.
+
+Резолвер — одна точка: `InputValueResolver` в `Mars.Nodes.Core.Implements/Utils` (шаг 1, 2026-09-14).
+Движок — DynamicExpresso напрямую (`InterpreterOptions.Default | LateBindObject` + reference на
+`System.Linq.Enumerable`), не `XInterpreter`: тот создаёт `Interpreter` с `Default`-опциями и тащит
+зависимость от SiteEngine. Скоуп — `ExpressionScope(Rns, Msg)` с корнями `msg` (`DynamicNodeMsgWrapper`),
+`GlobalContext`, `FlowContext`, `VarNode`, `env`; scope-обёртки `ContextPropertyAccesableObject` /
+`ContextVarNodesAccesableObject` переехали сюда из `VariableSetNodeImpl` (его `CreateInterpreter`
+на `XInterpreter` остаётся для собственных нужд до шага 4). kind `msg`/`flow`/`global` (шаг 2)
+будут компилироваться в выражение `root.<path>` — весь резолвинг одним путём; `const` — парсинг по
+`VarType` (бывшая логика `InjectNodeImpl`).
+
+Статическая типизация корневых путей (`BindRootPaths`): C#-runtime-байндер **не резолвит extension-
+методы LINQ на dynamic-приёмнике** (`msg.Payload.Count()` падал бы RuntimeBinderException'ом), поэтому
+перед eval пути `msg.*` / `GlobalContext.*` / `FlowContext.*` / `VarNode.*` resolve'ятся в значения и
+подменяются в тексте выражения параметрами со статическим типом (`msg_Payload`); LINQ после этого
+парсится статически. Пути внутри строковых литералов не подменяются (маска литералов); неразрешимые
+(null/отсутствующие) пути остаются dynamic.
+
+Куда жить резолверу: на шаге 1 — `Mars.Nodes.Core.Implements/Utils` (DynamicExpresso там уже
+ссылается); вынос в `Mars.Nodes.Expressions` отложен до переезда остальных нод (шаг 4), чтобы не
+заводить проект под одного потребителя. Выбор движка закрыт: DynamicExpresso (Roslyn `CSharpScript`
+из `FunctionNode` — для полного C#, не для полей ввода).
+
+Производительность резолвинга (замеры 2026-09-26): интерпретация `@msg.Payload` на сообщении стоит
+~107 мкс / 34 КБ — переиспользование Interpreter, hot path и NCalc для простых выражений планируются
+в [ExpressionEnginePlan.md](./ExpressionEnginePlan.md) (бенчмарки — `benchmarks/Benchmark.NodeExpression/`).
+
+Схема для пикера: фаза A — свободный ввод + автокомплит по JSON последнего входящего сообщения ноды
+(INPUT-панель как в n8n; debug-сообщения уже несут JSON); фаза B — типизированные выходы (этап 4) и
+фильтр по `ExpectedType`; ключи `flow`/`global` — из живого инстанса (Blazor Server in-proc), позже.
+
+Прототип-порядок:
+
+1. ✅ `ValueKind` у `InjectNodeField` + резолвер (`const`/`expression`) + тесты (2026-09-14):
+   `InputValueKind` в Core (`const`/`expression` + `IsValid`), `ValueKind` на поле с дефолтом `const`,
+   валидация неизвестного kind и пустого expression, `InputValueResolver` + 13 новых тестов
+   (арифметика, `msg.Payload`, `msg.<context>`, `msg.Payload.Count() + 1`, конвертация в `VarType`,
+   литерал `"msg.Payload"` не подменяется, ошибки eval/null/kind, round-trip `ValueKind`);
+   `Mars.Nodes.Tests` — 445/445.
+2. ✅ kind `msg` + `FieldPathPicker` (2026-09-14): kind компилируется в выражение `msg.<path>`
+   (тот же путь резолвинга; статическая типизация `BindRootPaths` работает и здесь), валидация
+   пустого пути; компонент `FieldPathPicker.razor` в `EditForms/Components` — input с префиксом-корнем
+   (`msg.`), попап по `Candidates` + свободный ввод, пропы `Root`/`Value`/`Candidates`/`Placeholder`
+   (`Schema`/`ExpectedType` — с фазой A); стили в `wwwroot/css/style.less` (компилирует пользователь).
+   +6 тестов, `Mars.Nodes.Tests` — 451/451. Подключение к форме — шаг 3.
+3. ✅ `ValueSourceEditor` в форме Inject (2026-09-14): компонент в `EditForms/Components` —
+   кнопка-селект kind (`const` / `msg.` / `expr`) + редактор по kind: const — текст по `VarType`
+   (bool — select true/false, timestamp — placeholder «empty = now»), msg — `FieldPathPicker`
+   (`ShowRoot=false`: корень виден на кнопке kind), expression — mono-input. Колонка Value в
+   `InjectNodeForm` — теперь этот редактор (`@bind-Value` + `@bind-ValueKind`); bool/placeholder-
+   хелперы формы удалены (переехали в компонент); стили в `style.less` (компилирует пользователь).
+   Визуальная проверка — пользователем в `/dev/nodered`.
+4. ✅ Переезд на `ValueKind` (2026-09-14): `SwitchNode.Condition.ValueKind` и `EvalNode.ValueKind`
+   (дефолт `expression`), `FileWriteNode.FilePathKind` и `HttpRequestNode.UrlKind` (дефолт `const`);
+   все четыре impl резолвятся через `InputValueResolver` (литеральные спец-кейсы `true/1/false/0` в
+   Switch удалены — eval литерала даёт то же; мёртвая NCalc-ветка `#if DynamicExpresso` удалена);
+   `ReadFieldAsExpression` (@-конвенция FileWrite/HttpRequest) удалена целиком;
+   `VariableSetNodeImpl` переведён с `XInterpreter` на резолвер (`SetExpression` принимает
+   `Interpreter`), его `CreateInterpreter` удалён — потребители (`NodeService.VarNodesSetDefaultValues`,
+   `InlineFunctionNodeImpl`, тесты) переведены на `InputValueResolver.CreateInterpreter`;
+   **вынос: новый проект `Mars.Nodes.Expressions`** (`InputValueResolver` + `ExpressionScope` +
+   scope-обёртки + `DynamicNodeMsgWrapper`, namespace `Mars.Nodes.Expressions`), ссылка
+   `SiteEngine.Abstractions` из `Core.Implements` **снята** (архдолг закрыт: в Core.Implements не
+   осталось кода с `Mars.SiteEngine`). +4 теста (Switch const/msg, Eval expression/const),
+   `Mars.Nodes.Tests` — 455/455.
+   Остаток @-конвенции: аргументы `InlineFunctionNode` (`@expr` в `node.Arguments`) — отдельный
+   механизм, не тронут (кандидат в добор этапа 3). Формы Switch/Eval/FileWrite/HttpRequest на
+   `ValueSourceEditor` не переведены (свойства kind пока видны только в JSON) — следующим шагом.
+
+Фактическое состояние форм (2026-09-23): прототипные `ValueSourceEditor`/`FieldPathPicker` удалены и
+заменены компонентами `MarsValueInput`/`MarsPathInput` (`EditForms/Components`) с конвенцией ввода
+`@` = expression; отдельного контрола kind в формах нет — kind задаётся сеттером формы
+(`SetFieldValue`/`SetUrlValue`: любой `@...` сохраняется как `expression`, `msg` остаётся только
+в JSON и отображается как `@msg.<path>`). Подключены: Inject, Switch, Eval, FileWrite, FileRead,
+HttpRequest, MqttOut, EmailSend, VariableSet, DevAdminConnection.
+
+## Этап 3 — UI источников: добор ➡️ перенесён
+
+Переехал в [NodesReworkStage2Plan.md](./NodesReworkStage2Plan.md) (фаза C): панель INPUT по последнему
+сообщению ноды, автокомплит `msg.` / `flow.` / `global.` / `VarNode.` на реальном провайдере подсказок,
+Monaco для expression и для массивов/объектов в `const`.
+
+## Этап 4 — типизированные выходы ➡️ перенесён
+
+Переехал в [NodesReworkStage2Plan.md](./NodesReworkStage2Plan.md) (фазы A–B): контракты выходов нод
+атрибутами (`[NodeOutput(...)]`, дефолт `Payload : object`), провайдер подсказок по контрактам, вывод
+типов по графу проводов и валидация выражений до запуска — открытые вопросы там же.
+
+## Грабли и риски
+
+- `DynamicNodeMsgWrapper` поднимает свойства `Payload` на верхний уровень и **приоритет у свойств payload**
+  над Context (`_allProperties` заполняется и теми, и другими) — Context-ключ с именем, совпадающим со
+  свойством payload-объекта, будет затенён. Для Inject (payload — строка/число) не проявляется, но выстрелит
+  при payload-объекте (кандидат в этап 3/4).
+- `NodeMsg.AsFullDict()` кладёт `Payload` поверх копии `Context` — ключ Context с именем `Payload` был бы
+  перекрыт (у нас он и должен уходить в payload, поведение согласовано).
+- Добавление типа в `VarNode._typesDict` без правки `GetTypeDefault`/`ResolveDefault` — `NotImplementedException`
+  в валидации/дефолтах (учтено для `timestamp`).
+- `VarNode.IsValidVarType` — `internal static`: доступен внутри `Mars.Nodes.Core`, форме не нужен
+  (ей хватает публичного `ListTypesSelect()`).
+- Форма в списке: `FormItem2` не применять (в `SwitchNodeForm` он стоит с фиктивным `For="() => Node.Conditions"`);
+  рабочий путь — placeholder + `FluentValidationMessage` на элемент.
+- В `Mars.Nodes.Core` есть `Globals.cs` с `global using Mars.Nodes.Core.Nodes.Common` — поэтому в примерах
+  `InjectNodeField` доступен без using (проверено при переводе примеров).
+- C#-runtime-байндер не резолвит extension-методы (LINQ) на dynamic-приёмнике — любое выражение вида
+  `msg.X.Count()` без статической типизации приёмника падает RuntimeBinderException'ом; лечится
+  `BindRootPaths` (подмена корневых путей параметрами со статическим типом). Встанет снова в шаге 2
+  (автокомплит/парсер путей) — не изобретать обход заново.
+- .NET-regex с lookahead «сегмент не метод» (`(?!\s*\()`) на бэктреке обрезает сегмент
+  (`msg.Payload.Coun`): усечённый сегмент проходит lookahead. Нужна полная граница сегмента:
+  `(?![A-Za-z0-9_(])` (проверено 2026-09-14 на `RootPathRegex`).
+
+## Отклонённые альтернативы
+
+- **Вариант B (все поля в объект `Payload`)** — даёт `msg.Payload.username`, но ломает ноды, ожидающие в
+  `Payload` скаляр/строку/поток (`FileWriteNodeImpl`, `TemplateNodeImpl`, `HttpRequestNodeImpl`), и
+  существующие flows. Выбран вариант A.
+- **Свой enum типов (`InputType` из черновика)** — дублировал бы `VarNode` (9 типов + массивы) и смешивал
+  ось типа с осью источника. Тип берём у `VarNode`, источники — отдельная ось (этап 2); enum удалён.
+- **`List<InjectNodeField>` вместо массива** — в проекте для списков полей используются массивы
+  (`T[]` + пересоздание через `[.. a, item]`); стиль сохранён.
+- **`FormItem2` внутри списка** — не работает без выражения `For` на конкретный элемент.
+- **JSON-хуки для чтения старого `Payload`** (были реализованы, затем удалены по решению пользователя):
+  «столько кода ради него» — не оправдывает себя, данные старых flows с одним payload сознательно не
+  переносятся.
+- **`FluentCheckbox` для `bool`-значения** — значение поля хранится строкой; взят селект `true/false`.
+- **Магия «пустая строка `Payload` → текущее время»** — заменена явным типом `timestamp` (в т.ч. в дефолте ноды).
+- **`@`-префикс внутри строки как маркер выражения** (исходная идея пользователя): литерал, начинающийся
+  с `@`, потребовал бы экранирования, JSON перестал бы быть самодокументированным. Взято отдельное
+  свойство `ValueKind`; `@` остаётся только старой конвенцией двух нод до их переезда (решения 8–9).
+- **Механизмы обратной совместимости старых flows** (дефолты инициализаторов под старый JSON, `@`-алиас
+  в резолвере, миграции) — отклонены пользователем 2026-09-14: «обратная совместимость не нужны».
+- **Monaco сразу для expression** — отложен: строка с автокомплит-попапом дешевле в прототипе, Monaco
+  приходит вместе со схемой (этап 3).
+- **Полный набор kind Node-RED (JSON/buffer/cred/env/…)** — не берём в старт этапа 2 (решение 8).
+
+## Открытые вопросы
+
+- Формат значения `timestamp` при явном вводе: пока только unix-millis (пусто = «сейчас»); нужен ли ISO-8601?
+- Нужен ли предпросмотр собранного JSON прямо в форме (как OUTPUT-панель n8n) — в этап 1 не брали.
+- Чистим ли нерабочие ключи локализации в `InjectNodeForm` (`delay millis`, `cron mask`) — вне объёма этапа 1.
+- Массивы/объекты в значении поля сейчас вводятся сырым JSON-текстом — редактор в Monaco отложен до этапа 3.
+- Старые flows с одним `payload` теряют значение (нода отдаёт timestamp) — закрыто окончательно:
+  обратная совместимость не нужна (решение 9), миграций не будет нигде.
+- Автокомплит этапа 2: откуда форма достаёт JSON последнего входящего сообщения ноды — закрыто в
+  [NodesReworkStage2Plan.md](./NodesReworkStage2Plan.md) (решения 1–4: контракты выходов нод; данные — только
+  в DebugMode, InMemory-кэш с TTL 10 мин; без контракта считаем `Payload : object`).

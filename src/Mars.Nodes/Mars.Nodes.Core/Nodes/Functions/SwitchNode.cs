@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Functions;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SwitchNode/SwitchNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/SwitchNode/SwitchNode{.lang}.md")]
 [Display(GroupName = "functions")]
 public class SwitchNode : Node
 {
@@ -24,11 +24,12 @@ public class SwitchNode : Node
         Inputs = [new()];
         Color = "#E0D870";
         Outputs = [new(), new(),];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/switch.svg";
     }
 
     public class Condition
     {
+        public string ValueKind { get; set; } = InputValueKind.Expression;
         public string Value { get; set; } = "";
     }
 }

@@ -31,6 +31,9 @@ public interface INodeRuntime
     void DebugMsg(string nodeId, DebugMessage msg);
     void DebugMsg(string nodeId, Exception ex);
     void BroadcastStatus(string nodeId, NodeStatus nodeStatus);
+
+    /// <summary>Сигнал клиентам «снапшоты DebugMode обновились — перетяните» (троттлится, данных не несёт).</summary>
+    void DebugSnapshotsChanged();
     void RegisterHttpMiddleware(HttpCatchRegister mw);
     HttpClient GetHttpClient();
     void Done(string nodeId, Guid jobGuid);

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
@@ -33,7 +34,7 @@ public interface INodeEditorApi
     void ChangeFlow(FlowNode flowNode);
     IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId);
     void StartEditNode(Node node);
-    void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
+    Task StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
     void EnableHotkeys(bool enable);
     void RedrawWires();
     void AddDebugMessage(DebugMessage msg);

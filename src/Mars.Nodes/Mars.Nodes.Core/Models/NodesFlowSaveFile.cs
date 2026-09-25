@@ -10,4 +10,9 @@ public class NodesData
 {
     public required Node[] Nodes { get; init; }
     public required InlineFunctionNodeSchema[] InlineFunctionNodeSchemas { get; init; }
+
+    public IReadOnlyDictionary<string, OutputValueSpec[]> OutputValueSpecs { get; init; } =
+        new Dictionary<string, OutputValueSpec[]>();
+
+    public IReadOnlyCollection<string> GlobalVariableNames { get; init; } = [];
 }

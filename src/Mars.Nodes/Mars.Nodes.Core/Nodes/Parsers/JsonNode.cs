@@ -3,9 +3,9 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Parsers;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/JsonNode/JsonNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/JsonNode/JsonNode{.lang}.md")]
 [Display(GroupName = "parser")]
-public class JsonNode : Node
+public class JsonNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.JsonNode";
 
@@ -18,7 +18,19 @@ public class JsonNode : Node
         Inputs = [new()];
         Color = "#debd5c";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/json.svg";
+    }
+
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        var target = string.IsNullOrWhiteSpace(Property) ? nameof(NodeMsg.Payload) : Property;
+
+        yield return Action == JsonNodeAction.ToJsonString
+            ? new OutputValueSpec(target, "string")
+            : new OutputValueSpec(target, VarNode.ObjectTypeName,
+                Description: Action == JsonNodeAction.ToObject
+                    ? "DynamicJson"
+                    : "DynamicJson for string input, JSON string otherwise");
     }
 
     public enum JsonNodeAction

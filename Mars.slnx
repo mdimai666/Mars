@@ -13,6 +13,9 @@
     <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">
       <Build Solution="Debug|*" Project="false" />
     </Project>
+    <Project Path="benchmarks/Benchmark.NodeExpression/Benchmark.NodeExpression.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="benchmarks/Benchmarks.DatabaseQuery/Benchmarks.DatabaseQuery.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars.Memory/Benchmarks.MyHandlebars.Memory.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars/Benchmarks.MyHandlebars.csproj" />
@@ -45,8 +48,14 @@
     <Project Path="src/Mars.Modules/Mars.Cms.Contracts/Mars.Cms.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Cms.Host/Mars.Cms.Host.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/CodeCompletion/">
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Contracts/Mars.CodeCompletion.Contracts.csproj" />
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Front/Mars.CodeCompletion.Front.csproj" />
+    <Project Path="src/Mars.Modules/Mars.CodeCompletion.Host/Mars.CodeCompletion.Host.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/CommandLine/">
     <Project Path="src/Mars.Modules/Mars.CommandLine.Abstractions/Mars.CommandLine.Abstractions.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
+    <Project Path="src/Mars.Modules/Mars.CommandLine.Scripting/Mars.CommandLine.Scripting.csproj" />
     <Project Path="src/Mars.Modules/Mars.CommandLine/Mars.CommandLine.csproj" Id="6b088378-aa0e-4a8a-a220-3359c86d6106" />
   </Folder>
   <Folder Name="/Mars.Modules/Datasource/">
@@ -159,8 +168,10 @@
   </Folder>
   <Folder Name="/Nodes/">
     <Project Path="src/Mars.Nodes/Mars.Nodes.Abstractions/Mars.Nodes.Abstractions.csproj" />
+    <Project Path="src/Mars.Nodes/Mars.Nodes.Contracts/Mars.Nodes.Contracts.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core.Implements/Mars.Nodes.Core.Implements.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core/Mars.Nodes.Core.csproj" />
+    <Project Path="src/Mars.Nodes/Mars.Nodes.Expressions/Mars.Nodes.Expressions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.FormEditor/Mars.Nodes.FormEditor.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Front.Abstractions/Mars.Nodes.Front.Abstractions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Host/Mars.Nodes.Host.csproj" />
@@ -217,6 +228,8 @@
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
     <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
     <Project Path="tests/Mars.Cms.Tests/Mars.Cms.Tests.csproj" />
+    <Project Path="tests/Mars.CommandLine.Scripting.Tests/Mars.CommandLine.Scripting.Tests.csproj" />
+    <Project Path="tests/Mars.CodeCompletion.Tests/Mars.CodeCompletion.Tests.csproj" />
     <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Tests/Mars.Datasource.Tests.csproj" />

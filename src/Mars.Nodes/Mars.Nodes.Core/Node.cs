@@ -76,8 +76,8 @@ public class Node : INodeBasic
     public bool error;
     public string? status;
 
-    public bool isInjectable;
-    public bool hasTailButton;
+    public bool IsInjectable;
+    public bool HasTailButton;
 
     protected int InputOrOutputsMax => Math.Max(Inputs.Count, Outputs.Count);
 

@@ -2,9 +2,7 @@
 @using Icons16R = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Nodes.Common
-@using Mars.Nodes.Core.Nodes.DevNodes
 @using Mars.Nodes.FormEditor
-@using Mars.Nodes.Front.Abstractions.Components.NodeViews
 @using Mars.Nodes.Workspace.ActionManager.Actions.Globals
 @using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
@@ -14,7 +12,7 @@
 
 <div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill use-fluent-typo">
     <CascadingValue Value="this">
-        <div class="border-bottom shadow-sm 1position-fixed" style="height:40px;">
+        <div class="border-bottom shadow-sm flex-shrink-0" style="height:40px;">
             <div class="d-flex justify-content-between p-1 align-items-center">
                 <div class="d-flex fs-5">
 
@@ -43,7 +41,18 @@
                     <span>[@SelectContextString]</span>
                 </div>
 
-                <div class="d-flex gap-2 me-2">
+                <div class="d-flex align-items-center gap-2 me-2">
+                    <FluentTooltip Anchor="debug-mode-switch">
+                        <b>DEBUG MODE</b><br />
+                        Stores the last message every node sent further (10 min, one per node output).<br />
+                        Values appear in field hints and in the INPUT panel.<br />
+                        Turns itself off after 30 minutes.
+                    </FluentTooltip>
+                    <FluentSwitch Id="debug-mode-switch"
+                                  Value="DebugMode"
+                                  ValueChanged="OnDebugModeSwitchChanged"
+                                  Label="DEBUG">
+                    </FluentSwitch>
                     <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
                         <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Neutral))" />
                     </FluentButton>
@@ -71,114 +80,26 @@
                 </div>
             </div>
         </div>
-        <main class="d-flex no-gutters g-0 flex-fill w-100" style="height:calc(100% - 40px)">
-            <div class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
+        <main class="d-flex no-gutters g-0 flex-fill w-100" style="min-height:0">
+            <div @ref="_paletteSidebarRef" class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
                 <div class="bg-white custom-scroll1" style="overflow-y:scroll;overflow-x:hidden;scroll-behavior: auto;width:190px;max-height:500px">
                     @if (activeMasterTab == "nodes")
                     {
-                        <div class="p-2 border-1 d-flex">
-                            <label>
-                                global Variables
-                            </label>
-                            <div class="ms-auto">
-                                <span @onclick=OnClickAddVarNode class="badge text-black cursor-pointer" style="background:#eee">
-                                    <i class="bi bi-plus"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="px-2 py-1 d-flex gap-1 flex-wrap">
-                            @foreach (var _varNode in varNodes)
-                            {
-                                var varNode = _varNode;
-                                <span class="badge dmodel-badge cursor-pointer"
-                                      @ondblclick="e => StartEditNode(varNode)"
-                                      title="@($"{varNode.Name}:{varNode.VarType}")"
-                                      data-var-type="@varNode.VarType"
-                                      data-array="@varNode.ArrayValue.ToString().ToLower()">
-                                    @varNode.Name
-                                </span>
-                            }
-                        </div>
-                        <div class="mb-2"></div>
-                        <div class="p-2 ">
-                            <p class="card-text">Palette (@Palette.Count)</p>
-                        </div>
-                        <div class="">
-                            @foreach (var group in Palette.GroupBy(s => s.GroupName))
-                            {
-                                <div class="px-4">
-                                    <label class="fw-bold">@group.Key</label>
-                                </div>
-                                @foreach (var _palette in group)
-                                {
-                                    Node node = _palette.Instance;
-                                    <div class="list-group-item px-2 py-0 border-0" @key=_palette title="@node.Label">
-                                        <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                            @if (node is MicroschemeNode)
-                                            {
-                                                <MicroschemeComponent Node="@node"
-                                                                      OnMouseDown=OnMouseDownPaletteNode
-                                                                      OnContextMenu=OnPaletteNodeContextMenu />
-                                            }
-                                            else if (node is CommentNode commentNode)
-                                            {
-                                                <CommentNodeComponent Node="@commentNode"
-                                                                      OnMouseDown=OnMouseDownPaletteNode
-                                                                      OnContextMenu=OnPaletteNodeContextMenu
-                                                                      FixedWidth="120" />
-                                            }
-                                            else
-                                            {
-                                                <NodeComponent Node="@node"
-                                                               OnMouseDown=OnMouseDownPaletteNode
-                                                               OnContextMenu=OnPaletteNodeContextMenu
-                                                               ShowLabelInsteadDisplayName="true"
-                                                               FixedWidth="120" />
-                                            }
-                                        </svg>
-                                    </div>
-                                }
-                            }
-
-                        </div>
+                        <PaletteSidebar Palette="Palette"
+                                        VarNodes="varNodes"
+                                        OnNodeMouseDown="OnMouseDownPaletteNode"
+                                        OnNodeContextMenu="OnPaletteNodeContextMenu"
+                                        OnEditVarNode="StartEditNode"
+                                        OnAddVarNode="OnClickAddVarNode" />
                     }
                     else if (activeMasterTab == "tabs")
                     {
-                        <ul class="list-group fz12px">
-                            @foreach (FlowNode _flow in flows)
-                            {
-                                var flow = _flow;
-                                bool isactive = _activeFlow == flow;
-                                @*<li class="p-2 list-group-item active" aria-current="true">An active item</li>*@
-                                <li class=@($"p-2 list-group-item rounded-0 {(isactive ? "active" : "")}")
-                                    @key=_flow.Id
-                                    @onclick=@(e => ChangeFlow(flow))
-                                    @ondblclick="@(e => StartEditNode(flow))">@flow.DisplayName</li>
-                            }
-                            <li class="px-2 py-0 list-group-item text-center fw-bold rounded-0" @onclick=ClickAddFlow>
-                                <i class="bi bi-plus fz22px"></i>
-                            </li>
-                        </ul>
+                        <FlowsTabList Flows="flows" ActiveFlow="ActiveFlow"
+                                      OnSelectFlow="ChangeFlow" OnEditFlow="StartEditNode" OnAddFlow="ClickAddFlow" />
                     }
                     else if (activeMasterTab == "configs")
                     {
-                        var configNodes = AllNodes.Values.Where(node => node is ConfigNode);
-
-                        <div class="card-body p-2 ">
-                            <p class="card-text">Configs (@configNodes.Count())</p>
-                        </div>
-                        <ul class="list-group">
-                            @foreach (var node in configNodes)
-                            {
-                                Node _node = node;
-                                <li class="list-group-item px-2 py-0 border-0">
-                                    <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                        <NodeComponent Node="@_node" OnDblClick=@(e => StartEditNode(_node)) FixedWidth="120" />
-                                    </svg>
-                                </li>
-                            }
-
-                        </ul>
+                        <ConfigsTabList ConfigNodes="AllNodes.Values.OfType<ConfigNode>()" OnEditNode="StartEditNode" />
                     }
                     <FluentMenu UseMenuService="!true"
                                 @ref="_paletteNodeContextMenu"
@@ -197,7 +118,7 @@
                     </FluentMenu>
                 </div>
             </div>
-            <FluentSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6" Class="w-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
+            <FluentSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6" Class="w-100 h-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
                 <Panel1>
                     <div class="h-100 w-100" style="position:relative">
                         <NodeWorkspace1 @ref=_nodeWorkspace1
@@ -249,8 +170,12 @@
                     </div>
                 </Panel1>
                 <Panel2>
-                    <div class="console-panel" style="height: 100%;">
-                        <DebugMessagesConsole @ref="_debugMessagesConsole" Messages="messages" />
+                    <div class="console-panel d-flex flex-column" style="height: 100%; min-height: 0;">
+                        @if (DebugMode)
+                        {
+                            <NodeInputViewer Node="_selectedNode" Nodes="AllNodes" />
+                        }
+                        <DebugMessagesConsole @ref="_debugMessagesConsole" />
                     </div>
                 </Panel2>
             </FluentSplitter>
@@ -266,6 +191,10 @@
 <style>
     .btn-terminate-all-tasks:hover {
         --neutral-foreground-rest: red;
+    }
+
+    #debug-mode-switch.checked::part(switch) {
+        background: #7a2101;
     }
 </style>
 

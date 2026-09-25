@@ -1,0 +1,57 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileWriteNode))]
+
+<div class="vstack gap-3">
+    <FormItem2 For="() => Node.FilePath" Class="">
+        <MarsValueInput Class="mvi-fill" VarType="string" Value="@FilePathValue" ValueChanged="SetFilePathValue" For="() => Node.FilePath" />
+    </FormItem2>
+
+    <FormItem2 For=@(() => Node.WriteMode)>
+        <FluentSelect @bind-SelectedOption="@Node.WriteMode"
+                      TOption="FileWriteNode.FileWriteMode"
+                      Items="Enum.GetValues<FileWriteNode.FileWriteMode>()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    @if (Node.WriteMode != FileWriteNode.FileWriteMode.Delete)
+    {
+        <FluentCheckbox @bind-Value=@Node.AddAsNewLine Class="">
+            <AutoInputLabel For="() => Node.AddAsNewLine" />
+        </FluentCheckbox>
+
+        <FluentCheckbox @bind-Value=@Node.CreateDirectoryIfItDoesntExist Class="">
+            <AutoInputLabel For="() => Node.CreateDirectoryIfItDoesntExist" />
+        </FluentCheckbox>
+
+    }
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileWriteNode Node { get => (FileWriteNode)Value; set => Value = value; }
+
+    string FilePathValue => Node.FilePathKind switch
+    {
+        InputValueKind.Expression => "@" + Node.FilePath,
+        InputValueKind.Msg => "@msg." + Node.FilePath,
+        _ => Node.FilePath,
+    };
+
+    void SetFilePathValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.FilePathKind = InputValueKind.Expression;
+            Node.FilePath = value[1..].Trim();
+        }
+        else
+        {
+            Node.FilePathKind = InputValueKind.Const;
+            Node.FilePath = value;
+        }
+    }
+}

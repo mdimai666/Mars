@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using Mars.Contracts.Common;
-using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+using Mars.Nodes.Contracts.NodeTaskJob;
 using Mars.Nodes.Front.Abstractions.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

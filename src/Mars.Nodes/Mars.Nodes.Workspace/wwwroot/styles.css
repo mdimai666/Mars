@@ -16,12 +16,6 @@
         outline: none;
     }
 
-.red-ui-workspace-chart-background {
-    fill: #fff;
-    background-image: url('/img/bg-red.svg');
-    background-size: 100px;
-}
-
 /* NODES */
 .red-ui-flow-node {
 
@@ -435,7 +429,47 @@ g.red-ui-flow-link-ghost path.red-ui-flow-link-line {
     user-select: none
 }
 
+/* VarNode badges (global variables list in NodeEditor1) */
+.varnode-badge {
+    background-color: grey;
+
+    &[data-var-type^='string' i] {
+        background-color: #f49319;
+    }
+
+    &[data-var-type^='int' i],
+    &[data-var-type^='long' i] {
+        background-color: #3b61ff;
+    }
+
+    &[data-var-type^='decimal' i],
+    &[data-var-type^='double' i],
+    &[data-var-type^='float' i] {
+        background-color: #3b9dff;
+    }
+
+    &[data-var-type^='bool' i] {
+        background-color: #db4b35;
+    }
+
+    &[data-var-type^='Guid' i] {
+        background-color: #75c68a;
+    }
+
+    &[data-var-type^='DateTime' i] {
+        background-color: #285e94;
+    }
+}
+
 .NodeEditor1 {
+    /* self-contained sizing: fill a definite parent, cap at viewport otherwise,
+       never grow with content (host may not constrain height, e.g. outside builder-layout) */
+    height: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+
     --red-ui-link-color: #999;
     --red-ui-link-link-color: #aaa;
     --red-ui-link-disabled-color: #ccc;
@@ -445,4 +479,43 @@ g.red-ui-flow-link-ghost path.red-ui-flow-link-line {
     --red-ui-node-border-placeholder: #aaa;
     --red-ui-node-link-port-background: #eee;
     --red-ui-node-port-label-color: #888;
+}
+
+.node-input-viewer {
+    max-height: 45%;
+    overflow: auto;
+    padding: 4px 6px;
+    border-bottom: 1px solid #d6d6d6;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 11px;
+}
+
+.node-input-viewer .niv-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+.node-input-viewer .niv-title {
+    font-weight: 600;
+}
+
+.node-input-viewer .niv-head-sub {
+    margin-top: 6px;
+    color: #6b6b6b;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.node-input-viewer .niv-empty {
+    padding: 4px 0;
+    color: #8a8a8a;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.node-input-viewer .niv-stale {
+    color: #b06a00;
 }

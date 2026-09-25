@@ -2,9 +2,11 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
+[NodeOutputValueSpec(typeof(string))]
 public class ExecNodeImpl : INodeImplement<ExecNode>
 {
     public ExecNode Node { get; }

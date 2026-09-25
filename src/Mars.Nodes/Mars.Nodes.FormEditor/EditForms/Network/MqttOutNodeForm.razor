@@ -1,0 +1,52 @@
+@using Mars.Admin.Framework.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(MqttOutNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="()=>Node.Config">
+            <InputConfigField @bind-Value=@Node.Config TConfig="MqttBrokerConfigNode" />
+        </FormItem2>
+
+        <FormItem2 For="()=>Node.Topic">
+            <MarsValueInput Class="mvi-fill" VarType="string"
+                            Value="@TopicValue" ValueChanged="SetTopicValue"
+                            For="() => Node.Topic" />
+        </FormItem2>
+
+        <FormItem2 For="()=>Node.QoS">
+            <FluentSelect TOption="NodeMqttQualityOfServiceLevel"
+                          Items="Enum.GetValues<NodeMqttQualityOfServiceLevel>()"
+                          @bind-SelectedOption=@Node.QoS />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    MqttOutNode Node { get => (MqttOutNode)Value!; set => Value = value; }
+
+    string TopicValue => Node.TopicKind switch
+    {
+        InputValueKind.Expression => "@" + Node.Topic,
+        InputValueKind.Msg => "@msg." + Node.Topic,
+        _ => Node.Topic,
+    };
+
+    void SetTopicValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.TopicKind = InputValueKind.Expression;
+            Node.Topic = value[1..].Trim();
+        }
+        else
+        {
+            Node.TopicKind = InputValueKind.Const;
+            Node.Topic = value;
+        }
+    }
+}

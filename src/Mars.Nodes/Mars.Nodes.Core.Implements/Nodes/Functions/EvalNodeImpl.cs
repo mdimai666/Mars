@@ -1,4 +1,5 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -16,9 +17,9 @@ public class EvalNodeImpl : INodeImplement<EvalNode>
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
+        using var expr = RNS.Expressions(Node);
 
-        var result = ppt.Get.Eval(Node.Input);
+        var result = expr.Resolve(Node.ValueKind, Node.Input, "", input, Node, "Input");
 
         input.Payload = result;
 

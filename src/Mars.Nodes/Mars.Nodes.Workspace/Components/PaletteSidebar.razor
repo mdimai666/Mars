@@ -1,0 +1,78 @@
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.Core.Nodes.DevNodes
+@using Mars.Nodes.Front.Abstractions.Components.NodeViews
+@using Mars.Nodes.Workspace.Models
+
+<div class="p-2 border-1 d-flex">
+    <label>
+        global Variables
+    </label>
+    <div class="ms-auto">
+        <span @onclick=@(e => OnAddVarNode.InvokeAsync()) class="badge text-black cursor-pointer" style="background:#eee">
+            <i class="bi bi-plus"></i>
+        </span>
+    </div>
+</div>
+<div class="px-2 py-1 d-flex gap-1 flex-wrap">
+    @foreach (var varNode in VarNodes)
+    {
+        <span class="badge varnode-badge cursor-pointer"
+              @ondblclick="e => OnEditVarNode.InvokeAsync(varNode)"
+              title="@($"{varNode.Name}:{varNode.VarType}")"
+              data-var-type="@varNode.VarType"
+              data-array="@varNode.ArrayValue.ToString().ToLower()">
+            @varNode.Name
+        </span>
+    }
+</div>
+<div class="mb-2"></div>
+<div class="p-2 ">
+    <p class="card-text">Palette (@Palette.Count)</p>
+</div>
+<div class="">
+    @foreach (var group in Palette.GroupBy(s => s.GroupName))
+    {
+        <div class="px-4">
+            <label class="fw-bold">@group.Key</label>
+        </div>
+        @foreach (var paletteNode in group)
+        {
+            Node node = paletteNode.Instance;
+            <div class="list-group-item px-2 py-0 border-0" @key=paletteNode title="@node.Label">
+                <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    @if (node is MicroschemeNode)
+                    {
+                        <MicroschemeComponent Node="@node"
+                                              OnMouseDown=OnNodeMouseDown
+                                              OnContextMenu=OnNodeContextMenu />
+                    }
+                    else if (node is CommentNode commentNode)
+                    {
+                        <CommentNodeComponent Node="@commentNode"
+                                              OnMouseDown=OnNodeMouseDown
+                                              OnContextMenu=OnNodeContextMenu
+                                              FixedWidth="120" />
+                    }
+                    else
+                    {
+                        <NodeComponent Node="@node"
+                                       OnMouseDown=OnNodeMouseDown
+                                       OnContextMenu=OnNodeContextMenu
+                                       ShowLabelInsteadDisplayName="true"
+                                       FixedWidth="120" />
+                    }
+                </svg>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public IReadOnlyCollection<PaletteNode> Palette { get; set; } = [];
+    [Parameter] public IReadOnlyCollection<VarNode> VarNodes { get; set; } = [];
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnNodeMouseDown { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnNodeContextMenu { get; set; }
+    [Parameter] public EventCallback<VarNode> OnEditVarNode { get; set; }
+    [Parameter] public EventCallback OnAddVarNode { get; set; }
+}

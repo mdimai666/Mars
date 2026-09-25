@@ -1,27 +1,28 @@
 @using Mars.Core.Extensions
 @using Mars.Nodes.Core
-<section class="DebugMessagesConsole h-100" @onclick="OnClick" @onclick:stopPropagation="true" style="">
-    <div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
+@inject NodeWorkspaceJsInterop _js
+<section class="DebugMessagesConsole flex-fill d-flex flex-column" style="min-height:0" @onclick="OnClick" @onclick:stopPropagation="true">
+    <div class="bg-light border-bottom p-1 d-flex align-items-center flex-shrink-0" style="height: 40px;">
         Debug console
         <div class="ms-auto d-flex gap-1">
             <button class="btn btn-sm bg-light" @onclick="_editor.ToggleConsolePosition"
                     title="toggle console position">
                 <i class="bi bi-layout-text-window"></i>
             </button>
-            <button class="btn btn-sm bg-light xcenter" @onclick=_editor.ClearDebugMessages
+            <button class="btn btn-sm bg-light xcenter" @onclick=Clear
                     title="Clear debug window">
                 <i class="bg-contain bicon" style="background-image:url('_content/Mars.Nodes.Workspace/ban-solid.svg')"></i>
             </button>
         </div>
     </div>
-    <div class="debug-text flex-fill d-flex" style="height:calc(100% - 40px)">
+    <div class="debug-text flex-fill d-flex" style="calc(100% - 40px)">
         <div id="nodered-debug-message-list"
              class="text-wrap text-break custom-scroll1 w-100 p-1"
              style="overflow-y:scroll;scroll-behavior: auto;">
             <div class="debug-message-cnt">
 
                 <ul class="list-group list-group-flush" style="font-size: 12px;">
-                    @foreach (var m in Messages)
+                    @foreach (var m in _messages)
                     {
                         <li class="list-group-item p-1 nodered-debug-message-list__item"
                             @key=@m.Id
@@ -56,16 +57,25 @@
 @code {
     [CascadingParameter] NodeEditor1 _editor { get; set; } = default!;
 
-    [Parameter] public IReadOnlyCollection<DebugMessage> Messages { get; set; } = new List<DebugMessage>();
+    const string DebugMessageListSelector = "#nodered-debug-message-list";
+    const int MaxDebugMessages = 500;
+
+    List<DebugMessage> _messages = [];
+
+    public void AddMessage(DebugMessage msg)
+    {
+        _messages.Add(msg);
+        if (_messages.Count > MaxDebugMessages)
+            _messages.RemoveRange(0, _messages.Count - MaxDebugMessages);
+        _ = InvokeAsync(StateHasChanged);
+        _ = _js.ScrollDownElement(DebugMessageListSelector);
+    }
+
+    void Clear() => _messages.Clear();
 
     void OnClick()
     {
         _editor.EnableHotkeys(false);
-    }
-
-    public void CallStateHasChanged()
-    {
-        StateHasChanged();
     }
 
     void OnMouseEnterMessage(DebugMessage message)

@@ -5,7 +5,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Common;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VarNode/VarNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/VarNode/VarNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class VarNode : Node, IValidatableObject
 {
@@ -30,8 +30,13 @@ public class VarNode : Node, IValidatableObject
     public VarNode()
     {
         Color = "#3b71ea";
-
+        Icon = "_content/Mars.Nodes.Workspace/nodes/var.svg";
     }
+
+    public const string TimestampTypeName = "timestamp";
+
+    /// <summary>Type name for values whose type is unknown — used by output specs, not stored as a VarType.</summary>
+    public const string ObjectTypeName = "object";
 
     internal static readonly Dictionary<string, Type> _typesDict = new()
     {
@@ -44,6 +49,7 @@ public class VarNode : Node, IValidatableObject
         ["string"] = typeof(string),
         ["DateTime"] = typeof(DateTime),
         ["Guid"] = typeof(Guid),
+        [TimestampTypeName] = typeof(long),
     };
 
     internal static readonly Dictionary<Type, string> _pureArrayInitsDict = new()
@@ -57,6 +63,21 @@ public class VarNode : Node, IValidatableObject
         [typeof(string[])] = "string[]",
     };
 
+    static readonly Dictionary<Type, string> _namesDict = BuildNamesDict();
+
+    static Dictionary<Type, string> BuildNamesDict()
+    {
+        var dict = new Dictionary<Type, string>();
+
+        foreach (var (name, type) in _typesDict)
+        {
+            if (name == TimestampTypeName) continue;
+            dict.TryAdd(type, name);
+        }
+
+        return dict;
+    }
+
     public static Type ResolveClrType(string varType)
     {
         if (_typesDict.TryGetValue(varType, out var _type)) return _type;
@@ -64,6 +85,18 @@ public class VarNode : Node, IValidatableObject
         var (t, arr) = ParseVarTypeString(varType);
         if (!arr) return _typesDict[t];
         return _typesDict[t].MakeArrayType();
+    }
+
+    public static string GetVarTypeName(Type? type)
+    {
+        if (type is null) return ObjectTypeName;
+
+        type = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (type.IsArray && type.GetElementType() is { } element)
+            return $"{GetVarTypeName(element)}[]";
+
+        return _namesDict.TryGetValue(type, out var name) ? name : ObjectTypeName;
     }
 
     public static object ResolveDefault(string varType)
@@ -87,6 +120,7 @@ public class VarNode : Node, IValidatableObject
             "string" => "",
             "DateTime" => DateTime.MinValue,
             "Guid" => Guid.Empty,
+            TimestampTypeName => 0L,
             _ => throw new NotImplementedException()
         };
     }
@@ -121,7 +155,7 @@ public class VarNode : Node, IValidatableObject
     {
         return _listTypesSelect ??= [
             .._typesDict.Keys,
-            .._typesDict.Keys.Select(s=>$"{s}[]")
+            .._typesDict.Keys.Where(s => s != TimestampTypeName).Select(s=>$"{s}[]")
         ];
     }
 

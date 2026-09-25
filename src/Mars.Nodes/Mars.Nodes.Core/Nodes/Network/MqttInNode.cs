@@ -4,7 +4,7 @@ using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MqttInNode/MqttInNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/MqttInNode/MqttInNode{.lang}.md")]
 [Display(GroupName = "network")]
 public class MqttInNode : Node
 {

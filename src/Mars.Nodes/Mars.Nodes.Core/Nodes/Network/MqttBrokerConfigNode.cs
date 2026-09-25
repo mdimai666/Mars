@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MqttBrokerConfigNode/MqttBrokerConfigNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/MqttBrokerConfigNode/MqttBrokerConfigNode{.lang}.md")]
 [Display(GroupName = "network")]
 public class MqttBrokerConfigNode : ConfigNode
 {

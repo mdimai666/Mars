@@ -51,4 +51,30 @@ public class TemplateNodeTests : NodeServiceUnitTestBase
         msg.Context["Sub1"].Should().BeEquivalentTo("test");
         msg.Payload.Should().Be(123);
     }
+
+    [Fact]
+    public async Task Execute_DeepPathProperty_WritesNestedProperty()
+    {
+        //Arrange
+        _ = nameof(TemplateNodeImpl.Execute);
+        var payload = new DeepPayload();
+        var input = new NodeMsg { Payload = payload };
+
+        //Act
+        var msg = await RenderTemplate(input, "rendered", propertyName: "Payload.Data.Text");
+
+        //Assert
+        payload.Data!.Text.Should().Be("rendered");
+        msg.Payload.Should().BeSameAs(payload);
+    }
+
+    public class DeepPayload
+    {
+        public DeepData? Data { get; set; } = new();
+    }
+
+    public class DeepData
+    {
+        public string? Text { get; set; }
+    }
 }

@@ -22,9 +22,14 @@ export function activateJSextensions(blazorMonacoId, optionsJson, dotNetRef) {
 
     if (!blazorMonaco.Mars_extensions_activated) {
         blazorMonaco.Mars_extensions_activated = true;
-        emmetMonaco.emmetHTML(monaco, ['html', 'php', 'handlebars'])
-        emmetMonaco.emmetCSS(monaco)
-        if (monaco_plugin_init_log_lang) monaco_plugin_init_log_lang()
+        let emmetMonaco = window.emmetMonaco;
+        if (emmetMonaco) {
+            emmetMonaco.emmetHTML(monaco, ['html', 'php', 'handlebars'])
+            emmetMonaco.emmetCSS(monaco)
+        } else {
+            console.warn('Emmet Monaco plugin not found');
+        }
+        if (window.monaco_plugin_init_log_lang) monaco_plugin_init_log_lang()
         else "'monaco_plugin_init_log_lang' not found";
         registerHttpLanguage()
     }

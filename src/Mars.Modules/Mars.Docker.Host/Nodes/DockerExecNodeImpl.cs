@@ -2,6 +2,7 @@ using Mars.Docker.Abstractions.Dto;
 using Mars.Docker.Contracts.Nodes;
 using Mars.Docker.Host.Services;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Contracts.Hubs;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;

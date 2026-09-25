@@ -4,7 +4,7 @@ using Mars.Core.Extensions;
 
 namespace Mars.Nodes.Core.Nodes.Common;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CatchErrorNode/CatchErrorNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/CatchErrorNode/CatchErrorNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class CatchErrorNode : Node
 {
@@ -18,7 +18,7 @@ public class CatchErrorNode : Node
     {
         Outputs = [new() { Label = "On error" }];
         Color = "#e77c6d";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/catch-error.svg";
 
     }
 }

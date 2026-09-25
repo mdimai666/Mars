@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Storage;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/FileServiceWriteNode/FileServiceWriteNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/FileServiceWriteNode/FileServiceWriteNode{.lang}.md")]
 [Display(GroupName = "storage")]
 public class FileServiceWriteNode : Node
 {
@@ -24,7 +24,7 @@ public class FileServiceWriteNode : Node
         Inputs = [new()];
         Color = "#ffea9f";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/file-service-write.svg";
     }
 
 }

@@ -1,51 +1,52 @@
-using System.Diagnostics;
-
-public class Debouncer
+public class Debouncer : IDisposable
 {
-    private List<CancellationTokenSource> StepperCancelTokens = [];
-    private int MillisecondsToWait;
-    private readonly object _lockThis = new(); // Use a locking object to prevent the debouncer to trigger again while the func is still running
+    private readonly int _millisecondsToWait;
+    private readonly object _lockThis = new();
+    private CancellationTokenSource? _cts;
 
     public Debouncer(int millisecondsToWait = 300)
     {
-        MillisecondsToWait = millisecondsToWait;
+        _millisecondsToWait = millisecondsToWait;
     }
 
-    public void Debouce(Action func)
+    public void Debounce(Action func)
     {
-        CancelAllStepperTokens(); // Cancel all api requests;
-        var newTokenSrc = new CancellationTokenSource();
+        CancellationToken token;
         lock (_lockThis)
         {
-            StepperCancelTokens.Add(newTokenSrc);
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            token = _cts.Token;
         }
-        Task.Delay(MillisecondsToWait, newTokenSrc.Token).ContinueWith(task => // Create new request
-        {
-            if (!newTokenSrc.IsCancellationRequested) // if it hasn't been cancelled
-            {
-                CancelAllStepperTokens(); // Cancel any that remain (there shouldn't be any)
-                StepperCancelTokens = []; // set to new list
-                lock (_lockThis)
-                {
-                    func(); // run
-                }
-            }
-        });
+        _ = FireAsync(func, token);
     }
 
-    [DebuggerStepThrough]
-    private void CancelAllStepperTokens()
+    private async Task FireAsync(Action func, CancellationToken token)
     {
         try
         {
-            foreach (var token in StepperCancelTokens)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    token.Cancel();
-                }
-            }
+            await Task.Delay(_millisecondsToWait, token);
         }
-        catch { }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        lock (_lockThis)
+        {
+            if (token.IsCancellationRequested) return;
+            func();
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_lockThis)
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
+        }
     }
 }

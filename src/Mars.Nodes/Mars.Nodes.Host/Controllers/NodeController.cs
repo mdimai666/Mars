@@ -3,9 +3,9 @@ using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Nodes.Abstractions.Services;
+using Mars.Nodes.Contracts.NodeTaskJob;
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Contracts.Nodes;
-using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 using Mars.Nodes.Host.Mappings.Nodes;
 using Mars.Nodes.Host.Mappings.NodeTaskJobs;
 using Mars.Nodes.Host.Services;
@@ -31,6 +31,8 @@ public class NodeController : ControllerBase
     private readonly IServiceScopeFactory _factory;
     private readonly INodeTaskManager _nodeTaskManager;
     private readonly FunctionCodeSuggestService _functionCodeSuggestService;
+    private readonly INodeDebugStore _debugStore;
+    private readonly INodeDebugMode _debugMode;
 
     private static readonly Meter Meter = new(MetricsConstants.AppName);
     private static readonly Counter<long> InjectCounter =
@@ -39,12 +41,16 @@ public class NodeController : ControllerBase
     public NodeController(INodeService nodeService,
                         IServiceScopeFactory factory,
                         INodeTaskManager nodeTaskManager,
-                        FunctionCodeSuggestService functionCodeSuggestService)
+                        FunctionCodeSuggestService functionCodeSuggestService,
+                        INodeDebugStore debugStore,
+                        INodeDebugMode debugMode)
     {
         _nodeService = nodeService;
         _factory = factory;
         _nodeTaskManager = nodeTaskManager;
         _functionCodeSuggestService = functionCodeSuggestService;
+        _debugStore = debugStore;
+        _debugMode = debugMode;
     }
 
     [HttpPost(nameof(Deploy))]
@@ -56,7 +62,41 @@ public class NodeController : ControllerBase
     [HttpGet(nameof(Load))]
     public NodesDataResponse Load()
     {
-        return _nodeService.GetNodesData().ToResponse();
+        return _nodeService.GetNodesData().ToResponse() with { DebugMode = _debugMode.Enabled };
+    }
+
+    [HttpGet(nameof(DebugSnapshots))]
+    public NodeDebugSnapshotsResponse DebugSnapshots([FromQuery] string[]? nodeIds)
+    {
+        return new NodeDebugSnapshotsResponse
+        {
+            ServerTimeUtc = DateTime.UtcNow,
+            DebugMode = _debugMode.Enabled,
+            Snapshots = _debugStore.Get(nodeIds ?? []),
+        };
+    }
+
+    [HttpGet(nameof(DebugNodeFull) + "/{nodeId}")]
+    public NodeDebugFullResponse DebugNodeFull(string nodeId, [FromQuery] bool includeJson = false)
+    {
+        var snapshot = _debugStore.GetFull(nodeId);
+
+        return new NodeDebugFullResponse
+        {
+            ServerTimeUtc = DateTime.UtcNow,
+            CapturedAt = snapshot?.CapturedAt,
+            Size = snapshot?.Json.Length ?? 0,
+            Truncated = snapshot?.Truncated ?? false,
+            Json = includeJson ? snapshot?.Json : null,
+        };
+    }
+
+    [HttpPost(nameof(SetDebugMode))]
+    public UserActionResult SetDebugMode([FromQuery] bool enabled)
+    {
+        _debugMode.Enabled = enabled;
+
+        return UserActionResult.Success(enabled ? "Debug mode on" : "Debug mode off");
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]

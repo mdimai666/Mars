@@ -20,7 +20,7 @@ public class ForeachNodeIterateStringLettersExample1 : INodeExample<ForeachNode>
         };
 
         var builder = NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "1234", Name = "1234" })
+            .AddNext(new InjectNode().SetPayload("1234"))
             .AddNext(foreachNode)
             .AddNext(new TemplateNode() { Template = "Finish", Name = "Finish" })
             .AddNext(new DebugNode())

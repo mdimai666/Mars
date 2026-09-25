@@ -14,6 +14,7 @@ using Mars.Storage.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MOptions = Microsoft.Extensions.Options.Options;
@@ -33,7 +34,13 @@ public static class ApplicationPluginExtensions
         var dataFileStorage = builder.Services.GetOrCreateDataFileStorage(builder.Environment);
         // без using: логгер живёт вместе с PluginManager весь срок работы приложения.
         // Только консоль: стартовая активность до Build, файловый логгер ещё не настроен.
-        var loggerFactory = LoggerFactory.Create(logBuilder => logBuilder.AddConsole());
+        // Cli:Quiet ставит MarsWebAppStartup при `--quiet` — автономная фабрика не знает
+        // про фильтры builder.Logging, поэтому глушим консоль-провайдер здесь.
+        var quiet = builder.Configuration.GetValue<bool>("Cli:Quiet");
+        var loggerFactory = LoggerFactory.Create(logBuilder =>
+        {
+            if (!quiet) logBuilder.AddConsole();
+        });
 
         var pluginManager = new PluginManager(loggerFactory.CreateLogger<PluginManager>(), dataFileStorage);
         pluginManager.ConfigureBuilder(builder);

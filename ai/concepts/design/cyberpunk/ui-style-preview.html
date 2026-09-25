@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mars UI — технический контур (черновик стиля)</title>
+<script>
+    // Тема: по умолчанию следуем системной, переключатель ставит атрибут явно.
+    (function () {
+        var t = new URLSearchParams(location.search).get('theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+        else if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+</script>
+<style>
+    /* ==================== ТОКЕНЫ ====================
+       Светлый набор по умолчанию; тёмный — тем же составом по data-theme. */
+    :root {
+        --ui-bw: 1px;
+        --ui-line: #23282e;
+        --ui-line-soft: rgba(35, 40, 46, .20);
+        --ui-line-faint: rgba(35, 40, 46, .10);
+        --ui-fill: #f7f8f9;
+        --ui-fill-raised: #ffffff;
+        --ui-fill-sunken: #eceff1;
+        --ui-page: #e6eaed;
+        --ui-ink: #101418;
+        --ui-ink-dim: #6d757d;
+        --ui-accent: #008b8b;
+        --ui-accent-ink: #eafcfc;
+        --ui-accent-soft: rgba(0, 139, 139, .10);
+        --ui-ok: #1f8f4d;
+        --ui-warn: #b06a00;
+        --ui-err: #bf3b2c;
+        --ui-info: #0a6f86;
+        --ui-path: #0a6f86;
+        --ui-num: #a35a00;
+        --ui-str: #6f35a8;
+        --ui-shadow: 4px 4px 0 0 var(--ui-line-soft);
+        --ui-radius: 0;
+        --ui-mono: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+    }
+
+    html[data-theme="dark"] {
+        --ui-line: #cfd6dd;
+        --ui-line-soft: rgba(207, 214, 221, .22);
+        --ui-line-faint: rgba(207, 214, 221, .12);
+        --ui-fill: #12161b;
+        --ui-fill-raised: #0e1116;
+        --ui-fill-sunken: #1a1f26;
+        --ui-page: #07090c;
+        --ui-ink: #dfe6ec;
+        --ui-ink-dim: #8a949e;
+        --ui-accent: #19d0d0;
+        --ui-accent-ink: #04171a;
+        --ui-accent-soft: rgba(25, 208, 208, .14);
+        --ui-ok: #35c46f;
+        --ui-warn: #e0a24a;
+        --ui-err: #e4604f;
+        --ui-info: #5fd7e8;
+        --ui-path: #5fd7e8;
+        --ui-num: #e0a24a;
+        --ui-str: #c08ff0;
+    }
+
+    html[data-orn="0"] {
+        --ui-shadow: none;
+    }
+
+    html[data-orn="0"] .brk::after {
+        display: none;
+    }
+
+    html[data-orn="2"] .page {
+        background-image:
+            linear-gradient(var(--ui-line-faint) 1px, transparent 1px),
+            linear-gradient(90deg, var(--ui-line-faint) 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background: var(--ui-page);
+        color: var(--ui-ink);
+        font: 14px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    a { color: var(--ui-accent); text-decoration: none; border-bottom: 1px solid var(--ui-accent-soft); }
+    a:hover { border-bottom-color: var(--ui-accent); }
+
+    /* ==================== КАРКАС ==================== */
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 10px 20px;
+        background: var(--ui-fill-raised);
+        border-bottom: var(--ui-bw) solid var(--ui-line);
+    }
+
+    .topbar__title { font-weight: 600; letter-spacing: .2px; }
+    .topbar__sub { color: var(--ui-ink-dim); font-size: 12px; }
+    .topbar__spacer { flex: 1 1 auto; }
+
+    .page {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+    }
+
+    .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+    }
+
+    .sec { margin: 0 0 44px; }
+
+    .sec__head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding-bottom: 6px;
+        margin-bottom: 18px;
+        border-bottom: var(--ui-bw) solid var(--ui-line);
+    }
+
+    .sec__num {
+        font-family: var(--ui-mono);
+        font-size: 11px;
+        color: var(--ui-accent);
+    }
+
+    .sec__title { font-size: 15px; font-weight: 600; }
+    .sec__note { color: var(--ui-ink-dim); font-size: 12px; margin-left: auto; }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 16px;
+        align-items: start;
+    }
+
+    .grid--wide { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+    .grid--lab { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .row--tight { gap: 6px; }
+    .row--between { justify-content: space-between; }
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+    .stack--tight { gap: 6px; }
+
+    /* ==================== СЛУЖЕБНОЕ ==================== */
+    .caps {
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        font-size: 10.5px;
+        color: var(--ui-ink-dim);
+    }
+
+    .mono { font-family: var(--ui-mono); }
+    .dim { color: var(--ui-ink-dim); }
+    .ok { color: var(--ui-ok); }
+    .warn { color: var(--ui-warn); }
+    .err { color: var(--ui-err); }
+    .accent { color: var(--ui-accent); }
+
+    /* Поверхность: заливка + волосяной контур + жёсткая тень со смещением 45° */
+    .surf {
+        position: relative;
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        box-shadow: var(--ui-shadow);
+    }
+
+    .surf__pad { padding: 14px 16px; }
+
+    .surf__head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-faint);
+        background: var(--ui-fill);
+    }
+
+    .surf__body { padding: 12px; }
+    .surf__foot {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding: 10px 12px;
+        border-top: var(--ui-bw) solid var(--ui-line-faint);
+        background: var(--ui-fill);
+    }
+
+    .demo {
+        background: var(--ui-fill);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        padding: 12px;
+    }
+
+    .demo__label { margin-bottom: 12px; }
+    .demo__label .caps { color: var(--ui-ink); }
+    .demo__hint { font-size: 11.5px; color: var(--ui-ink-dim); margin-top: 10px; }
+    .demo code { font-family: var(--ui-mono); font-size: 11.5px; color: var(--ui-ink-dim); }
+
+    /* ==================== УГОЛКИ-СКОБКИ (brk) ====================
+       Четыре уголка одним псевдоэлементом: восемь линейных градиентов,
+       плечо регулируется длиной --bl. */
+    .brk { position: relative; }
+
+    .brk::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        pointer-events: none;
+        --bl: 7px;
+        background:
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 0 0 / var(--bl) var(--ui-bw) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 0 0 / var(--ui-bw) var(--bl) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 100% 0 / var(--bl) var(--ui-bw) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 100% 0 / var(--ui-bw) var(--bl) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 0 100% / var(--bl) var(--ui-bw) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 0 100% / var(--ui-bw) var(--bl) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 100% 100% / var(--bl) var(--ui-bw) no-repeat,
+            linear-gradient(var(--brk-c, var(--ui-line)) 0 0) 100% 100% / var(--ui-bw) var(--bl) no-repeat;
+    }
+
+    .brk--accent { --brk-c: var(--ui-accent); }
+    .brk--big::after { --bl: 12px; }
+
+    /* ==================== КНОПКИ ==================== */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 12px;
+        border: var(--ui-bw) solid var(--ui-line);
+        background: transparent;
+        color: var(--ui-ink);
+        font: inherit;
+        line-height: 1;
+        white-space: nowrap;
+        cursor: pointer;
+        border-radius: var(--ui-radius);
+    }
+
+    .btn:hover { background: var(--ui-fill-sunken); }
+    .btn:active { transform: translate(1px, 1px); }
+
+    .btn--primary {
+        background: var(--ui-accent);
+        border-color: var(--ui-accent);
+        color: var(--ui-accent-ink);
+    }
+
+    .btn--primary:hover { box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .12); background: var(--ui-accent); }
+
+    .btn--ghost { border-color: transparent; color: var(--ui-ink-dim); }
+    .btn--ghost:hover { border-color: var(--ui-line-soft); color: var(--ui-ink); }
+
+    .btn--danger { border-color: var(--ui-err); color: var(--ui-err); }
+    .btn--danger:hover { background: rgba(191, 59, 44, .08); }
+
+    .btn--sm { height: 24px; padding: 0 8px; font-size: 12px; }
+    .btn--lg { height: 38px; padding: 0 18px; font-size: 15px; }
+    .btn--icon { width: 30px; padding: 0; }
+    .btn--icon.btn--sm { width: 24px; }
+
+    .btn[disabled], .btn.is-disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Срез двух углов: «щит» */
+    .btn--chamfer {
+        clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+
+    .btn--cut {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .btngroup { display: inline-flex; }
+    .btngroup .btn { border-radius: 0; margin-left: calc(-1 * var(--ui-bw)); }
+    .btngroup .btn:first-child { margin-left: 0; }
+
+    /* ==================== ПОЛЯ ==================== */
+    .fld {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 30px;
+        background: var(--ui-fill);
+        border-top: var(--ui-bw) solid var(--ui-line-soft);
+        border-bottom: var(--ui-bw) solid var(--ui-line-soft);
+    }
+
+    .fld input,
+    .fld textarea,
+    .fld select {
+        width: 100%;
+        min-height: 28px;
+        padding: 0 8px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        outline: none;
+        border-radius: 0;
+    }
+
+    .fld textarea { padding: 6px 8px; min-height: 74px; resize: vertical; }
+    .fld--mono input, .fld--mono textarea { font-family: var(--ui-mono); }
+
+    .fld__prefix,
+    .fld__suffix {
+        display: inline-flex;
+        align-items: center;
+        align-self: stretch;
+        padding: 0 8px;
+        background: var(--ui-fill-sunken);
+        color: var(--ui-ink-dim);
+        font-family: var(--ui-mono);
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .fld__suffix { border-left: var(--ui-bw) solid var(--ui-line-faint); }
+
+    .fld__btn {
+        align-self: stretch;
+        width: 28px;
+        border: 0;
+        border-left: var(--ui-bw) solid var(--ui-line-faint);
+        background: transparent;
+        color: var(--ui-ink-dim);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .fld__btn:hover { background: var(--ui-accent-soft); color: var(--ui-accent); }
+
+    .fld:focus-within, .fld.is-focus {
+        border-top-color: var(--ui-accent);
+        border-bottom-color: var(--ui-accent);
+        box-shadow: inset 2px 0 0 0 var(--ui-accent);
+        --brk-c: var(--ui-accent);
+    }
+
+    .fld.is-error {
+        border-top-color: var(--ui-err);
+        border-bottom-color: var(--ui-err);
+        box-shadow: inset 2px 0 0 0 var(--ui-err);
+        --brk-c: var(--ui-err);
+    }
+
+    .fld.is-disabled { opacity: .55; }
+
+    .lbl { display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px; }
+    .lbl .req { color: var(--ui-accent); font-family: var(--ui-mono); }
+    .hint { font-size: 11.5px; color: var(--ui-ink-dim); margin-top: 5px; }
+    .hint--err { color: var(--ui-err); }
+
+    /* Поле значения с тегом режима (MarsValueInput) */
+    .vv {
+        position: relative;
+        display: inline-flex;
+        align-items: stretch;
+        min-height: 30px;
+        background: var(--ui-fill);
+        border-top: var(--ui-bw) solid var(--ui-line-soft);
+        border-bottom: var(--ui-bw) solid var(--ui-line-soft);
+    }
+
+    .vv__tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        padding: 0 10px 0 7px;
+        background: var(--ui-line);
+        color: var(--ui-fill-raised);
+        font-family: var(--ui-mono);
+        font-size: 10.5px;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .vv--expr .vv__tag { background: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .vv__body {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0 8px;
+        font-family: var(--ui-mono);
+        font-size: 13px;
+        white-space: pre;
+        overflow: hidden;
+    }
+
+    .vv__placeholder { color: var(--ui-ink-dim); }
+    .vv__caret { display: inline-block; width: 1px; height: 15px; background: var(--ui-accent); margin: 0 -1px; }
+
+    .vv__btns { display: inline-flex; align-items: stretch; }
+
+    .vv__btn {
+        width: 28px;
+        border: 0;
+        border-left: var(--ui-bw) solid var(--ui-line-faint);
+        background: transparent;
+        color: var(--ui-ink-dim);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .vv__btn:hover { background: var(--ui-accent-soft); color: var(--ui-accent); }
+
+    .tk-at { color: var(--ui-accent); }
+    .tk-path { color: var(--ui-path); }
+    .tk-num { color: var(--ui-num); }
+    .tk-str { color: var(--ui-str); }
+    .tk-op { color: var(--ui-ink-dim); }
+
+    /* Попап под полем */
+    .pop {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        z-index: 10;
+        min-width: 230px;
+        max-height: 260px;
+        overflow: auto;
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line);
+        box-shadow: 4px 4px 0 0 var(--ui-line-soft);
+    }
+
+    .pop--right { left: auto; right: 0; }
+    .pop__row { display: flex; align-items: center; gap: 6px; padding: 3px 8px; white-space: nowrap; cursor: pointer; }
+    .pop__row:hover { background: var(--ui-accent-soft); }
+    .pop__row.is-active { background: var(--ui-accent); color: var(--ui-accent-ink); }
+    .pop__row.is-active .pop__type { color: inherit; }
+    .pop__bullet { width: 9px; color: var(--ui-ink-dim); }
+    .pop__type { margin-left: auto; padding-left: 14px; font-size: 11px; color: var(--ui-ink-dim); }
+    .pop__group {
+        padding: 3px 8px;
+        background: var(--ui-line-soft);
+        color: var(--ui-ink-dim);
+        font-size: 10.5px;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .float-host { position: relative; padding-bottom: 168px; }
+    .fld-anchor { position: relative; }
+
+    /* Чекбоксы, радио, переключатель */
+    .chk, .rad { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .chk__box, .rad__box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border: var(--ui-bw) solid var(--ui-line);
+        background: var(--ui-fill);
+        font-size: 11px;
+        line-height: 1;
+    }
+
+    .rad__box { border-radius: 50%; }
+    .chk input, .rad input { position: absolute; opacity: 0; pointer-events: none; }
+    .chk input:checked + .chk__box, .rad input:checked + .rad__box { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+    .chk input:checked + .chk__box::before { content: "✓"; }
+    .rad input:checked + .rad__box::before { content: ""; width: 7px; height: 7px; background: var(--ui-accent-ink); }
+
+    .sw { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .sw input { position: absolute; opacity: 0; pointer-events: none; }
+    .sw__track {
+        position: relative;
+        width: 34px;
+        height: 18px;
+        border: var(--ui-bw) solid var(--ui-line);
+        background: var(--ui-fill-sunken);
+    }
+
+    .sw__track::after {
+        content: "";
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 14px;
+        height: 14px;
+        background: var(--ui-line);
+        transition: transform .1s linear;
+    }
+
+    .sw input:checked + .sw__track { background: var(--ui-accent-soft); border-color: var(--ui-accent); }
+    .sw input:checked + .sw__track::after { background: var(--ui-accent); transform: translateX(16px); }
+
+    /* Ползунок и прогресс */
+    .rng { width: 100%; }
+    .rng input[type="range"] { width: 100%; accent-color: var(--ui-accent); }
+
+    .bar { position: relative; height: 8px; background: var(--ui-fill-sunken); border: var(--ui-bw) solid var(--ui-line-faint); }
+    .bar__fill { height: 100%; background: var(--ui-accent); }
+    .bar__fill--warn { background: var(--ui-warn); }
+    .bar__fill--err { background: var(--ui-err); }
+    .bar--seg { display: flex; gap: 2px; border: 0; background: transparent; height: 10px; }
+    .bar--seg i { flex: 1 1 auto; background: var(--ui-line-faint); }
+    .bar--seg i.on { background: var(--ui-accent); }
+
+    .spin {
+        width: 18px;
+        height: 18px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        border-top-color: var(--ui-accent);
+        border-radius: 50%;
+        animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .skel { height: 10px; background: var(--ui-line-faint); }
+    .skel--w60 { width: 60%; }
+    .skel--w85 { width: 85%; }
+    .skel--w40 { width: 40%; }
+
+    /* ==================== ТЕГИ / СТАТУСЫ ==================== */
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 19px;
+        padding: 0 10px 0 7px;
+        background: var(--ui-line);
+        color: var(--ui-fill-raised);
+        font-family: var(--ui-mono);
+        font-size: 10.5px;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+    }
+
+    .tag--accent { background: var(--ui-accent); color: var(--ui-accent-ink); }
+    .tag--outline,
+    .tag--ok,
+    .tag--warn,
+    .tag--err { clip-path: none; }
+
+    .tag--outline { background: transparent; color: var(--ui-ink); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-line); }
+    .tag--ok { background: transparent; color: var(--ui-ok); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-ok); }
+    .tag--warn { background: transparent; color: var(--ui-warn); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-warn); }
+    .tag--err { background: transparent; color: var(--ui-err); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-err); }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 18px;
+        padding: 0 5px;
+        border: var(--ui-bw) solid var(--ui-line);
+        background: var(--ui-fill);
+        font-family: var(--ui-mono);
+        font-size: 11px;
+    }
+
+    .badge--accent { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 22px;
+        padding: 0 4px 0 8px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background: var(--ui-fill);
+        font-size: 12px;
+    }
+
+    .chip__x { color: var(--ui-ink-dim); cursor: pointer; font-family: var(--ui-mono); }
+    .chip__x:hover { color: var(--ui-err); }
+
+    .dot { width: 7px; height: 7px; display: inline-block; }
+    .dot--ok { background: var(--ui-ok); }
+    .dot--warn { background: var(--ui-warn); }
+    .dot--err { background: var(--ui-err); }
+    .dot--idle { background: var(--ui-line-soft); }
+
+    /* ==================== АЛЕРТЫ / KPI ==================== */
+    .alert {
+        display: flex;
+        gap: 10px;
+        padding: 10px 12px;
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        box-shadow: inset 3px 0 0 0 var(--ui-info);
+    }
+
+    .alert--ok { box-shadow: inset 3px 0 0 0 var(--ui-ok); }
+    .alert--warn { box-shadow: inset 3px 0 0 0 var(--ui-warn); }
+    .alert--err { box-shadow: inset 3px 0 0 0 var(--ui-err); }
+    .alert__icon { font-family: var(--ui-mono); }
+    .alert__title { font-weight: 600; }
+    .alert__text { color: var(--ui-ink-dim); font-size: 12.5px; }
+
+    .kpi { display: flex; flex-direction: column; gap: 4px; padding: 12px; }
+    .kpi__val { font-family: var(--ui-mono); font-size: 26px; letter-spacing: -.5px; }
+    .kpi__delta { font-family: var(--ui-mono); font-size: 11.5px; }
+
+    /* ==================== ТАБЛИЦА ==================== */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th {
+        text-align: left;
+        font-weight: 400;
+        padding: 7px 10px;
+        border-bottom: var(--ui-bw) solid var(--ui-line);
+    }
+
+    .tbl td { padding: 6px 10px; border-bottom: var(--ui-bw) solid var(--ui-line-faint); }
+    .tbl tbody tr:hover { background: var(--ui-accent-soft); }
+    .tbl tr.is-selected { background: var(--ui-accent-soft); }
+    .tbl tr.is-selected td:first-child { box-shadow: inset 2px 0 0 0 var(--ui-accent); }
+    .tbl .num { font-family: var(--ui-mono); text-align: right; }
+    .tbl__actions { text-align: right; white-space: nowrap; }
+    .tbl__actions .btn + .btn { margin-left: 4px; }
+
+    /* ==================== НАВИГАЦИЯ ВНУТРИ КОНТЕНТА ==================== */
+    .tabs { display: flex; gap: 2px; border-bottom: var(--ui-bw) solid var(--ui-line-soft); }
+    .tab {
+        padding: 7px 12px;
+        color: var(--ui-ink-dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+    }
+
+    .tab:hover { color: var(--ui-ink); }
+    .tab.is-active { color: var(--ui-ink); border-bottom-color: var(--ui-accent); }
+
+    .seg { display: inline-flex; border: var(--ui-bw) solid var(--ui-line-soft); }
+    .seg > * { padding: 5px 12px; cursor: pointer; border-left: var(--ui-bw) solid var(--ui-line-faint); color: var(--ui-ink-dim); }
+    .seg > *:first-child { border-left: 0; }
+    .seg > *.is-active { background: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .crumbs { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+    .crumbs .sep { color: var(--ui-line-soft); font-family: var(--ui-mono); }
+    .crumbs .cur { color: var(--ui-ink-dim); }
+
+    .pager { display: inline-flex; gap: 4px; }
+    .pager > * {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 26px;
+        padding: 0 6px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background: var(--ui-fill);
+        font-family: var(--ui-mono);
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .pager > *.is-active { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .steps { display: flex; align-items: center; gap: 10px; }
+    .step { display: inline-flex; align-items: center; gap: 7px; }
+    .step__num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        font-family: var(--ui-mono);
+        font-size: 11px;
+    }
+
+    .step.is-done .step__num { border-color: var(--ui-ok); color: var(--ui-ok); }
+    .step.is-active .step__num { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+    .step__line { width: 26px; height: var(--ui-bw); background: var(--ui-line-soft); }
+
+    /* ==================== СПИСКИ / ДЕРЕВО ==================== */
+    .list { display: flex; flex-direction: column; }
+    .li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-faint);
+        cursor: pointer;
+    }
+
+    .li:hover { background: var(--ui-accent-soft); }
+    .li.is-selected { box-shadow: inset 2px 0 0 0 var(--ui-accent); background: var(--ui-accent-soft); }
+    .li__meta { margin-left: auto; font-family: var(--ui-mono); font-size: 11.5px; color: var(--ui-ink-dim); }
+
+    .tree { font-family: var(--ui-mono); font-size: 12.5px; }
+    .tree__row { display: flex; align-items: center; gap: 6px; padding: 2px 8px; }
+    .tree__row:hover { background: var(--ui-accent-soft); }
+    .tree__row--leaf { cursor: pointer; }
+    .tree__bullet { width: 10px; color: var(--ui-ink-dim); }
+    .tree__type { margin-left: auto; font-size: 11px; color: var(--ui-ink-dim); }
+
+    /* ==================== ОВЕРЛЕИ ==================== */
+    .modal-host { position: relative; min-height: 230px; background: var(--ui-fill-sunken); border: var(--ui-bw) solid var(--ui-line-faint); overflow: hidden; }
+    .modal-host__backdrop { position: absolute; inset: 0; background: rgba(16, 20, 24, .35); }
+    .modal {
+        position: absolute;
+        top: 26px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(340px, 90%);
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line);
+        box-shadow: 6px 6px 0 0 var(--ui-line-soft);
+    }
+
+    .toast {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 9px 12px;
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line);
+        box-shadow: var(--ui-shadow);
+    }
+
+    .toast--ok { box-shadow: inset 3px 0 0 0 var(--ui-ok), var(--ui-shadow); }
+    .toast--err { box-shadow: inset 3px 0 0 0 var(--ui-err), var(--ui-shadow); }
+
+    .tip-host { position: relative; padding-top: 42px; }
+    .tip {
+        position: absolute;
+        top: 0;
+        left: 12px;
+        padding: 4px 8px;
+        background: var(--ui-ink);
+        color: var(--ui-fill-raised);
+        font-size: 11.5px;
+        white-space: nowrap;
+    }
+
+    .tip::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 12px;
+        width: 8px;
+        height: 8px;
+        background: var(--ui-ink);
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+
+    /* ==================== ЛАБОРАТОРИЯ ==================== */
+    .lab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 58px;
+        background: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        font-family: var(--ui-mono);
+        font-size: 12px;
+    }
+
+    .lab-shadow-2 { box-shadow: 2px 2px 0 0 var(--ui-line-soft); }
+    .lab-shadow-4 { box-shadow: 4px 4px 0 0 var(--ui-line-soft); }
+    .lab-shadow-6 { box-shadow: 6px 6px 0 0 var(--ui-line-soft); }
+    .lab-shadow-10 { box-shadow: 10px 10px 0 0 var(--ui-line-soft); }
+    .lab-shadow-accent { box-shadow: 6px 6px 0 0 var(--ui-accent-soft); }
+    .lab-shadow-wide { box-shadow: 9px 4px 0 0 var(--ui-line-soft); }
+    .lab-shadow-soft { box-shadow: 0 6px 14px rgba(16, 20, 24, .25); }
+
+    .chamfer-tr { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
+    .chamfer-2 { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+    .chamfer-all { clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px); }
+    .notch-tr { clip-path: polygon(0 0, calc(100% - 14px) 0, calc(100% - 14px) 8px, 100% 8px, 100% 100%, 0 100%); }
+    .pennant { clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+    .skewed { transform: skewX(-9deg); }
+    .skewed > * { display: block; transform: skewX(9deg); }
+
+    /* Тень под срезанной фигурой: дубль-фигура, а не box-shadow */
+    .dup-shadow { position: relative; isolation: isolate; }
+    .dup-shadow::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--ui-line-soft);
+        clip-path: inherit;
+        transform: translate(6px, 6px);
+    }
+
+    .spec {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--ui-mono);
+        font-size: 11.5px;
+    }
+
+    .spec th, .spec td { text-align: left; padding: 5px 8px; border-bottom: var(--ui-bw) solid var(--ui-line-faint); }
+    .spec td:first-child { color: var(--ui-ink-dim); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>
+        <div class="topbar__title">Mars UI — технический контур</div>
+        <div class="topbar__sub">черновик стиля, не продакшн · /ai/concepts/design/cyberpunk</div>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="row row--tight">
+        <span class="caps">тема</span>
+        <div class="seg" id="theme-switch">
+            <span data-theme-set="auto">авто</span>
+            <span data-theme-set="light">светлая</span>
+            <span data-theme-set="dark">тёмная</span>
+        </div>
+    </div>
+    <div class="row row--tight">
+        <span class="caps">орнамент</span>
+        <div class="seg" id="orn-switch">
+            <span data-orn-set="0">только линии</span>
+            <span data-orn-set="1">+ уголки/тень</span>
+            <span data-orn-set="2">+ сетка</span>
+        </div>
+    </div>
+    <div class="row row--tight">
+        <span class="caps">линия</span>
+        <div class="seg" id="bw-switch">
+            <span data-bw-set="1">1px</span>
+            <span data-bw-set="2">2px</span>
+        </div>
+    </div>
+</div>
+
+<div class="page">
+
+    <nav class="nav">
+        <a class="btn btn--sm" href="#tokens">Токены</a>
+        <a class="btn btn--sm" href="#type">Типографика</a>
+        <a class="btn btn--sm" href="#buttons">Кнопки</a>
+        <a class="btn btn--sm" href="#fields">Поля</a>
+        <a class="btn btn--sm" href="#value">Поле значения</a>
+        <a class="btn btn--sm" href="#tags">Теги и статусы</a>
+        <a class="btn btn--sm" href="#panels">Панели, KPI, алерты</a>
+        <a class="btn btn--sm" href="#table">Таблица</a>
+        <a class="btn btn--sm" href="#nav">Навигация контента</a>
+        <a class="btn btn--sm" href="#lists">Списки и дерево</a>
+        <a class="btn btn--sm" href="#overlays">Оверлеи</a>
+        <a class="btn btn--sm" href="#progress">Прогресс</a>
+        <a class="btn btn--sm" href="#lab">Лаборатория: тени и срезы</a>
+    </nav>
+
+    <!-- ============ 1. ТОКЕНЫ ============ -->
+    <section class="sec" id="tokens">
+        <div class="sec__head">
+            <span class="sec__num">01</span>
+            <span class="sec__title">Токены</span>
+            <span class="sec__note">светлая и тёмная палитры одним составом имён</span>
+        </div>
+        <div class="grid">
+            <div class="demo">
+                <div class="demo__label caps">Поверхности и линии</div>
+                <div class="row row--tight">
+                    <span class="lab" style="width:60px;background:var(--ui-page)">page</span>
+                    <span class="lab" style="width:60px;background:var(--ui-fill)">fill</span>
+                    <span class="lab" style="width:60px;background:var(--ui-fill-raised)">raised</span>
+                    <span class="lab" style="width:60px;background:var(--ui-fill-sunken)">sunken</span>
+                </div>
+                <div class="demo__hint">Контуры: line, line-soft, line-faint — три степени присутствия.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Акцент и семантика</div>
+                <div class="row row--tight">
+                    <span class="lab" style="width:60px;background:var(--ui-accent);border-color:var(--ui-accent);color:var(--ui-accent-ink)">accent</span>
+                    <span class="lab" style="width:60px;color:var(--ui-ok)">ok</span>
+                    <span class="lab" style="width:60px;color:var(--ui-warn)">warn</span>
+                    <span class="lab" style="width:60px;color:var(--ui-err)">err</span>
+                </div>
+                <div class="demo__hint">Один акцент на состояние; семантика — только текстом и рейлом.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Цвета типов данных</div>
+                <div class="row row--tight mono">
+                    <span style="color:var(--ui-at,var(--ui-accent))">@</span>
+                    <span style="color:var(--ui-path)">msg.user.email</span>
+                    <span style="color:var(--ui-num)">42</span>
+                    <span style="color:var(--ui-str)">"text"</span>
+                    <span class="dim">+ ( ) .</span>
+                </div>
+                <div class="demo__hint">Тот же принцип, что в поле значения: путь, число, строка, оператор.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 2. ТИПОГРАФИКА ============ -->
+    <section class="sec" id="type">
+        <div class="sec__head">
+            <span class="sec__num">02</span>
+            <span class="sec__title">Типографика</span>
+            <span class="sec__note">гротеск для интерфейса, моно для данных</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo">
+                <div class="caps" style="margin-bottom:8px">Заголовки и микро-капс</div>
+                <div style="font-size:24px;font-weight:600;letter-spacing:-.3px">Панель управления нодами</div>
+                <div style="font-size:17px;font-weight:600;margin-top:6px">Раздел: источники значений</div>
+                <div style="font-size:14px;font-weight:600;margin-top:6px">Группа полей</div>
+                <div class="caps" style="margin-top:10px">micro-caps · tracked · 10.5px</div>
+            </div>
+            <div class="demo">
+                <div class="caps" style="margin-bottom:8px">Текст и данные</div>
+                <p style="margin:0 0 8px">Обычный текст интерфейса: 14px, межстрочный 1.5. Ссылка выглядит <a href="#type">как подчёркнутая линия</a>, а не цветная таблетка.</p>
+                <div class="mono" style="font-size:13px">msg.payload.items[0].price = <span class="accent">19.90</span></div>
+                <div class="mono dim" style="font-size:11.5px;margin-top:6px">2026-09-16 21:40:12 · 1 284 ms · pid 7712</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 3. КНОПКИ ============ -->
+    <section class="sec" id="buttons">
+        <div class="sec__head">
+            <span class="sec__num">03</span>
+            <span class="sec__title">Кнопки</span>
+            <span class="sec__note">волосяной контур, нулевой радиус, срез — как отдельный ранг</span>
+        </div>
+        <div class="grid">
+            <div class="demo">
+                <div class="demo__label caps">Ранги</div>
+                <div class="row row--tight">
+                    <button class="btn btn--primary">Сохранить</button>
+                    <button class="btn">Отмена</button>
+                    <button class="btn btn--ghost">Сбросить</button>
+                    <button class="btn btn--danger">Удалить</button>
+                </div>
+                <div class="demo__hint">primary — акцентная заливка; остальные — контур и текст.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Со срезом и иконкой</div>
+                <div class="row row--tight">
+                    <button class="btn btn--primary btn--chamfer">Запустить</button>
+                    <button class="btn btn--cut">Сохранить как</button>
+                    <button class="btn btn--icon" title="Свойства">◈</button>
+                    <button class="btn btn--icon" title="Операции">ƒ</button>
+                    <button class="btn btn--icon" title="Удалить">✕</button>
+                </div>
+                <div class="demo__hint">Срез — «дорогой» вариант действия, не для всего подряд.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Размеры и группы</div>
+                <div class="row row--tight">
+                    <button class="btn btn--sm">sm</button>
+                    <button class="btn">md</button>
+                    <button class="btn btn--lg">lg</button>
+                    <button class="btn is-disabled">disabled</button>
+                </div>
+                <div class="btngroup" style="margin-top:10px">
+                    <button class="btn btn--sm">День</button>
+                    <button class="btn btn--sm">Неделя</button>
+                    <button class="btn btn--sm">Месяц</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 4. ПОЛЯ ============ -->
+    <section class="sec" id="fields">
+        <div class="sec__head">
+            <span class="sec__num">04</span>
+            <span class="sec__title">Поля ввода</span>
+            <span class="sec__note">линии сверху/снизу + уголки; фокус — акцентный рейл слева</span>
+        </div>
+        <div class="grid">
+            <div class="demo">
+                <div class="demo__label caps">Текст, состояния</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">обычное</span></div>
+                        <div class="fld brk"><input placeholder="Введите значение" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">в фокусе</span></div>
+                        <div class="fld brk is-focus"><input value="active value" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">ошибка</span></div>
+                        <div class="fld brk is-error"><input value="не число" /></div>
+                        <div class="hint hint--err">Ожидалось целое число</div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">выключено</span></div>
+                        <div class="fld brk is-disabled"><input value="read only" disabled /></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Моно, префикс, кнопка</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">идентификатор</span></div>
+                        <div class="fld fld--mono brk"><input value="inject_main" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">путь с префиксом</span></div>
+                        <div class="fld fld--mono brk">
+                            <span class="fld__prefix">msg.</span>
+                            <input value="payload.items[0].price" />
+                            <button class="fld__btn">▾</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">поиск</span></div>
+                        <div class="fld brk">
+                            <span class="fld__prefix">⌕</span>
+                            <input placeholder="Поиск по нодам" />
+                            <button class="fld__btn">✕</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Выбор и многострочное</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">тип значения</span></div>
+                        <div class="fld brk">
+                            <select>
+                                <option>string</option>
+                                <option>int</option>
+                                <option>timestamp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">число со шагом</span></div>
+                        <div class="fld fld--mono brk">
+                            <input value="2048" />
+                            <button class="fld__btn">▴</button>
+                            <button class="fld__btn">▾</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">заметка</span></div>
+                        <div class="fld brk"><textarea rows="3">Текст подсказки в многострочном поле.</textarea></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Чекбоксы, радио, переключатель</div>
+                <div class="stack stack--tight">
+                    <label class="chk"><input type="checkbox" checked /><span class="chk__box"></span><span>Запускать при старте</span></label>
+                    <label class="chk"><input type="checkbox" /><span class="chk__box"></span><span>Писать в лог</span></label>
+                    <label class="rad"><input type="radio" name="r" checked /><span class="rad__box"></span><span>Только выбранная нода</span></label>
+                    <label class="rad"><input type="radio" name="r" /><span class="rad__box"></span><span>Все ноды во flow</span></label>
+                    <label class="sw" style="margin-top:6px"><input type="checkbox" checked /><span class="sw__track"></span><span>Расписание включено</span></label>
+                </div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Ползунок и дата-время</div>
+                <div class="stack">
+                    <div class="rng"><input type="range" min="0" max="100" value="40" /></div>
+                    <div class="row row--tight">
+                        <div class="fld fld--mono brk" style="width:170px"><input value="2026-09-16" /></div>
+                        <div class="fld fld--mono brk" style="width:110px"><input value="21:40" /></div>
+                    </div>
+                    <div class="row row--tight">
+                        <span class="tag tag--outline">cron</span>
+                        <div class="fld fld--mono brk"><input value="0 0/5 * * * ?" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 5. ПОЛЕ ЗНАЧЕНИЯ ============ -->
+    <section class="sec" id="value">
+        <div class="sec__head">
+            <span class="sec__num">05</span>
+            <span class="sec__title">Поле значения (MarsValueInput)</span>
+            <span class="sec__note">режим выводится из строки: ведущий @ = выражение</span>
+        </div>
+        <div class="grid grid--lab">
+            <div class="demo">
+                <div class="demo__label caps">Константа · string</div>
+                <div class="vv brk"><span class="vv__tag">str</span><span class="vv__body"><span class="vv__placeholder">string</span><span class="vv__caret"></span></span><span class="vv__btns"><button class="vv__btn">◈</button></span></div>
+                <div class="demo__hint">Тег серый, placeholder = тип, кнопка операций скрыта.</div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Константа · int</div>
+                <div class="vv brk"><span class="vv__tag">int</span><span class="vv__body">42<span class="vv__caret"></span></span><span class="vv__btns"><button class="vv__btn">◈</button></span></div>
+                <div class="demo__hint">Тип задаётся объявлением поля в ноде, не вводом.</div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Константа · DateTime</div>
+                <div class="vv brk"><span class="vv__tag">date</span><span class="vv__body">2026-09-16<span class="vv__caret"></span></span><span class="vv__btns"><button class="vv__btn">◈</button></span></div>
+                <div class="demo__hint">Под типизированную константу позже встанет date picker.</div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Выражение</div>
+                <div class="vv vv--expr brk is-focus"><span class="vv__tag">@</span><span class="vv__body"><span class="tk-at">@</span><span class="tk-path">msg.payload.age</span><span class="tk-op"> + </span><span class="tk-num">2</span></span><span class="vv__btns"><button class="vv__btn">◈</button><button class="vv__btn">ƒ</button></span></div>
+                <div class="demo__hint">Тег акцентный, подсветка по типам данных, доступны две кнопки.</div>
+            </div>
+
+            <div class="demo">
+                <div class="demo__label caps">Строка и литерал</div>
+                <div class="vv vv--expr brk"><span class="vv__tag">@</span><span class="vv__body"><span class="tk-path">msg.user.firstname</span><span class="tk-op">.ToUpper() + </span><span class="tk-str">"!"</span></span><span class="vv__btns"><button class="vv__btn">◈</button><button class="vv__btn">ƒ</button></span></div>
+                <div class="demo__hint">Строковый литерал своим цветом — видно, где текст, а где данные.</div>
+            </div>
+
+            <div class="demo float-host">
+                <div class="demo__label caps">Подсказка после точки</div>
+                <div class="fld-anchor">
+                    <div class="vv vv--expr brk is-focus"><span class="vv__tag">@</span><span class="vv__body"><span class="tk-at">@</span><span class="tk-path">msg.</span><span class="vv__caret"></span></span><span class="vv__btns"><button class="vv__btn">◈</button><button class="vv__btn">ƒ</button></span></div>
+                    <div class="pop" style="min-width:250px">
+                        <div class="pop__row is-active"><span class="pop__bullet">·</span><span class="mono">msg.payload.age</span><span class="pop__type">number</span></div>
+                        <div class="pop__row"><span class="pop__bullet">·</span><span class="mono">msg.payload.name</span><span class="pop__type">string</span></div>
+                        <div class="pop__row"><span class="pop__bullet">·</span><span class="mono">msg.user.email</span><span class="pop__type">string</span></div>
+                        <div class="pop__row"><span class="pop__bullet">·</span><span class="mono">msg.user.registered</span><span class="pop__type">DateTime</span></div>
+                        <div class="pop__row"><span class="pop__bullet">·</span><span class="mono">msg.timestamp</span><span class="pop__type">DateTime</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo float-host">
+                <div class="demo__label caps">Дерево по кнопке ◈</div>
+                <div class="fld-anchor">
+                    <div class="vv brk"><span class="vv__tag">str</span><span class="vv__body"><span class="vv__placeholder">value</span></span><span class="vv__btns"><button class="vv__btn" style="background:var(--ui-accent-soft);color:var(--ui-accent)">◈</button></span></div>
+                    <div class="pop" style="min-width:250px">
+                        <div class="tree">
+                            <div class="tree__row"><span class="tree__bullet">▾</span><span>msg</span></div>
+                            <div class="tree__row" style="padding-left:20px"><span class="tree__bullet">▾</span><span>payload</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:32px"><span class="tree__bullet">·</span><span>age</span><span class="tree__type">number</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:32px"><span class="tree__bullet">·</span><span>name</span><span class="tree__type">string</span></div>
+                            <div class="tree__row" style="padding-left:20px"><span class="tree__bullet">▸</span><span>user</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:20px"><span class="tree__bullet">·</span><span>topic</span><span class="tree__type">string</span></div>
+                            <div class="tree__row"><span class="tree__bullet">▾</span><span>flow</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:32px"><span class="tree__bullet">·</span><span>counter</span><span class="tree__type">number</span></div>
+                            <div class="tree__row"><span class="tree__bullet">▾</span><span>global</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:32px"><span class="tree__bullet">·</span><span>var1</span><span class="tree__type">string</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo float-host">
+                <div class="demo__label caps">Операции ƒ</div>
+                <div class="fld-anchor">
+                    <div class="vv vv--expr brk"><span class="vv__tag">@</span><span class="vv__body"><span class="tk-path">msg.payload.name</span><span class="vv__caret"></span></span><span class="vv__btns"><button class="vv__btn">◈</button><button class="vv__btn" style="background:var(--ui-accent-soft);color:var(--ui-accent)">ƒ</button></span></div>
+                    <div class="pop pop--right">
+                        <div class="pop__group">String</div>
+                        <div class="pop__row mono">.ToUpper()</div>
+                        <div class="pop__row mono">.Trim()</div>
+                        <div class="pop__row mono">.Length</div>
+                        <div class="pop__group">Math</div>
+                        <div class="pop__row mono"> + 1</div>
+                        <div class="pop__row mono">Math.Round(</div>
+                        <div class="pop__group">Date</div>
+                        <div class="pop__row mono">.AddDays(1)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 6. ТЕГИ И СТАТУСЫ ============ -->
+    <section class="sec" id="tags">
+        <div class="sec__head">
+            <span class="sec__num">06</span>
+            <span class="sec__title">Теги, статусы, счётчики</span>
+            <span class="sec__note">скошенная кромка — только у служебных ярлыков</span>
+        </div>
+        <div class="grid">
+            <div class="demo">
+                <div class="demo__label caps">Теги</div>
+                <div class="row row--tight">
+                    <span class="tag">default</span>
+                    <span class="tag tag--accent">accent</span>
+                    <span class="tag tag--outline">outline</span>
+                    <span class="tag tag--ok">online</span>
+                    <span class="tag tag--warn">degraded</span>
+                    <span class="tag tag--err">failed</span>
+                </div>
+                <div class="demo__hint">Форма — флажок со скошенным правым краем.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Статусы и счётчики</div>
+                <div class="stack stack--tight">
+                    <div class="row row--tight"><span class="dot dot--ok"></span><span>Готово</span><span class="li__meta">12 ms</span></div>
+                    <div class="row row--tight"><span class="dot dot--warn"></span><span>Ожидает подключения</span><span class="li__meta">—</span></div>
+                    <div class="row row--tight"><span class="dot dot--err"></span><span>Ошибка исполнения</span><span class="li__meta">1</span></div>
+                    <div class="row row--tight"><span class="dot dot--idle"></span><span>Не запускалась</span><span class="li__meta">0</span></div>
+                </div>
+                <div class="row row--tight" style="margin-top:10px">
+                    <span class="badge">0</span>
+                    <span class="badge">12</span>
+                    <span class="badge badge--accent">128</span>
+                </div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Чипы</div>
+                <div class="row row--tight">
+                    <span class="chip mono">msg.user.email<span class="chip__x">✕</span></span>
+                    <span class="chip mono">flow.counter<span class="chip__x">✕</span></span>
+                    <span class="chip">тег<span class="chip__x">✕</span></span>
+                </div>
+                <div class="demo__hint">Чип — для вставленного значения, тег — для статуса.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 7. ПАНЕЛИ ============ -->
+    <section class="sec" id="panels">
+        <div class="sec__head">
+            <span class="sec__num">07</span>
+            <span class="sec__title">Панели, KPI, алерты</span>
+            <span class="sec__note">тень жёсткая, заливкой, 45° — без размытия</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="surf brk">
+                <div class="surf__head">
+                    <span class="caps" style="color:var(--ui-ink)">Параметры ноды</span>
+                    <span class="tag tag--outline" style="margin-left:auto">inject</span>
+                </div>
+                <div class="surf__body stack">
+                    <div class="row row--between"><span class="dim">Ключ</span><span class="mono">Payload</span></div>
+                    <div class="row row--between"><span class="dim">Тип</span><span class="mono">timestamp</span></div>
+                    <div class="row row--between"><span class="dim">Значение</span><span class="mono">empty = now</span></div>
+                </div>
+                <div class="surf__foot">
+                    <button class="btn btn--sm">Сброс</button>
+                    <button class="btn btn--sm btn--primary">Применить</button>
+                </div>
+            </div>
+
+            <div class="surf brk">
+                <div class="surf__head">
+                    <span class="caps" style="color:var(--ui-ink)">Обзор обработки</span>
+                    <span class="pop__type" style="margin-left:auto">за сутки</span>
+                </div>
+                <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:0">
+                    <div class="kpi" style="border-right:var(--ui-bw) solid var(--ui-line-faint)">
+                        <span class="caps">сообщений</span>
+                        <span class="kpi__val">18 402</span>
+                        <span class="kpi__delta ok">+4.2%</span>
+                    </div>
+                    <div class="kpi" style="border-right:var(--ui-bw) solid var(--ui-line-faint)">
+                        <span class="caps">среднее время</span>
+                        <span class="kpi__val">23<span style="font-size:14px"> ms</span></span>
+                        <span class="kpi__delta warn">+6 ms</span>
+                    </div>
+                    <div class="kpi">
+                        <span class="caps">ошибок</span>
+                        <span class="kpi__val">3</span>
+                        <span class="kpi__delta err">1 критичная</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo stack">
+                <div class="alert"><span class="alert__icon">i</span><div><div class="alert__title">Соединение с брокером установлено</div><div class="alert__text">Последняя синхронизация 21:39:04, задержка 12 ms.</div></div></div>
+                <div class="alert alert--ok"><span class="alert__icon">✓</span><div><div class="alert__title">Нода сохранена</div><div class="alert__text">Изменения применены к активному flow.</div></div></div>
+                <div class="alert alert--warn"><span class="alert__icon">!</span><div><div class="alert__title">Не задан cron</div><div class="alert__text">Расписание включено, но маска пустая.</div></div></div>
+                <div class="alert alert--err"><span class="alert__icon">✕</span><div><div class="alert__title">Ошибка выражения</div><div class="alert__text mono" style="font-size:12px">msg.payload.age + <span class="err">«незакрытая скобка»</span></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 8. ТАБЛИЦА ============ -->
+    <section class="sec" id="table">
+        <div class="sec__head">
+            <span class="sec__num">08</span>
+            <span class="sec__title">Таблица данных</span>
+            <span class="sec__note">плотные строки, числа — моно справа</span>
+        </div>
+        <div class="surf">
+            <div class="surf__head">
+                <span class="caps" style="color:var(--ui-ink)">Журнал исполнения</span>
+                <div class="row row--tight" style="margin-left:auto">
+                    <div class="fld fld--mono brk" style="min-height:24px"><input placeholder="фильтр" style="min-height:22px;font-size:12px" /></div>
+                    <button class="btn btn--sm">Экспорт</button>
+                </div>
+            </div>
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th class="caps">время</th>
+                        <th class="caps">нода</th>
+                        <th class="caps">тип</th>
+                        <th class="caps">значение</th>
+                        <th class="caps num">мс</th>
+                        <th class="caps tbl__actions">действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="is-selected">
+                        <td class="mono">21:40:12.004</td>
+                        <td>inject_main</td>
+                        <td><span class="tag tag--accent">inject</span></td>
+                        <td class="mono">18:40:12.004</td>
+                        <td class="num">2</td>
+                        <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                    </tr>
+                    <tr>
+                        <td class="mono">21:40:12.006</td>
+                        <td>http_request</td>
+                        <td><span class="tag tag--outline">http</span></td>
+                        <td class="mono">200 OK · 1 284 B</td>
+                        <td class="num">147</td>
+                        <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                    </tr>
+                    <tr>
+                        <td class="mono">21:40:12.153</td>
+                        <td>parse_json</td>
+                        <td><span class="tag tag--outline">json</span></td>
+                        <td class="mono">items: 12</td>
+                        <td class="num">4</td>
+                        <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                    </tr>
+                    <tr>
+                        <td class="mono">21:40:12.157</td>
+                        <td>foreach_items</td>
+                        <td><span class="tag tag--err">failed</span></td>
+                        <td class="mono err">index 7: timeout</td>
+                        <td class="num">9 000</td>
+                        <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="surf__foot" style="justify-content:space-between">
+                <span class="caps">строк 4 из 1 284</span>
+                <div class="pager">
+                    <span>‹</span><span class="is-active">1</span><span>2</span><span>3</span><span>…</span><span>312</span><span>›</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 9. НАВИГАЦИЯ КОНТЕНТА ============ -->
+    <section class="sec" id="nav">
+        <div class="sec__head">
+            <span class="sec__num">09</span>
+            <span class="sec__title">Навигация внутри контента</span>
+            <span class="sec__note">вкладки, сегменты, крошки, шаги</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo">
+                <div class="demo__label caps">Вкладки</div>
+                <div class="tabs">
+                    <div class="tab is-active">Свойства</div>
+                    <div class="tab">Вход</div>
+                    <div class="tab">Выход</div>
+                    <div class="tab">Журнал</div>
+                </div>
+                <div class="demo__hint">Активная вкладка — акцентная линия снизу, без пилюли.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Сегмент и крошки</div>
+                <div class="row row--between">
+                    <div class="seg"><span class="is-active">Визуально</span><span>JSON</span></div>
+                    <div class="crumbs">
+                        <a href="#nav">Ноды</a><span class="sep">/</span>
+                        <a href="#nav">inject_main</a><span class="sep">/</span>
+                        <span class="cur">Свойства</span>
+                    </div>
+                </div>
+                <div class="demo__hint">Сегмент — для режима просмотра, крошки — для места в дереве.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Шаги</div>
+                <div class="steps">
+                    <span class="step is-done"><span class="step__num">✓</span><span>Схема</span></span>
+                    <span class="step__line"></span>
+                    <span class="step is-active"><span class="step__num">2</span><span>Поля</span></span>
+                    <span class="step__line"></span>
+                    <span class="step"><span class="step__num">3</span><span>Проверка</span></span>
+                    <span class="step__line"></span>
+                    <span class="step"><span class="step__num">4</span><span>Запуск</span></span>
+                </div>
+                <div class="demo__hint">Нумерация моно, соединители — волосяные линии.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 10. СПИСКИ И ДЕРЕВО ============ -->
+    <section class="sec" id="lists">
+        <div class="sec__head">
+            <span class="sec__num">10</span>
+            <span class="sec__title">Списки и дерево</span>
+            <span class="sec__note">выбор — рейл слева, метаданные — моно справа</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo">
+                <div class="demo__label caps">Список нод</div>
+                <div class="list">
+                    <div class="li is-selected"><span class="dot dot--ok"></span><span>inject_main</span><span class="li__meta">inject · 2 ms</span></div>
+                    <div class="li"><span class="dot dot--ok"></span><span>http_request</span><span class="li__meta">http · 147 ms</span></div>
+                    <div class="li"><span class="dot dot--warn"></span><span>mqtt_in</span><span class="li__meta">mqtt · ожидает</span></div>
+                    <div class="li"><span class="dot dot--err"></span><span>foreach_items</span><span class="li__meta">loop · ошибка</span></div>
+                </div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Дерево доступных полей</div>
+                <div class="tree">
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>msg</span><span class="tree__type">object</span></div>
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>user</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:20px"><span class="tree__bullet">·</span><span>email</span><span class="tree__type">string</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:20px"><span class="tree__bullet">·</span><span>firstname</span><span class="tree__type">string</span></div>
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>flow</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:20px"><span class="tree__bullet">·</span><span>counter</span><span class="tree__type">number</span></div>
+                </div>
+                <div class="demo__hint">Тип справа моно — по нему фильтруется ожидаемый тип поля.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 11. ОВЕРЛЕИ ============ -->
+    <section class="sec" id="overlays">
+        <div class="sec__head">
+            <span class="sec__num">11</span>
+            <span class="sec__title">Оверлеи</span>
+            <span class="sec__note">тень та же — жёсткая, со смещением</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo">
+                <div class="demo__label caps">Модальное окно</div>
+                <div class="modal-host">
+                    <div class="modal-host__backdrop"></div>
+                    <div class="modal brk">
+                        <div class="surf__head"><span class="caps" style="color:var(--ui-ink)">Удалить ноду</span><span class="pop__type" style="margin-left:auto">✕</span></div>
+                        <div class="surf__body">
+                            <div>Нода <span class="mono">foreach_items</span> будет удалена вместе с настройками.</div>
+                            <div class="hint">Действие необратимо.</div>
+                        </div>
+                        <div class="surf__foot">
+                            <button class="btn btn--sm">Отмена</button>
+                            <button class="btn btn--sm btn--danger">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="demo stack">
+                <div class="demo__label caps">Тосты</div>
+                <div class="toast toast--ok"><span class="ok">✓</span><span>Flow сохранён</span><span class="pop__type">21:40</span></div>
+                <div class="toast toast--err"><span class="err">✕</span><span>Не удалось подключиться к MQTT</span><span class="pop__type">21:41</span></div>
+                <div class="toast"><span class="dim">i</span><span>Обновление доступно: 0.8.3-alpha.15</span><span class="pop__type">21:42</span></div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Подсказка и меню</div>
+                <div class="tip-host">
+                    <div class="tip">Скопировать путь</div>
+                    <div class="row row--tight">
+                        <button class="btn btn--sm">◈ Наведите на элементы</button>
+                        <button class="btn btn--sm">ƒ Операции</button>
+                    </div>
+                </div>
+                <div class="demo__hint">Подсказка — инверсия (тёмная заливка), меню — панель с тенью.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 12. ПРОГРЕСС ============ -->
+    <section class="sec" id="progress">
+        <div class="sec__head">
+            <span class="sec__num">12</span>
+            <span class="sec__title">Прогресс и состояния загрузки</span>
+            <span class="sec__note">полосы тонкие, сегменты — для дискретных шагов</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo stack">
+                <div class="bar"><div class="bar__fill" style="width:32%"></div></div>
+                <div class="bar"><div class="bar__fill bar__fill--warn" style="width:68%"></div></div>
+                <div class="bar"><div class="bar__fill bar__fill--err" style="width:91%"></div></div>
+                <div class="bar bar--seg">
+                    <i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Загрузка</div>
+                <div class="row">
+                    <div class="spin"></div>
+                    <span class="dim">Читаем схему полей…</span>
+                </div>
+                <div class="stack stack--tight" style="margin-top:14px">
+                    <div class="skel skel--w85"></div>
+                    <div class="skel skel--w60"></div>
+                    <div class="skel skel--w40"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 13. ЛАБОРАТОРИЯ ============ -->
+    <section class="sec" id="lab">
+        <div class="sec__head">
+            <span class="sec__num">13</span>
+            <span class="sec__title">Лаборатория: тени и срезы</span>
+            <span class="sec__note">ручки стиля — что сравнивать при выборе</span>
+        </div>
+
+        <div class="grid grid--lab">
+            <div class="demo">
+                <div class="demo__label caps">Тень: 2 / 4 / 6 / 10 px</div>
+                <div class="lab lab-shadow-2" style="width:120px;margin:0 auto">2 2 0</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-shadow-4" style="width:120px;margin:0 auto">4 4 0</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-shadow-6" style="width:120px;margin:0 auto">6 6 0</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-shadow-10" style="width:120px;margin:0 auto">10 10 0</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Не 45°: 9 / 4</div>
+                <div class="lab lab-shadow-wide" style="width:120px;margin:0 auto">9 4 0</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Акцентная тень</div>
+                <div class="lab lab-shadow-accent" style="width:120px;margin:0 auto">6 6 0 accent</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Размытая (для сравнения)</div>
+                <div class="lab lab-shadow-soft" style="width:120px;margin:0 auto">soft</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Без тени и уголков</div>
+                <div class="lab" style="width:120px;margin:0 auto">только линии</div>
+            </div>
+        </div>
+
+        <div class="grid" style="margin-top:16px">
+            <div class="demo">
+                <div class="demo__label caps">Срезы кромок</div>
+                <div class="stack stack--tight">
+                    <div class="lab chamfer-tr">chamfer · один угол</div>
+                    <div class="lab chamfer-2">chamfer · два угла</div>
+                    <div class="lab chamfer-all">chamfer · все углы</div>
+                    <div class="lab notch-tr">notch · вырез</div>
+                    <div class="lab pennant">pennant · скошенная кромка</div>
+                    <div class="lab skewed"><span>skewX(-9deg)</span></div>
+                </div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Тень под срезанной фигурой</div>
+                <div class="stack">
+                    <div class="lab chamfer-2 dup-shadow" style="width:170px">дубль-фигура</div>
+                    <div class="lab chamfer-2 lab-shadow-6" style="width:170px">box-shadow</div>
+                </div>
+                <div class="demo__hint">Сверху — псевдоэлемент с тем же <span class="mono">clip-path</span> и <span class="mono">translate(6px, 6px)</span>; снизу — обычная тень, срезом обрезается. Для панелей со срезом нужен первый вариант.</div>
+            </div>
+            <div class="demo">
+                <div class="demo__label caps">Уголки-скобки: плечо</div>
+                <div class="stack">
+                    <div class="lab brk" style="position:relative">7px (по умолчанию)</div>
+                    <div class="lab brk brk--big" style="position:relative">12px</div>
+                    <div class="lab brk brk--accent" style="position:relative">акцентные</div>
+                </div>
+                <table class="spec" style="margin-top:12px">
+                    <tr><td>линия</td><td>var(--ui-bw) solid var(--ui-line)</td></tr>
+                    <tr><td>плечо</td><td>--bl: 7px</td></tr>
+                    <tr><td>тень</td><td>4px 4px 0 0 var(--ui-line-soft)</td></tr>
+                    <tr><td>радиус</td><td>0</td></tr>
+                    <tr><td>моно</td><td>Cascadia Mono</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    function bindSwitch(id, attr, apply) {
+        var box = document.getElementById(id);
+        if (!box) return;
+
+        function paint(value) {
+            box.querySelectorAll('[data-' + attr + '-set]').forEach(function (el) {
+                el.classList.toggle('is-active', el.getAttribute('data-' + attr + '-set') === value);
+            });
+        }
+
+        box.addEventListener('click', function (e) {
+            var target = e.target.closest('[data-' + attr + '-set]');
+            if (!target) return;
+
+            var value = target.getAttribute('data-' + attr + '-set');
+            apply(value);
+            paint(value);
+        });
+
+        paint(document.documentElement.getAttribute('data-' + attr) || (attr === 'theme' ? 'auto' : '1'));
+    }
+
+    bindSwitch('theme-switch', 'theme', function (value) {
+        if (value === 'auto') {
+            document.documentElement.removeAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', value);
+        }
+    });
+
+    bindSwitch('orn-switch', 'orn', function (value) {
+        document.documentElement.setAttribute('data-orn', value);
+    });
+
+    bindSwitch('bw-switch', 'bw', function (value) {
+        document.documentElement.style.setProperty('--ui-bw', value + 'px');
+    });
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Front.Abstractions.Editor.Models
 @using Mars.Nodes.Workspace.ActionManager
 @using Mars.Contracts.Resources
@@ -18,13 +19,15 @@
 </div>
 
 @code {
+    [CascadingParameter] INodeEditorApi Editor { get; set; } = default!;
+
     IQueryable<EditorActionType> _actions = Array.Empty<EditorActionType>().AsQueryable();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        _actions = NodeEditor1.Instance!.ActionManager.Actions.Values.Where(s => s.Attr != null && s.DefaultHotkey != null).AsQueryable();
+        _actions = Editor.ActionManager.Actions.Values.Where(s => s.Attr != null && s.DefaultHotkey != null).AsQueryable();
     }
 
 }

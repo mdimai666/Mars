@@ -1,7 +1,9 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
 
+[NodeOutputValueSpec(typeof(Exception))]
 public class CatchErrorNodeImpl : INodeImplement<CatchErrorNode>
 {
     public CatchErrorNode Node { get; }

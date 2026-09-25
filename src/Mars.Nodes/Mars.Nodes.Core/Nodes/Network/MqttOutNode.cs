@@ -4,7 +4,7 @@ using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MqttOutNode/MqttOutNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/MqttOutNode/MqttOutNode{.lang}.md")]
 [Display(GroupName = "network")]
 public class MqttOutNode : Node
 {
@@ -14,6 +14,7 @@ public class MqttOutNode : Node
 
     [Display(Name = "Topic", Description = "the MQTT topic to publish to")]
     public string Topic { get; set; } = "";
+    public string TopicKind { get; set; } = InputValueKind.Const;
     public NodeMqttQualityOfServiceLevel QoS { get; set; }
 
     public MqttOutNode()

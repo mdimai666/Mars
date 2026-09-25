@@ -224,7 +224,7 @@ SiteEngine-реворк (сентябрь 2026): чистка зависимос
 `TemplateEngine.Providers.*` с контрибьюторами хелперов (точки расширения для плагинов),
 добавлен движок Scriban (`*.sbn`), QueryLang-ядро общее (`Mars.QueryLang`), выбор движка при
 создании фронта + Scriban-стартер, маунт-фронты (`site_base`, относительные ссылки).
-План с заметками по фазам — в истории git (`git show <squash-коммит-реворка>:ai/SiteEngineReworkPlan.md`,
+План с заметками по фазам — в истории git (`git show 17ea5ffe:ai/SiteEngineReworkPlan.md`,
 файл схлопнут).
 
 ## Агентам

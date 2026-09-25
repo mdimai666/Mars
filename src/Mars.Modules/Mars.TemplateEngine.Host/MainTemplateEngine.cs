@@ -11,6 +11,8 @@ public static class MainTemplateEngine
     public static IServiceCollection AddMarsTemplateEngines(this IServiceCollection services)
     {
         return services
+            .AddSingleton<IHandlebarsEngineFactory, HandlebarsEngineFactory>()
+            .AddSingleton<IScribanEngineFactory, ScribanEngineFactory>()
             .AddSingleton<ITemplateManager, TemplateManager>()
             .AddSingleton<ITemplateEngine, PlainTextTemplateEngine>()
             .AddSingleton<ITemplateEngine, TextReplaceTemplateEngine>()

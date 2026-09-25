@@ -1,0 +1,10 @@
+@page "/posts"
+
+{{#context}}
+page == int.Parse(_req.Query["page"]??"1")
+table = ef.post.OrderByDescending(CreatedAt).Table(page,10)
+posts == table.Items
+{{/context}}
+
+<div id="ctx-errors">{{#tojson $errors}}</div>
+<div id="ctx-posts">count={{#if posts}}{{posts.Count}}{{else}}none{{/if}}</div>

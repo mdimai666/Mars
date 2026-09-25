@@ -10,9 +10,9 @@ public class MyFunctionsTests
 {
     string Render(string html, object? data = null)
     {
-        using var hbs = new MyHandlebars();
+        var hbs = SiteHandlebarsTestFactory.CreateSiteHandlebars();
         var template = hbs.Compile(html);
-        return template(data ?? new { });
+        return template(data ?? new { }, null);
     }
 
     [Fact]

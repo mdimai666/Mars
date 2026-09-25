@@ -3,7 +3,6 @@
         <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.SemanticKernel.Abstractions\Mars.SemanticKernel.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
-        <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="Skills\**\*.md">

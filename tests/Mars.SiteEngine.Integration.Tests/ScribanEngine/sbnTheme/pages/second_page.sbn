@@ -1,0 +1,4 @@
+@page "/second"
+
+<h1>SecondPageSbn</h1>
+{{ include 'pages/block1' }}

@@ -6,9 +6,8 @@ using Mars.Server.Abstractions.Models;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Host.Templators;
-using Mars.SiteEngine.Templators;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 
@@ -34,7 +33,7 @@ public class QueryLangProcessingTests
             RenderParam = new RenderParam(),
             IsDevelopment = true,
         };
-        var dataFiller = new HandlebarsTmpCtxBasicDataContext();
+        var dataFiller = new SiteTmpCtxBasicDataContext();
         dataFiller.FillTemplateDictionary(_pageContext, _pageContext.TemplateContextVariables);
 
         tfLocator = new TemplatorFeaturesLocator();
@@ -93,6 +92,23 @@ public class QueryLangProcessingTests
         // Assert
         result["x"].Should().Be(UserConstants.TestUser.FullName);
         result["y"].ToString().Should().Be("localhost");
+    }
+
+    [Fact]
+    public async Task Process_QueryStringParse_Repro()
+    {
+        // Arrange
+        var queries = new Dictionary<string, string>()
+        {
+            ["page"] = @"= int.Parse(_req.Query[""page""]??""1"")",
+        };
+
+        // Act
+        var result = await _handler.Process(_pageContext, queries, null, default);
+
+        // Assert
+        _pageContext.Errors.Should().BeEmpty();
+        result["page"].Should().Be(1);
     }
 
     [Fact]

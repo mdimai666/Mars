@@ -9,8 +9,6 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Exceptions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,8 +33,12 @@ public class WebSiteRequestProcessor
     {
         var appFront = (httpContext.Items[nameof(MarsAppFront)] as MarsAppFront)!;
 
-        WebPage? page = template.WebPageRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
-        var request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
+        // страницы в шаблонах объявляют url относительно маунта ("@page /second"),
+        // поэтому матчим и раскладываем route-переменные по фронто-относительному пути
+        var path = StripMount(appFront.Front?.Url, httpContext.Request.Path);
+
+        WebPage? page = template.WebPageRouteMatcher.Match(path, out var routeValues);
+        var request = new WebClientRequest(httpContext.Request, replacePath: path, routeValues: routeValues);
 
         try
         {
@@ -150,25 +152,7 @@ public class WebSiteRequestProcessor
 
             pageRenderContext.TemplateContextVariables.Add("$attr", page.Attributes);
 
-            if (page.UrlIsContainCurlyBracket)
-            {
-                //Dictionary<string, object> par = new();
-
-                var surl = TemplateParser.Parse(request.Path);
-
-                for (int i = 0; i < page.RoutePattern.PathSegments.Count; i++)
-                {
-                    var p = page.RoutePattern.PathSegments[i].Parts[0];
-
-                    if (p.IsParameter && p is RoutePatternParameterPart pa && i < surl.Segments.Count)
-                    {
-                        var seg = surl.Segments[i].Parts[0].Text;
-                        var key = pa.Name;
-                        //httpContext.Request.RouteValues.Add(key, seg); //TODO: rgis - slug conflict
-                        pageRenderContext.TemplateContextVariables.TryAdd(key, seg!);
-                    }
-                }
-            }
+            page.FillRouteVariables(request.Path, pageRenderContext.TemplateContextVariables);
 
             //=======================================================
             //PREPARE handlebars
@@ -208,48 +192,20 @@ public class WebSiteRequestProcessor
 
     string GetPageCacheKey(WebPage page, WebClientRequest request) => $"{page.Name}+{request.Path}";
 
-}
-
-///////////// Things....
-
-#if THINGS
-public class TemplatePipline
-{
-    public void Processing()
+    /// <summary>
+    /// Срезает префикс маунта фронта с пути запроса ("/sbn/x" при маунте "/sbn" → "/x",
+    /// "/sbn" → "/"). Для корневого фронта (Url пуст) возвращает путь как есть.
+    /// </summary>
+    public static PathString StripMount(string? mountUrl, PathString path)
     {
-        /*
-        - PrepareContext
-        - Compile
-        - Render
-        - AfterFilter
-        */
-    }
-}
+        if (string.IsNullOrEmpty(mountUrl) || !mountUrl.StartsWith('/'))
+            return path;
 
-public interface IWebSiteRenderPipline//ProcessingPipline
-{
-    public PageRenderContext CreateContext(HttpContext httpContext);
-    public WebPage FindPage();
-    public IWebRenderEngine RenderEngine { get; }
-}
+        if (path.StartsWithSegments(mountUrl, out var remaining))
+            return remaining.HasValue && remaining.Value.Length > 0 ? remaining : "/";
 
-public interface IContentRender
-{
-    public void Render(HttpContext httpContext, string content);
-}
-
-public class StaticWebsiteProcessing : IWebSiteRenderPipline
-{
-    public IWebRenderEngine RenderEngine { get; }
-
-    public PageRenderContext CreateContext(HttpContext httpContext)
-    {
-        throw new NotImplementedException();
+        return path;
     }
 
-    public WebPage FindPage()
-    {
-        throw new NotImplementedException();
-    }
 }
-#endif
+

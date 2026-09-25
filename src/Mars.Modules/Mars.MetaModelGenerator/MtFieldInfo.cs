@@ -7,6 +7,9 @@ namespace Mars.MetaModelGenerator;
 public class MtFieldInfo
 {
     string keyName;
+    // ключевые слова C# в имени свойства экранируются '@'; в строковых литералах
+    // (f.MetaField.Key == "...") используется исходный ключ
+    string propName;
     List<string> attributes = [];
     string comment = "";
     Type type;
@@ -23,6 +26,7 @@ public class MtFieldInfo
 
         this.metaField = metaField;
         keyName = metaField.Key;
+        propName = GenSourceCodeMasterHelper.EscapeCSharpKeyword(metaField.Key);
 
         var mt = MetaFieldEntity.MetaFieldTypeToType(metaField.Type);
         type = mt;
@@ -78,21 +82,21 @@ public class MtFieldInfo
         if (TypeRelation)
         {
             fieldRow = $$"""
-                    public {{friendlyTypeName}} {{keyName}}Id { get; set; }
-                    public {{relationModelTypeFullName}}? {{keyName}} { get; set; }
+                    public {{friendlyTypeName}} {{propName}}Id { get; set; }
+                    public {{relationModelTypeFullName}}? {{propName}} { get; set; }
                 """;
         }
         else if (metaField.Type == EMetaFieldType.Select)
         {
-            fieldRow = $"\tpublic {nameof(MetaFieldVariant)}? {keyName} {{ get; set; }}";
+            fieldRow = $"\tpublic {nameof(MetaFieldVariant)}? {propName} {{ get; set; }}";
         }
         else if (metaField.Type == EMetaFieldType.SelectMany)
         {
-            fieldRow = $"\tpublic {nameof(MetaFieldVariant)}[]? {keyName} {{ get; set; }}";
+            fieldRow = $"\tpublic {nameof(MetaFieldVariant)}[]? {propName} {{ get; set; }}";
         }
         else
         {
-            fieldRow = $"\tpublic {friendlyTypeName} {keyName} {{ get; set; }}";
+            fieldRow = $"\tpublic {friendlyTypeName} {propName} {{ get; set; }}";
         }
 
         return //Primitive field
@@ -108,7 +112,7 @@ public class MtFieldInfo
         if (TypeRelation)
         {
             return $"""
-                {keyName}Id = post.MetaValues!
+                {propName}Id = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.{MetaValueBase.GetColName(metaField.Type)})
                     .FirstOrDefault()!
@@ -117,7 +121,7 @@ public class MtFieldInfo
         else if (metaField.Type == EMetaFieldType.Select)
         {
             return $"""
-                {keyName} = post.MetaValues!
+                {propName} = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.MetaField.Variants.FirstOrDefault(v => v.Id == f.VariantId))
                     .FirstOrDefault()!
@@ -126,7 +130,7 @@ public class MtFieldInfo
         else if (metaField.Type == EMetaFieldType.SelectMany)
         {
             return $"""
-                {keyName} = post.MetaValues!
+                {propName} = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
                     .SelectMany(f => f.MetaField.Variants.Where(v => f.VariantsIds.Contains(v.Id)))
                     .ToArray()
@@ -134,7 +138,7 @@ public class MtFieldInfo
         }
 
         return $"""
-                {keyName} = post.MetaValues!
+                {propName} = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.{MetaValueBase.GetColName(metaField.Type)})
                     .FirstOrDefault()!

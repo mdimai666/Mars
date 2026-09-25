@@ -1,0 +1,4 @@
+@page "/"
+
+<h1>Hello, world! from sbnTheme!</h1>
+<p>{{ if mobile }}mobile{{ else }}desktop{{ end }}</p>

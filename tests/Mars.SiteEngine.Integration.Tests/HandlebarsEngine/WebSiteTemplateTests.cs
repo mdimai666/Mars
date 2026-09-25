@@ -4,7 +4,7 @@ using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Host.Services;
 using Mars.SiteEngine.Integration.Tests.Common;
 using Mars.Test.Common.Constants;
@@ -66,7 +66,7 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
     public async Task Basic_RenderUsername_RendersAuthenticatedUserName()
     {
         //Arrange
-        _ = nameof(HandlebarsTmpCtxBasicDataContext.UserParamKey);
+        _ = nameof(SiteTmpCtxBasicDataContext.UserParamKey);
         var template = "{{_user.FirstName}}";
         _webTemplateService.Template.Returns(EmptyWebSiteTemplate(template));
 

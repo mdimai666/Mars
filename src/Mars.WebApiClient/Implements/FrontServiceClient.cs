@@ -16,9 +16,9 @@ internal class FrontServiceClient : BasicServiceClient, IFrontServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Engines")
                     .GetJsonAsync<IReadOnlyCollection<FFrontEngineResponse>>();
 
-    public Task<IReadOnlyCollection<string>> FrontTemplates()
+    public Task<IReadOnlyCollection<FFrontTemplateResponse>> FrontTemplates()
         => _client.Request($"{_basePath}{_controllerName}", "FrontTemplates")
-                    .GetJsonAsync<IReadOnlyCollection<string>>();
+                    .GetJsonAsync<IReadOnlyCollection<FFrontTemplateResponse>>();
 
     public Task<FFrontTreeNodeResponse> FrontTree(string slug)
         => _client.Request($"{_basePath}{_controllerName}", "FrontTree")

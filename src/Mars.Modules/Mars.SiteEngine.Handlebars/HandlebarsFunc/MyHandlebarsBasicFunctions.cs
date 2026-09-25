@@ -582,12 +582,13 @@ public static class MyHandlebarsBasicFunctions
         var tflocator = renderContext.ServiceProvider.GetRequiredService<ITemplatorFeaturesLocator>();
         var mlocator = renderContext.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>();
         var queryLangHelperAvailableMethodsProvider = renderContext.ServiceProvider.GetRequiredService<IQueryLangHelperAvailableMethodsProvider>();
+        var databaseEntityTypeCatalogService = renderContext.ServiceProvider.GetRequiredService<IDatabaseEntityTypeCatalogService>();
 
 #if DEBUG
-        var helpBlock = new MyHandlebarsHelpBlock(options, tflocator, mlocator, queryLangHelperAvailableMethodsProvider);
+        var helpBlock = new MyHandlebarsHelpBlock(options, tflocator, mlocator, queryLangHelperAvailableMethodsProvider, databaseEntityTypeCatalogService);
         helpBlock.WriteTo(output);
 #else
-        _helpBlock ??= new MyHandlebarsHelpBlock(options, tflocator, mlocator, queryLangHelperAvailableMethodsProvider);
+        _helpBlock ??= new MyHandlebarsHelpBlock(options, tflocator, mlocator, queryLangHelperAvailableMethodsProvider, databaseEntityTypeCatalogService);
         _helpBlock.WriteTo(output);
 #endif
     }

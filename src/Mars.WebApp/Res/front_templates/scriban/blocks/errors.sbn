@@ -1,0 +1,18 @@
+<div id="errors-list" style="position: sticky; top: 10px;">
+    <div class="container">
+
+        {{ for err in errors }}
+        <div class="alert alert-danger">
+            {{ err.Message }}
+            {{ if _dev && err.StackTrace }}
+            <pre>{{ err.StackTrace }}</pre>
+            {{ end }}
+        </div>
+        {{ end }}
+    </div>
+</div>
+<style>
+#errors-list pre{
+    white-space: break-spaces;
+}
+</style>

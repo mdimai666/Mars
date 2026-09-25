@@ -1,3 +1,4 @@
+using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Mars.SiteEngine.Host.Services;
@@ -46,6 +47,43 @@ public class FrontTemplateService
 
         names.Sort(StringComparer.OrdinalIgnoreCase);
         return names;
+    }
+
+    /// <summary>
+    /// Стартовые шаблоны с движком: шаблон диктует движок фронта
+    /// (определяется по расширению файлов — <see cref="DetectTemplateEngine"/>).
+    /// </summary>
+    public IReadOnlyCollection<(string Name, string EngineId)> GetStarterTemplateInfos()
+    {
+        var root = Path.Combine(env.ContentRootPath, "Res", "front_templates");
+        if (!Directory.Exists(root)) return [];
+
+        var infos = new List<(string, string)>();
+        foreach (var dir in Directory.GetDirectories(root))
+        {
+            var name = Path.GetFileName(dir);
+            if (string.IsNullOrEmpty(name)) continue;
+            if (string.Equals(name, AdminTemplateName, StringComparison.OrdinalIgnoreCase)) continue;
+
+            infos.Add((name, DetectTemplateEngine(dir)));
+        }
+
+        infos.Sort(static (a, b) => string.Compare(a.Item1, b.Item1, StringComparison.OrdinalIgnoreCase));
+        return infos;
+    }
+
+    /// <summary>
+    /// Движок стартового шаблона: есть *.sbn-файлы — scriban, иначе handlebars.
+    /// </summary>
+    public static string DetectTemplateEngine(string templatePath)
+    {
+        if (Directory.Exists(templatePath)
+            && Directory.GetFiles(templatePath, "*.sbn", SearchOption.AllDirectories).Length > 0)
+        {
+            return FrontItem.ScribanEngine;
+        }
+
+        return FrontItem.HandlebarsEngine;
     }
 
     public void CreateFrontFromTemplate(string slug, string templateName = DefaultTemplateName)

@@ -2,14 +2,17 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Core.Models;
+using Mars.Nodes.Abstractions.Hubs;
 using Mars.TemplateEngine.Abstractions;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -165,6 +168,15 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
         {
             Configuration = configuration,
             Front = front,
+        };
+
+        var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
+        var wts = new WebTemplateService(rootServices, hub, appFront);
+        appFront.Features.Set<IWebTemplateService>(wts);
+
+        wts.OnFileUpdated += (s, e) =>
+        {
+            wts.ClearCache();
         };
 
         var engine = factory.Create(appFront, rootServices);

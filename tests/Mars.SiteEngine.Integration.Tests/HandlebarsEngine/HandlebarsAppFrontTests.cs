@@ -33,6 +33,7 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
         //Assert
         //render.Should().Contain(UserConstants.TestUserFirstName);
         render.Should().Contain(expectText);
+        render.Should().Contain("<base href=\"/\" />", "site_base корневого фронта — /");
     }
 
     [IntegrationFact]
@@ -46,6 +47,17 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
 
         //Assert
         render.Should().Contain(expectText);
+    }
+
+    [IntegrationFact]
+    public async Task Context_QueryLangOnRealApp_NoErrors()
+    {
+        //Act — appTheme/pages/posts_page.hbs: #context с int.Parse(_req.Query) + ef.post.Table()
+        var render = await RenderRequestPage("/posts");
+
+        //Assert
+        render.Should().NotContain("error on add #context");
+        render.Should().Contain("ctx-posts");
     }
 
     [IntegrationFact]

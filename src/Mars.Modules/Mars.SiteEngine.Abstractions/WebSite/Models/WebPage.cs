@@ -16,18 +16,19 @@ public class WebPage : WebSitePart
     /// Имеются ли параметры типа /path/<b>{id}</b>
     /// </summary>
     public bool UrlIsContainCurlyBracket { get; private init; }
-    public int UrlSegmentCount;
+    public int UrlSegmentCount { get; private init; }
 
     /// <summary>
     /// Имеются ли фильтры у параметров типа /path/{id<b>:int</b>}
     /// </summary>
     public bool IsRoutePatternHasConstraints { get; private init; }
-    public RouteTemplate RouteTemplate { get; private init; }
-    public RoutePattern RoutePattern { get; private init; }
-    public TemplateMatcher TemplateMatcher { get; private init; }
 
-    private RouteValueDictionary? _templateMatcherRouteValues;
-    private IReadOnlyDictionary<string, IRouteConstraint>? _routeConstraints;
+    RouteTemplate RouteTemplate { get; init; }
+    RoutePattern RoutePattern { get; init; }
+    TemplateMatcher TemplateMatcher { get; init; }
+
+    readonly string[] _usedConstraints;
+    IReadOnlyDictionary<string, IRouteConstraint>? _routeConstraints;
 
     public string? Layout { get; init; }
     public bool DefineLayout { get; init; }
@@ -54,8 +55,9 @@ public class WebPage : WebSitePart
         RoutePattern = RouteTemplate.ToRoutePattern();
         UrlSegmentCount = RouteTemplate.Segments.Count;
 
-        TemplateMatcher = new TemplateMatcher(RouteTemplate, _templateMatcherRouteValues ??= []);
-        IsRoutePatternHasConstraints = TemplateMatcherUsedConstraints().Length > 0;
+        TemplateMatcher = new TemplateMatcher(RouteTemplate, new RouteValueDictionary());
+        _usedConstraints = TemplateMatcherUsedConstraints();
+        IsRoutePatternHasConstraints = _usedConstraints.Length > 0;
 
         if (Attributes.TryGetValue("layout", out var layoutName))
         {
@@ -82,7 +84,6 @@ public class WebPage : WebSitePart
         if (!UrlIsContainCurlyBracket)
             return path == Url;
 
-        if (TemplateMatcher is null) return false;
         routeValues = WebPageRouteMatcher.RouteValuePools.Get();
 
         try
@@ -105,16 +106,33 @@ public class WebPage : WebSitePart
         }
     }
 
-    public string[] TemplateMatcherUsedConstraints()
+    /// <summary>
+    /// Раскладывает сегменты url по параметрам маршрута ({slug} и т.п.) в переменные шаблона.
+    /// </summary>
+    public void FillRouteVariables(PathString path, Dictionary<string, object?> templateContextVariables)
+    {
+        if (!UrlIsContainCurlyBracket) return;
+
+        var surl = TemplateParser.Parse(path);
+
+        for (int i = 0; i < RoutePattern.PathSegments.Count && i < surl.Segments.Count; i++)
+        {
+            var p = RoutePattern.PathSegments[i].Parts[0];
+
+            if (p.IsParameter && p is RoutePatternParameterPart pa)
+            {
+                var seg = surl.Segments[i].Parts[0].Text;
+                templateContextVariables.TryAdd(pa.Name, seg!);
+            }
+        }
+    }
+
+    string[] TemplateMatcherUsedConstraints()
         => TemplateMatcher.Template.Parameters.SelectMany(s => s.InlineConstraints.Select(s => s.Constraint)).Distinct().ToArray();
 
     public bool RouteConstraintMatch(PathString pathString, RouteValueDictionary routeValues)
     {
-        if (_routeConstraints is null)
-        {
-            var constrainUsed = TemplateMatcherUsedConstraints();
-            _routeConstraints = RouteUtil.CreateConstraints(constrainUsed).ToImmutableDictionary();
-        }
+        _routeConstraints ??= RouteUtil.CreateConstraints(_usedConstraints).ToImmutableDictionary();
 
         //var constraints = CreateConstraints(["id:int"]);
         foreach (var (key, val) in routeValues)

@@ -33,10 +33,9 @@ public class DataQueryScenariosTests
         _serviceProvider.GetService(typeof(IQueryLangProcessing)).Returns(_queryLangProcessing);
     }
 
-    string Render(string html, Dictionary<string, object?>? data = null, Action<MyHandlebars>? builder = null)
+    string Render(string html, Dictionary<string, object?>? data = null, Action<HandlebarsDotNet.IHandlebars>? builder = null)
     {
-        using var hbs = new MyHandlebars();
-        hbs.RegisterContextFunctions();
+        var hbs = SiteHandlebarsTestFactory.CreateSiteHandlebars();
         builder?.Invoke(hbs);
         var template = hbs.Compile(html);
         var pageRenderContext = new PageRenderContext()

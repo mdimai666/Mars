@@ -2,11 +2,9 @@ using System.Reflection;
 using System.Web;
 using HandlebarsDotNet;
 using Mars.Cms.Abstractions.Services;
-using Mars.Data.Contexts;
 using Mars.QueryLang;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.Templators;
-using Microsoft.EntityFrameworkCore;
 
 namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
@@ -19,16 +17,19 @@ public class MyHandlebarsHelpBlock
     List<HbsContextFunctionItem> _hbsContextFunctionItems;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IQueryLangHelperAvailableMethodsProvider _queryLangHelperAvailableMethodsProvider;
+    private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
 
     public MyHandlebarsHelpBlock(in HelperOptions options,
                                 ITemplatorFeaturesLocator tflocator,
                                 IMetaModelTypesLocator metaModelTypesLocator,
-                                IQueryLangHelperAvailableMethodsProvider queryLangHelperAvailableMethodsProvider)
+                                IQueryLangHelperAvailableMethodsProvider queryLangHelperAvailableMethodsProvider,
+                                IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService)
     {
         _hbsHelperItems = ReadHelperItems(options);
         _hbsContextFunctionItems = ReadFunctionItems(tflocator);
         _metaModelTypesLocator = metaModelTypesLocator;
         _queryLangHelperAvailableMethodsProvider = queryLangHelperAvailableMethodsProvider;
+        _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
     }
 
     public void WriteTo(in EncodedTextWriter output)
@@ -232,17 +233,18 @@ public class MyHandlebarsHelpBlock
             yield return new HbsQueryLangLinqDatabaseQueryHandlerItem(key, attr);
         }
 
-        var memberDbSetsByName = typeof(MarsDbContext).GetProperties()
-                .Where(p => p.PropertyType.IsGenericType
-                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
-                .ToDictionary(s => s.Name);
+        var entities = _databaseEntityTypeCatalogService.ListEntities()
+                .Where(e => !e.IsMetaType)
+                .Select(e => e.EntityUri.Root!)
+                .Distinct()
+                .OrderBy(name => name);
 
-        foreach (var prop in memberDbSetsByName)
+        foreach (var name in entities)
         {
-            var listName = prop.Key.ToLower();
+            var listName = name.ToLower();
 
-            var attr = new TemplatorHelperInfoAttribute(prop.Key, $"""{listName} = ef.{prop.Key}.Take(10)""", "");
-            yield return new HbsQueryLangLinqDatabaseQueryHandlerItem(prop.Key, attr);
+            var attr = new TemplatorHelperInfoAttribute(name, $"""{listName} = ef.{name}.Take(10)""", "");
+            yield return new HbsQueryLangLinqDatabaseQueryHandlerItem(name, attr);
         }
     }
 

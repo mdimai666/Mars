@@ -1,10 +1,10 @@
 using HandlebarsDotNet;
 using Mars.Cms.Abstractions.Services;
 using Mars.Core.Extensions;
+using Mars.QueryLang.Services;
 using Mars.Server.Abstractions.Interfaces;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Handlebars.Parsers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -82,7 +82,7 @@ public static class MyHandlebarsContextFunctions
         {
             var body = options.Template();
             //var queryRows = renderContext.PageContext.AddDataQueriesRows(body, key);
-            var queryRows = HandlebarsContextHelperFunctionBodyParser.FunctionBodyParse(body, key);
+            var queryRows = DataQueryBodyParser.FunctionBodyParse(body, key);
 
             var currentFrameCtx = (context.Value as Dictionary<string, object>)!;
 
@@ -93,12 +93,11 @@ public static class MyHandlebarsContextFunctions
                                            entry => entry.Value);
             }
 
-            var hlp = new HandlebarsContextBlockProcessor();
-
             if (queryRows.Queries.Any())
                 renderContext.PageContext.DataQueries.Add(key ?? Guid.NewGuid().ToString(), queryRows);
 
-            hlp.Process(renderContext).ConfigureAwait(false).GetAwaiter().GetResult();
+            ContextQueryProcessor.Process(renderContext.PageContext, renderContext.ServiceProvider, renderContext.CancellationToken)
+                .ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (isCache && dCopy is not null)
             {
@@ -107,7 +106,7 @@ public static class MyHandlebarsContextFunctions
 
                 IEnumerable<KeyValuePair<string, object>> diff = dCopy.Except(dResult).Concat(dResult.Except(dCopy));
 
-                var tsCache = MyHandlebars.ParseStringTimespan(cache ?? "10m");
+                var tsCache = DataQueryBodyParser.ParseTimespan(cache ?? "10m");
                 memoryCache?.Set(cacheKey, diff, tsCache ?? TimeSpan.FromMinutes(5));
             }
 

@@ -190,6 +190,33 @@ QueryLang. Старт 2026-09-26.
 - Схлопывание плана в гайд — НЕ делать: правки продолжаются, схлопнуть по явной команде
   пользователя (решение 2026-09-26).
 
+## Фаза 5 — выбор движка при создании фронта + Scriban-стартер (запрос пользователя 2026-09-26)
+
+- [x] 5.1 API создания фронта: `FCreateFrontRequest` += `EngineId`, `Path`;
+      `FrontTemplates()` → `FFrontTemplateResponse { Name, EngineId }` (движок шаблона
+      детектится по наличию `*.sbn`: `FrontTemplateService.GetStarterTemplateInfos`/
+      `DetectTemplateEngine`); `CreateFront`: из шаблона — движок диктуется шаблоном,
+      без шаблона — `EngineId` из запроса валидируется по `GetAvailableEngines()`;
+      непустой `Path` — подключение существующей папки (проверка `Directory.Exists`).
+- [x] 5.2 Стартовый шаблон `Res/front_templates/scriban` — порт default-темы:
+      `_root.sbn` (@Body + site_head/site_footer + title через `page_title`), layout
+      base/centered/fullwidth (конвенция `{{ body }}`), blocks header1/errors/paginator1,
+      pages index/posts/post_detail/login/logout/help/404/500, wwwroot скопирован из default.
+      Добавлена функция `help` (список сайт-функций; `ScribanRenderContext.Functions`).
+- [x] 5.3 Админка `FrontSettingsPage`: переключатель источника («Из стартового шаблона» /
+      «Существующая папка» + поле Path), селекты шаблона и движка; при создании из шаблона
+      движок выбирается автоматически и селект задизейблен.
+      Грабли: в FluentUI 4.14 `FluentSelect.Value` — **string** (значение опции), привязка
+      к объекту-элементу не компилируется — биндить имя/Id и резолвить объект в коде.
+- [x] 5.4 Тесты: `GetStarterTemplateInfos_DetectsEngine_BySbnFiles`; `scriban` в
+      StarterFrontTemplatesTests (валидность WebSiteTemplate) + новый
+      `ScribanStarterTemplate_AllFiles_ParseWithoutErrors` (парсинг каждого .sbn);
+      Scriban-unit: multiline-строка в `context`, `help`, итерация словаря.
+      Грабли Scriban: `for` — только одна переменная; словарь — `for kv in d` + `kv.Key`/`kv.Value`.
+      Итог: SiteEngine.Tests 76/76, Integration Services 99/99+1 flake (DataContextTests,
+      JWT iat на границе секунды — перезапуск 2/2 зелёный). `MarsAppVersion` → 0.8.3-alpha.32
+      (cache-busting админки).
+
 ## Отложенный бэклог (не в этом реворке)
 
 - `WebTemplateService.ClearCache()` чистит весь глобальный MemoryCache — нужна точечная

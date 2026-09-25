@@ -105,7 +105,7 @@ public class ScribanWebRenderEngine : IWebRenderEngine
         }
         dataObject["mobile"] = ctx.Request.IsMobile;
 
-        var rctx = new ScribanRenderContext(ctx, serviceProvider, cancellationToken, webSiteTemplate, dataObject);
+        var rctx = new ScribanRenderContext(ctx, serviceProvider, cancellationToken, webSiteTemplate, dataObject, _globalFunctions);
 
         var templateContext = new TemplateContext
         {

@@ -58,12 +58,15 @@ public class FrontController : ControllerBase
 
     /// <summary>
     /// Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
+    /// Движок шаблона определяется по расширению файлов (*.sbn — scriban).
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IReadOnlyCollection<string> FrontTemplates()
+    public IReadOnlyCollection<FFrontTemplateResponse> FrontTemplates()
     {
-        return _frontTemplateService.GetStarterTemplates();
+        return _frontTemplateService.GetStarterTemplateInfos()
+            .Select(s => new FFrontTemplateResponse { Name = s.Name, EngineId = s.EngineId })
+            .ToList();
     }
 
     [HttpPost]
@@ -80,16 +83,40 @@ public class FrontController : ControllerBase
         if (option.Fronts.Any(s => string.Equals(s.Slug, request.Slug, StringComparison.OrdinalIgnoreCase)))
             return UserActionResult.Exception($"Фронт '{request.Slug}' уже существует", null);
 
+        // движок фронта: из шаблона (если создаётся из стартового) или из запроса (валидируется по реестру фабрик)
+        var template = string.IsNullOrWhiteSpace(request.Template)
+            ? FrontTemplateService.DefaultTemplateName
+            : request.Template;
+        string frontPath = "";
+
+        string engineId;
         if (request.UseTemplate)
         {
-            var template = string.IsNullOrWhiteSpace(request.Template)
-                ? FrontTemplateService.DefaultTemplateName
-                : request.Template;
+            engineId = FrontTemplateService.DetectTemplateEngine(_frontTemplateService.GetTemplatePath(template));
+        }
+        else
+        {
+            engineId = string.IsNullOrWhiteSpace(request.EngineId) ? FrontItem.HandlebarsEngine : request.EngineId.Trim();
 
+            if (!_renderEngineLocator.GetAvailableEngines().Any(e => string.Equals(e.Id, engineId, StringComparison.OrdinalIgnoreCase)))
+                return UserActionResult.Exception($"Рендер-движок '{engineId}' не найден", null);
+        }
+
+        if (request.UseTemplate)
+        {
             if (!Directory.Exists(_frontTemplateService.GetTemplatePath(template)))
                 return UserActionResult.Exception($"Шаблон фронта '{template}' не найден", null);
 
             _frontTemplateService.CreateFrontFromTemplate(request.Slug, template);
+        }
+        else if (!string.IsNullOrWhiteSpace(request.Path))
+        {
+            // подключение существующей папки (без разворачивания шаблона)
+            var externalPath = Path.GetFullPath(request.Path.Trim());
+            if (!Directory.Exists(externalPath))
+                return UserActionResult.Exception($"Папка фронта не найдена '{externalPath}'", null);
+
+            frontPath = externalPath;
         }
         else
         {
@@ -101,8 +128,8 @@ public class FrontController : ControllerBase
             Slug = request.Slug,
             Title = string.IsNullOrWhiteSpace(request.Title) ? request.Slug : request.Title,
             Url = request.Url,
-            Path = "",
-            EngineId = FrontItem.HandlebarsEngine,
+            Path = frontPath,
+            EngineId = engineId,
             Enabled = true,
         });
         _optionService.SaveOption(option);

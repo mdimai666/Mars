@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -95,6 +96,28 @@ public static class SiteScribanFunctions
 
     static Dictionary<string, object> SnapshotData(ScriptObject dataObject)
         => dataObject.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+    //=========================================================
+    // help: {{ help }} — список зарегистрированных сайт-функций
+    //=========================================================
+    public static object? Help(TemplateContext tctx)
+    {
+        var rctx = ScribanRenderContext.From(tctx);
+
+        var names = rctx.Functions.Keys
+            .OrderBy(k => k, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var sb = new StringBuilder();
+        sb.Append("<ul class=\"mb-0\">");
+        foreach (var name in names)
+        {
+            sb.Append("<li><code>").Append(HttpUtility.HtmlEncode(name)).Append("</code></li>");
+        }
+        sb.Append("</ul>");
+
+        return sb.ToString();
+    }
 
     //=========================================================
     // iff: {{ if iff "x > 2" }}...{{ end }}

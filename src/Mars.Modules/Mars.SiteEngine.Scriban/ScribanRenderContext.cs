@@ -17,6 +17,11 @@ public class ScribanRenderContext
     public WebSiteTemplate? WebSiteTemplate { get; }
 
     /// <summary>
+    /// Глобальные сайт-функции движка (для справочника {{ help }}).
+    /// </summary>
+    public ScriptObject Functions { get; }
+
+    /// <summary>
     /// Данные рендера (переменные шаблона) — сайт-функции дописывают результаты запросов сюда,
     /// чтобы они были видны последующим блокам и второй стадии (layout).
     /// </summary>
@@ -27,13 +32,15 @@ public class ScribanRenderContext
         IServiceProvider serviceProvider,
         CancellationToken cancellationToken,
         WebSiteTemplate? webSiteTemplate,
-        ScriptObject dataObject)
+        ScriptObject dataObject,
+        ScriptObject functions)
     {
         PageContext = pageContext;
         ServiceProvider = serviceProvider;
         CancellationToken = cancellationToken;
         WebSiteTemplate = webSiteTemplate;
         DataObject = dataObject;
+        Functions = functions;
     }
 
     public static ScribanRenderContext From(TemplateContext context)

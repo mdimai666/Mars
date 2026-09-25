@@ -46,7 +46,8 @@
   `src/Mars.Admin/Builder/FrontEditorViews/FrontEditorPage.razor` (`/front/editor/{Slug}`).
 - ИИ-инструменты: `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`.
 - Стартовые шаблоны: `Res/front_templates/<name>` в content root (в репо — `src/Mars.WebApp/Res/front_templates`:
-  `default`, `landing`, служебный `admin`).
+  `default`, `landing`, `scriban` (движок Scriban, `*.sbn`), служебный `admin`).
+  Движок шаблона определяется по наличию `*.sbn`-файлов (`FrontTemplateService.DetectTemplateEngine`).
 
 ## Пайплайн запроса фронта
 
@@ -111,7 +112,10 @@
 ## Админка
 
 - `/Settings/Front` — список фронтов (`EditOptionForm<FrontsOption>`): карточки (Title/Url/Path/движок/вкл),
-  «Создать фронт» (из стартового шаблона), удаление (опционально с папкой; внешние папки через API не удаляются).
+  «Создать фронт» — из стартового шаблона (движок диктуется шаблоном, селект задизейблен)
+  или подключение существующей папки (пустой Path = `data/fronts/<slug>`, иначе внешняя папка;
+  движок выбирается вручную, валидируется по реестру фабрик), удаление (опционально с папкой;
+  внешние папки через API не удаляются).
 - `/front/editor/{Slug}` — редактор в стиле VSCode: дерево файлов | `CodeEditor2` (Ctrl+S) | iframe-превью
   сайта; полноэкранный предпросмотр; live-reload превью через ChatHub; защита от затирания
   (по событию `reload` открытый файл перечитывается, только если пользователь не вносил несохранённых правок).

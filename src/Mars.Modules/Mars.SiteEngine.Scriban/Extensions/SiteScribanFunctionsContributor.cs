@@ -26,6 +26,9 @@ public class SiteScribanFunctionsContributor : IScribanObjectContributor
         // условия через XInterpreter
         scriptObject.Import("iff", new Func<TemplateContext, string, object?>(SiteScribanFunctions.Iff));
 
+        // справочник функций
+        scriptObject.Import("help", new Func<TemplateContext, object?>(SiteScribanFunctions.Help));
+
         // части сайта
         scriptObject.Import("raw_block", new Func<TemplateContext, string, object?>(SiteScribanFunctions.RawBlock));
         scriptObject.Import("render_post_content", new Func<TemplateContext, object?, object?>(SiteScribanFunctions.RenderPostContent));

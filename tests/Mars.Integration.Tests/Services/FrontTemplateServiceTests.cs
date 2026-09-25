@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Hosting;
 using NSubstitute;
@@ -55,6 +56,19 @@ public class FrontTemplateServiceTests : IDisposable
         var templates = service.GetStarterTemplates();
 
         templates.Should().BeEquivalentTo(["default", "landing"]);
+    }
+
+    [Fact]
+    public void GetStarterTemplateInfos_DetectsEngine_BySbnFiles()
+    {
+        WriteTemplateFile("sbntheme", "index.sbn");
+        var service = CreateService();
+
+        var infos = service.GetStarterTemplateInfos();
+
+        infos.Should().Contain(("default", FrontItem.HandlebarsEngine));
+        infos.Should().Contain(("landing", FrontItem.HandlebarsEngine));
+        infos.Should().Contain(("sbntheme", FrontItem.ScribanEngine));
     }
 
     public void Dispose()

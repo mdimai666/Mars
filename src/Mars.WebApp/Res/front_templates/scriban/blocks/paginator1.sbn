@@ -1,0 +1,36 @@
+<div class="d-flex justify-content-center">
+    <nav class="d-flex align-items-center justify-content-center w-100" aria-label="Pagination">
+        <span class="me-3">Всего {{ paginator.Total }} записей</span>
+
+        <div class="me-3">
+            {{ if paginator.Prev }}
+            <div class="page-item">
+                <a class="btn btn-light rounded-2 1page-link px-2 py-1 xcenter" style="height: 37px;"
+                    href="{{ url }}?{{ paginator.Prev }}">
+                    <i class="bi bi-arrow-left" style="font-size:1.4em;"></i>
+                </a>
+            </div>
+            {{ end }}
+        </div>
+
+        <ul class="pagination pagination-sm justify-content-start" style="margin:20px 0">
+            {{ for kv in paginator.Items }}
+            <li class="page-item {{ if kv.Key == paginator.Page }}active{{ end }}">
+                <a class="page-link px-3 py-2 border-0 rounded-1"
+                    href="{{ url }}?{{ kv.Value }}">{{ kv.Key }}</a>
+            </li>
+            {{ end }}
+        </ul>
+
+        <div class="ms-3">
+            {{ if paginator.Next }}
+            <div class="page-item">
+                <a class="btn btn-light rounded-2 1page-link px-2 py-1 xcenter" style="height: 37px;"
+                    href="{{ url }}?{{ paginator.Next }}">
+                    <i class="bi bi-arrow-right" style="font-size:1.4em;"></i>
+                </a>
+            </div>
+            {{ end }}
+        </div>
+    </nav>
+</div>

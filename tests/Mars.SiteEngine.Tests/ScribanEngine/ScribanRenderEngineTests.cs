@@ -44,7 +44,7 @@ public class ScribanRenderEngineTests
         return new WebSiteTemplate(parts);
     }
 
-    string Render(WebSiteTemplate template, PageRenderContext? ctx = null)
+    string Render(WebSiteTemplate template, Dictionary<string, object?>? extraVars = null)
     {
         var sys = new SiteSettings { SiteUrl = "http://localhost" };
         var user = UserConstants.AuthorizedUserInfo;
@@ -57,7 +57,7 @@ public class ScribanRenderEngineTests
             Features = new(),
         };
 
-        ctx ??= new PageRenderContext
+        var ctx = new PageRenderContext
         {
             Request = webClientRequest,
             SiteSettings = sys,
@@ -66,6 +66,14 @@ public class ScribanRenderEngineTests
             TemplateContextVariables = [],
             RenderParam = new RenderParam(),
         };
+
+        if (extraVars is not null)
+        {
+            foreach (var (key, val) in extraVars)
+            {
+                ctx.TemplateContextVariables[key] = val;
+            }
+        }
 
         var renderContext = new RenderEngineRenderRequestContext(webClientRequest, af, template, template.IndexPage, ctx, ctx.RenderParam);
 
@@ -146,6 +154,50 @@ public class ScribanRenderEngineTests
             Arg.Is<IReadOnlyCollection<KeyValuePair<string, string>>>(q => q.Any(s => s.Key == "x" && s.Value == "1")),
             Arg.Any<Dictionary<string, object>?>(),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void ContextFunction_MultilineBody_ParsesAllLines()
+    {
+        var queryLangProcessing = Substitute.For<IQueryLangProcessing>();
+        queryLangProcessing.Process(Arg.Any<PageRenderContext>(), Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>(), Arg.Any<Dictionary<string, object>?>(), Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<string, object?> { ["greeting"] = "hello" });
+        _serviceProvider.GetService(typeof(IQueryLangProcessing)).Returns(queryLangProcessing);
+
+        var template = BuildTemplate("""
+            {{ context '
+            a == 1
+            b = ef.post.Take(2)
+            ' }}{{ greeting }}
+            """);
+
+        Render(template).Should().Be("hello");
+        queryLangProcessing.Received(1).Process(
+            Arg.Any<PageRenderContext>(),
+            Arg.Is<IReadOnlyCollection<KeyValuePair<string, string>>>(q =>
+                q.Count == 2
+                && q.Any(s => s.Key == "a")
+                && q.Any(s => s.Key == "b" && s.Value == "ef.post.Take(2)")),
+            Arg.Any<Dictionary<string, object>?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void HelpFunction_ListsRegisteredFunctions()
+    {
+        Render(BuildTemplate("{{ help }}")).Should().Contain("context").And.Contain("site_head");
+    }
+
+    [Fact]
+    public void DictionaryVariables_IterateAsKeyValue()
+    {
+        var vars = new Dictionary<string, object?>
+        {
+            ["items"] = new Dictionary<int, string> { [1] = "page=1", [2] = "page=2" },
+        };
+
+        Render(BuildTemplate("{{ for kv in items }}[{{ kv.Key }}={{ kv.Value }}]{{ end }}"), vars)
+            .Should().Be("[1=page=1][2=page=2]");
     }
 
     [Fact]

@@ -78,9 +78,9 @@ public static class MainAdminFramework
         services.AddBlazoredLocalStorage();
         services.AddAuthorizationCore();
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>();
+        services.TryAddScoped<CookieAuthStateProvider>();
         services.TryAddScoped<AuthenticationStateProvider>(sp =>
-            sp.GetRequiredService<CookieOrLocalStorageAuthStateProvider>());
+            sp.GetRequiredService<CookieAuthStateProvider>());
 
         services.ConfigureLocalizer();
 

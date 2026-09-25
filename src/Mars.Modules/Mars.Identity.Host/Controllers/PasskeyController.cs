@@ -5,11 +5,13 @@ using Mars.Identity.Abstractions.Mappings.Accounts;
 using Mars.Identity.Abstractions.Mappings.Passkeys;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Options;
 using Mars.Identity.Contracts.Passkeys;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Mars.Identity.Host.Controllers;
 
@@ -85,6 +87,7 @@ public class PasskeyController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting(AuthProtectionOption.RateLimitPolicyName)]
     [ProducesResponseType(typeof(AuthResultResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

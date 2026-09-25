@@ -1,6 +1,7 @@
 using Mars.Server.Abstractions.Features;
 using Mars.SSO.Host.OAuth.interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
 
@@ -52,7 +53,9 @@ public class OAuthPageController : Controller
         return View(LoginPageView);
     }
 
+    // имя политики совпадает с AuthProtectionOption.RateLimitPolicyName (Mars.Identity.Contracts)
     [HttpPost("auth")]
+    [EnableRateLimiting("auth")]
     //public IActionResult Login(string username, string password, string redirect_uri, string? state)
     public async Task<IActionResult> Login(string username, string password, Guid credential_id, CancellationToken cancellationToken)
     {

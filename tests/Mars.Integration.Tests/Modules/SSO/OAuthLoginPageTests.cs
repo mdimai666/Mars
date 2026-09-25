@@ -1,6 +1,7 @@
 using System.Web;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Identity.Abstractions.Utils;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -33,7 +34,7 @@ public class OAuthLoginPageTests : ApplicationTests
         {
             Enable = true,
             ClientId = ClientId,
-            ClientSecret = ClientSecret,
+            ClientSecretHash = ApiKeyFormat.HashSecret(ClientSecret),
             AllowedGrantTypes = "authorization_code,password,client_credentials",
             CallbackUrl = "",
             RequirePkce = false,

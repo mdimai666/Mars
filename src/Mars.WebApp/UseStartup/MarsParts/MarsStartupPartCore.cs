@@ -14,6 +14,7 @@ using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -30,14 +31,10 @@ internal static class MarsStartupPartCore
         //------------------------------------------
         // Core
 
-        services.AddCors(options => //not check
-        {
-            options.AddDefaultPolicy(
-                builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-            );
-        });
+        // CORS из опции БД (CorsOption): дефолт — только same-origin,
+        // явно перечисленным origins разрешаются куки (см. OptionCorsPolicyProvider)
+        services.AddCors();
+        services.AddSingleton<ICorsPolicyProvider, OptionCorsPolicyProvider>();
 
         //TODO: think
         //AppSharedSettings.BackendUrl = "";

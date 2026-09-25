@@ -1,7 +1,5 @@
-using System.Net.Http.Headers;
-using Blazored.LocalStorage;
+using Flurl.Http;
 using Mars.Identity.Contracts.Auth;
-using Mars.SSO.Contracts.Dto;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Framework.AuthProviders;
@@ -9,54 +7,34 @@ namespace Mars.Admin.Framework.AuthProviders;
 public class AuthenticationService : IAuthenticationService
 {
     protected readonly IMarsWebApiClient _client;
-    protected readonly CookieOrLocalStorageAuthStateProvider _authStateProvider;
-    protected readonly ILocalStorageService _localStorage;
-    protected AdminJs _js;
+    protected readonly CookieAuthStateProvider _authStateProvider;
 
-    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage, AdminJs adminJs)
+    public AuthenticationService(IMarsWebApiClient client, CookieAuthStateProvider authStateProvider)
     {
         _client = client;
         _authStateProvider = authStateProvider;
-        _localStorage = localStorage;
-        _js = adminJs;
     }
 
-    public virtual async Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication)
-    {
-        var result = await _client.Account.Login(userForAuthentication);
-
-        if (!result.IsAuthSuccessful) return result;
-
-        await LoginStage(result);
-
-        return new AuthResultResponse { ErrorMessage = null };
-    }
-
-    public virtual Task MarkUserAsAuthenticated(string token, SsoUserInfoResponse? ssoUserInfo = null)
-    {
-        return _authStateProvider.MarkUserAsAuthenticated(token, ssoUserInfo);
-    }
-
-    public virtual async Task LoginCallback(AuthResultResponse authData)
-    {
-        await LoginStage(authData);
-    }
-
-    protected virtual async Task LoginStage(AuthResultResponse result)
-    {
-        ArgumentNullException.ThrowIfNull(result.Token, nameof(result.Token));
-        await _localStorage.SetItemAsync("authToken", result.Token);
-        await _authStateProvider.MarkUserAsAuthenticated(result.Token, null);
-        _client.Client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
-    }
+    /// <summary>
+    /// Cookie-схема (A1): сервер ставит Identity-cookie в ответе (Set-Cookie),
+    /// клиенту нечего сохранять — вызывающая страница перезагружается (forceLoad),
+    /// и хост-страница приходит уже с авторизованным UserPrimaryInfo.
+    /// </summary>
+    public virtual Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication)
+        => _client.Account.Login(userForAuthentication);
 
     public virtual async Task Logout()
     {
-        await _js.CookieRemove(".AspNetCore.Identity.Application");
-        await _localStorage.RemoveItemAsync("authToken");
+        try
+        {
+            await _client.Account.Logout();
+        }
+        catch (FlurlHttpException)
+        {
+            // сервер недоступен — снимаем только локальную сессию
+        }
+
         await _authStateProvider.MarkUserAsLoggedOut();
-        _client.Client.HttpClient.DefaultRequestHeaders.Authorization = null;
-        Q.LogoutUser();
     }
 
     public virtual async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userForRegistration)

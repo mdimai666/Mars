@@ -1,5 +1,6 @@
 using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Host.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.AiChat.Host.Hubs;
@@ -8,11 +9,11 @@ namespace Mars.AiChat.Host.Hubs;
 /// Хаб ИИ-чата. Сервер пушит события в группу чата (AiChatHubEvents.*),
 /// клиент подписывается через JoinChat.
 ///
-/// Info: без [Authorize] — по аналогии с ChatHub. Авторизация WebSocket-рукопожатия
-/// через access_token в query не поддерживается "smart"-схемой аутентификации Mars.
-/// Данные защищены на уровне REST API (Admin-роль) и в хранилище (изоляция по userId);
-/// chatId — неугадываемый Guid.
+/// Info: [Authorize] работает на cookie-схеме (A1): браузер шлёт Identity-cookie
+/// и в WS-рукопожатии, и в negotiate. Данные дополнительно защищены на уровне
+/// REST API (Admin-роль) и в хранилище (изоляция по userId).
 /// </summary>
+[Authorize]
 public class AiChatHub : Hub
 {
     private readonly AiChatPageBridge _pageBridge;

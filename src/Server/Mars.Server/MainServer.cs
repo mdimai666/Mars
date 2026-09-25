@@ -74,6 +74,7 @@ public static class MainServer
         var optionService = services.GetRequiredService<IOptionService>();
         optionService.RegisterOption<SiteSettings>();
         optionService.RegisterOption<ApiOption>();
+        optionService.RegisterOption<CorsOption>();
         optionService.RegisterOption<MaintenanceModeOption>();
         optionService.GetOption<SiteSettings>();
 

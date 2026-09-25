@@ -301,7 +301,7 @@
     async Task Delete()
     {
         var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete container <b>{DisplayName}</b>?",
+            (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(DisplayName)}</b>?",
             new DialogParameters { Title = "Delete container", Modal = true });
         var result = await dialog.Result;
         if (result.Cancelled)

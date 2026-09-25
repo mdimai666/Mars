@@ -23,8 +23,8 @@ public class OpenIDServerClientConfig
     public string ClientId { get; set; } = default!;
 
     [Required]
-    [Display(Name = "ClientSecret", Description = "the 'client_secret'")]
-    public string ClientSecret { get; set; } = default!;
+    [Display(Name = "ClientSecretHash", Description = "SHA-256 хэш секрета; plaintext показывается один раз при нажатии 'generate'")]
+    public string ClientSecretHash { get; set; } = default!;
 
     [Display(Name = "CallbackPath")]
     public string CallbackUrl { get; set; } = "https://example.com/dev/Login";
@@ -37,4 +37,8 @@ public class OpenIDServerClientConfig
 
     [Display(Name = "AllowedGrantTypes", Description = "comma list; etc= authorization_code,refresh_token,password")]
     public string AllowedGrantTypes { get; set; } = "authorization_code,refresh_token,password"; // comma list
+
+    [Display(Name = "RefreshTokenLifetimeDays")]
+    [Range(1, 365)]
+    public int RefreshTokenLifetimeDays { get; set; } = 30;
 }

@@ -220,7 +220,7 @@ public partial class ListDockerContainer
     {
         var name = container.Names.FirstOrDefault() ?? container.ID;
         var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete container <b>{name}</b>?",
+            (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(name)}</b>?",
             new DialogParameters { Title = "Delete container", Modal = true });
         var result = await dialog.Result;
         if (result.Cancelled)

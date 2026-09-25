@@ -93,16 +93,9 @@ public partial class LoginForm
         }
         else
         {
-            await Task.Delay(10);//из-за редиректа какя то бага и не переходит по ссылке
-
-            if (string.IsNullOrEmpty(ReturnUrl))
-            {
-                _navigationManager.NavigateTo(AfterLoginUrl);
-            }
-            else
-            {
-                _navigationManager.NavigateTo(ReturnUrl);
-            }
+            // cookie-схема (A1): сессия уже установлена Set-Cookie в ответе сервера —
+            // полная перезагрузка, чтобы хост-страница отрендерилась авторизованной
+            _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl, forceLoad: true);
         }
     }
 
@@ -117,12 +110,9 @@ public partial class LoginForm
         {
             var result = await _passkeyJs.LoginWithPasskey();
 
-            if (result.IsAuthSuccessful && result.Token is not null)
+            if (result.IsAuthSuccessful)
             {
-                await _authenticationService.LoginCallback(result);
-                await Task.Delay(10);//из-за редиректа какя то бага и не переходит по ссылке
-
-                _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl);
+                _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl, forceLoad: true);
                 return;
             }
 
@@ -237,9 +227,8 @@ public partial class LoginForm
         }
         else
         {
-            await _authenticationService.MarkUserAsAuthenticated(auth.AccessToken, auth);
-            await Task.Delay(200);
-            _navigationManager.NavigateTo(AfterLoginUrl);
+            // серверный callback уже поставил Identity-cookie — полная перезагрузка
+            _navigationManager.NavigateTo(AfterLoginUrl, forceLoad: true);
         }
 
         _loginOverlayVisible = false;

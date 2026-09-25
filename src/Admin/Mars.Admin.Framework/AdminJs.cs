@@ -36,11 +36,6 @@ public class AdminJs : IAsyncDisposable
         return _js.InvokeVoidAsync("blazor_newTab", url);
     }
 
-    public ValueTask CookieRemove(string key)
-    {
-        return _js.InvokeVoidAsync("d_cookie_remove", key);
-    }
-
     public Task DownloadContentAsFile(string content, string filename)
     {
         byte[] fileBytes = Encoding.UTF8.GetBytes(content);

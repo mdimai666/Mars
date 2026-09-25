@@ -35,9 +35,7 @@ class App {
             /** @type {IAccountLoginResponse} */
             const res = await response.json();
 
-            if (res.isAuthSuccessful) {
-                localStorage.setItem('authToken', res.token);
-            }
+            // cookie-схема (A1): сессия ставится Set-Cookie в ответе, токен не храним
 
             let a = new UserActionResult();
             a.ok = res.isAuthSuccessful;
@@ -51,13 +49,13 @@ class App {
         }
     }
 
-    Logout() {
-        let cookieKey = ".AspNetCore.Identity.Application";
-        let sPath = '', sDomain = '';
+    async Logout() {
+        try {
+            await fetch('/api/Account/Logout', { method: 'POST', credentials: 'include' });
+        } catch {
+            // сервер недоступен — всё равно перезагружаем страницу
+        }
 
-        document.cookie = encodeURIComponent(cookieKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
-
-        localStorage.removeItem("authToken");
         if (location.pathname.toLowerCase().startsWith('/logout')) {
             location = '/';
         } else {

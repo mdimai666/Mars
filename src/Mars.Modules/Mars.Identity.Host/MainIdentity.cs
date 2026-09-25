@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
 using Mars.CommandLine.Abstractions;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
@@ -13,9 +14,11 @@ using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Server.Contracts.Options;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Mars.Identity.Host;
 
@@ -28,6 +31,29 @@ public static class MainIdentity
         ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreateUserQueryValidator).Assembly);
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));
+
+        services.AddRateLimiter(rateLimitOptions =>
+        {
+            rateLimitOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            rateLimitOptions.AddPolicy(AuthProtectionOption.RateLimitPolicyName, httpContext =>
+            {
+                var protection = httpContext.RequestServices.GetRequiredService<IOptionService>()
+                    .GetOption<AuthProtectionOption>();
+
+                if (!protection.Enabled)
+                {
+                    return RateLimitPartition.GetNoLimiter("disabled");
+                }
+
+                var partitionKey = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(partitionKey, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = protection.RateMaxRequestsPerWindow,
+                    Window = TimeSpan.FromSeconds(protection.RateWindowSeconds),
+                    QueueLimit = 0,
+                });
+            });
+        });
 
         services.AddOptions<IdentityPasskeyOptions>()
             .Configure<IOptionService>((options, optionService) =>
@@ -56,12 +82,23 @@ public static class MainIdentity
 
     public static IApplicationBuilder UseMarsIdentity(this WebApplication app)
     {
-        app.Services.GetRequiredService<IOptionService>().RegisterOption<PasskeyOption>(appendToInitialSiteData: true);
+        var optionService = app.Services.GetRequiredService<IOptionService>();
+        optionService.RegisterOption<PasskeyOption>(appendToInitialSiteData: true);
+        optionService.RegisterOption<AuthProtectionOption>(onChangeHook: protection => ApplyLockoutSettings(app.Services, protection));
+        ApplyLockoutSettings(app.Services, optionService.GetOption<AuthProtectionOption>());
 
         var cli = app.Services.GetService<ICommandLineApi>();
         cli?.Register<UserCommandCli>();
         cli?.Register<RoleCommandCli>();
 
         return app;
+    }
+
+    private static void ApplyLockoutSettings(IServiceProvider services, AuthProtectionOption protection)
+    {
+        var lockout = services.GetRequiredService<IOptions<IdentityOptions>>().Value.Lockout;
+        lockout.AllowedForNewUsers = true;
+        lockout.MaxFailedAccessAttempts = protection.LockoutMaxFailedAccessAttempts;
+        lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(protection.LockoutDefaultLockoutTimeSpanMinutes);
     }
 }

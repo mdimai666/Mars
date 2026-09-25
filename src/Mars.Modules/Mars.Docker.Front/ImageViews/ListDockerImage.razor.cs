@@ -128,7 +128,7 @@ public partial class ListDockerImage
     async Task DeleteImage(ImageTagEntry entry)
     {
         var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete image <b>{entry.FullName}</b>?",
+            (MarkupString)$"Delete image <b>{System.Net.WebUtility.HtmlEncode(entry.FullName)}</b>?",
             new DialogParameters { Title = "Delete image", Modal = true });
         var result = await dialog.Result;
         if (result.Cancelled)

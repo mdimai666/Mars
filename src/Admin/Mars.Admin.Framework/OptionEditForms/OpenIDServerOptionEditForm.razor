@@ -1,3 +1,5 @@
+@using System.Security.Cryptography
+@using System.Text
 @using Mars.Admin.Framework
 @using Mars.Admin.Framework.Services
 @using Mars.Core.Utils
@@ -42,12 +44,19 @@
                         <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
                     </FormItem2>
 
-                    <FormItem2 For="() => sso.ClientSecret" Class="col">
-                        <FluentTextField @bind-Value="@sso.ClientSecret" Class="w-100">
+                    <FormItem2 For="() => sso.ClientSecretHash" Class="col">
+                        <FluentTextField @bind-Value="@sso.ClientSecretHash" Class="w-100" ReadOnly Appearance="FluentInputAppearance.Filled">
                             <FluentButton Appearance="@Appearance.Stealth"
-                                          OnClick=@(e=>{ sso.ClientSecret = Password.Generate(16,6); })
+                                          OnClick=@(e => GenerateSecret(sso))
                                           slot="end">generate</FluentButton>
                         </FluentTextField>
+                        @if (_shownSecrets.TryGetValue(sso, out var shownSecret))
+                        {
+                            <div class="alert alert-warning my-1">
+                                Секрет показан один раз и хранится в виде хэша — скопируйте сейчас:
+                                <code>@shownSecret</code>
+                            </div>
+                        }
                     </FormItem2>
                 </div>
 
@@ -86,6 +95,16 @@
     EditOptionForm<OpenIDServerOption> form = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
 
+    readonly Dictionary<OpenIDServerClientConfig, string> _shownSecrets = new();
+
+    void GenerateSecret(OpenIDServerClientConfig sso)
+    {
+        var secret = Password.Generate(16, 6);
+        // SHA-256 → base64, тот же контракт, что ApiKeyFormat.HashSecret (Identity.Abstractions)
+        sso.ClientSecretHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(secret)));
+        _shownSecrets[sso] = secret;
+    }
+
     void AddSSOClick()
     {
         form.Model.OpenIDClientConfigs.Add(new());
@@ -94,6 +113,7 @@
     void DeleteSSOClick(OpenIDServerClientConfig sso)
     {
         form.Model.OpenIDClientConfigs.Remove(sso);
+        _shownSecrets.Remove(sso);
     }
 
 }

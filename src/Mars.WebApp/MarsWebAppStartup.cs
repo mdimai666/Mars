@@ -178,12 +178,11 @@ public static class MarsWebAppStartup
         app.UseCors();
         //app.UseIdentityServer();
         app.UseRouting();
+        app.UseRateLimiter();
         //app.UseAntiforgery();
         app.UseAuthentication();
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSO());
-#pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
         app.UseAuthorization();
-#pragma warning restore ASP0001 // Authorization middleware is incorrectly configured
 
         app.UseMarsSwagger();
         app.MapControllers();

@@ -1,3 +1,4 @@
+using System.Net;
 using FluentAssertions;
 using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Host.Controllers;
@@ -48,5 +49,19 @@ public class LoginAccountTests : BaseWebApiClientTests
         result.ErrorMessage.Should().NotBeNullOrEmpty();
         result.Token.Should().BeNullOrEmpty();
         result.ExpiresIn.Should().Be(0);
+    }
+
+    [IntegrationFact]
+    public async Task Logout_WithoutAuthorization_ReturnsOk()
+    {
+        //Arrange
+        _ = nameof(AccountController.Logout);
+        var http = AppFixture.GetClientEx(isAnonymous: true);
+
+        //Act
+        var response = await http.PostAsync("/api/Account/Logout", content: null);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

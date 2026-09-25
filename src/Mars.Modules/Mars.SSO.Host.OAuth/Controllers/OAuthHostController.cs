@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
 
@@ -77,7 +78,9 @@ public class OAuthHostController : ControllerBase
     // for Authorization Code: grant_type=authorization_code&code=...&redirect_uri=...&client_id=...&client_secret=...&code_verifier=...
     // for Refresh token: grant_type=refresh_token&refresh_token=...&client_id=...&client_secret=...
     // for client_credentials: grant_type=client_credentials&client_id=...&client_secret=...&scope=...
+    // имя политики совпадает с AuthProtectionOption.RateLimitPolicyName (Mars.Identity.Contracts)
     [HttpPost("token")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Token([FromForm] IFormCollection form, CancellationToken cancellationToken)
     {
         var grantType = form["grant_type"].FirstOrDefault();

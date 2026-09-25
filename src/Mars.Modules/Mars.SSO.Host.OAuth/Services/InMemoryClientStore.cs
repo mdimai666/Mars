@@ -46,12 +46,12 @@ public class InMemoryClientStore : IOAuthClientStore
         => new()
         {
             ClientId = opt.ClientId,
-            ClientSecret = opt.ClientSecret,
+            ClientSecretHash = opt.ClientSecretHash,
             RedirectUris = opt.RedirectUris,
             AllowedGrantTypes = opt.AllowedGrantTypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
             RequirePkce = opt.RequirePkce,
             AccessTokenLifetimeSeconds = _tokenService.ExpiryInSeconds,
-            RefreshTokenLifetimeDays = 60, //TODO: make configurable
+            RefreshTokenLifetimeDays = opt.RefreshTokenLifetimeDays,
             AllowOfflineAccess = true,
             AllowedScopes = "openid profile email phone address roles api1"
         };

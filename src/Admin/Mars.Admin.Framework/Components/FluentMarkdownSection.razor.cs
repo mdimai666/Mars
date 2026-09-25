@@ -141,6 +141,9 @@ public partial class FluentMarkdownSection : FluentComponentBase
         {
             var builder = new MarkdownPipelineBuilder()
                     .UseAdvancedExtensions()
+                    // raw HTML в markdown экранируется в текст — защита от XSS
+                    // (контент приходит от LLM/пользователя и рендерится через MarkupString)
+                    .DisableHtml()
                     .UseAutoLinks(new AutoLinkOptions { OpenInNewWindow = true })
                     .Use<MarkdownSectionPreCodeExtension>();
 
@@ -162,7 +165,6 @@ public partial class FluentMarkdownSection : FluentComponentBase
 
             string html = document.ToHtml(pipeline);
 
-            // Return sanitized HTML as a MarkupString that Blazor can render
             return new MarkupString(html);
         }
 

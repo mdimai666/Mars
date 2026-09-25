@@ -440,7 +440,7 @@ public abstract partial class QueryWorkspaceBase : ComponentBase
     protected async Task<bool> ConfirmChangeAsync(string keyword, string what)
     {
         var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Запрос <b>{keyword}</b> {what}. Выполнить?",
+            (MarkupString)$"Запрос <b>{System.Net.WebUtility.HtmlEncode(keyword)}</b> {what}. Выполнить?",
             new DialogParameters
             {
                 Title = "Подтверждение запроса",

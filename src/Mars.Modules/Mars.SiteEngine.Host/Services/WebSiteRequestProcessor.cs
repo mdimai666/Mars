@@ -9,8 +9,6 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Exceptions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -150,25 +148,7 @@ public class WebSiteRequestProcessor
 
             pageRenderContext.TemplateContextVariables.Add("$attr", page.Attributes);
 
-            if (page.UrlIsContainCurlyBracket)
-            {
-                //Dictionary<string, object> par = new();
-
-                var surl = TemplateParser.Parse(request.Path);
-
-                for (int i = 0; i < page.RoutePattern.PathSegments.Count; i++)
-                {
-                    var p = page.RoutePattern.PathSegments[i].Parts[0];
-
-                    if (p.IsParameter && p is RoutePatternParameterPart pa && i < surl.Segments.Count)
-                    {
-                        var seg = surl.Segments[i].Parts[0].Text;
-                        var key = pa.Name;
-                        //httpContext.Request.RouteValues.Add(key, seg); //TODO: rgis - slug conflict
-                        pageRenderContext.TemplateContextVariables.TryAdd(key, seg!);
-                    }
-                }
-            }
+            page.FillRouteVariables(request.Path, pageRenderContext.TemplateContextVariables);
 
             //=======================================================
             //PREPARE handlebars

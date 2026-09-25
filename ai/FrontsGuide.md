@@ -8,7 +8,7 @@
 
 Фронт — это папка с файлами-шаблонами и статикой:
 
-- `_root.hbs` — корневой шаблон;
+- `_root.hbs`/`_root.sbn` — корневой шаблон (расширение = движок фронта: `*.hbs` — Handlebars, `*.sbn` — Scriban);
 - `pages/` — страницы с атрибутом `@page "/url"`;
 - `blocks/`, `layout/` — блоки и layout'ы;
 - `wwwroot/` — статика фронта.
@@ -31,7 +31,17 @@
 - `Mars.SiteEngine.Host` — реализация: `FrontManager`, `WebRenderEngineLocator`, `FrontFilesService`,
   `FrontTemplateService`, `WebTemplateService`, `WebSiteRequestProcessor`; middleware пайплайна —
   в `MainSiteEngine` (`AddMarsSiteEngine`/`UseMarsSiteEngineStartup`/`UseMarsSiteEngine`).
-- `Mars.SiteEngine.Handlebars` — встроенный движок рендера (фабрика `HandlebarsRenderEngineFactory`).
+- `Mars.SiteEngine.Handlebars` — встроенный движок рендера Handlebars (фабрика `HandlebarsRenderEngineFactory`);
+  сайт-хелперы — контрибьюторы `Extensions/SiteBasicHelpersContributor` + `SiteContextHelpersContributor`.
+- `Mars.SiteEngine.Scriban` — встроенный движок рендера Scriban (фабрика `ScribanRenderEngineFactory`,
+  Id `scriban`); сайт-функции — `Extensions/SiteScribanFunctionsContributor`.
+- `Mars.TemplateEngine.Providers.Handlebars`/`.Scriban` — фабричный слой движков библиотек
+  (`IHandlebarsEngineFactory`/`IScribanEngineFactory`) и точки расширения
+  (`IHandlebarsBuilderContributor`/`IScribanObjectContributor`, scope `core` = нода Template,
+  `site` = сайт-движок, `null` = все). Тот же механизм используют плагины.
+- Филлеры контекстных переменных (`SiteTmpCtx*`, `ITemplateContextVariablesFiller`) — в
+  `Mars.SiteEngine.Abstractions/TemplateData` (общие для движков); парсер/процессор QueryLang-запросов
+  (`DataQueryBodyParser`, `ContextQueryProcessor`) — в `Mars.QueryLang/Services`.
 - Админка: страница `/Settings/Front` (список фронтов) и редактор
   `src/Mars.Admin/Builder/FrontEditorViews/FrontEditorPage.razor` (`/front/editor/{Slug}`).
 - ИИ-инструменты: `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`.
@@ -62,22 +72,35 @@
 
 ## Движки рендера
 
-- Реестр фабрик `IWebRenderEngineFactory` в DI (`IEnumerable<>`). Встроенный —
-  `HandlebarsRenderEngineFactory` (регистрируется в `Mars.SiteEngine.Handlebars`); плагины могут
-  добавлять свои фабрики. Метаданные движка — через `[Display]`.
+- Реестр фабрик `IWebRenderEngineFactory` в DI (`IEnumerable<>`). Встроенные —
+  `HandlebarsRenderEngineFactory` (`Mars.SiteEngine.Handlebars`) и `ScribanRenderEngineFactory`
+  (`Mars.SiteEngine.Scriban`, Id `scriban`); плагины могут добавлять свои фабрики.
+  Метаданные движка — через `[Display]`.
 - Движок фронта выбирается по `FrontItem.EngineId`. `WebRenderEngineLocator` кэширует движки
   per-front, создаёт лениво на первом запросе и пересоздаёт по diff'у полей при изменении
-  `FrontsOption` (подписан на `FrontManager.Changed`).
+  `FrontsOption` (подписан на `FrontManager.Changed`). `WebTemplateService` создаёт ХОСТ
+  (`WebRenderEngineLocator.Build`) и кладёт в `appFront.Features` — движки его не создают.
+- Движок библиотеки (экземпляр `IHandlebars` / глобальный `ScriptObject`) движки сайта получают
+  из фабрик провайдеров (`TemplateEngine.Providers.*`) с scope `site` — хелперы/функции
+  регистрируются контрибьюторами один раз на инстанс.
+- Конвенции Scriban-шаблонов: layout выводит страницу через `{{ body }}` (двухстадийный рендер:
+  страница → обёртка root+layout); блоки — `{{ include 'blocks/name' }}`; QueryLang —
+  `{{ context "posts = ef.Post.Take(3)" key? cache? }}`; `$`-переменные недоступны из глобалов
+  (`$errors` → `errors`); списки — `{{ x.size }}`, не `.Count`.
 - `IMarsAppProvider` — read-only фасад над фронт-менеджером для старых потребителей
   (`GetAppForUrl`, `Apps` и т.д.).
 - Демонтировано в реворк: DB-рендер (посты типов `page/template/block/layout`, `HostHtml` как `_root`)
   и Blazor-рендер. Шаблоны — только файлы.
+- **Грабли маунт-фронтов**: страницы матчатся ПОЛНЫМ url запроса (Host не срезает префикс маунта) —
+  у фронта на `/app2` страницы объявляют `@page "/app2/..."`; index маунта детектится только по
+  имени файла `index.*`; `Page404` ищется по `Url == "/404"` (у маунта не сработает — fallback на index).
 
 ## Шаблоны и hot-reload
 
 - Файлы с атрибутами в шапке: `@page "/url"`, `@layout`, `@cache`/`@cache-force`, `@title`;
-  модели `WebSitePart`/`WebPage`. Данные в шаблонах — `{{#context}}` и QueryLang.
-- `WebTemplateService` сканирует папку фронта (только файловый источник); `FileSystemWatcher`
+  модели `WebSitePart`/`WebPage`. Данные в шаблонах — QueryLang: `{{#context}}` (Handlebars)
+  или `{{ context "..." }}` (Scriban); общий парсер/исполнение — `Mars.QueryLang`.
+- `WebTemplateService` сканирует папку фронта (`*.hbs` и `*.sbn`, только файловый источник); `FileSystemWatcher`
   следит за изменениями и шлёт SignalR-события `reload`/`refreshcss` через ChatHub (`/_ws/admin`);
   `hot-reload.js` в wwwroot перезагружает страницы.
 - **Важно**: движок кэширует скомпилированные шаблоны (~30 минут). Поэтому `FrontFilesService`
@@ -115,8 +138,9 @@
 
 ## Тесты
 
-- `tests/Mars.SiteEngine.Tests` — юниты рендера и QueryLang.
-- Docker-регрессия: `HandlebarsAppFrontTests` в `Mars.SiteEngine.Integration.Tests`
+- `tests/Mars.SiteEngine.Tests` — юниты рендера (Handlebars + `ScribanEngine/ScribanRenderEngineTests`) и QueryLang.
+- Docker-регрессия: `Mars.SiteEngine.Integration.Tests` — `HandlebarsAppFrontTests` +
+  `ScribanAppFrontTests` (тема `ScribanEngine/sbnTheme`, маунт `/sbn`)
   (полный пайплайн: `/dev` не перехватывается фолбэком, maintenance, мгновенный рендер после записи).
 - Лёгкий набор без Docker — см. память/гайды по фронтовым тестам (`FrontManagerTests`,
   `AiFrontFilesToolsTests` и др. в `Mars.Integration.Tests`).
@@ -129,9 +153,16 @@
 фронтов в админке, редактор с live-превью и ИИ-чатом. Полный план с заметками по фазам —
 в истории git (`ai/FrontReworkPlan.md`, файл схлопнут).
 
+SiteEngine-реворк (сентябрь 2026): чистка зависимостей и мёртвого кода, `MyHandlebars`/
+`IMarsHtmlTemplator` демонтированы — сайт-движки строятся на фабричном слое
+`TemplateEngine.Providers.*` с контрибьюторами хелперов (точки расширения для плагинов),
+добавлен движок Scriban (`*.sbn`), QueryLang-ядро общее (`Mars.QueryLang`). План —
+`ai/SiteEngineReworkPlan.md`.
+
 ## Агентам
 
-- Изменения рендера/пайплайна фронтов обязательно проверять Docker-регрессией `HandlebarsAppFrontTests`.
+- Изменения рендера/пайплайна фронтов обязательно проверять Docker-регрессией
+  `Mars.SiteEngine.Integration.Tests` (Handlebars + Scriban фронты).
 - Middleware SiteEngine — последние в пайплайне; порядок внутри `UseSiteEngineMiddlewares` не ломать
   (особенно: фолбэк-рендер — middleware, а не endpoint).
 - Файловые операции над фронтами — только через `FrontFilesService` (защита путей);

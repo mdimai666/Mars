@@ -169,19 +169,24 @@ QueryLang. Старт 2026-09-26.
 
 ## Фаза 4 — WebPage-чистка и закрытие
 
-- [ ] 4.1 `WebPage` минимальная чистка (`SiteEngine.Abstractions/WebSite/Models/WebPage.cs`)
-      — отложена в конец по решению пользователя:
-      - `UrlSegmentCount` — публичное поле → init-свойство;
-      - `RouteTemplate`, `TemplateMatcher` → private (снаружи не нужны);
-      - убрать мёртвую проверку `TemplateMatcher is null` в `MatchUrl` и бессмысленный
-        `_templateMatcherRouteValues ??= []`;
-      - `TemplateMatcherUsedConstraints()` — вызывать один раз (кэшировать в init);
-      - новое свойство/метод `RouteParameterNames` — и переписать
-        `WebSiteRequestProcessor.cs:153–165` (единственный внешний потребитель
-        `RoutePattern.PathSegments`) на него.
-- [ ] 4.2 Прогнать регрессию рендера: `HandlebarsAppFrontTests` (Docker) + лёгкие фронт-тесты
-      `Mars.Integration.Tests` + `Mars.SiteEngine.Tests` + контракт-тесты `Mars.Server.Tests`.
-- [ ] 4.3 Обновить `ai/FrontsGuide.md` (реестр движков: + Scriban; убрать упоминания MyHandlebars).
+- [x] 4.1 `WebPage` минимальная чистка (`SiteEngine.Abstractions/WebSite/Models/WebPage.cs`):
+      - `UrlSegmentCount` — поле → init-свойство;
+      - `RouteTemplate`, `RoutePattern`, `TemplateMatcher` → приватные;
+      - убрана мёртвая проверка `TemplateMatcher is null` и `_templateMatcherRouteValues ??= []`
+        (поле удалено);
+      - `TemplateMatcherUsedConstraints()` — приватный, считается один раз в конструкторе
+        (`_usedConstraints`), `RouteConstraintMatch` переиспользует кэш;
+      - новый метод `FillRouteVariables(PathString, Dictionary<string, object?>)` — заменил
+        раскопки `page.RoutePattern.PathSegments` в `WebSiteRequestProcessor` (единственный
+        внешний потребитель ASP.NET-внутренностей; из процессора убраны using'и
+        Routing.Patterns/Template).
+- [x] 4.2 Регрессия рендера: `Mars.SiteEngine.Tests` 73/73; `Mars.SiteEngine.Integration.Tests`
+      (Docker, Handlebars+Scriban фронты) 22/22; `Mars.Integration.Tests` (Services) 97/97;
+      `Mars.Server.Tests` (TemplateEngines) 57/57; `dotnet build Mars.slnx` — 0 ошибок.
+- [x] 4.3 `ai/FrontsGuide.md` обновлён: два встроенных движка (Handlebars/Scriban), фабричный
+      слой Providers и контрибьюторы, Scriban-конвенции (`{{ body }}`, include, context,
+      `$`-алиасы, `.size`), скан `*.hbs`+`*.sbn`, грабли маунт-фронтов, тесты, история
+      SiteEngine-реворка.
 - Схлопывание плана в гайд — НЕ делать: правки продолжаются, схлопнуть по явной команде
   пользователя (решение 2026-09-26).
 

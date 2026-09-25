@@ -1,0 +1,89 @@
+@page "/ApiKeys"
+@using Mars.Identity.Contracts.ApiKeys
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize]
+@attribute [Display(Name = "API-ключи")]
+
+<ContentWrapper Title="API-ключи">
+
+    <div class="hstack">
+        <FluentLabel>Ключи для доступа к API через заголовок X-API-Key. Полный ключ показывается только один раз при создании.</FluentLabel>
+        <div class="ms-auto">
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="OnClickCreate"
+                          IconStart="@(new Icons.Regular.Size16.Key())">Создать ключ</FluentButton>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <FluentDataGrid ItemsProvider="dataProvider"
+                        @ref=table
+                        TGridItem="ApiKeySummaryResponse"
+                        ShowHover="false"
+                        GenerateHeader="GenerateHeaderOption.Sticky"
+                        GridTemplateColumns="2fr 2fr 1fr 1fr auto">
+            <PropertyColumn Property="@(f => f.Name)" Title="Название" />
+            <PropertyColumn Property="@(f => f.KeyPrefix)" Title="Ключ" />
+            <PropertyColumn Property="@(f => f.CreatedAt)" Title="Создан" Format="d" />
+            <TemplateColumn Title="Действителен до">
+                @(context.ExpiresAt?.ToString("d") ?? "бессрочно")
+            </TemplateColumn>
+            <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <DFluentDeleteButton OnConfirm=@(e => Revoke(context.Id))>
+                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                </DFluentDeleteButton>
+            </TemplateColumn>
+        </FluentDataGrid>
+    </div>
+
+    <FluentDialog Hidden="@(!createVisible)" aria-label="Create api key dialog"
+                  Modal="true"
+                  @ondialogdismiss="@(() => createVisible = false)"
+                  PreventScroll="true">
+        <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+            <div class="hstack">
+                <FluentLabel Typo="Typography.Header">Новый ключ</FluentLabel>
+            </div>
+        </FluentDialogHeader>
+        <div class="vstack gap-2">
+            <FluentTextField @bind-Value="newKeyName" Label="Название" AutoComplete="off" />
+            <div class="hstack gap-2">
+                <FluentButton Appearance="@(IsChipActive(Week) ? Appearance.Accent : Appearance.Lightweight)"
+                              OnClick="@(() => SetExpires(Week))">Неделя</FluentButton>
+                <FluentButton Appearance="@(IsChipActive(Month) ? Appearance.Accent : Appearance.Lightweight)"
+                              OnClick="@(() => SetExpires(Month))">Месяц</FluentButton>
+                <FluentButton Appearance="@(IsChipActive(Quarter) ? Appearance.Accent : Appearance.Lightweight)"
+                              OnClick="@(() => SetExpires(Quarter))">3 месяца</FluentButton>
+                <FluentButton Appearance="@(IsChipActive(Year) ? Appearance.Accent : Appearance.Lightweight)"
+                              OnClick="@(() => SetExpires(Year))">Год</FluentButton>
+            </div>
+            <FluentDatePicker @bind-Value="newKeyExpires" Label="Действителен до" />
+        </div>
+        <FluentDialogFooter>
+            <FluentButton Appearance="Appearance.Accent" OnClick="CreateKey">Создать</FluentButton>
+            <FluentButton OnClick="@(() => createVisible = false)">Отмена</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+
+    <FluentDialog Hidden="@(!createdKeyVisible)" aria-label="Created api key dialog"
+                  Modal="true"
+                  @ondialogdismiss="@(() => createdKeyVisible = false)"
+                  PreventScroll="true">
+        <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+            <div class="hstack">
+                <FluentLabel Typo="Typography.Header">Ключ создан</FluentLabel>
+            </div>
+        </FluentDialogHeader>
+        <div class="vstack gap-2">
+            <FluentLabel>Сохраните ключ — он показан в последний раз:</FluentLabel>
+            <div class="hstack gap-2">
+                <FluentTextField Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
+                <FluentButton IconStart="@(new Icons.Regular.Size16.Copy())" OnClick="CopyCreatedKey" Title="Скопировать" />
+            </div>
+        </div>
+        <FluentDialogFooter>
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => createdKeyVisible = false)">Закрыть</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+
+</ContentWrapper>

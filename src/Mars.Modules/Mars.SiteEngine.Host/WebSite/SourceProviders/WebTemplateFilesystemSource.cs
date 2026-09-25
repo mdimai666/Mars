@@ -23,7 +23,7 @@ public class WebTemplateFilesystemSource : IWebTemplateSource
 
         var files = _fileService.ScanFiles(path);
 
-        if (!files.Any()) throw new FileNotFoundException($"WebSiteTemplate: no *.hbs files in front folder '{path}'");
+        if (!files.Any()) throw new FileNotFoundException($"WebSiteTemplate: no *.hbs/*.sbn files in front folder '{path}'");
 
         foreach (var file in files)
         {

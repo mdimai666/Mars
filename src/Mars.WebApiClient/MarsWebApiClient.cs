@@ -11,6 +11,8 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IFlurlClient Client { get; }
 
     public IAccountServiceClient Account { get; }
+    public IApiKeyServiceClient ApiKey { get; }
+    public IPasskeyServiceClient Passkey { get; }
     public IPostTypeServiceClient PostType { get; }
     public IFeedbackServiceClient Feedback { get; }
     public IPostServiceClient Post { get; }
@@ -34,6 +36,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IFrontServiceClient Front { get; }
     public IAIServiceClient AITool { get; }
     public IAiChatServiceClient AiChat { get; }
+    public ICodeCompletionServiceClient CodeCompletion { get; }
 
     public MarsWebApiClient(IServiceProvider serviceProvider, IFlurlClient flurlClient)
     {
@@ -41,6 +44,8 @@ public class MarsWebApiClient : IMarsWebApiClient
         Client = targetClient.OnError(BasicServiceClient.OnError);
 
         Account = new AccountServiceClient(serviceProvider, targetClient);
+        ApiKey = new ApiKeyServiceClient(serviceProvider, targetClient);
+        Passkey = new PasskeyServiceClient(serviceProvider, targetClient);
         PostType = new PostTypeServiceClient(serviceProvider, targetClient);
         Feedback = new FeedbackServiceClient(serviceProvider, targetClient);
         Post = new PostServiceClient(serviceProvider, targetClient);
@@ -64,5 +69,6 @@ public class MarsWebApiClient : IMarsWebApiClient
         Front = new FrontServiceClient(serviceProvider, targetClient);
         AITool = new AIServiceClient(serviceProvider, targetClient);
         AiChat = new AiChatServiceClient(serviceProvider, targetClient);
+        CodeCompletion = new CodeCompletionServiceClient(serviceProvider, targetClient);
     }
 }

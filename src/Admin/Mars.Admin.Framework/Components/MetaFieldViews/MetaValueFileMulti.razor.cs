@@ -1,5 +1,8 @@
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Services;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Contracts;
+using Mars.Forms.Front;
 using Mars.Media.Contracts.Files;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -9,53 +12,49 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// <summary>
 /// Множественные значения поля Файл/Изображение: плитки с превью (каждая запрашивает файл сама),
 /// порядок драгом, добавление дроп-зоной и мультивыбором из медиа, удаление = отвязка
-/// (файл остаётся в медиа).
+/// (файл остаётся в медиа). Значения — список идентификаторов файлов из привязки поля.
 /// </summary>
 public partial class MetaValueFileMulti
 {
     [Inject] IAppMediaService _mediaService { get; set; } = default!;
 
-    [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
 
-    List<MetaValueEditModel> _rows = [];
+    List<Guid> _rows = [];
     readonly string _sortableId = "file-multi-" + Guid.NewGuid().ToString("N");
     readonly Dictionary<Guid, FileSummaryResponse?> _previews = [];
     readonly HashSet<Guid> _loadingIds = [];
 
     /// <summary>Вид отображения (Options.viewMode): таблица (дефолт) или карточки</summary>
-    bool IsCardsView => Meta.ViewMode == MetaFieldKindCatalog.ViewModes.Cards;
+    bool IsCardsView => Binding.Field.Options.GetViewMode() == MetaFieldKindCatalog.ViewModes.Cards;
 
-    List<MetaValueEditModel> FieldRows()
-        => MetaValues.Where(v => v.MetaField.Key == Meta.Key)
-                     .Where(v => v.ModelId != Guid.Empty)
-                     .OrderBy(v => v.Index)
-                     .ToList();
+    /// <summary>Папка загрузки дропа (пусто = папка года)</summary>
+    string UploadFolder => Binding.Field.Options.GetUploadFolder();
 
-    FileSummaryResponse? PreviewOf(MetaValueEditModel row)
-        => _previews.GetValueOrDefault(row.ModelId);
+    /// <summary>Дроп-зона загрузки включена (отсутствие параметра = включена)</summary>
+    bool DropZoneEnabled => Binding.Field.Options.IsDropZoneEnabled();
 
-    bool IsLoading(MetaValueEditModel row)
-        => _loadingIds.Contains(row.ModelId);
+    bool IsImage => Binding.Field.Type == FormFieldType.Image;
+
+    List<Guid> SelectedIds()
+        => Binding.List.OfType<Guid>().Where(id => id != Guid.Empty).ToList();
+
+    FileSummaryResponse? PreviewOf(Guid id)
+        => _previews.GetValueOrDefault(id);
+
+    bool IsLoading(Guid id)
+        => _loadingIds.Contains(id);
 
     protected override void OnParametersSet()
     {
-        PurgeBlankRows();
-        _rows = FieldRows();
+        _rows = SelectedIds();
         _ = LoadPreviewsAsync();
-    }
-
-    /// <summary>Пустая строка необязательного поля (не выбрано) не сохраняется — вместо неё ничего</summary>
-    void PurgeBlankRows()
-    {
-        if (Meta.IsNullable)
-            MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key && v.ModelId == Guid.Empty);
     }
 
     /// <summary>Превью каждого файла запрашивается отдельно (как в одинарных плитках)</summary>
     async Task LoadPreviewsAsync()
     {
-        foreach (var id in _rows.Select(r => r.ModelId).Distinct())
+        foreach (var id in _rows)
         {
             if (_previews.ContainsKey(id) || _loadingIds.Contains(id)) continue;
 
@@ -64,7 +63,7 @@ public partial class MetaValueFileMulti
         }
 
         // превью могли устареть (файл отвязали) — лишние не держим
-        var actual = _rows.Select(r => r.ModelId).ToHashSet();
+        var actual = _rows.ToHashSet();
         foreach (var key in _previews.Keys.Where(k => !actual.Contains(k)).ToList())
             _previews.Remove(key);
     }
@@ -89,17 +88,12 @@ public partial class MetaValueFileMulti
 
         foreach (var file in files)
         {
-            if (_rows.Any(r => r.ModelId == file.Id)) continue;
-            _rows.Add(new MetaValueEditModel
-            {
-                Id = Guid.NewGuid(),
-                MetaField = Meta,
-                ModelId = file.Id,
-            });
+            if (_rows.Contains(file.Id)) continue;
+            _rows.Add(file.Id);
             _previews[file.Id] = file;
         }
 
-        SyncRows();
+        SyncValues();
     }
 
     /// <summary>Дроп-зона: файлы грузятся в медиа и становятся значениями (без постов)</summary>
@@ -107,24 +101,19 @@ public partial class MetaValueFileMulti
     {
         foreach (var file in files)
         {
-            _rows.Add(new MetaValueEditModel
-            {
-                Id = Guid.NewGuid(),
-                MetaField = Meta,
-                ModelId = file.Id,
-            });
+            _rows.Add(file.Id);
             _previews[file.Id] = file;
         }
 
-        SyncRows();
+        SyncValues();
         return Task.CompletedTask;
     }
 
     /// <summary>Удаление = отвязка значения (файл остаётся в медиа)</summary>
-    void RemoveAsync(MetaValueEditModel row)
+    void RemoveAsync(Guid id)
     {
-        _rows.Remove(row);
-        SyncRows();
+        _rows.Remove(id);
+        SyncValues();
     }
 
     void OnSort(FluentSortableListEventArgs args)
@@ -134,16 +123,13 @@ public partial class MetaValueFileMulti
         var item = _rows[args.OldIndex];
         _rows.RemoveAt(args.OldIndex);
         _rows.Insert(args.NewIndex, item);
-        SyncRows();
+        SyncValues();
     }
 
-    /// <summary>Переиндексация строк и запись обратно в значения формы</summary>
-    void SyncRows()
+    /// <summary>Записать порядок значений в привязку поля</summary>
+    void SyncValues()
     {
-        for (var i = 0; i < _rows.Count; i++) _rows[i].Index = i;
-
-        MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key);
-        MetaValues.AddRange(_rows);
+        Binding.Values.SetList(Binding.Field, _rows.Cast<object?>().ToList());
         StateHasChanged();
     }
 }

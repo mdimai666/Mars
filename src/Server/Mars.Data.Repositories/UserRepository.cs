@@ -12,6 +12,7 @@ using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
 using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,16 +23,18 @@ internal class UserRepository : IUserRepository, IDisposable
     private readonly MarsDbContext _marsDbContext;
     private readonly UserManager<UserEntity> _userManager;
     private readonly ILookupNormalizer _lookupNormalizer;
+    private readonly ISecurityStampCache _securityStampCache;
     private bool _disposed;
 
     IQueryable<UserEntity> _listAllQuery => _marsDbContext.Users.OrderByDescending(s => s.CreatedAt);
 
     public UserRepository(MarsDbContext marsDbContext, UserManager<UserEntity> userManager,
-                            ILookupNormalizer lookupNormalizer)
+                            ILookupNormalizer lookupNormalizer, ISecurityStampCache securityStampCache)
     {
         _marsDbContext = marsDbContext;
         _userManager = userManager;
         _lookupNormalizer = lookupNormalizer;
+        _securityStampCache = securityStampCache;
     }
 
     public async Task<UserSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -132,6 +135,7 @@ internal class UserRepository : IUserRepository, IDisposable
         await UpdateRoles(entity, query.Roles, cancellationToken);
         await _marsDbContext.SaveChangesAsync(cancellationToken);
         await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+        _securityStampCache.Mark(entity.Id, entity.SecurityStamp!);
         _marsDbContext.Entry(entity).State = EntityState.Detached;
     }
 
@@ -341,7 +345,7 @@ internal class UserRepository : IUserRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var user = await _userManager.FindByEmailAsync(query.Username) ?? throw new NotFoundException();
+        var user = await _userManager.FindByEmailAsync(query.Username) ?? await _userManager.FindByNameAsync(query.Username) ?? throw new NotFoundException();
 
         var removeResult = await _userManager.RemovePasswordAsync(user);
         var addResult = await _userManager.AddPasswordAsync(user, query.NewPassword);
@@ -394,20 +398,19 @@ internal class UserRepository : IUserRepository, IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
 
-        var user = await _marsDbContext.Users.Include(s => s.Roles).AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId) ?? throw new NotFoundException();
+        // тот же путь, что в Update (UpdateRoles + SaveChanges): Identity role-API
+        // (AddToRolesAsync) конфликтует с Include(Roles) по трекингу UserRoleEntity
+        var user = await _marsDbContext.Users.Include(s => s.Roles)
+                                             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken)
+            ?? throw new NotFoundException();
 
         if (user.Roles is null) throw new UserActionException("не удалось получить роли");
 
-        var existRoles = user.Roles!.Select(s => s.Name!).ToList();
-
-        var diff = DiffList.FindDifferences(existRoles!, roles);
-
-        if (!diff.HasChanges) return UserActionResult.Success("нет изменений");
-
-        if (diff.ToRemove.Any()) await _userManager.RemoveFromRolesAsync(user, diff.ToRemove);
-        if (diff.ToAdd.Any()) await _userManager.AddToRolesAsync(user, diff.ToAdd);
+        await UpdateRoles(user, roles, cancellationToken);
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
 
         await _userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
+        _securityStampCache.Mark(user.Id, user.SecurityStamp!);
 
         return UserActionResult.Success("успешно");
     }
@@ -496,6 +499,7 @@ internal class UserRepository : IUserRepository, IDisposable
                 await UpdateRoles(entity, setupRoles, cancellationToken);
                 await _marsDbContext.SaveChangesAsync(cancellationToken);
                 await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+                _securityStampCache.Mark(entity.Id, entity.SecurityStamp!);
                 _marsDbContext.Entry(entity).State = EntityState.Detached;
             }
 

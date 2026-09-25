@@ -1,7 +1,13 @@
 using FluentAssertions;
-using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.MySQL;
+using Mars.Datasource.Abstractions.Mappings;
+using Mars.Datasource.Abstractions.Sql;
+using Mars.Datasource.Contracts.Sql;
+using Mars.Datasource.Providers.MySQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
+using Mars.Datasource.Contracts.Catalog;
+using Mars.Datasource.Contracts.Config;
+using Mars.Datasource.Contracts.Document;
+using Mars.Datasource.Contracts.Query;
 using Mars.Integration.Tests.Attributes;
 using MySqlConnector;
 
@@ -54,22 +60,157 @@ public class MySqlDatasourceTests : IClassFixture<MySqlFixture>
         await using var connection = new MySqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
         await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
 
         string query = "SELECT * FROM `todo` LIMIT 10";
         var se = new DatasourceMySQLDriver(Config());
 
-        var result = await se.SqlQuery(query);
-        Assert.True(result.Data.Length > 0);
+        var result = await se.Query(new DatasourceRequest { Query = query });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Fields.Select(c => c.Name).Should().Equal("Id", "Title", "Content", "Completed");
+        result.Rows.Should().HaveCount(2);
+        result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
-        Assert.True(columns.Count > 0);
+        columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        columns.Values.Single(c => c.ColumnName == "Title").IsNullable.Should().BeFalse();
 
         var tables = await se.Tables();
-        Assert.True(tables.Count > 0);
+        tables.Should().Contain(t => t.TableName == "todo" && t.Kind == QTableKind.Table);
 
         var structure = await se.DatabaseStructure();
-        Assert.True(structure.Tables.Count > 0);
-        Assert.NotNull(structure.DatabaseName);
+        var todo = structure.Tables.Single(t => t.TableName == "todo");
+        todo.TableSchema.Kind.Should().Be(QTableKind.Table);
+        todo.Columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        structure.DatabaseName.Should().NotBeNullOrEmpty();
+    }
+
+    [IntegrationFact]
+    public async Task ViewDefinition_CreatedByBuilder_ReturnsBodyAndDrops()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+
+        var se = new DatasourceMySQLDriver(Config());
+        var view = $"todo_view_{Guid.NewGuid():N}";
+
+        var create = ViewDdlBuilder.Create(SqlDialect.MySql, connection.Database, view, "SELECT Id, Title FROM todo", replace: false);
+        create.Ok.Should().BeTrue(create.Error);
+
+        var created = await se.NonQuery(create.Sql!);
+        created.Ok.Should().BeTrue(created.Message);
+
+        var definition = await se.ViewDefinition(connection.Database, view);
+        definition.Should().NotBeNullOrWhiteSpace();
+        definition.Should().Contain("todo");
+
+        // Замена поверх существующей вьюхи проходит через CREATE OR REPLACE.
+        var replace = ViewDdlBuilder.Create(SqlDialect.MySql, connection.Database, view, "SELECT Id FROM todo", replace: true);
+        var replaced = await se.NonQuery(replace.Sql!);
+        replaced.Ok.Should().BeTrue(replaced.Message);
+        (await se.ViewDefinition(connection.Database, view)).Should().NotContain("Title");
+
+        var drop = ViewDdlBuilder.Drop(SqlDialect.MySql, connection.Database, view);
+        var dropped = await se.NonQuery(drop.Sql!);
+        dropped.Ok.Should().BeTrue(dropped.Message);
+
+        (await se.ViewDefinition(connection.Database, view)).Should().BeNull();
+    }
+
+    [IntegrationFact]
+    public async Task Query_JsonColumn_MarksColumnAsJson()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        await using (var command = new MySqlCommand("CREATE TABLE todo_json (Id INT PRIMARY KEY, Data JSON)", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await using (var command = new MySqlCommand("""INSERT INTO todo_json (Id, Data) VALUES (1, '{"a": {"b": 1}}')""", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM `todo_json`" });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Fields.Single(c => c.Name == "Data").IsJson.Should().BeTrue();
+
+        var columns = await se.Columns("todo_json");
+        columns["Data"].IsJson.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task DatabaseStructure_LongTextColumn_SizeAboveInt32()
+    {
+        // CHARACTER_MAXIMUM_LENGTH в MySQL — BIGINT UNSIGNED: у longtext это 4294967295,
+        // поэтому чтение структуры не должно конвертировать размер в int.
+        // У JSON-колонки это поле пустое — его размер в структуру не приходит.
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        await using (var command = new MySqlCommand("CREATE TABLE todo_long (Id INT PRIMARY KEY, Body LONGTEXT, Doc JSON)", connection))
+        {
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var structure = await se.DatabaseStructure();
+        var columns = structure.Tables.Single(t => t.TableName == "todo_long").Columns;
+
+        columns["Body"].ColumnSize.Should().BeGreaterThan(int.MaxValue);
+        columns["Doc"].ColumnSize.Should().BeNull();
+    }
+
+    [IntegrationFact]
+    public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM `todo`", MaxRows = 1 });
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(1);
+        result.Truncated.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task NonQuery_WithParameters_UpdatesRows()
+    {
+        await using var connection = new MySqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMySQLDriver(Config());
+
+        var result = await se.NonQuery(
+            "UPDATE `todo` SET Title = @title WHERE Title = @from",
+            [
+                new DatasourceParam { Name = "title", Value = "edited" },
+                new DatasourceParam { Name = "from", Value = "first" },
+            ]);
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.RowsAffected.Should().Be(1);
+    }
+
+    static async Task SeedTodoAsync(MySqlConnection connection)
+    {
+        await using var command = new MySqlCommand(
+            "INSERT INTO todo (Title, Content, Completed) VALUES ('first', 'a', 0), ('second', 'b', 1)", connection);
+
+        await command.ExecuteNonQueryAsync();
     }
 
     private static async Task<int> CreateTodoTableAsync(MySqlConnection connection)

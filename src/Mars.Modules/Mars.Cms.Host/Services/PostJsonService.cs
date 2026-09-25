@@ -128,7 +128,7 @@ internal class PostJsonService : IPostJsonService
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type)
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");
-        var meta = CreateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, postType.TypeName, postType.ContentField()?.Key);
+        var meta = CreateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, postType.TypeName);
         var createQuery = ToCreateQuery(query, meta, postType);
 
         var post = await _postService.Create(createQuery, cancellationToken);
@@ -144,7 +144,7 @@ internal class PostJsonService : IPostJsonService
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");
         var existPost = await _postRepository.GetPostEditDetail(query.Id, cancellationToken)
                             ?? throw new NotFoundException($"Post with id '{query.Id}' not found");
-        var meta = UpdateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, existPost.MetaValues, postType.TypeName, postType.ContentField()?.Key);
+        var meta = UpdateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, existPost.MetaValues, postType.TypeName);
         var updateQuery = ToUpdateQuery(query, meta, postType);
 
         var post = await _postService.Update(updateQuery, cancellationToken);
@@ -188,8 +188,7 @@ internal class PostJsonService : IPostJsonService
 
     internal static IReadOnlyCollection<ModifyMetaValueDetailQuery> CreateJsonMetaValuesToModifyDto(IReadOnlyDictionary<string, JsonNode>? meta,
                                                                                                 IReadOnlyCollection<MetaFieldDto> metaFields,
-                                                                                                string postTypeName,
-                                                                                                string? contentFieldKey = null)
+                                                                                                string postTypeName)
     {
         if (meta is null) return [];
 
@@ -209,7 +208,6 @@ internal class PostJsonService : IPostJsonService
         {
             var metaField = mfDict[key];
             if (metaField.Type == MetaFieldType.Query) continue; // вычислимое — значения не принимаются
-            if (contentFieldKey is not null && key == contentFieldKey) continue; // значение — в posts.Content
 
             var jsonVal = meta[key];
             if (jsonVal is JsonArray array)
@@ -229,13 +227,10 @@ internal class PostJsonService : IPostJsonService
     }
 
     /// <summary>
-    /// Мульти-значения Relation/File/Image: массив ИД → строки значения с порядком
+    /// Мульти-значения: массив значений → строки значения с порядком
     /// </summary>
     static IEnumerable<ModifyMetaValueDetailQuery> MultiValuesFromJsonArray(MetaFieldDto metaField, JsonArray array)
     {
-        if (metaField.Type is not (MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image))
-            throw new InvalidOperationException($"array value supported only for Relation/File/Image fields, not '{metaField.Type}'");
-
         var index = 0;
         foreach (var element in array)
         {
@@ -250,8 +245,7 @@ internal class PostJsonService : IPostJsonService
     internal static IReadOnlyCollection<ModifyMetaValueDetailQuery>? UpdateJsonMetaValuesToModifyDto(IReadOnlyDictionary<string, JsonNode>? meta,
                                                                                                 IReadOnlyCollection<MetaFieldDto> metaFields,
                                                                                                 IReadOnlyCollection<MetaValueDetailDto> existMetaValues,
-                                                                                                string postTypeName,
-                                                                                                string? contentFieldKey = null)
+                                                                                                string postTypeName)
     {
         if (meta is null) return null;
 
@@ -264,9 +258,8 @@ internal class PostJsonService : IPostJsonService
             throw new InvalidOperationException($"fields '{diff.ToAdd.JoinStr(",")}' not exist for '{postTypeName}'");
         }
 
-        // мульти-значения Relation/File/Image заменяются целиком (старые строки уходят в диффе)
-        var multiKeys = mfDict.Where(kv => kv.Value.Type is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image
-                                        && meta.GetValueOrDefault(kv.Key) is JsonArray)
+        // поля со значением-массивом заменяются целиком (старые строки уходят в диффе)
+        var multiKeys = mfDict.Where(kv => meta.GetValueOrDefault(kv.Key) is JsonArray)
                               .Select(kv => kv.Key)
                               .ToHashSet();
 
@@ -278,7 +271,6 @@ internal class PostJsonService : IPostJsonService
         {
             var metaField = mfDict[key];
             if (metaField.Type == MetaFieldType.Query) continue; // вычислимое — значения не принимаются
-            if (contentFieldKey is not null && key == contentFieldKey) continue; // значение — в posts.Content
 
             var jsonVal = meta.GetValueOrDefault(key);
             if (jsonVal is null) continue;
@@ -300,8 +292,7 @@ internal class PostJsonService : IPostJsonService
 
         return existMetaValues
             .Where(s => s.MetaField.Type != MetaFieldType.Query
-                        && !multiKeys.Contains(s.MetaField.Key)
-                        && !(contentFieldKey is not null && s.MetaField.Key == contentFieldKey))
+                        && !multiKeys.Contains(s.MetaField.Key))
             .Select(s =>
             {
                 var updValue = meta.GetValueOrDefault(s.MetaField.Key) as JsonValue;

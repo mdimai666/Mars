@@ -17,6 +17,7 @@ public class StarterFrontTemplatesTests
     [Theory]
     [InlineData("default")]
     [InlineData("landing")]
+    [InlineData("scriban")]
     public void StarterTemplate_IsValidWebSiteTemplate(string templateName)
     {
         var path = Path.Combine(TemplatesRoot, templateName);
@@ -28,5 +29,21 @@ public class StarterFrontTemplatesTests
         template.RootPage.Should().NotBeNull();
         template.IndexPage.Should().NotBeNull();
         template.IndexPage.Url.Value.Should().Be("/");
+    }
+
+    [Fact]
+    public void ScribanStarterTemplate_AllFiles_ParseWithoutErrors()
+    {
+        var path = Path.Combine(TemplatesRoot, "scriban");
+        Directory.Exists(path).Should().BeTrue("шаблон 'scriban' должен существовать в Res/front_templates");
+
+        foreach (var file in Directory.GetFiles(path, "*.sbn", SearchOption.AllDirectories))
+        {
+            // контент без @attr-заголовка — именно его парсит движок
+            var (_, content) = WebSitePart.ParseContent(File.ReadAllText(file));
+
+            var parsed = Scriban.Template.Parse(content, file);
+            parsed.HasErrors.Should().BeFalse($"файл '{file}' должен парситься без ошибок: {string.Join("; ", parsed.Messages)}");
+        }
     }
 }

@@ -1,8 +1,8 @@
 using Mars.Admin.Framework.Hub;
 using Mars.Core.Models;
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Functions;
-using Mars.Nodes.Core.Nodes.Mappings.Nodes;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace;
 using Microsoft.AspNetCore.Components;
@@ -13,11 +13,15 @@ public partial class NodeRedPage
 {
     [Inject] INodeServiceClient service { get; set; } = default!;
 
+    [Inject] IHostValueHints HostHints { get; set; } = default!;
+
     [Inject] ClientHub hub { get; set; } = default!;
 
     NodeEditor1? _editor1 = default!;
 
     bool Busy = false;
+
+    bool _debugMode;
 
     IDictionary<string, Node>? _nodes;
 
@@ -33,6 +37,7 @@ public partial class NodeRedPage
         hub.OnDebugMsg += OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged += OnNodeRunningTaskCountChanged;
         hub.OnNodeExecuted += OnNodeExecuted;
+        hub.OnDebugSnapshotsChanged += OnDebugSnapshotsChanged;
 
         hub.ws.Reconnected += OnWsReconnected;
 
@@ -47,6 +52,7 @@ public partial class NodeRedPage
         hub.OnDebugMsg -= OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged -= OnNodeRunningTaskCountChanged;
         hub.OnNodeExecuted -= OnNodeExecuted;
+        hub.OnDebugSnapshotsChanged -= OnDebugSnapshotsChanged;
 
         hub.ws.Reconnected -= OnWsReconnected;
     }
@@ -54,7 +60,13 @@ public partial class NodeRedPage
     Task OnWsReconnected(string? connectionId)
     {
         hub.JoinGroup(NodeConstants.WsNodesNotifyGroupName);
+        _editor1?.RefreshDebugSnapshots();
         return Task.CompletedTask;
+    }
+
+    void OnDebugSnapshotsChanged()
+    {
+        _editor1?.RefreshDebugSnapshots();
     }
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
@@ -100,6 +112,10 @@ public partial class NodeRedPage
             }
             _nodes = recivedNodes.Values.ToDictionary(s => s.Id);
             _inlineFunctionNodeSchemas = data.InlineFunctionNodeSchemas.ToDictionary(s => s.TypeId, s => s.ToModel());
+
+            HostHints.SetOutputSpecs(data.OutputValueSpecs);
+            HostHints.SetGlobalVariableNames(data.GlobalVariableNames);
+            _debugMode = data.DebugMode;
         }
         catch (Exception ex)
         {

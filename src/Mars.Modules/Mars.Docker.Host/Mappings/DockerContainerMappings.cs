@@ -11,7 +11,7 @@ public static class DockerContainerMappings
         => new()
         {
             ID = request.ID,
-            Names = request.Names,
+            Names = request.Names ?? [],
             Image = request.Image,
             ImageID = request.ImageID,
             Command = request.Command,
@@ -19,10 +19,10 @@ public static class DockerContainerMappings
             Ports = request.Ports.ToResponse(),
             SizeRw = request.SizeRw,
             SizeRootFs = request.SizeRootFs,
-            Labels = request.Labels.ToDictionary(),
+            Labels = request.Labels?.ToDictionary() ?? new Dictionary<string, string>(),
             State = request.State,
             Status = request.Status,
-            NetworkSettings = request.NetworkSettings.ToResponse(),
+            NetworkSettings = (request.NetworkSettings ?? new SummaryNetworkSettings()).ToResponse(),
             Mounts = request.Mounts.ToResponse(),
 
         };
@@ -39,15 +39,15 @@ public static class DockerContainerMappings
     public static SummaryNetworkSettingsResponse ToResponse(this SummaryNetworkSettings request)
         => new()
         {
-            Networks = request.Networks.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
+            Networks = request.Networks?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, EndpointSettingsResponse>(),
         };
 
     public static EndpointSettingsResponse ToResponse(this EndpointSettings request)
         => new()
         {
-            IPAMConfig = request.IPAMConfig?.ToResponse(),
-            Links = request.Links,
-            Aliases = request.Aliases,
+            IPAMConfig = (request.IPAMConfig ?? new EndpointIPAMConfig()).ToResponse(),
+            Links = request.Links ?? [],
+            Aliases = request.Aliases ?? [],
             NetworkID = request.NetworkID,
             EndpointID = request.EndpointID,
             Gateway = request.Gateway,
@@ -57,7 +57,7 @@ public static class DockerContainerMappings
             GlobalIPv6Address = request.GlobalIPv6Address,
             GlobalIPv6PrefixLen = request.GlobalIPv6PrefixLen,
             MacAddress = request.MacAddress,
-            DriverOpts = request.DriverOpts,
+            DriverOpts = request.DriverOpts ?? new Dictionary<string, string>(),
 
         };
 
@@ -66,7 +66,7 @@ public static class DockerContainerMappings
         {
             IPv4Address = request.IPv4Address,
             IPv6Address = request.IPv6Address,
-            LinkLocalIPs = request.LinkLocalIPs,
+            LinkLocalIPs = request.LinkLocalIPs ?? [],
         };
 
     public static MountPointResponse ToResponse(this MountPoint request)
@@ -89,11 +89,11 @@ public static class DockerContainerMappings
     public static PagingResult<ContainerListResponse1> ToResponse(this PagingResult<ContainerListResponse> request)
         => request.ToMap(ToResponse);
 
-    public static IList<DockerPortResponse> ToResponse(this IEnumerable<Port> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<DockerPortResponse> ToResponse(this IEnumerable<Port>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
-    public static IList<MountPointResponse> ToResponse(this IEnumerable<MountPoint> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<MountPointResponse> ToResponse(this IEnumerable<MountPoint>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static ContainerInspectResponse1 ToResponse(this ContainerInspectResponse request)
         => new()
@@ -101,14 +101,14 @@ public static class DockerContainerMappings
             ID = request.ID,
             Created = request.Created,
             Path = request.Path,
-            Args = request.Args,
-            State = request.State.ToResponse(),
+            Args = request.Args ?? [],
+            State = (request.State ?? new ContainerState()).ToResponse(),
             Image = request.Image,
             ResolvConfPath = request.ResolvConfPath,
             HostnamePath = request.HostnamePath,
             HostsPath = request.HostsPath,
             LogPath = request.LogPath,
-            Node = request.Node.ToResponse(),
+            Node = (request.Node ?? new ContainerNode()).ToResponse(),
             Name = request.Name,
             RestartCount = request.RestartCount,
             Driver = request.Driver,
@@ -116,14 +116,14 @@ public static class DockerContainerMappings
             MountLabel = request.MountLabel,
             ProcessLabel = request.ProcessLabel,
             AppArmorProfile = request.AppArmorProfile,
-            ExecIDs = request.ExecIDs,
-            HostConfig = request.HostConfig.ToResponse(),
-            GraphDriver = request.GraphDriver.ToResponse(),
+            ExecIDs = request.ExecIDs ?? [],
+            HostConfig = (request.HostConfig ?? new HostConfig()).ToResponse(),
+            GraphDriver = (request.GraphDriver ?? new GraphDriverData()).ToResponse(),
             SizeRw = request.SizeRw,
             SizeRootFs = request.SizeRootFs,
             Mounts = request.Mounts.ToResponse(),
-            Config = request.Config.ToResponse(),
-            NetworkSettings = request.NetworkSettings.ToResponse(),
+            Config = (request.Config ?? new Config()).ToResponse(),
+            NetworkSettings = (request.NetworkSettings ?? new NetworkSettings()).ToResponse(),
         };
 
     public static ContainerStateResponse ToResponse(this ContainerState request)
@@ -140,7 +140,7 @@ public static class DockerContainerMappings
             Error = request.Error,
             StartedAt = request.StartedAt,
             FinishedAt = request.FinishedAt,
-            Health = request.Health.ToResponse(),
+            Health = (request.Health ?? new Health()).ToResponse(),
         };
 
     public static HealthResponse ToResponse(this Health request)
@@ -160,8 +160,8 @@ public static class DockerContainerMappings
             Output = request.Output,
         };
 
-    public static IList<HealthcheckResultResponse> ToResponse(this IEnumerable<HealthcheckResult> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<HealthcheckResultResponse> ToResponse(this IEnumerable<HealthcheckResult>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static ContainerNodeResponse ToResponse(this ContainerNode request)
         => new()
@@ -172,46 +172,46 @@ public static class DockerContainerMappings
             Name = request.Name,
             Cpus = request.Cpus,
             Memory = request.Memory,
-            Labels = request.Labels,
+            Labels = request.Labels ?? new Dictionary<string, string>(),
         };
 
     public static HostConfigResponse ToResponse(this HostConfig request)
         => new()
         {
-            Binds = request.Binds,
+            Binds = request.Binds ?? [],
             ContainerIDFile = request.ContainerIDFile,
-            LogConfig = request.LogConfig.ToResponse(),
+            LogConfig = (request.LogConfig ?? new LogConfig()).ToResponse(),
             NetworkMode = request.NetworkMode,
-            PortBindings = request.PortBindings.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
-            RestartPolicy = request.RestartPolicy.ToResponse(),
+            PortBindings = request.PortBindings?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, IList<DockerPortBindingResponse>>(),
+            RestartPolicy = (request.RestartPolicy ?? new RestartPolicy()).ToResponse(),
             AutoRemove = request.AutoRemove,
             VolumeDriver = request.VolumeDriver,
-            VolumesFrom = request.VolumesFrom,
-            CapAdd = request.CapAdd,
-            CapDrop = request.CapDrop,
+            VolumesFrom = request.VolumesFrom ?? [],
+            CapAdd = request.CapAdd ?? [],
+            CapDrop = request.CapDrop ?? [],
             CgroupnsMode = request.CgroupnsMode,
-            DNS = request.DNS,
-            DNSOptions = request.DNSOptions,
-            DNSSearch = request.DNSSearch,
-            ExtraHosts = request.ExtraHosts,
-            GroupAdd = request.GroupAdd,
+            DNS = request.DNS ?? [],
+            DNSOptions = request.DNSOptions ?? [],
+            DNSSearch = request.DNSSearch ?? [],
+            ExtraHosts = request.ExtraHosts ?? [],
+            GroupAdd = request.GroupAdd ?? [],
             IpcMode = request.IpcMode,
             Cgroup = request.Cgroup,
-            Links = request.Links,
+            Links = request.Links ?? [],
             OomScoreAdj = request.OomScoreAdj,
             PidMode = request.PidMode,
             Privileged = request.Privileged,
             PublishAllPorts = request.PublishAllPorts,
             ReadonlyRootfs = request.ReadonlyRootfs,
-            SecurityOpt = request.SecurityOpt,
-            StorageOpt = request.StorageOpt,
-            Tmpfs = request.Tmpfs,
+            SecurityOpt = request.SecurityOpt ?? [],
+            StorageOpt = request.StorageOpt ?? new Dictionary<string, string>(),
+            Tmpfs = request.Tmpfs ?? new Dictionary<string, string>(),
             UTSMode = request.UTSMode,
             UsernsMode = request.UsernsMode,
             ShmSize = request.ShmSize,
-            Sysctls = request.Sysctls,
+            Sysctls = request.Sysctls ?? new Dictionary<string, string>(),
             Runtime = request.Runtime,
-            ConsoleSize = request.ConsoleSize,
+            ConsoleSize = request.ConsoleSize ?? [],
             Isolation = request.Isolation,
             CPUShares = request.CPUShares,
             Memory = request.Memory,
@@ -230,7 +230,7 @@ public static class DockerContainerMappings
             CpusetCpus = request.CpusetCpus,
             CpusetMems = request.CpusetMems,
             Devices = request.Devices.ToResponse(),
-            DeviceCgroupRules = request.DeviceCgroupRules,
+            DeviceCgroupRules = request.DeviceCgroupRules ?? [],
             DeviceRequests = request.DeviceRequests.ToResponse(),
             KernelMemory = request.KernelMemory,
             KernelMemoryTCP = request.KernelMemoryTCP,
@@ -245,8 +245,8 @@ public static class DockerContainerMappings
             IOMaximumIOps = request.IOMaximumIOps,
             IOMaximumBandwidth = request.IOMaximumBandwidth,
             Mounts = request.Mounts.ToResponse(),
-            MaskedPaths = request.MaskedPaths,
-            ReadonlyPaths = request.ReadonlyPaths,
+            MaskedPaths = request.MaskedPaths ?? [],
+            ReadonlyPaths = request.ReadonlyPaths ?? [],
             Init = request.Init,
         };
 
@@ -254,7 +254,7 @@ public static class DockerContainerMappings
         => new()
         {
             Name = request.Name,
-            Options = request.Options,
+            Options = request.Options ?? new Dictionary<string, string>(),
         };
 
     public static BindOptionsResponse ToResponse(this BindOptions request)
@@ -268,8 +268,8 @@ public static class DockerContainerMappings
         => new()
         {
             NoCopy = request.NoCopy,
-            Labels = request.Labels,
-            DriverConfig = request.DriverConfig.ToResponse(),
+            Labels = request.Labels ?? new Dictionary<string, string>(),
+            DriverConfig = (request.DriverConfig ?? new Driver()).ToResponse(),
         };
 
     public static TmpfsOptionsResponse ToResponse(this TmpfsOptions request)
@@ -287,13 +287,13 @@ public static class DockerContainerMappings
             Target = request.Target,
             ReadOnly = request.ReadOnly,
             Consistency = request.Consistency,
-            BindOptions = request.BindOptions.ToResponse(),
-            VolumeOptions = request.VolumeOptions.ToResponse(),
-            TmpfsOptions = request.TmpfsOptions.ToResponse(),
+            BindOptions = (request.BindOptions ?? new BindOptions()).ToResponse(),
+            VolumeOptions = (request.VolumeOptions ?? new VolumeOptions()).ToResponse(),
+            TmpfsOptions = (request.TmpfsOptions ?? new TmpfsOptions()).ToResponse(),
         };
 
-    public static IList<MountResponse> ToResponse(this IEnumerable<Mount> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<MountResponse> ToResponse(this IEnumerable<Mount>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static UlimitResponse ToResponse(this Ulimit request)
         => new()
@@ -303,8 +303,8 @@ public static class DockerContainerMappings
             Soft = request.Soft,
         };
 
-    public static IList<UlimitResponse> ToResponse(this IEnumerable<Ulimit> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<UlimitResponse> ToResponse(this IEnumerable<Ulimit>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static ThrottleDeviceResponse ToResponse(this ThrottleDevice request)
         => new()
@@ -313,21 +313,21 @@ public static class DockerContainerMappings
             Rate = request.Rate,
         };
 
-    public static IList<ThrottleDeviceResponse> ToResponse(this IEnumerable<ThrottleDevice> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<ThrottleDeviceResponse> ToResponse(this IEnumerable<ThrottleDevice>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static DeviceRequestResponse ToResponse(this DeviceRequest request)
         => new()
         {
             Driver = request.Driver,
             Count = request.Count,
-            DeviceIDs = request.DeviceIDs,
-            Capabilities = request.Capabilities,
-            Options = request.Options,
+            DeviceIDs = request.DeviceIDs ?? [],
+            Capabilities = request.Capabilities ?? [],
+            Options = request.Options ?? new Dictionary<string, string>(),
         };
 
-    public static IList<DeviceRequestResponse> ToResponse(this IEnumerable<DeviceRequest> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<DeviceRequestResponse> ToResponse(this IEnumerable<DeviceRequest>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static DeviceMappingResponse ToResponse(this DeviceMapping request)
         => new()
@@ -337,8 +337,8 @@ public static class DockerContainerMappings
             CgroupPermissions = request.CgroupPermissions,
         };
 
-    public static IList<DeviceMappingResponse> ToResponse(this IEnumerable<DeviceMapping> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<DeviceMappingResponse> ToResponse(this IEnumerable<DeviceMapping>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static WeightDeviceResponse ToResponse(this WeightDevice request)
         => new()
@@ -346,14 +346,14 @@ public static class DockerContainerMappings
             Path = request.Path,
             Weight = request.Weight,
         };
-    public static IList<WeightDeviceResponse> ToResponse(this IEnumerable<WeightDevice> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<WeightDeviceResponse> ToResponse(this IEnumerable<WeightDevice>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static LogConfigResponse ToResponse(this LogConfig request)
         => new()
         {
             Type = request.Type,
-            Config = request.Config,
+            Config = request.Config ?? new Dictionary<string, string>(),
         };
 
     public static DockerPortBindingResponse ToResponse(this PortBinding request)
@@ -363,8 +363,8 @@ public static class DockerContainerMappings
             HostPort = request.HostPort,
         };
 
-    public static IList<DockerPortBindingResponse> ToResponse(this IEnumerable<PortBinding> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<DockerPortBindingResponse> ToResponse(this IEnumerable<PortBinding>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static RestartPolicyResponse ToResponse(this RestartPolicy request)
         => new()
@@ -385,25 +385,25 @@ public static class DockerContainerMappings
             AttachStdin = request.AttachStdin,
             AttachStdout = request.AttachStdout,
             AttachStderr = request.AttachStderr,
-            ExposedPorts = request.ExposedPorts.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
+            ExposedPorts = request.ExposedPorts?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, EmptyStructResponse>(),
             Tty = request.Tty,
             OpenStdin = request.OpenStdin,
             StdinOnce = request.StdinOnce,
-            Env = request.Env,
-            Cmd = request.Cmd,
-            Healthcheck = request.Healthcheck.ToResponse(),
+            Env = request.Env ?? [],
+            Cmd = request.Cmd ?? [],
+            Healthcheck = (request.Healthcheck ?? new HealthConfig()).ToResponse(),
             ArgsEscaped = request.ArgsEscaped,
             Image = request.Image,
-            Volumes = request.Volumes.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
+            Volumes = request.Volumes?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, EmptyStructResponse>(),
             WorkingDir = request.WorkingDir,
-            Entrypoint = request.Entrypoint,
+            Entrypoint = request.Entrypoint ?? [],
             NetworkDisabled = request.NetworkDisabled,
             MacAddress = request.MacAddress,
-            OnBuild = request.OnBuild,
-            Labels = request.Labels,
+            OnBuild = request.OnBuild ?? [],
+            Labels = request.Labels ?? new Dictionary<string, string>(),
             StopSignal = request.StopSignal,
             StopTimeout = request.StopTimeout,
-            Shell = request.Shell,
+            Shell = request.Shell ?? [],
         };
 
     public static EmptyStructResponse ToResponse(this EmptyStruct request)
@@ -412,7 +412,7 @@ public static class DockerContainerMappings
     public static HealthConfigResponse ToResponse(this HealthConfig request)
         => new()
         {
-            Test = request.Test,
+            Test = request.Test ?? [],
             Interval = request.Interval,
             Timeout = request.Timeout,
             StartPeriod = request.StartPeriod,
@@ -422,7 +422,7 @@ public static class DockerContainerMappings
     public static GraphDriverDataResponse ToResponse(this GraphDriverData request)
         => new()
         {
-            Data = request.Data,
+            Data = request.Data ?? new Dictionary<string, string>(),
             Name = request.Name,
         };
 
@@ -433,8 +433,8 @@ public static class DockerContainerMappings
             PrefixLen = request.PrefixLen,
         };
 
-    public static IList<AddressResponse> ToResponse(this IEnumerable<Address> request)
-        => request.Select(ToResponse).ToList();
+    public static IList<AddressResponse> ToResponse(this IEnumerable<Address>? request)
+        => request?.Select(ToResponse).ToList() ?? [];
 
     public static NetworkSettingsResponse ToResponse(this NetworkSettings request)
         => new()
@@ -444,7 +444,7 @@ public static class DockerContainerMappings
             HairpinMode = request.HairpinMode,
             LinkLocalIPv6Address = request.LinkLocalIPv6Address,
             LinkLocalIPv6PrefixLen = request.LinkLocalIPv6PrefixLen,
-            Ports = request.Ports.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
+            Ports = request.Ports?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, IList<DockerPortBindingResponse>>(),
             SandboxKey = request.SandboxKey,
             SecondaryIPAddresses = request.SecondaryIPAddresses.ToResponse(),
             SecondaryIPv6Addresses = request.SecondaryIPv6Addresses.ToResponse(),
@@ -456,9 +456,8 @@ public static class DockerContainerMappings
             IPPrefixLen = request.IPPrefixLen,
             IPv6Gateway = request.IPv6Gateway,
             MacAddress = request.MacAddress,
-            Networks = request.Networks.ToDictionary(s => s.Key, s => s.Value.ToResponse()),
+            Networks = request.Networks?.ToDictionary(s => s.Key, s => s.Value.ToResponse()) ?? new Dictionary<string, EndpointSettingsResponse>(),
         };
 
 
 }
-

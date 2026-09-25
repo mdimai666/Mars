@@ -15,7 +15,6 @@ public class HandlebarsRenderEngineFactory : IWebRenderEngineFactory
     {
         var engine = ActivatorUtilities.CreateInstance<HandlebarsWebRenderEngine>(services, appFront);
         engine.Setup();
-        engine.InitializeEngine(services);
 
         return engine;
     }

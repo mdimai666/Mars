@@ -8,6 +8,7 @@ using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Host.Services;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,10 +58,16 @@ v1
             },
         };
 
-        // как HandlebarsRenderEngineFactory.Create: движок + WebTemplateService с подпиской на изменения
-        engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), appFront);
+        // как WebRenderEngineLocator.Build: движок создаётся фабрикой, WebTemplateService — Host'ом
+        engine = new HandlebarsWebRenderEngine(
+            services.GetRequiredService<IMemoryCache>(),
+            new HandlebarsEngineFactory([]),
+            appFront);
         engine.Setup();
-        engine.InitializeEngine(services);
+
+        var wts = new WebTemplateService(services, hub, appFront);
+        appFront.Features.Set<Mars.SiteEngine.Abstractions.WebSite.Interfaces.IWebTemplateService>(wts);
+        wts.OnFileUpdated += (s, e) => wts.ClearCache();
     }
 
     string IndexFile() => Path.Combine(dir, "index.hbs");

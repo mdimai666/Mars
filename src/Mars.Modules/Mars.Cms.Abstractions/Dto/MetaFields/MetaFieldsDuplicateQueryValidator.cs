@@ -20,6 +20,10 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                     .Matches(MetaFieldKeyNormalizer.FormatPattern)
                     .WithMessage("Key должен соответствовать формату [a-z_][a-z0-9_]*");
 
+                metaField.RuleFor(x => x.Key)
+                    .Must(key => !MetaFieldKeyNormalizer.IsCSharpKeyword(key))
+                    .WithMessage(x => $"Key '{x.Key}' — зарезервированное слово C#, используйте другое имя");
+
                 metaField.RuleFor(x => x.Variants)
                     .Custom((variants, context) =>
                     {

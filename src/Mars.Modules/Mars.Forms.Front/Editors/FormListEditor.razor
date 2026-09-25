@@ -1,0 +1,60 @@
+@namespace Mars.Forms.Front.Editors
+@inject IFormEditorLocator Editors
+
+@* Встроенный редактор множественных значений простых типов: строки, числа, даты, варианты.
+   Порядок строк = индекс значения; доменные множественные редакторы (связи, медиа)
+   регистрирует провайдер своим ключом. *@
+
+<div class="vstack gap-1">
+    @for (var i = 0; i < Binding.List.Count; i++)
+    {
+        var index = i;
+        <div class="hstack gap-1 align-items-center">
+            <div class="flex-fill">
+                @if (ElementEditor is not null)
+                {
+                    <DynamicComponent Type="@ElementEditor" Parameters="@ElementParameters(index)" />
+                }
+                else
+                {
+                    <FluentLabel Color="@Color.Warning">нет редактора для элемента (тип @Binding.ElementType)</FluentLabel>
+                }
+            </div>
+            @if (!Binding.ReadOnly)
+            {
+                <FluentButton Appearance="Appearance.Stealth" title="выше" @onclick="() => Binding.Move(index, -1)">
+                    <i class="bi bi-arrow-up"></i>
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Stealth" title="ниже" @onclick="() => Binding.Move(index, 1)">
+                    <i class="bi bi-arrow-down"></i>
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Stealth" title="удалить" @onclick="() => Binding.RemoveAt(index)">
+                    <i class="bi bi-x-lg"></i>
+                </FluentButton>
+            }
+        </div>
+        @foreach (var error in Binding.ErrorsAt(index))
+        {
+            <div class="text-danger fz10px">@error.Message</div>
+        }
+    }
+
+    @if (!Binding.ReadOnly)
+    {
+        <div>
+            <FluentButton Appearance="Appearance.Stealth" @onclick="Add">
+                <i class="bi bi-plus-lg"></i> добавить
+            </FluentButton>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    Type? ElementEditor => Editors.GetDefaultEditor(Binding.ElementType, false);
+
+    Dictionary<string, object> ElementParameters(int index) => new() { ["Binding"] = Binding, ["Index"] = index };
+
+    void Add() => Binding.AddItem(null);
+}

@@ -11,7 +11,9 @@ public class WebFilesReadFilesystemService : IWebFilesService
 
         //Directory.GetFileSystemEntries(path, "*.html", SearchOption.AllDirectories);
 
-        var files = FindAllFiles(path, "*.hbs", ignoreList);
+        var files = FindAllFiles(path, "*.hbs", ignoreList)
+            .Concat(FindAllFiles(path, "*.sbn", ignoreList))
+            .ToArray();
 
         return files;
     }

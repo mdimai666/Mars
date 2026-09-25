@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Common;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Contracts.PostTypes;
 
@@ -23,6 +24,9 @@ public record CreatePostTypeRequest
     public string? ImageFieldKey { get; init; }
 
     public required IReadOnlyCollection<CreateMetaFieldRequest> MetaFields { get; init; }
+
+    /// <summary>Параметры системных полей (правила, редактор); null — не заданы</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
 public record UpdatePostTypeRequest
@@ -44,6 +48,9 @@ public record UpdatePostTypeRequest
     public string? ImageFieldKey { get; init; }
 
     public required IReadOnlyCollection<UpdateMetaFieldRequest> MetaFields { get; init; }
+
+    /// <summary>Параметры системных полей (правила, редактор); null — не прислали, сохранённые не трогаем</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
 public record CreatePostStatusRequest
@@ -88,4 +95,7 @@ public record UpdatePostTypePresentationRequest
 
     /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
     public PostTypeGridSettings? Grid { get; init; }
+
+    /// <summary>Раскладка формы редактирования поста; null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
 }

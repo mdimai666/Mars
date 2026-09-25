@@ -19,7 +19,8 @@ public static class PostTypeRequestExtensions
             ImageFieldKey = request.ImageFieldKey,
             EnabledFeatures = request.EnabledFeatures,
             PostStatusList = request.PostStatusList.ToDto(),
-            MetaFields = request.MetaFields.ToDto()
+            MetaFields = request.MetaFields.ToDto(),
+            SystemFields = request.SystemFields,
         };
 
     public static UpdatePostTypeQuery ToQuery(this UpdatePostTypeRequest request)
@@ -34,7 +35,8 @@ public static class PostTypeRequestExtensions
             ImageFieldKey = request.ImageFieldKey,
             EnabledFeatures = request.EnabledFeatures,
             PostStatusList = request.PostStatusList.ToDto(),
-            MetaFields = request.MetaFields.ToDto()
+            MetaFields = request.MetaFields.ToDto(),
+            SystemFields = request.SystemFields,
         };
 
     public static ListPostTypeQuery ToQuery(this ListPostTypeQueryRequest request)

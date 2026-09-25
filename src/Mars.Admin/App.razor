@@ -43,6 +43,11 @@
 
                 </NotFound>
             </Router>
+            <AuthorizeView>
+                <Mars.Admin.Framework.AdminSharedContainer />
+                <Mars.SemanticKernel.Front.Components.MarsAITools.AIToolsContainer />
+                <Mars.AiChat.Front.Components.AiChatContainer />
+            </AuthorizeView>
         </CascadingAuthenticationState>
     </FluentDesignSystemProvider>
 }
@@ -54,10 +59,6 @@ else
         </div>
     </ContentWrapper>
 }
-
-<Mars.Admin.Framework.AdminSharedContainer />
-<Mars.SemanticKernel.Front.Components.MarsAITools.AIToolsContainer />
-<Mars.AiChat.Front.Components.AiChatContainer />
 
 <FluentToastProvider Position="ToastPosition.TopCenter" />
 <FluentDialogProvider />

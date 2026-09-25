@@ -11,7 +11,7 @@ public class SplitNodeSplitStringExample : INodeExample<SplitNode>
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "123;456;789" })
+            .AddNext(new InjectNode().SetPayload("123;456;789"))
             .AddNext(new SplitNode() { Delimiter = ";" })
             .AddNext(new DebugNode())
             .Build();
@@ -26,7 +26,7 @@ public class SplitNodeSplitArrayExample : INodeExample<SplitNode>
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "123;456;789" })
+            .AddNext(new InjectNode() { Fields = [new() { Key = "Payload", Value = "123;456;789" }] })
             .AddNext(editorState.CreateInlineFunctionNodeById("core.InlineFunctionNode.Utils.GenerateSequentialArray")!)
             .AddNext(new SplitNode())
             .AddNext(new DebugNode())

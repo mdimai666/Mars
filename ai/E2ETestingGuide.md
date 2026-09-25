@@ -23,12 +23,10 @@ tests/Mars.E2E.Tests/
 [Collection("E2ETestApp")]
 public class BaseE2ETests : IAsyncLifetime
 {
-    public const string? SkipE2ETests = null; // null = тесты включены
-    
     protected readonly E2EServerFixture AppFixture;
     protected IPage Page { get; private set; } = null!;
     protected string BaseUrl => AppFixture.BaseUrl;
-    
+
     // Автоматическая авторизация перед каждым тестом
     public override bool AuthorizedStart => true;
 }
@@ -36,8 +34,22 @@ public class BaseE2ETests : IAsyncLifetime
 
 ## Test Attribute
 
+E2E-тесты помечаются `[E2EFact]` — скип берётся из окружения, код и сьют не правятся:
+
+```bash
+# только E2E-класс (нужны Docker и системный Edge; браузер открывается видимым)
+set MARS_E2E_TESTS=1
+tests\Mars.E2E.Tests\bin\Debug\net10.0\Mars.E2E.Tests.exe -filter "/Mars.E2E.Tests/Mars.E2E.Tests.Tests/CreatePostTests/*"
+
+# весь сьют вместе с остальными проектами
+pwsh -NoProfile -File test-all.ps1 -IncludeE2E
+```
+
+Без `MARS_E2E_TESTS=1` тесты не запускаются (Skipped за миллисекунды: сервер, контейнер и
+браузер не поднимаются). Атрибут — `tests/Mars.Test.AppHost/Attributes/E2EFactAttribute.cs`.
+
 ```csharp
-[IntegrationFact(Skip = SkipE2ETests)]
+[E2EFact]
 public async Task MyTest_Scenario_ExpectedResult()
 {
     // Arrange
@@ -153,7 +165,7 @@ tracker.AssertNoErrors();
 ## Complete Example
 
 ```csharp
-[IntegrationFact(Skip = SkipE2ETests)]
+[E2EFact]
 public async Task EditUserPage_UpdateFields_ShouldPersist()
 {
     // Arrange

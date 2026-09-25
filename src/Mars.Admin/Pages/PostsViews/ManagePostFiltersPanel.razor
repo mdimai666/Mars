@@ -11,19 +11,20 @@
     @foreach (var col in Columns)
     {
         var f = FilterState(col.Key);
-        var metaField = col.Kind == ManagePostView.GridColumnKind.Meta ? MetaFieldOf(col) : null;
+        var metaField = col.IsSystem ? null : MetaFieldOf(col);
 
         <div class="vstack gap-1" style="min-width:150px;">
             <label class="text-secondary small">@col.Title</label>
 
-            @if (col.Kind == ManagePostView.GridColumnKind.Title || col.Kind == ManagePostView.GridColumnKind.Author
+            @if ((col.IsSystem && col.Key is SystemFieldsCatalog.Title or SystemFieldsCatalog.Author)
                  || metaField is { Type: MetaFieldType.String or MetaFieldType.Text })
             {
                 <FluentTextField @bind-Value="f.Text" @bind-Value:after="OnFilterInputChanged"
                                  Immediate
                                  Placeholder="поиск…" Style="min-width:150px;" />
             }
-            else if (col.Kind == ManagePostView.GridColumnKind.CreatedAt || metaField is { Type: MetaFieldType.DateTime })
+            else if ((col.IsSystem && col.Key == SystemFieldsCatalog.CreatedAt)
+                     || metaField is { Type: MetaFieldType.DateTime })
             {
                 <div class="hstack gap-1">
                     <FluentDatePicker @bind-Value="f.DateFrom" @bind-Value:after="RaiseNow" Placeholder="от" Style="max-width:140px;" />
@@ -41,7 +42,7 @@
                                        Placeholder="до" Style="width:80px;" />
                 </div>
             }
-            else if (col.Kind == ManagePostView.GridColumnKind.Status)
+            else if (col.IsSystem && col.Key == SystemFieldsCatalog.Status)
             {
                 <FluentAutocomplete TOption="string" Multiple
                                     Items="PostStatuses.Select(s => s.Slug).ToList()"
@@ -62,7 +63,7 @@
                                     Style="min-width:150px;" />
             }
 
-            @if (col.Kind == ManagePostView.GridColumnKind.Meta)
+            @if (!col.IsSystem)
             {
                 <FluentSelect TOption="string" @bind-Value="f.Presence" @bind-Value:after="RaiseNow" Style="min-width:150px;">
                     <FluentOption TOption="string" Value="">значение: любое</FluentOption>
@@ -154,60 +155,68 @@
         {
             if (!_columnFilters.TryGetValue(column.Key, out var state)) continue;
 
-            switch (column.Kind)
+            if (!column.IsSystem)
             {
-                case ManagePostView.GridColumnKind.Title:
-                case ManagePostView.GridColumnKind.Author:
+                AddMetaFilters(list, column, state);
+                continue;
+            }
+
+            switch (column.Key)
+            {
+                case SystemFieldsCatalog.Title:
+                case SystemFieldsCatalog.Author:
                     if (!string.IsNullOrWhiteSpace(state.Text))
                         list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.Contains, Value = state.Text.Trim() });
                     break;
 
-                case ManagePostView.GridColumnKind.CreatedAt:
+                case SystemFieldsCatalog.CreatedAt:
                     AddRangeFilters(list, column.Key, state.DateFrom, state.DateTo, d => d.ToString("O"));
                     break;
 
-                case ManagePostView.GridColumnKind.Status:
+                case SystemFieldsCatalog.Status:
                     if (state.Selected.Any())
                         list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.In, Values = [.. state.Selected] });
-                    break;
-
-                case ManagePostView.GridColumnKind.Meta:
-                    var field = MetaFieldOf(column);
-                    if (field is null) break;
-
-                    if (state.Presence == PostGridFilterOps.Empty || state.Presence == PostGridFilterOps.NotEmpty)
-                        list.Add(new PostGridFilter { Key = column.Key, Op = state.Presence });
-
-                    switch (field.Type)
-                    {
-                        case MetaFieldType.String:
-                        case MetaFieldType.Text:
-                            if (!string.IsNullOrWhiteSpace(state.Text))
-                                list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.Contains, Value = state.Text.Trim() });
-                            break;
-
-                        case MetaFieldType.Int:
-                        case MetaFieldType.Long:
-                        case MetaFieldType.Float:
-                        case MetaFieldType.Decimal:
-                            AddRangeFilters(list, column.Key, state.NumberFrom, state.NumberTo,
-                                n => n.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                            break;
-
-                        case MetaFieldType.DateTime:
-                            AddRangeFilters(list, column.Key, state.DateFrom, state.DateTo, d => d.ToString("O"));
-                            break;
-
-                        case MetaFieldType.Select:
-                            if (state.Selected.Any())
-                                list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.In, Values = [.. state.Selected] });
-                            break;
-                    }
                     break;
             }
         }
 
         return [.. list];
+    }
+
+    /// <summary>Фильтры мета-колонки: наличие значения плюс фильтр по типу поля</summary>
+    void AddMetaFilters(List<PostGridFilter> list, ManagePostView.GridColumn column, ColumnFilterState state)
+    {
+        var field = MetaFieldOf(column);
+        if (field is null) return;
+
+        if (state.Presence == PostGridFilterOps.Empty || state.Presence == PostGridFilterOps.NotEmpty)
+            list.Add(new PostGridFilter { Key = column.Key, Op = state.Presence });
+
+        switch (field.Type)
+        {
+            case MetaFieldType.String:
+            case MetaFieldType.Text:
+                if (!string.IsNullOrWhiteSpace(state.Text))
+                    list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.Contains, Value = state.Text.Trim() });
+                break;
+
+            case MetaFieldType.Int:
+            case MetaFieldType.Long:
+            case MetaFieldType.Float:
+            case MetaFieldType.Decimal:
+                AddRangeFilters(list, column.Key, state.NumberFrom, state.NumberTo,
+                    n => n.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                break;
+
+            case MetaFieldType.DateTime:
+                AddRangeFilters(list, column.Key, state.DateFrom, state.DateTo, d => d.ToString("O"));
+                break;
+
+            case MetaFieldType.Select:
+                if (state.Selected.Any())
+                    list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.In, Values = [.. state.Selected] });
+                break;
+        }
     }
 
     static void AddRangeFilters<T>(List<PostGridFilter> list, string key, T? from, T? to,

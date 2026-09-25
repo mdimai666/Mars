@@ -1,0 +1,20 @@
+@namespace Mars.Forms.Front.Editors
+@inject IFormEditorLocator Editors
+
+@* Встроенный редактор выбора: в значении — стабильный ключ варианта, не заголовок *@
+
+<FluentSelect TOption="FormChoiceOption"
+              Items="@Binding.Field.Choices"
+              OptionValue="@(c => c.Key)"
+              OptionText="@(c => c.Title)"
+              Value="@(Binding.ValueAt(Index) as string)"
+              ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+              Name="@Binding.Field.Key"
+              Disabled="@Binding.ReadOnly"
+              Style="width:250px" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+}

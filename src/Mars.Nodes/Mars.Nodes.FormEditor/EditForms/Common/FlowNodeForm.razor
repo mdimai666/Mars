@@ -1,0 +1,15 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Nodes.Core.Nodes.Common
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FlowNode))]
+
+<div class="vstack gap-4">
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FlowNode Node { get => (FlowNode)Value; set => Value = value; }
+
+}

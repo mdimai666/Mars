@@ -27,5 +27,6 @@ internal class EventManagerMock : IEventManager
     public void TriggerEvent(ManagerEventPayload payload)
     {
         //throw new NotImplementedException();
+        OnTrigger?.Invoke(payload);
     }
 }

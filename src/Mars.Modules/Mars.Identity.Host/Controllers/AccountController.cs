@@ -8,6 +8,7 @@ using Mars.Identity.Abstractions.Mappings.Accounts;
 using Mars.Identity.Abstractions.Mappings.UserProfiles;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Options;
 using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Mars.Identity.Host.Controllers;
 
@@ -55,9 +57,9 @@ public class AccountController : ControllerBase
 
     //https://code-maze.com/blazor-webassembly-authentication-aspnetcore-identity/
     //TODO: use [ValidateAntiForgeryToken]
-    //TODO: rate limit
 
     [HttpPost("Login")]
+    [EnableRateLimiting(AuthProtectionOption.RateLimitPolicyName)]
     [ProducesResponseType(typeof(AuthResultResponse), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -76,8 +78,8 @@ public class AccountController : ControllerBase
         return Unauthorized(result.ToResponse());
     }
 
+    // без [Authorize]: выход должен снимать cookie даже с протухшим bearer; SignOutAsync безопасен
     [HttpPost("Logout")]
-    [Authorize]
     public Task Logout()
     {
         return _accountsService.Logout();

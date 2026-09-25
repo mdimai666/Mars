@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Connections;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DevAdminConnectionNode/DevAdminConnectionNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/DevAdminConnectionNode/DevAdminConnectionNode{.lang}.md")]
 [Display(GroupName = "connections")]
 public class DevAdminConnectionNode : Node
 {
@@ -11,6 +11,7 @@ public class DevAdminConnectionNode : Node
 
     public string Action { get; set; } = ACTION_MESSAGE;
     public string Message { get; set; } = "";
+    public string MessageKind { get; set; } = InputValueKind.Const;
 
     public MessageRecipientType MessageRecipient { get; set; }
 
@@ -23,7 +24,6 @@ public class DevAdminConnectionNode : Node
     {
         Inputs = [new()];
         Color = "#3b9c9c";
-        hasTailButton = false;
         Icon = "_content/Mars.Nodes.Workspace/nodes/info-circle.svg";
     }
 

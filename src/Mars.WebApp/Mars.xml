@@ -36,6 +36,20 @@
             но env-переменные и явно примонтированный appsettings.Production.json перекрывают его.
             </summary>
         </member>
+        <member name="T:Mars.UseStartup.MarsParts.OptionCorsPolicyProvider">
+            <summary>
+            CORS-политика из опции БД <see cref="T:Mars.Server.Contracts.Options.CorsOption"/> (динамически, на каждый запрос).
+            Дефолт (пустой список origins) — кросс-origin запросы запрещены: админка и фронты
+            работают same-origin. Явно перечисленным origins разрешаются куки (AllowCredentials).
+            </summary>
+        </member>
+        <member name="M:Mars.UseStartup.MarsParts.OptionCorsPolicyProvider.#ctor(Mars.Options.Abstractions.Services.IOptionService)">
+            <summary>
+            CORS-политика из опции БД <see cref="T:Mars.Server.Contracts.Options.CorsOption"/> (динамически, на каждый запрос).
+            Дефолт (пустой список origins) — кросс-origin запросы запрещены: админка и фронты
+            работают same-origin. Явно перечисленным origins разрешаются куки (AllowCredentials).
+            </summary>
+        </member>
         <member name="T:Program">
             <summary>
             Auto-generated public partial Program class for top-level statement apps.

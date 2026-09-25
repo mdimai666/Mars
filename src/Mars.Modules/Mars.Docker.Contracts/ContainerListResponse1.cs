@@ -46,4 +46,8 @@ public class ContainerListResponse1 // (types.Container)
 
     [DataMember(Name = "Mounts", EmitDefaultValue = false)]
     public required IList<MountPointResponse> Mounts { get; init; }
+
+    /// <summary>Последний запуск (из inspect; null — контейнер ещё не стартовал).</summary>
+    [DataMember(Name = "StartedAt", EmitDefaultValue = false)]
+    public DateTime? StartedAt { get; set; }
 }

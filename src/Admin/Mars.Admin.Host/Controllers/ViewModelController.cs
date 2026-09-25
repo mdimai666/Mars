@@ -26,10 +26,15 @@ public class ViewModelController : ControllerBase //MinimalControllerBase, IView
         _initialSiteDataViewModelHandler = initialSiteDataViewModelHandler;
     }
 
+    /// <summary>
+    /// Сознательно без [Authorize]: отдаёт тот же набор данных, что вшивается в хост-страницу
+    /// _AdminHost.cshtml (она рендерится и анонимно — для страницы логина). UserPrimaryInfo
+    /// берётся из ambient-аутентификации: аноним → null. Используется WASM-админкой как
+    /// remote-fallback начальных данных.
+    /// </summary>
     [HttpGet]
     public Task<InitialSiteDataViewModel> InitialSiteDataViewModel(bool devAdminPageData = false, CancellationToken cancellationToken = default)
     {
         return _initialSiteDataViewModelHandler.Handle(Request, devAdminPageData, cancellationToken);
-        //return await InitialSiteDataViewModel(_serviceProvider, Request, devAdminPageData: devAdminPageData);
     }
 }

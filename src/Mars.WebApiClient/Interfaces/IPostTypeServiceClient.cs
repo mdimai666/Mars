@@ -2,6 +2,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
+using Mars.Forms.Contracts;
 
 namespace Mars.WebApiClient.Interfaces;
 
@@ -32,4 +33,7 @@ public interface IPostTypeServiceClient
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, Guid[] ids);
     Task<PostTypePresentationEditViewModel> GetPresentationEditModel(Guid id);
     Task UpdatePresentation(UpdatePostTypePresentationRequest request);
+
+    /// <summary>Определение формы редактирования поста типа; <paramref name="saved"/> = false — дерево по умолчанию</summary>
+    Task<FormDefinition?> GetFormDefinition(Guid id, bool saved = true);
 }

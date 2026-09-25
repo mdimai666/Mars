@@ -1,0 +1,103 @@
+@namespace Mars.Forms.Front
+@using Mars.Forms.Contracts
+
+@* Узел раскладки: ряд, колонка, контейнер или листовой узел (поле, заголовок, разделитель).
+   InColumn — узел лежит внутри колонки: контент идёт вертикальным списком, а ячейки сетки
+   ставит сама колонка. Легаси-поле прямо в ряду остаётся неявной ячейкой col-*. *@
+
+@if (Rendered)
+{
+    if (Node.Item.Kind == FormItemKind.Column)
+    {
+        <div class="@WidthClass(Node.Item)">
+            @if (Children.Count > 0)
+            {
+                <div class="vstack gap-2">
+                    @foreach (var child in Children)
+                    {
+                        <FormLayoutNodeView Node="@child" InColumn="true" />
+                    }
+                </div>
+            }
+        </div>
+    }
+    else if (Node.Item.Kind == FormItemKind.Row)
+    {
+        @if (InColumn)
+        {
+            <div class="row">
+                @foreach (var child in Children)
+                {
+                    <FormLayoutNodeView Node="@child" />
+                }
+            </div>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="row">
+                    @foreach (var child in Children)
+                    {
+                        <FormLayoutNodeView Node="@child" />
+                    }
+                </div>
+            </div>
+        }
+    }
+    else if (Node.Item.Kind == FormItemKind.Container)
+    {
+        @foreach (var child in Children)
+        {
+            <FormLayoutNodeView Node="@child" />
+        }
+    }
+    else if (Node.Item.Kind == FormItemKind.Heading)
+    {
+        <div class="@(InColumn ? "" : "col-12")">
+            <h6 class="mt-3 mb-1">@Node.Item.Title</h6>
+        </div>
+    }
+    else if (Node.Item.Kind == FormItemKind.Divider)
+    {
+        <div class="@(InColumn ? "" : "col-12")">
+            <hr class="my-2" />
+        </div>
+    }
+    else if (InColumn)
+    {
+        @FieldContent
+    }
+    else
+    {
+        <div class="@WidthClass(Node.Item)">
+            @FieldContent
+        </div>
+    }
+}
+
+@code {
+    [CascadingParameter] FormRenderContext Context { get; set; } = default!;
+
+    [Parameter, EditorRequired] public FormLayoutNode Node { get; set; } = default!;
+
+    /// <summary>Узел лежит внутри колонки: контент идёт вертикальным списком, без своей ячейки</summary>
+    [Parameter] public bool InColumn { get; set; }
+
+    IReadOnlyList<FormLayoutNode> Children => Node.Children;
+
+    /// <summary>Поле без дескриптора и невидимое поле не рисуются; структура и заголовки рисуются всегда</summary>
+    bool Rendered => Node.Item.Kind != FormItemKind.Field || (Node.Item.Visible && Node.Item.Field is not null);
+
+    /// <summary>Свой рендер листа-поля (иначе встроенный <see cref="FormFieldRow"/>)</summary>
+    RenderFragment FieldContent => Context.FieldTemplate is { } template
+        ? template(Node.Item)
+        : @<FormFieldRow Item="@Node.Item" />;
+
+    static string WidthClass(FormItem item) => item.Width switch
+    {
+        FormItemWidths.Half => "col-12 col-md-6",
+        FormItemWidths.Third => "col-12 col-md-4",
+        FormItemWidths.Quarter => "col-12 col-md-3",
+        _ => "col-12",
+    };
+}

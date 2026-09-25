@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Reflection;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Sequences;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Sequences;
 
+[NodeOutputValueSpec(typeof(object), Description = "string/collection element, or {PropertyName,Value} for a POCO")]
 public class SplitNodeImpl : INodeImplement<SplitNode>
 {
     public SplitNode Node { get; }

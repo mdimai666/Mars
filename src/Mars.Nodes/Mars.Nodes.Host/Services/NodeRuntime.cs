@@ -58,6 +58,7 @@ internal class NodeRuntime : INodeRuntime
     public NodesErrorHandlerRegistry ErrorHandlerRegistry { get; private set; } = default!;
 
     SmartThrottleByKey _broadcastStatusThrottler;
+    readonly SmartThrottleByKey _debugSnapshotsChangedThrottler = new(TimeSpan.FromSeconds(1));
 
     public NodeRuntime(BroadcastHub hub, INodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
@@ -269,6 +270,14 @@ internal class NodeRuntime : INodeRuntime
         _broadcastStatusThrottler.TryExecute(nodeId, () =>
         {
             BroadcastHub.NodeStatus(nodeId, nodeStatus);
+        });
+    }
+
+    public virtual void DebugSnapshotsChanged()
+    {
+        _debugSnapshotsChangedThrottler.TryExecute("debugSnapshotsChanged", () =>
+        {
+            BroadcastHub.DebugSnapshotsChanged();
         });
     }
 

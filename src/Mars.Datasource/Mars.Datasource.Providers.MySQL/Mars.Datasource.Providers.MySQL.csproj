@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="MySqlConnector" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

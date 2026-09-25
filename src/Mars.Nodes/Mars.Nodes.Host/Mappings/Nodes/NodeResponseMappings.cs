@@ -1,5 +1,5 @@
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes.Functions;
 
@@ -12,7 +12,9 @@ public static class NodeResponseMappings
         {
             Nodes = entity.Nodes.ToArray(),
             NodesState = entity.Nodes.Where(s => s.status != null).ToDictionary(node => node.Id, node => node.ToResponse()),
-            InlineFunctionNodeSchemas = entity.InlineFunctionNodeSchemas.ToResponse()
+            InlineFunctionNodeSchemas = entity.InlineFunctionNodeSchemas.ToResponse(),
+            OutputValueSpecs = entity.OutputValueSpecs,
+            GlobalVariableNames = entity.GlobalVariableNames
         };
 
     public static NodeStateInfoResponse ToResponse(this Node entity)

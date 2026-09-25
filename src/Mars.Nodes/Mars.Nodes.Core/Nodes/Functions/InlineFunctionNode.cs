@@ -8,7 +8,7 @@ public class InlineFunctionNode : Node
     public override string TypeId => "core.InlineFunctionNode";
 
     public const string DefaultColor = "#dcdc9b";
-    public const string DefaultIcon = "_content/Mars.Nodes.Workspace/nodes/function.svg";
+    public const string DefaultIcon = "_content/Mars.Nodes.Workspace/nodes/inline-function.svg";
 
     public string FunctionId { get; set; } = "";
     public string[] Arguments { get; set; } = [];

@@ -1,11 +1,13 @@
-@using Mars.Datasource
-@using Mars.Datasource.Abstractions.Models
-@using Mars.Datasource.Dto
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
 @using Mars.Datasource.Front.Services
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inject IDatasourceServiceClient datasourceService;
+@inject NavigationManager nav;
 @inject Mars.Admin.Framework.Interfaces.IMessageService messageService
 
 <div class="vstack gap-3">
@@ -14,12 +16,15 @@
                       OnClick="ClickTestConnection">Test connection</FluentButton>
     </div>
     <div class="hstack">
-        <a href="/dev/datasource/query?slug=mssql" class="">
-            <FluentButton>
-                Query tool
-            </FluentButton>
-        </a>
+        <FluentButton Disabled="@(string.IsNullOrWhiteSpace(Config.Slug) || slugError is not null)"
+                      OnClick="OpenQueryTool">
+            Query tool
+        </FluentButton>
     </div>
+    @if (slugError is not null)
+    {
+        <div class="text-danger fz14px">@slugError</div>
+    }
 </div>
 
 @code {
@@ -28,24 +33,47 @@
 
     bool isTestLoading;
 
-    async void ClickTestConnection()
+    string? slugError => DatasourceConfig.ValidateSlug(Config.Slug);
+
+    void OpenQueryTool()
+    {
+        nav.NavigateTo($"{nav.BaseUri}datasource/query?slug={Uri.EscapeDataString(Config.Slug)}");
+    }
+
+    async Task ClickTestConnection()
     {
         isTestLoading = true;
         StateHasChanged();
 
-        var conn = new ConnectionStringTestDto { Driver = Config.Driver, ConnectionString = Config.ConnectionString };
-        var res = await datasourceService.TestConnection(conn);
-
-        if (res.Ok)
+        try
         {
-            _ = messageService.Success(res.Message);
-        }
-        else
-        {
-            _ = messageService.Error(res.Message);
-        }
+            var conn = new ConnectionStringTestDto
+            {
+                Kind = Config.Kind,
+                Driver = Config.Driver,
+                ConnectionString = Config.ConnectionString,
+                Settings = Config.Settings,
+            };
 
-        isTestLoading = false;
-        StateHasChanged();
+            var res = await datasourceService.TestConnection(conn);
+
+            if (res.Ok)
+            {
+                _ = messageService.Success(res.Message);
+            }
+            else
+            {
+                _ = messageService.Error(res.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = messageService.Error(ex.Message);
+        }
+        finally
+        {
+            isTestLoading = false;
+            StateHasChanged();
+        }
     }
 }

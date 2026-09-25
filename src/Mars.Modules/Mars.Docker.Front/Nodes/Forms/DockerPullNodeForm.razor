@@ -1,0 +1,31 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Docker.Contracts.Nodes
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DockerPullNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.Image">
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="python"
+                            Value="@DockerNodeFormUtil.KindValue(Node.ImageKind, Node.Image)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.ImageKind = k, x => Node.Image = x))"
+                            For="() => Node.Image" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Tag">
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="latest"
+                            Value="@DockerNodeFormUtil.KindValue(Node.TagKind, Node.Tag)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.TagKind = k, x => Node.Tag = x))"
+                            For="() => Node.Tag" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    DockerPullNode Node { get => (DockerPullNode)Value!; set => Value = value; }
+}

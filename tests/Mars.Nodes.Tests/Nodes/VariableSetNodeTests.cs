@@ -1,8 +1,9 @@
+using DynamicExpresso;
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Tests.Services;
-using Mars.SiteEngine.Abstractions.Templators;
 
 namespace Mars.Nodes.Tests.Nodes;
 
@@ -140,11 +141,11 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     public void InitArray_Ctor_Success(string varType, string expression, object expect)
     {
         //Arrange
-        var ppt = new XInterpreter();
+        var ppt = new Interpreter();
 
         //Act
         var replaced = VariableSetNodeImpl.SmartReplaceArrayInitializer(expect.GetType(), expression);
-        var result = ppt.Get.Eval(replaced);
+        var result = ppt.Eval(replaced);
 
         //Assert
         result.Should().BeEquivalentTo(expect);
@@ -156,7 +157,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     {
         //Arrange
         _ = nameof(VariableSetNodeImpl.Execute);
-        _ = nameof(VariableSetNodeImpl.CreateInterpreter);
+        _ = nameof(InputValueResolver.CreateInterpreter);
 
         var flowNode = new FlowNode();
         Runtime.FlowContexts.Add(flowNode.Id, new());

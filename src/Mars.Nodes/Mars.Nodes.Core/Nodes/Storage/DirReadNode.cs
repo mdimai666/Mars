@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Storage;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DirReadNode/DirReadNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/DirReadNode/DirReadNode{.lang}.md")]
 [Display(GroupName = "storage")]
 public class DirReadNode : Node
 {
@@ -28,7 +28,7 @@ public class DirReadNode : Node
         Inputs = [new()];
         Color = "#deb887";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/dir-read.svg";
     }
 
 }

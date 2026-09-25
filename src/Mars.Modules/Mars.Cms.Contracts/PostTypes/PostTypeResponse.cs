@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Contracts.PostTypes;
 
@@ -67,6 +68,13 @@ public record PostTypeDetailResponse : IBasicEntityResponse
 
     public string? ImageFieldKey { get; init; }
 
+    /// <summary>
+    /// Параметры системных полей (правила, редактор) — <c>post_types.Options["systemFields"]</c>;
+    /// null — не заданы. Симметрично <see cref="CreatePostTypeRequest.SystemFields"/> и
+    /// <see cref="UpdatePostTypeRequest.SystemFields"/>: что принимает запись, то отдаёт чтение.
+    /// </summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
+
 }
 
 public record PostStatusResponse
@@ -104,22 +112,4 @@ public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse
 {
     public required PostTypePresentationResponse Presentation { get; init; }
 
-}
-
-/// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
-public static class PostTypeDetailResponseContentExtensions
-{
-    /// <summary>Поле контента: фича включена и поле с фиксированным ключом существует</summary>
-    public static MetaFieldDetailResponse? ContentField(this PostTypeDetailResponse postType)
-        => postType.EnabledFeatures.Contains(PostTypeConstants.Features.Content)
-            ? postType.MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
-            : null;
-
-    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
-    public static string ContentEditorKey(this PostTypeDetailResponse postType)
-        => postType.ContentField()?.Options.GetEditor() ?? "";
-
-    /// <summary>Язык кода редактора контента</summary>
-    public static string ContentCodeLang(this PostTypeDetailResponse postType)
-        => postType.ContentField()?.Options.GetCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
 }

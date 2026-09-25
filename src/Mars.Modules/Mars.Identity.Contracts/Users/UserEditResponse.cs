@@ -55,18 +55,6 @@ public class UserEditResponse
     //public virtual ICollection<MetaValue> MetaValues { get; set; }
     //public virtual ICollection<MetaField> MetaFields { get; set; }
 
-    //-------------GEO-----------
-
-    //[Display(Name = "Регион")]
-    //public Guid? GeoRegionId { get; set; }
-
-    //[Display(Name = "Муниципалитет")]
-    //public Guid? GeoMunicipalityId { get; set; }
-
-    //[Display(Name = "Поселение")]
-    //public Guid? GeoLocationId { get; set; }
-    //-------------end GEO-----------
-
     public required string UserName { get; init; }
     public required IReadOnlyCollection<string> Roles { get; init; }
 

@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Network;
+using Mars.Nodes.Expressions;
 using Mars.Notifications.Abstractions;
 using Mars.Notifications.Contracts;
 using Mars.Options.Abstractions.Services;
@@ -43,20 +45,29 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>
         }
         else
         {
-            //info = new EmailSendMessageDto
-            //{
-            //    ToEmail = Node.ToEmail,
-            //    Subject = Node.Subject,
-            //    Message = input.Payload?.ToString() ?? "",
-            //};
-            //info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
+            info = new EmailSendMessageDto { Message = input.Payload.ToString() ?? "" };
         }
+
+        var (toEmail, subject, message) = ResolveFields();
 
         info ??= new();
 
-        if (!string.IsNullOrWhiteSpace(Node.ToEmail)) { info.ToEmail = Node.ToEmail; }
-        //if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
-        if (!string.IsNullOrWhiteSpace(Node.Subject)) { info.Subject = Node.Subject; }
+        if (!string.IsNullOrWhiteSpace(toEmail)) { info.ToEmail = toEmail!; }
+        if (!string.IsNullOrWhiteSpace(message)) { info.Message = message!; }
+        if (!string.IsNullOrWhiteSpace(subject)) { info.Subject = subject!; }
+
+        // аренда runner'а только на резолвинг — SMTP-отправка ниже идёт вне сессии
+        (string? To, string? Subject, string? Message) ResolveFields()
+        {
+            using var expr = RNS.Expressions(Node);
+
+            string? Resolve(string kind, string value, string source)
+                => (string?)expr.Resolve(kind, value, "string", input, Node, source);
+
+            return (Resolve(Node.ToEmailKind, Node.ToEmail, "ToEmail"),
+                    Resolve(Node.SubjectKind, Node.Subject, "Subject"),
+                    Resolve(Node.MessageKind, Node.Message, "Message"));
+        }
 
         var valid = info.Validate(new ValidationContext(info));
 

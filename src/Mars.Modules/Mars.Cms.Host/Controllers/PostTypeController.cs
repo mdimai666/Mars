@@ -11,6 +11,7 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
+using Mars.Forms.Contracts;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -174,4 +175,17 @@ public class PostTypeController : ControllerBase
     {
         await _postTypeService.UpdatePresentation(request.ToQuery(), cancellationToken);
     }
+
+    /// <summary>
+    /// Определение формы редактирования поста типа: дерево провайдера с дескрипторами
+    /// и манифестом. <paramref name="saved"/> = false — дерево по умолчанию (сброс раскладки).
+    /// </summary>
+    [HttpGet("form/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public FormDefinition GetFormDefinition(Guid id, [FromQuery] bool saved = true, CancellationToken cancellationToken = default)
+        => _postTypeService.GetFormDefinition(id, saved, cancellationToken) ?? throw new NotFoundException();
 }

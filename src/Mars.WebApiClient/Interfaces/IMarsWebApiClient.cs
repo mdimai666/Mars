@@ -8,6 +8,8 @@ public interface IMarsWebApiClient
     IFlurlClient Client { get; }
 
     IAccountServiceClient Account { get; }
+    IApiKeyServiceClient ApiKey { get; }
+    IPasskeyServiceClient Passkey { get; }
     IPostTypeServiceClient PostType { get; }
     IFeedbackServiceClient Feedback { get; }
     IPostServiceClient Post { get; }
@@ -31,5 +33,6 @@ public interface IMarsWebApiClient
     IFrontServiceClient Front { get; }
     IAIServiceClient AITool { get; }
     IAiChatServiceClient AiChat { get; }
+    ICodeCompletionServiceClient CodeCompletion { get; }
 
 }

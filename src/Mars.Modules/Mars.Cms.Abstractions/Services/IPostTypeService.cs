@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Services;
 
@@ -22,4 +23,10 @@ public interface IPostTypeService
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetMetaValueRelationModels(string modelName, Guid[] ids, CancellationToken cancellationToken);
     Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken);
     PostTypePresentationEditViewModel? GetPresentationEditModel(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Определение формы редактирования поста типа. <paramref name="saved"/> = false — дерево
+    /// по умолчанию, без сохранённой раскладки (сброс в дизайнере формы).
+    /// </summary>
+    FormDefinition? GetFormDefinition(Guid id, bool saved, CancellationToken cancellationToken);
 }

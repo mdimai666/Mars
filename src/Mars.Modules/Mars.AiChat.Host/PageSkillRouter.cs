@@ -16,9 +16,19 @@ internal static class PageSkillRouter
         if (frontEditorSlug is not null) skills.Add("mars-front-editor");
         if (IsPostEditPage(pageContext)) skills.Add("mars-posts");
         if (IsMediaPage(pageContext)) skills.Add("mars-media");
+        if (IsDatasourcePage(pageContext)) skills.Add("mars-datasource");
         if (option.EnableSqlAccess) skills.Add("mars-sql");
 
         return skills;
+    }
+
+    // Страницы модуля DataSource: /datasource/query, /datasource/config, /datasource/actions
+    static bool IsDatasourcePage(string? pageContext)
+    {
+        if (string.IsNullOrWhiteSpace(pageContext)) return false;
+
+        return pageContext.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Any(seg => seg.Equals("datasource", StringComparison.OrdinalIgnoreCase));
     }
 
     // Страница «Медиа» админки: /Media

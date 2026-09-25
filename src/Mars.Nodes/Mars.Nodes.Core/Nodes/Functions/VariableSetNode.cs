@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Functions;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/VariableSetNode/VariableSetNode{.lang}.md")]
 [Display(GroupName = "functions")]
 public class VariableSetNode : Node
 {
@@ -19,7 +19,7 @@ public class VariableSetNode : Node
         Inputs = [new()];
         Color = "#ecb56a";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/function-x.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/var-set.svg";
     }
 
 }

@@ -1,8 +1,13 @@
 @page "/datasource/query"
 
-<Mars.Datasource.Front.DatabaseQueryWorkspace DataSourceConfigSlug="@DataSourceConfigSlug" />
+<Mars.Datasource.Front.QueryPage DataSourceConfigSlug="@DataSourceConfigSlug" />
 
 @code {
     [Parameter, SupplyParameterFromQuery(Name = "slug")]
-    public string DataSourceConfigSlug { get; set; } = "default";
+    public string DataSourceConfigSlug { get; set; } = "";
+
+    protected override void OnParametersSet()
+    {
+        if (DataSourceConfigSlug.IsNullOrEmpty()) DataSourceConfigSlug = "default";
+    }
 }

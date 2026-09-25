@@ -19,7 +19,7 @@ public class SetupWizardTests : BaseE2ETests
     {
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task SetupWizard_DatabasePage_InvalidConnection_ShowsError()
     {
         // Arrange
@@ -40,7 +40,7 @@ public class SetupWizardTests : BaseE2ETests
         await Page.WaitForSelectorAsync(".alert-danger", new() { Timeout = 15000 });
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task SetupWizard_DatabasePage_TestConnection_ShowsError()
     {
         // Arrange
@@ -63,7 +63,7 @@ public class SetupWizardTests : BaseE2ETests
         content.Should().Contain("Ошибка подключения");
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task SetupWizard_FullFlow_ReachesCompletePage()
     {
         // Parse connection string from test fixture

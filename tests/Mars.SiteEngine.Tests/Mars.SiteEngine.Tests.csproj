@@ -19,6 +19,8 @@
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Scriban\Mars.SiteEngine.Scriban.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
     </ItemGroup>
 

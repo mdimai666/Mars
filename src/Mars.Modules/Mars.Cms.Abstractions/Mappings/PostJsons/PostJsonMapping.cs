@@ -26,6 +26,8 @@ public static class PostJsonMapping
             Slug = entity.Slug,
             Author = entity.Author,
             Content = entity.Content,
+            Excerpt = entity.Excerpt,
+            LangCode = entity.LangCode,
             Tags = entity.Tags,
 
             ///<see cref="MetaValueMapping.ToDto"/>
@@ -46,6 +48,8 @@ public static class PostJsonMapping
             Slug = entity.Slug,
             Author = entity.Author,
             Content = entity.Content?.StripHTML()?.TextEllipsis(250),
+            Excerpt = entity.Excerpt,
+            LangCode = entity.LangCode,
             Tags = entity.Tags,
 
             ///<see cref="MetaValueMapping.ToDto"/>
@@ -104,6 +108,8 @@ public static class PostJsonMapping
             Type = entity.Type,
             Tags = entity.Tags,
             Content = entity.Content,
+            Excerpt = entity.Excerpt,
+            LangCode = entity.LangCode,
             Author = entity.Author.ToResponse(),
             Meta = entity.Meta,
             Categories = entity.Categories?.ToResponse(),

@@ -15,8 +15,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.AiChat.Front\Mars.AiChat.Front.csproj" />
+		<ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
-		<ProjectReference Include="..\Mars.Datasource\Mars.Datasource.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

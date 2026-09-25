@@ -12,14 +12,7 @@
 
     @if (!_singleRedirect)
     {
-        @if (POSTTYPE == "NONE-gallery")
-        {
-            @* <Mars.Admin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
-        }
-        else
-        {
-            <EditPostView ID=@ID PostTypeName=@POSTTYPE />
-        }
+        <EditPostView ID=@ID PostTypeName=@POSTTYPE />
     }
     <div class="spacer-2"></div>
 

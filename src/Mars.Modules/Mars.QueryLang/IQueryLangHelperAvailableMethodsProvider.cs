@@ -6,5 +6,5 @@ namespace Mars.QueryLang;
 public interface IQueryLangHelperAvailableMethodsProvider
 {
     IReadOnlyCollection<TemplatorHelperInfoAttribute> AvailableMethods();
-    IReadOnlyCollection<LinqMethodSignarute> LinqMethodSignarutes();
+    IReadOnlyCollection<LinqMethodSignature> LinqMethodSignatures();
 }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.StringFunctions;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -32,50 +33,8 @@ public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>
         MethodInfo methodInfo = def.Delegate.Method;
         ParameterInfo[] parametersInfo = methodInfo.GetParameters();
 
-        // 2. Определяем наличие аргументов NodeMsg и ExecutionParameters
-        bool hasNodeMsgParam = parametersInfo.Any(p => p.ParameterType == typeof(NodeMsg));
-        bool hasExecutionParamsParam = parametersInfo.Any(p => p.ParameterType == typeof(ExecutionParameters));
-
-        // 3. Формируем массив аргументов для вызова делегата
-        var args = new List<object?>();
-        var argumentIndex = 0;
-
-        var paramsWithoutExecutionParams = parametersInfo.Where(p => p.ParameterType != typeof(ExecutionParameters)
-                                                                    && p.ParameterType != typeof(ExecutionParameters))
-                                                        .ToList();
-
-        var nodeArgumentsList = node.Arguments.ToList();
-
-        var ppt = paramsWithoutExecutionParams.Any() ? VariableSetNodeImpl.CreateInterpreter(RNS, input) : null;
-
-        for (int i = 0; i < parametersInfo.Length; i++)
-        {
-            ParameterInfo? param = parametersInfo[i];
-            if (param.ParameterType == typeof(NodeMsg))
-            {
-                args.Add(input);
-            }
-            else if (param.ParameterType == typeof(ExecutionParameters))
-            {
-                args.Add(parameters);
-            }
-            else
-            {
-                var nodePassArgument = nodeArgumentsList.ElementAtOrDefault(argumentIndex)
-                                            ?? param.DefaultValue?.ToString()
-                                            ?? throw new ArgumentNullException($"required argument '{param.Name}'({param.ParameterType.Name}) on index {argumentIndex} not pass.");
-                object? calcValue;
-                bool isLiteralValue = !nodePassArgument.StartsWith('@');
-                if (isLiteralValue)
-                    calcValue = StringValueParser.ParseByType(param.ParameterType, nodePassArgument);
-                else
-                    calcValue = ppt.Get.Eval(nodePassArgument[1..], param.ParameterType);
-                args.Add(calcValue);
-
-                argumentIndex++;
-                //throw new InvalidOperationException($"Unsupported parameter type: {param.ParameterType}");
-            }
-        }
+        // 2. Аргументы собираются в арендованной сессии; вызов делегата (произвольный долгий код) — вне её
+        var args = BuildArgs();
 
         object? result = null;
 
@@ -114,6 +73,52 @@ public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>
         {
             // Обрабатываем исключение из вызванного метода
             throw ex.InnerException ?? ex;
+        }
+
+        // 3. Формируем массив аргументов для вызова делегата (@expr — через арендованный interpreter)
+        List<object?> BuildArgs()
+        {
+            var args = new List<object?>();
+            var argumentIndex = 0;
+
+            var paramsWithoutExecutionParams = parametersInfo.Where(p => p.ParameterType != typeof(ExecutionParameters)
+                                                                        && p.ParameterType != typeof(ExecutionParameters))
+                                                            .ToList();
+
+            var nodeArgumentsList = node.Arguments.ToList();
+
+            using var expr = RNS.Expressions(Node);
+            var ppt = paramsWithoutExecutionParams.Any() ? expr.GetInterpreter(input) : null;
+
+            for (int i = 0; i < parametersInfo.Length; i++)
+            {
+                ParameterInfo? param = parametersInfo[i];
+                if (param.ParameterType == typeof(NodeMsg))
+                {
+                    args.Add(input);
+                }
+                else if (param.ParameterType == typeof(ExecutionParameters))
+                {
+                    args.Add(parameters);
+                }
+                else
+                {
+                    var nodePassArgument = nodeArgumentsList.ElementAtOrDefault(argumentIndex)
+                                                ?? param.DefaultValue?.ToString()
+                                                ?? throw new ArgumentNullException($"required argument '{param.Name}'({param.ParameterType.Name}) on index {argumentIndex} not pass.");
+                    object? calcValue;
+                    bool isLiteralValue = !nodePassArgument.StartsWith('@');
+                    if (isLiteralValue)
+                        calcValue = StringValueParser.ParseByType(param.ParameterType, nodePassArgument);
+                    else
+                        calcValue = ppt.Eval(nodePassArgument[1..], param.ParameterType);
+                    args.Add(calcValue);
+
+                    argumentIndex++;
+                }
+            }
+
+            return args;
         }
     }
 }

@@ -7,6 +7,8 @@ using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
+using Mars.Core.Features;
+using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostsViews;
@@ -61,23 +63,11 @@ public class PostEditModel : IBasicEntity
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
     public Guid[] CategoryIds { get; set; } = [];
 
-    Dictionary<(string Key, int Index), MetaValueEditModel>? _metaValuesByIndex;
-
     /// <summary>
-    /// Доступ к значениям по <c>(ключ поля, Index)</c>; одиночные значения — <c>(key, 0)</c>.
-    /// Кэш по текущему списку <see cref="MetaValues"/>: пересобирается при изменении состава списка.
+    /// Определение формы редактирования от сервера (дерево контейнеров с дескрипторами полей).
+    /// Подменяется на месте после сохранения раскладки типа — несохранённые правки поста остаются.
     /// </summary>
-    public IReadOnlyDictionary<(string Key, int Index), MetaValueEditModel> MetaValuesByIndex
-    {
-        get
-        {
-            if (_metaValuesByIndex is null || _metaValuesByIndex.Count != MetaValues.Count)
-            {
-                _metaValuesByIndex = MetaValues.ToKeyIndexDictionary();
-            }
-            return _metaValuesByIndex;
-        }
-    }
+    public FormDefinition? Form { get; set; }
 
     //==========================================
     //Internal
@@ -90,6 +80,16 @@ public class PostEditModel : IBasicEntity
     public bool FeatureActivated(string featureName)
     {
         return PostType.EnabledFeatures.Contains(featureName);
+    }
+
+    //==========================================
+    // Форма (общий слой Mars.Forms)
+
+    /// <summary>Авто-подстановка slug из заголовка, пока slug пустой или похож на Guid</summary>
+    public void AutoFillSlug()
+    {
+        if (string.IsNullOrWhiteSpace(Slug) || Guid.TryParse(Slug, out _))
+            Slug = TextTool.TranslateToPostSlug(Title);
     }
 
     //==========================================
@@ -162,9 +162,9 @@ public class PostEditModel : IBasicEntity
         };
 
     public static PostEditModel FromViewModel(PostEditViewModel vm)
-        => ToModel(vm.Post, vm.PostType);
+        => ToModel(vm.Post, vm.PostType, vm.Form);
 
-    public static PostEditModel ToModel(PostEditResponse response, PostTypeDetailResponse postType)
+    public static PostEditModel ToModel(PostEditResponse response, PostTypeDetailResponse postType, FormDefinition? form = null)
         => new()
         {
             Id = response.Id,
@@ -182,6 +182,7 @@ public class PostEditModel : IBasicEntity
             UserId = response.Author.Id,
             MetaValues = response.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),
             CategoryIds = response.CategoryIds.ToArray(),
+            Form = form,
 
             //extra
             PostType = PostTypeEditModel.ToModel(postType, [])

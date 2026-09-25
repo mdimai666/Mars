@@ -1,17 +1,18 @@
 using System.Reflection;
 using Mars.Cms.Abstractions.Attributes;
 using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Host.Controllers;
 using Mars.Cms.Host.Handlers;
 using Mars.Cms.Host.Seeding;
 using Mars.Cms.Host.Services;
-using Mars.Cms.Host.Services.GallerySpace;
 using Mars.Cms.Host.XActions;
 using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Contracts.Resources;
 using Mars.Data.Seeding;
+using Mars.Forms.Abstractions;
 using Mars.Server.Abstractions.Validators;
 using Mars.XActions.Abstractions.Managers;
 using Mars.XActions.Contracts;
@@ -38,7 +39,6 @@ public static class MainCms
         services.AddScoped<IPostCategoryService, PostCategoryService>();
         services.AddScoped<IPostCategoryTypeService, PostCategoryTypeService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
-        services.AddScoped<IGalleryService, GalleryService>();
 
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<IMetaQueryFieldResolver, MetaQueryFieldResolver>();
@@ -50,6 +50,9 @@ public static class MainCms
                 .AddKeyedScoped<IMetaValueUniquenessProvider, PostCategoryMetaValueUniquenessProvider>(MetaValueOwnerCatalog.PostCategory)
                 .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
         services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
+        services.AddKeyedScoped<IFormDataProvider, PostFormProvider>(PostFormBuilder.OwnerModelWildcard);
+        services.AddScoped<PostFormRulesValidator>();
+        services.AddSingleton<IFormRulesContributor, PostFormRulesContributor>();
         services.AddSingleton<ISeedDataHandler, CmsSeedDataHandler>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();

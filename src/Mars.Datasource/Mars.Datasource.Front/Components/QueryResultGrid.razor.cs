@@ -1,0 +1,316 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Mars.Datasource.Contracts.Sql;
+using Mars.Datasource.Front.Services;
+using Mars.Datasource.Contracts.Catalog;
+using Mars.Datasource.Contracts.Config;
+using Mars.Datasource.Contracts.Document;
+using Mars.Datasource.Contracts.Query;
+using MarsCodeEditor2;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.FluentUI.AspNetCore.Components;
+
+namespace Mars.Datasource.Front.Components;
+
+/// <summary>
+/// Результат запроса: сводка, переключение таблица/JSON и правка ячеек.
+/// Сама таблица рисуется общим <see cref="ResultTable"/> — здесь только то, что относится к правке.
+/// </summary>
+public partial class QueryResultGrid
+{
+    [Inject] IDatasourceServiceClient service { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
+
+    [Parameter, EditorRequired] public QueryResultDto Result { get; set; } = default!;
+    [Parameter, EditorRequired] public QueryTab Tab { get; set; } = default!;
+    [Parameter] public string Slug { get; set; } = DatasourceConfig.DefaultSlug;
+    [Parameter] public SelectDatasourceDto? Source { get; set; }
+
+    /// <summary>Вызывается после успешного сохранения правок — рабочая область перечитывает данные.</summary>
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    /// <summary>Длинное значение правится в модалке: в ячейке (330px) его всё равно не видно.</summary>
+    const int InlineEditMaxLength = 50;
+
+    (int Row, string Column)? _editCell;
+    string? _editValue;
+
+    protected override void OnParametersSet()
+    {
+        // Результат переехал в другую вкладку — незавершённую правку не тащим.
+        _editCell = null;
+    }
+
+    /// <summary>Вариант провайдера, который ответил; у источников без вариантов — тип источника.</summary>
+    string SourceLabel => string.IsNullOrWhiteSpace(Result.Driver) ? Result.Kind : Result.Driver;
+
+    /// <summary>
+    /// «строк: 20 · всего 1234». Общее число есть только у просмотра объекта из дерева
+    /// (`QueryTab.Total`), у произвольного запроса мы не знаем, что считать.
+    /// </summary>
+    string RowsSummary
+    {
+        get
+        {
+            var text = $"строк: {Result.Rows.Length}";
+
+            if (Tab.Total is long total) text += $" из {total}";
+            if (Tab.TotalNote is not null) text += $" ({Tab.TotalNote})";
+
+            return text;
+        }
+    }
+
+    async Task StartCellEditAsync(CellEditRequest request)
+    {
+        if (!Tab.CanEdit) return;
+
+        if (request.Value is not null && request.Value.Length > InlineEditMaxLength)
+        {
+            await EditLongValueAsync(request, request.Value);
+            return;
+        }
+
+        StartEdit(request, request.Value);
+    }
+
+    async Task EditLongValueAsync(CellEditRequest request, string value)
+    {
+        var dialog = await _dialogService.ShowDialogAsync<CellValueDialog>(
+            new CellValueDialogContent(value, request.Kind == FieldKind.Json ? CodeEditor2.Language.json : "plaintext"),
+            new DialogParameters
+            {
+                Title = $"Значение: {request.Column}",
+                Width = "min(960px, 90vw)",
+                Modal = true,
+                PreventDismissOnOverlayClick = true,
+            });
+
+        var result = await dialog.Result;
+        if (result.Cancelled) return;
+
+        ApplyEdit((request.RowIndex, request.Column), result.Data as string);
+        StateHasChanged();
+    }
+
+    void StartEdit(CellEditRequest request, string? value)
+    {
+        var cell = (request.RowIndex, request.Column);
+        if (!Tab.CanEdit) return;
+        if (_editCell == cell) return;
+
+        _editCell = cell;
+        _editValue = value;
+        StateHasChanged();
+    }
+
+    async Task OnEditKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            CommitEdit();
+        }
+        else if (e.Key == "Escape")
+        {
+            _editCell = null;
+            StateHasChanged();
+            await Task.CompletedTask;
+        }
+    }
+
+    void CommitEdit()
+    {
+        if (_editCell is not { } cell) return;
+
+        _editCell = null;
+        ApplyEdit(cell, _editValue);
+        StateHasChanged();
+    }
+
+    /// <summary>Значение ложится в несохранённые правки; равное исходному — снимает правку.</summary>
+    void ApplyEdit((int Row, string Column) cell, string? value)
+    {
+        if (value == GetValue(cell.Row, cell.Column))
+        {
+            Tab.Changes.Remove(cell);
+        }
+        else
+        {
+            Tab.Changes[cell] = value;
+        }
+    }
+
+    void DiscardChanges()
+    {
+        Tab.Changes.Clear();
+        StateHasChanged();
+    }
+
+    async Task SaveAsync()
+    {
+        var editedRows = Tab.Changes.Keys.Select(k => k.Row).Distinct().Count();
+        var plans = BuildPlans();
+
+        if (plans.Count == 0 || plans.Count != editedRows)
+        {
+            _ = _messageService.Error("Не удалось собрать UPDATE: не хватает значений первичного ключа");
+            return;
+        }
+
+        var dialog = await _dialogService.ShowDialogAsync<SqlPreviewDialog>(plans, new DialogParameters
+        {
+            Title = "Изменение данных",
+            Modal = true,
+            PreventDismissOnOverlayClick = false,
+        });
+
+        var result = await dialog.Result;
+        if (result.Cancelled) return;
+
+        var affected = 0;
+
+        foreach (var plan in plans)
+        {
+            DatasourceModifyResult response;
+
+            try
+            {
+                response = await service.Modify(Slug, new DatasourceRequest { Language = DatasourceLanguage.Sql, Query = plan.Sql, Parameters = plan.Parameters });
+            }
+            catch (Exception ex)
+            {
+                // Исключение из обработчика события убивает страницу целиком — сообщаем словами
+                _ = _messageService.Error(ex.Message);
+                return;
+            }
+
+            if (!response.Ok)
+            {
+                _ = _messageService.Error(response.Message);
+                return;
+            }
+
+            affected += response.RowsAffected;
+        }
+
+        Tab.Changes.Clear();
+        _ = _messageService.Success($"Обновлено строк: {affected}");
+
+        await OnSaved.InvokeAsync();
+    }
+
+    List<SqlUpdatePlan> BuildPlans()
+    {
+        if (Tab.Object is null) return [];
+
+        var quote = Quoter();
+        List<SqlUpdatePlan> plans = [];
+
+        foreach (var rowGroup in Tab.Changes.GroupBy(c => c.Key.Row))
+        {
+            Dictionary<string, string?> keyValues = [];
+
+            foreach (var keyColumn in Tab.KeyColumns)
+            {
+                var index = ColumnIndex(keyColumn);
+                if (index < 0) continue;
+
+                keyValues[keyColumn] = GetValue(rowGroup.Key, keyColumn);
+            }
+
+            var changes = rowGroup.ToDictionary(c => c.Key.Column, c => c.Value);
+
+            var plan = RowUpdateBuilder.Build(
+                Tab.Schema,
+                Tab.Object.Name,
+                quote,
+                Tab.KeyColumns,
+                keyValues,
+                changes);
+
+            if (plan is not null) plans.Add(plan);
+        }
+
+        return plans;
+    }
+
+    Func<string, string> Quoter()
+    {
+        var dialect = SqlDialectMapping.Dialect(Source?.Driver);
+
+        return name => SqlDialectMapping.Quote(dialect, name);
+    }
+
+    int ColumnIndex(string columnName)
+        => Array.FindIndex(Result.Fields, c => c.Name == columnName);
+
+    string? GetValue(int rowIndex, string columnName)
+    {
+        var index = ColumnIndex(columnName);
+        if (index < 0) return null;
+        if (rowIndex < 0 || rowIndex >= Result.Rows.Length) return null;
+
+        var row = Result.Rows[rowIndex];
+
+        return index < row.Length ? row[index] : null;
+    }
+
+    /// <summary>
+    /// Результат как JSON: источник мог отдать ответ документом (rest) — тогда показываем его как есть,
+    /// иначе собираем из строк, разворачивая json-колонки вложенными объектами.
+    /// </summary>
+    string? resultJsonText
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(Result.Json)) return Result.Json;
+
+            if (!Result.Ok) return null;
+
+            JsonArray array = new();
+
+            for (var rowIndex = 0; rowIndex < Result.Rows.Length; rowIndex++)
+            {
+                var row = Result.Rows[rowIndex];
+                JsonObject obj = new();
+
+                for (var i = 0; i < Result.Fields.Length && i < row.Length; i++)
+                {
+                    var column = Result.Fields[i];
+                    var value = Tab.Changes.TryGetValue((rowIndex, column.Name), out var pending) ? pending : row[i];
+
+                    if (value is null)
+                    {
+                        obj[column.Name] = null;
+                    }
+                    else if (column.IsJson && TryParseJson(value) is JsonNode node)
+                    {
+                        obj[column.Name] = node;
+                    }
+                    else
+                    {
+                        obj[column.Name] = JsonValue.Create(value);
+                    }
+                }
+
+                array.Add(obj);
+            }
+
+            return array.ToJsonString();
+        }
+    }
+
+    static JsonNode? TryParseJson(string value)
+    {
+        try
+        {
+            return JsonNode.Parse(value);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+}

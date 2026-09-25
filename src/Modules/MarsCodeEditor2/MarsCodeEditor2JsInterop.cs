@@ -48,16 +48,22 @@ namespace MarsCodeEditor2
             await module.InvokeVoidAsync("f_editor_doaction", blazorMonacoId, actionId);
         }
 
-        public async ValueTask Editor_activateJSextensions(string blazorMonacoId, string? optionsJson = null)
+        public async ValueTask Editor_activateJSextensions(string blazorMonacoId, string? optionsJson = null, DotNetObjectReference<CodeEditor2>? dotNetRef = null)
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync("activateJSextensions", blazorMonacoId, optionsJson);
+            await module.InvokeVoidAsync("activateJSextensions", blazorMonacoId, optionsJson, dotNetRef);
         }
 
         public async ValueTask Editor_setModelLanguage(string blazorMonacoId, string lang)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync("setModelLanguage", blazorMonacoId, lang);
+        }
+
+        public async ValueTask Editor_ReplaceLines(string blazorMonacoId, int startLine, int endLine, string text)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("replaceLines", blazorMonacoId, startLine, endLine, text);
         }
     }
 }

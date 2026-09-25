@@ -62,6 +62,49 @@ public class SwitchNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
+    public async Task Execute_ConstCondition_RoutesByLiteral()
+    {
+        //Arrange
+        var node = new SwitchNode
+        {
+            Conditions =
+            [
+                new SwitchNode.Condition { ValueKind = InputValueKind.Const, Value = "false" },
+                new SwitchNode.Condition { ValueKind = InputValueKind.Const, Value = "true" },
+            ]
+        };
+
+        //Act
+        var msg = await ExecuteNodeEx(node, new NodeMsg());
+
+        //Assert
+        msg.OutputPort.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Execute_MsgCondition_ReadsBoolPath()
+    {
+        //Arrange
+        var input = new NodeMsg();
+        input.Set("flag", true);
+
+        var node = new SwitchNode
+        {
+            Conditions =
+            [
+                new SwitchNode.Condition { ValueKind = InputValueKind.Msg, Value = "flag" },
+                new SwitchNode.Condition { Value = "true" },
+            ]
+        };
+
+        //Act
+        var msg = await ExecuteNodeEx(node, input);
+
+        //Assert
+        msg.OutputPort.Should().Be(0);
+    }
+
+    [Fact]
     public async Task Execute_ObjectPropertyAccess_Succeeds()
     {
         //Arrange

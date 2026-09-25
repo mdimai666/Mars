@@ -55,16 +55,16 @@ public class DockerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public Task<ContainerInspectResponse?> InspectContainer(string id, CancellationToken cancellationToken)
-        => _dockerService.InspectContainer(id, cancellationToken) ?? throw new NotFoundException();
+    public async Task<ContainerInspectResponse1?> InspectContainer(string id, CancellationToken cancellationToken)
+        => (await _dockerService.InspectContainer(id, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
 
     [HttpGet("ListContainers")]
-    public async Task<ListDataResult<ContainerListResponse1>> ListContainers([FromQuery] ListContainerRequest query, CancellationToken cancellationToken)
-        => (await _dockerService.ListContainers(query.ToQuery(), cancellationToken)).ToResponse();
+    public Task<ListDataResult<ContainerListResponse1>> ListContainers([FromQuery] ListContainerRequest query, CancellationToken cancellationToken)
+        => _dockerService.ListContainers(query.ToQuery(), cancellationToken);
 
     [HttpGet("ListTableContainers")]
-    public async Task<PagingResult<ContainerListResponse1>> ListContainersTable([FromQuery] ListContainerRequest query, CancellationToken cancellationToken)
-        => (await _dockerService.ListContainersTable(query.ToQuery(), cancellationToken)).ToResponse();
+    public Task<PagingResult<ContainerListResponse1>> ListContainersTable([FromQuery] ListContainerRequest query, CancellationToken cancellationToken)
+        => _dockerService.ListContainersTable(query.ToQuery(), cancellationToken);
 
     [HttpPost("StartContainer/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -119,4 +119,82 @@ public class DockerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public Task DeleteContainer(string id, CancellationToken cancellationToken)
         => _dockerService.DeleteContainer(id, cancellationToken);
+
+    [HttpPost("CreateContainer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    public async Task<CreateContainerResponse1> CreateContainer([FromBody] CreateContainerRequest request, CancellationToken cancellationToken)
+    {
+        var created = await _dockerService.CreateContainer(request.ToQuery(), cancellationToken);
+        return new CreateContainerResponse1
+        {
+            ID = created.ID,
+            Name = string.IsNullOrEmpty(request.Name) ? created.ID : request.Name,
+            Warnings = created.Warnings ?? [],
+        };
+    }
+
+    [HttpPost("RunOnce")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    public Task<DockerRunResultResponse> RunOnce([FromBody] DockerRunOnceRequest request, CancellationToken cancellationToken)
+        => _dockerService.RunContainerOnce(request.ToQuery(), cancellationToken);
+
+    [HttpPost("Exec/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<DockerRunResultResponse> Exec(string id, [FromBody] DockerExecRequest request, CancellationToken cancellationToken)
+        => _dockerService.ExecInContainer(id, request.ToQuery(), cancellationToken);
+
+    [HttpPost("Wait/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<DockerRunResultResponse> Wait(string id, [FromQuery] int timeout, CancellationToken cancellationToken)
+        => _dockerService.WaitContainer(id, timeout, cancellationToken);
+
+    [HttpPost("StartAndCapture/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<DockerRunResultResponse> StartAndCapture(string id, [FromQuery] int timeout, [FromQuery] bool removeAfterExit, CancellationToken cancellationToken)
+        => _dockerService.StartAndCapture(id, timeout, removeAfterExit, cancellationToken);
+
+    [HttpGet("RunResult/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<DockerRunResultResponse?> GetRunResult(string id)
+        => await _dockerService.GetRunResult(id) ?? throw new NotFoundException();
+
+    [HttpGet("GetLogs/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<ContainerLogsResponse1> GetLogs(string id, [FromQuery] int tail, CancellationToken cancellationToken)
+        => _dockerService.GetContainerLogs(id, tail, cancellationToken);
+
+    // Image operations
+
+    [HttpGet("ListImages")]
+    public async Task<ListDataResult<ImageSummaryResponse1>> ListImages([FromQuery] ListImageRequest query, CancellationToken cancellationToken)
+        => (await _dockerService.ListImages(query.ToQuery(), cancellationToken)).ToResponse();
+
+    [HttpGet("ListTableImages")]
+    public async Task<PagingResult<ImageSummaryResponse1>> ListImagesTable([FromQuery] ListImageRequest query, CancellationToken cancellationToken)
+        => (await _dockerService.ListImagesTable(query.ToQuery(), cancellationToken)).ToResponse();
+
+    [HttpPost("PullImage")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    public Task PullImage([FromBody] PullImageRequest request, CancellationToken cancellationToken)
+        => _dockerService.PullImage(request.Image, request.Tag, null, cancellationToken);
+
+    [HttpDelete("DeleteImage/{name}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task DeleteImage(string name, CancellationToken cancellationToken)
+        => _dockerService.DeleteImage(HttpUtility.UrlDecode(name), cancellationToken);
 }

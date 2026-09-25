@@ -12,10 +12,20 @@ public partial class CodeEditor2 : IDisposable
 {
     StandaloneCodeEditor editor1 = default!;
 
+    /// <summary>
+    /// JS-редактор создаётся в <see cref="EditorOnDidInit"/>. До этого SetValue/GetValue падали
+    /// с «Couldn't find the editor with id»: операции до создания редактора — штатная ситуация.
+    /// </summary>
+    bool editorCreated;
+
+    /// <summary>Значение, запрошенное до создания редактора; подставляется сразу после инициализации.</summary>
+    string? pendingValue;
+
     public StandaloneCodeEditor Monaco => editor1!;
 
     public static class Language
     {
+        public static readonly string plaintext = "plaintext";
         public static readonly string handlebars = "handlebars";
         public static readonly string html = "html";
         public static readonly string js = "js";
@@ -26,11 +36,14 @@ public partial class CodeEditor2 : IDisposable
         public static readonly string sql = "sql";
         public static readonly string log = "log";
 
-        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql, log };
+        /// <summary>Язык документа запросов .http — монарх и CodeLens «выполнить» регистрирует JS-модуль.</summary>
+        public static readonly string http = "http";
+
+        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql, log, plaintext, http };
     }
 
     [Parameter] public string Value { get; set; } = "";
-    [Parameter] public string Lang { get; set; } = CodeEditor2.Language.handlebars;
+    [Parameter] public string Lang { get; set; } = Language.plaintext;
     [Parameter] public string MonacoCssClass { get; set; } = "flex-fill";
     [Parameter] public string ContainerCssStyle { get; set; } = "height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;";
     [Parameter] public bool HideToolbarComponents { get; set; } = false;
@@ -43,6 +56,20 @@ public partial class CodeEditor2 : IDisposable
 
     [Parameter] public EventCallback<string> OnSave { get; set; }
     [Parameter] public EventCallback OnInit { get; set; }
+
+    /// <summary>
+    /// Запрос на выполнение кода по номеру строки (1-based): CodeLens «выполнить» над строкой
+    /// запроса в документе .http. Без подписчика ссылка в JS не передаётся и CodeLens молчит.
+    /// </summary>
+    [Parameter] public EventCallback<int> OnRunRequest { get; set; }
+
+    /// <summary>Курсор перешёл на другую строку (1-based): связь формы с блоком под курсором.</summary>
+    [Parameter] public EventCallback<int> OnCursorLine { get; set; }
+
+    /// <summary>Текст редактора изменился (дебаунс в JS): перечитать блок под курсором.</summary>
+    [Parameter] public EventCallback OnContentChanged { get; set; }
+
+    DotNetObjectReference<CodeEditor2>? selfReference;
 
     public static List<Type> ToolbarComponents { get; set; } = [];
 
@@ -100,11 +127,24 @@ public partial class CodeEditor2 : IDisposable
             }
         });
 
-        await js.Editor_activateJSextensions(editor1.Id, OptionsJson);
+        if (OnRunRequest.HasDelegate || OnCursorLine.HasDelegate || OnContentChanged.HasDelegate)
+        {
+            selfReference ??= DotNetObjectReference.Create(this);
+        }
+
+        await js.Editor_activateJSextensions(editor1.Id, OptionsJson, selfReference);
 
         if (Lang == Language.log)
         {
             _ = JSRuntime.InvokeVoidAsync("monaco.editor.setTheme", "logview");
+        }
+
+        editorCreated = true;
+
+        if (pendingValue is not null)
+        {
+            await editor1.SetValue(pendingValue);
+            pendingValue = null;
         }
 
         _ = OnInit.InvokeAsync();
@@ -118,18 +158,33 @@ public partial class CodeEditor2 : IDisposable
             Language = Lang,
             //Language = "html",
             Value = Value,
+            // semantic tokens провайдер в standalone monaco выключен по умолчанию;
+            // опция работает ТОЛЬКО как construction-опция (не через updateOptions)
+            SemanticHighlightingEnabled = true,
         };
     }
 
     public Task<string> GetValue()
     {
-        return editor1?.GetValue()!;
+        if (!editorCreated)
+        {
+            return Task.FromResult(pendingValue ?? Value);
+        }
+
+        return editor1.GetValue();
     }
 
     public async Task SetValue(string value)
     {
-        //await SendEditorCode(value, Lang);
-        await editor1?.SetValue(value);
+        if (!editorCreated)
+        {
+            // JS-редактора ещё нет (создаётся в EditorOnDidInit): запоминаем и подставим после инициализации.
+            // Раньше такой вызов падал с «Couldn't find the editor with id».
+            pendingValue = value;
+            return;
+        }
+
+        await editor1.SetValue(value);
     }
 
     public async Task SetModelLanguage(string language)
@@ -137,8 +192,69 @@ public partial class CodeEditor2 : IDisposable
         await js.Editor_setModelLanguage(editor1.Id, language);
     }
 
+    /// <summary>
+    /// Строка, где стоит курсор (1-based); до создания JS-редактора — первая.
+    /// Нужна, когда «выполнить» относится к блоку под курсором, а не ко всему тексту.
+    /// </summary>
+    public async Task<int> GetCursorLineAsync()
+    {
+        if (!editorCreated) return 1;
+
+        var position = await editor1.GetPosition();
+
+        return position is { LineNumber: > 0 } ? position.LineNumber : 1;
+    }
+
+    /// <summary>Поставить курсор на строку, показать её и выделить блок: переход к запросу в документе.</summary>
+    public async Task RevealLinesAsync(int startLine, int endLine = 0)
+    {
+        if (!editorCreated) return;
+
+        var line = Math.Max(1, startLine);
+
+        await editor1.SetPosition(new Position { LineNumber = line, Column = 1 }, "mars-editor");
+        await editor1.RevealLineInCenter(line);
+
+        if (endLine >= line)
+        {
+            await editor1.SetSelection(new BlazorMonaco.Range
+            {
+                StartLineNumber = line,
+                StartColumn = 1,
+                EndLineNumber = endLine,
+                EndColumn = 1,
+            }, "mars-editor");
+        }
+
+        await editor1.Focus();
+    }
+
+    /// <summary>Вызов из JS (CodeLens «выполнить» в .http): строка запроса, которую надо выполнить.</summary>
+    [JSInvokable]
+    public Task RunRequestAtLine(int line) => OnRunRequest.InvokeAsync(line);
+
+    /// <summary>Вызов из JS: курсор перешёл на другую строку.</summary>
+    [JSInvokable]
+    public Task CursorMovedToLine(int line) => OnCursorLine.InvokeAsync(line);
+
+    /// <summary>Вызов из JS (дебаунс): текст редактора изменился.</summary>
+    [JSInvokable]
+    public Task ContentChanged() => OnContentChanged.InvokeAsync();
+
+    /// <summary>
+    /// Заменить строки [startLine..endLine] (1-based, включительно) без <see cref="SetValue"/>:
+    /// executeEdits сохраняет курсор и стек undo — так форма правит текст блока под курсором.
+    /// </summary>
+    public async Task ReplaceLinesAsync(int startLine, int endLine, string text)
+    {
+        if (!editorCreated) return;
+
+        await js.Editor_ReplaceLines(editor1.Id, startLine, endLine, text);
+    }
+
     public void Dispose()
     {
+        selfReference?.Dispose();
         editor1?.Dispose();
     }
 

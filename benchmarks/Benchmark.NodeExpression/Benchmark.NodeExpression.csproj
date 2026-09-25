@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" />
+        <PackageReference Include="NCalc" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+    </ItemGroup>
+</Project>

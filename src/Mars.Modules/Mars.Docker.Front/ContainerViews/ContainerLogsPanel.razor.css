@@ -1,0 +1,18 @@
+.docker-logs {
+    background: var(--neutral-fill-4, rgba(0, 0, 0, 0.04));
+    border: 1px solid var(--neutral-stroke-2, #e0e0e0);
+    border-radius: 4px;
+    padding: 8px 10px;
+    max-height: 420px;
+    overflow: auto;
+    font-family: var(--code-font-family, Consolas, monospace);
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.docker-logs-empty {
+    opacity: 0.6;
+    font-size: 13px;
+    padding: 8px 2px;
+}

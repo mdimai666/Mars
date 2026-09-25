@@ -1,8 +1,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using HandlebarsDotNet;
-using HandlebarsDotNet.Extension.Json;
-using HandlebarsDotNet.Extension.NewtonsoftJson;
+using HandlebarsDotNet.IO;
 using Mars.TemplateEngine.Abstractions;
 
 namespace Mars.TemplateEngine.Providers.HandlebarsProvider;
@@ -14,6 +13,19 @@ public class HandlebarsTemplateEngine : ITemplateEngine
     string ITemplateEngine.Id => Id;
 
     private readonly ConcurrentDictionary<string, CachedTemplateItem> _cache = new();
+    private readonly IHandlebars _handlebars;
+
+    public HandlebarsTemplateEngine()
+        : this(new HandlebarsEngineFactory([]))
+    {
+    }
+
+    public HandlebarsTemplateEngine(IHandlebarsEngineFactory engineFactory)
+    {
+        _handlebars = engineFactory.Create(
+            HandlebarsScopes.Core,
+            static configuration => configuration.TextEncoder = new HtmlEncoder()); //Убирает экранирование кириллицы
+    }
 
     private class CachedTemplateItem
     {
@@ -61,17 +73,7 @@ public class HandlebarsTemplateEngine : ITemplateEngine
     }
 
     private HandlebarsTemplate<object, object> CreateTemplate(string template)
-    {
-        var configuration = new HandlebarsConfiguration
-        {
-            //NoEscape = true // Отключает HTML-кодирование для всех шаблонов в этом экземпляре
-            TextEncoder = new HtmlEncoder() //Убирает экранирование кириллицы
-        };
-        var handlebars = Handlebars.Create(configuration);
-        handlebars.Configuration.UseJson();
-        handlebars.Configuration.UseNewtonsoftJson();
-        return handlebars.Compile(template);
-    }
+        => _handlebars.Compile(template);
 
     public bool RemoveFromCache(string id)
     {

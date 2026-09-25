@@ -13,21 +13,11 @@
                       AriaLabel="Search" />
         <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
         <div class="ms-auto">
-
-            @if (false)
-            {
-                <a href="@urlEditPage/@PostType.TypeName?CategoryTypeName=default">
-                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-                </a>
-            }
-            else
-            {
-                <FluentButton Appearance="Appearance.Accent"
-                              OnClick="ClickCreate"
-                              IconStart="@(new Icons.Regular.Size16.Add())">
-                    @AppRes.Create
-                </FluentButton>
-            }
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="ClickCreate"
+                          IconStart="@(new Icons.Regular.Size16.Add())">
+                @AppRes.Create
+            </FluentButton>
         </div>
     </div>
 

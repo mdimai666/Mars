@@ -232,19 +232,6 @@ public class MetaValuesValidatorTests
     }
 
     [Fact]
-    public async Task ValidateJson_ContentFieldSkipped()
-    {
-        // значение поля контента хранится в posts.Content, а не в мета-значениях
-        var contentField = Field(MetaFieldType.Text, FeatureFieldsCatalog.ContentFieldKey, isNullable: false);
-        var validator = Validator();
-
-        (await validator.ValidateJsonAsync([contentField], null, requireAll: true, Context(), contentFieldKey: contentField.Key))
-            .Should().BeEmpty();
-
-        (await validator.ValidateJsonAsync([contentField], null, requireAll: true, Context())).Should().ContainSingle();
-    }
-
-    [Fact]
     public async Task ValidateJson_MissingRequiredWithGenerator_NoError()
     {
         // поле с генератором будет заполнено при создании — отсутствие значения не ошибка

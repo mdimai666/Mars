@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Abstractions.Utils;
 using Mars.SSO.Host.OAuth.Data;
 using Mars.SSO.Host.OAuth.interfaces;
 using Mars.SSO.Host.OAuth.Models;
@@ -96,13 +97,10 @@ public class OAuthService : IOAuthService
         if (!client.AllowedGrantTypes.Contains("authorization_code"))
             throw new InvalidOperationException($"grant_type 'authorization_code' not allowed");
 
-        // if confidential client => verify secret (omitted hashing example)
-        //if (!string.IsNullOrEmpty(client.ClientSecretHash))
-        if (!string.IsNullOrEmpty(client.ClientSecret))
+        // if confidential client => verify secret
+        if (!string.IsNullOrEmpty(client.ClientSecretHash))
         {
             if (clientSecret == null) throw new InvalidOperationException("Client secret required");
-            // verify secret — here plain equality or hashed verify
-            //if (!BCrypt.Net.BCrypt.Verify(clientSecret, client.ClientSecretHash))
             if (!client.VerifySecret(clientSecret))
                 throw new InvalidOperationException("Invalid client secret");
         }
@@ -116,27 +114,22 @@ public class OAuthService : IOAuthService
         }
 
         // ok — create tokens
-        var userId = auth.SubjectId; //??????????????????????????
+        var userId = auth.SubjectId;
         var scopes = auth.Scopes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        //var expiresIn = client.AccessTokenLifetimeSeconds;
         var expiresIn = _tokenService.ExpiryInSeconds;
-        //var accessToken = _jwtService.CreateToken(Guid.Parse(userId), "user@example.com", scopes); // adapt claims creation
         var accessToken = await _tokenService.CreateAccessToken(userId, _userRepository, cancellationToken);
 
-        var all = _db.AuthCodes.ToList();
-
         string? refreshToken = null;
-        //if (client.AllowOfflineAccess)
-        if (true)
+        if (client.AllowOfflineAccess)
         {
             refreshToken = CryptoRandomString(64);
             var rt = new RefreshToken
             {
-                Token = refreshToken,
+                TokenHash = ApiKeyFormat.HashSecret(refreshToken),
                 ClientId = client.ClientId,
                 SubjectId = userId,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddSeconds(expiresIn),
+                ExpiresAt = DateTime.UtcNow.AddDays(client.RefreshTokenLifetimeDays),
                 Revoked = false
             };
             _db.RefreshTokens.Add(rt);
@@ -153,7 +146,8 @@ public class OAuthService : IOAuthService
                             string refreshToken, string clientId,
                             string clientSecret, CancellationToken cancellationToken)
     {
-        var rt = await _db.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken && !x.Revoked && x.ExpiresAt > DateTime.UtcNow);
+        var refreshTokenHash = ApiKeyFormat.HashSecret(refreshToken);
+        var rt = await _db.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == refreshTokenHash && !x.Revoked && x.ExpiresAt > DateTime.UtcNow);
         if (rt == null) throw new InvalidOperationException("Invalid refresh token");
         if (!string.Equals(rt.ClientId, clientId, StringComparison.Ordinal)) throw new InvalidOperationException("Client mismatch");
 
@@ -161,31 +155,26 @@ public class OAuthService : IOAuthService
             ?? throw new InvalidOperationException("Unknown client");
         if (!client.AllowedGrantTypes.Contains("refresh_token"))
             throw new InvalidOperationException($"grant_type 'refresh_token' not allowed");
-        //if (!string.IsNullOrEmpty(client.ClientSecretHash))
-        if (!string.IsNullOrEmpty(client.ClientSecret))
+        if (!string.IsNullOrEmpty(client.ClientSecretHash))
         {
             if (clientSecret == null) throw new InvalidOperationException("Client secret required");
-            //if (!BCrypt.Net.BCrypt.Verify(clientSecret, client.ClientSecretHash)) throw new InvalidOperationException("Invalid client secret");
             if (!client.VerifySecret(clientSecret))
                 throw new InvalidOperationException("Invalid client secret");
         }
 
-        // issue new access token (and optional new refresh token if rotate)
-        //var accessToken = _jwtService.CreateToken(Guid.Parse(rt.SubjectId), "user@example.com", rt.ClientId.Split(' '));
+        // issue new access token and rotate refresh token: revoke old, create new
         var accessToken = await _tokenService.CreateAccessToken(rt.SubjectId, _userRepository, cancellationToken);
-        //var expiresIn = client.AccessTokenLifetimeSeconds;
         var expiresIn = _tokenService.ExpiryInSeconds;
 
-        // optionally rotate refresh token: revoke old, create new
         rt.Revoked = true;
         var newRefresh = CryptoRandomString(64);
         var newRt = new RefreshToken
         {
-            Token = newRefresh,
+            TokenHash = ApiKeyFormat.HashSecret(newRefresh),
             ClientId = clientId,
             SubjectId = rt.SubjectId,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddSeconds(expiresIn)
+            ExpiresAt = DateTime.UtcNow.AddDays(client.RefreshTokenLifetimeDays)
         };
         _db.RefreshTokens.Add(newRt);
         await _db.SaveChangesAsync();
@@ -198,9 +187,7 @@ public class OAuthService : IOAuthService
     {
         var client = _clientStore.FindClientById(clientId)
             ?? throw new InvalidOperationException("Unknown client");
-        //if (string.IsNullOrEmpty(client.ClientSecretHash)) throw new InvalidOperationException("Client is not confidential");
-        if (string.IsNullOrEmpty(client.ClientSecret)) throw new InvalidOperationException("Client is not confidential");
-        //if (!BCrypt.Net.BCrypt.Verify(clientSecret, client.ClientSecretHash)) throw new InvalidOperationException("Invalid secret");
+        if (string.IsNullOrEmpty(client.ClientSecretHash)) throw new InvalidOperationException("Client is not confidential");
         if (!client.VerifySecret(clientSecret))
             throw new InvalidOperationException("Invalid secret");
 
@@ -257,7 +244,8 @@ public class OAuthService : IOAuthService
 
     public async Task RevokeRefreshTokenAsync(string refreshToken)
     {
-        var rt = await _db.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
+        var refreshTokenHash = ApiKeyFormat.HashSecret(refreshToken);
+        var rt = await _db.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == refreshTokenHash);
         if (rt != null) { rt.Revoked = true; await _db.SaveChangesAsync(); }
     }
 

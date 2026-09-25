@@ -18,14 +18,11 @@ public interface IMetaValuesValidator
 
     /// <summary>Ошибки значений из JSON-записи (ключи словаря — Key полей).
     /// requireAll — проверять обязательность и для отсутствующих ключей (создание);
-    /// при обновлении meta приходит частично.
-    /// contentFieldKey — поле контента фичи: значение хранится в posts.Content
-    /// и в мета-значениях не участвует, из проверки исключается.</summary>
+    /// при обновлении meta приходит частично.</summary>
     Task<IReadOnlyCollection<MetaValueValidationError>> ValidateJsonAsync(IReadOnlyCollection<MetaFieldDto> fields,
                                                                           IReadOnlyDictionary<string, JsonNode>? meta,
                                                                           bool requireAll,
                                                                           MetaValueValidationContext context,
-                                                                          string? contentFieldKey = null,
                                                                           CancellationToken cancellationToken = default);
 }
 

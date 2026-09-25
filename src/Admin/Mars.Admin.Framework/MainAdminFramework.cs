@@ -23,8 +23,6 @@ public static class MainAdminFramework
         services.AddFluentUIComponents();
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
-        services.TryAddSingleton<Mars.Admin.Framework.Components.MetaFieldViews.IMetaFieldEditorLocator,
-            Mars.Admin.Framework.Components.MetaFieldViews.MetaFieldEditorLocator>();
 
         if (!OperatingSystem.IsBrowser()) return;
 
@@ -80,19 +78,19 @@ public static class MainAdminFramework
         services.AddBlazoredLocalStorage();
         services.AddAuthorizationCore();
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>();
+        services.TryAddScoped<CookieAuthStateProvider>();
         services.TryAddScoped<AuthenticationStateProvider>(sp =>
-            sp.GetRequiredService<CookieOrLocalStorageAuthStateProvider>());
+            sp.GetRequiredService<CookieAuthStateProvider>());
 
         services.ConfigureLocalizer();
 
         services.TryAddScoped<ViewModelService>();
         services.TryAddScoped<AdminJs>();
+        services.TryAddScoped<PasskeyJs>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         services.TryAddScoped<DeveloperControlService>();
-        //services.TryAddScoped<GalleryService>();
         services.TryAddScoped<IActAppService, ActAppService>();
         services.TryAddScoped<IXActionFormPresenter, NullXActionFormPresenter>();
         services.TryAddSingleton<IXActionFormProvider, XActionFormProvider>();

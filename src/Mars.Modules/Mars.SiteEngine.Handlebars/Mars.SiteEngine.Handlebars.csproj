@@ -11,9 +11,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
 		<ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
-		<ProjectReference Include="..\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
+		<ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+		<ProjectReference Include="..\Mars.TemplateEngine.Providers.Handlebars\Mars.TemplateEngine.Providers.Handlebars.csproj" />
 	</ItemGroup>
 
 </Project>

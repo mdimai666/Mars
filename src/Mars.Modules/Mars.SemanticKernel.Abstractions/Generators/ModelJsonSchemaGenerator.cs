@@ -131,7 +131,7 @@ public class ModelJsonSchemaGenerator
         {
             schema["type"] = "array";
             var itemType = actualType.IsArray
-                ? actualType.GetElementType()
+                ? actualType.GetElementType()!
                 : actualType.GetGenericArguments()[0];
 
             // 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: для примитивных типов не строим объект
@@ -216,7 +216,7 @@ public class ModelJsonSchemaGenerator
         return false;
     }
 
-    private string GetPropertyDescription(PropertyInfo prop)
+    private string? GetPropertyDescription(PropertyInfo prop)
     {
         var descAttr = prop.GetCustomAttribute<DescriptionAttribute>();
         if (descAttr != null)
@@ -229,7 +229,7 @@ public class ModelJsonSchemaGenerator
         return null;
     }
 
-    private object GetPropertyExample(PropertyInfo prop)
+    private object? GetPropertyExample(PropertyInfo prop)
     {
         var exampleAttr = prop.GetCustomAttribute<ExampleAttribute>();
         if (exampleAttr != null)
@@ -249,7 +249,7 @@ public class ModelJsonSchemaGenerator
         return null;
     }
 
-    private string GetTypeDescription(Type type)
+    private string? GetTypeDescription(Type type)
     {
         var descAttr = type.GetCustomAttribute<DescriptionAttribute>();
         if (descAttr != null)

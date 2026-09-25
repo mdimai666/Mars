@@ -1,6 +1,5 @@
 using System.Dynamic;
 using FluentAssertions;
-using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
 
@@ -91,12 +90,12 @@ public class BasicExpressionTests
         string html1 = @"{{#eq dima.Count 123}}1{{else}}0{{/eq}}";
         string html2 = @"{{#eq dima.count 123}}1{{else}}0{{/eq}}";
 
-        var handlebars = new MyHandlebars();
+        var handlebars = SiteHandlebarsTestFactory.CreateSiteHandlebars();
 
         var template1 = handlebars.Compile(html1);
         var template2 = handlebars.Compile(html2);
 
-        Assert.Equal(template1(data).Trim(), template2(data).Trim());
+        Assert.Equal(template1(data, null).Trim(), template2(data, null).Trim());
     }
 
     [Fact]
@@ -111,12 +110,12 @@ public class BasicExpressionTests
         string html1 = @"{{#eq Count 123}}1{{else}}0{{/eq}}";
         string html2 = @"{{#eq count 123}}1{{else}}0{{/eq}}";
 
-        var handlebars = new MyHandlebars();
+        var handlebars = SiteHandlebarsTestFactory.CreateSiteHandlebars();
 
         var template1 = handlebars.Compile(html1);
         var template2 = handlebars.Compile(html2);
 
-        Assert.Equal(template1(data).Trim(), template2(data).Trim());
+        Assert.Equal(template1(data, null).Trim(), template2(data, null).Trim());
     }
 
     [Fact]
@@ -130,12 +129,12 @@ public class BasicExpressionTests
         string html1 = @"{{Title}}";
         string html2 = @"{{title}}";
 
-        var handlebars = new MyHandlebars();
+        var handlebars = SiteHandlebarsTestFactory.CreateSiteHandlebars();
 
         var template1 = handlebars.Compile(html1);
         var template2 = handlebars.Compile(html2);
 
-        Assert.Equal(template1(data).Trim(), template2(data).Trim());
-        Assert.NotEqual("", template2(data).Trim());
+        Assert.Equal(template1(data, null).Trim(), template2(data, null).Trim());
+        Assert.NotEqual("", template2(data, null).Trim());
     }
 }

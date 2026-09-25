@@ -66,7 +66,8 @@ public partial class App
             Task.Run(async () =>
             {
                 await AuthenticationService.Logout();
-                NavigationManager.NavigateTo("/dev/Login");
+                // forceLoad: состояние (Q, VM хост-страницы) должно пересобраться анонимно
+                NavigationManager.NavigateTo("/dev/Login", forceLoad: true);
             });
         }
 

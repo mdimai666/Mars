@@ -94,7 +94,7 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
 
             if (MqttTopicFilterComparer.Compare(msg.Topic, node.Topic) == MqttTopicFilterCompareResult.IsMatch)
             {
-                var payload = new MqttNodeMessagePaylad(message.ApplicationMessage);
+                var payload = new MqttNodeMessagePayload(message.ApplicationMessage);
                 var input = new NodeMsg { Payload = payload.Payload };
                 input.Add(payload);
                 _ = _nodeService.InjectAsync(_scopeFactory, nodeId, input);

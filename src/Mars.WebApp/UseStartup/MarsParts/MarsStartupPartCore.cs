@@ -3,6 +3,7 @@ using Flurl.Http;
 using Mars.Contracts.Common;
 using Mars.Data.Infrastructure;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Authentication;
 using Mars.Identity.Host.Models;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Options.Abstractions.Services;
@@ -10,8 +11,10 @@ using Mars.Server.Abstractions.Extensions;
 using Mars.Server.Abstractions.Features;
 using Mars.Server.Contracts.Options;
 using Mars.SSO.Host.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -28,14 +31,10 @@ internal static class MarsStartupPartCore
         //------------------------------------------
         // Core
 
-        services.AddCors(options => //not check
-        {
-            options.AddDefaultPolicy(
-                builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-            );
-        });
+        // CORS из опции БД (CorsOption): дефолт — только same-origin,
+        // явно перечисленным origins разрешаются куки (см. OptionCorsPolicyProvider)
+        services.AddCors();
+        services.AddSingleton<ICorsPolicyProvider, OptionCorsPolicyProvider>();
 
         //TODO: think
         //AppSharedSettings.BackendUrl = "";
@@ -59,6 +58,10 @@ internal static class MarsStartupPartCore
             {
                 options.ForwardDefaultSelector = context =>
                 {
+                    if (context.Request.Headers.ContainsKey(ApiKeyAuthenticationHandler.HeaderName))
+                    {
+                        return ApiKeyAuthenticationHandler.SchemeName;
+                    }
                     var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
                     if (authHeader?.ToLower().StartsWith("bearer ") == true)
                     {
@@ -68,7 +71,8 @@ internal static class MarsStartupPartCore
                 };
             })
             .AddCookie()
-            .AddJwtBearer();
+            .AddJwtBearer()
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, options => { });
 
         bool isSsoEnabled = configuration.GetSection(FeatureExtensions.SectionName).GetValue<bool>(FeatureFlags.SingleSignOn, false);
 
@@ -109,6 +113,9 @@ internal static class MarsStartupPartCore
 
             options.Events = new CookieAuthenticationEvents()
             {
+                // Events пересоздаётся целиком — штатная привязка SecurityStampValidator теряется,
+                // поэтому валидация вызывается явно внутри CookiePrincipalValidator
+                OnValidatePrincipal = CookiePrincipalValidator.ValidateAsync,
                 OnRedirectToLogin = async (ctx) =>
                 {
                     if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)

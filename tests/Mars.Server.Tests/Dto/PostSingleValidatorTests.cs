@@ -4,6 +4,7 @@ using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Server.Tests.Forms;
 using NSubstitute;
 
 namespace Mars.Server.Tests.Dto;
@@ -91,10 +92,12 @@ public class PostSingleValidatorTests
         var postRepository = Substitute.For<IPostRepository>();
         postRepository.CountByTypeAsync(postType.Id, Arg.Any<CancellationToken>()).Returns(1);
 
-        var validator = new CreatePostQueryValidator(Locator(postType),
+        var locator = Locator(postType);
+        var validator = new CreatePostQueryValidator(locator,
                                                      Substitute.For<IPostCategoryRepository>(),
                                                      Substitute.For<IMetaValuesValidator>(),
-                                                     postRepository);
+                                                     postRepository,
+                                                     PostFormTestHost.RulesValidator(locator, postRepository));
 
         var result = await validator.ValidateAsync(CreateQuery(postType.TypeName));
 
@@ -109,10 +112,12 @@ public class PostSingleValidatorTests
         var postRepository = Substitute.For<IPostRepository>();
         postRepository.CountByTypeAsync(postType.Id, Arg.Any<CancellationToken>()).Returns(0);
 
-        var validator = new CreatePostQueryValidator(Locator(postType),
+        var locator = Locator(postType);
+        var validator = new CreatePostQueryValidator(locator,
                                                      Substitute.For<IPostCategoryRepository>(),
                                                      Substitute.For<IMetaValuesValidator>(),
-                                                     postRepository);
+                                                     postRepository,
+                                                     PostFormTestHost.RulesValidator(locator, postRepository));
 
         var result = await validator.ValidateAsync(CreateQuery(postType.TypeName));
 
@@ -126,10 +131,12 @@ public class PostSingleValidatorTests
         var postRepository = Substitute.For<IPostRepository>();
         postRepository.CountByTypeAsync(postType.Id, Arg.Any<CancellationToken>()).Returns(5);
 
-        var validator = new CreatePostQueryValidator(Locator(postType),
+        var locator = Locator(postType);
+        var validator = new CreatePostQueryValidator(locator,
                                                      Substitute.For<IPostCategoryRepository>(),
                                                      Substitute.For<IMetaValuesValidator>(),
-                                                     postRepository);
+                                                     postRepository,
+                                                     PostFormTestHost.RulesValidator(locator, postRepository));
 
         var result = await validator.ValidateAsync(CreateQuery(postType.TypeName));
 

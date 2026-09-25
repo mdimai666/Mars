@@ -1,0 +1,39 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор множественного выбора: чекбоксы вариантов поля, в значении — список
+   стабильных ключей вариантов (порядок списка = порядок индексов значения) *@
+
+<div class="vstack">
+    @foreach (var choice in Binding.Field.Choices)
+    {
+        var option = choice;
+        <FluentCheckbox Value="@IsChecked(option.Key)"
+                        ValueChanged="@(state => Toggle(option.Key, state))"
+                        Disabled="@Binding.ReadOnly"
+                        Label="@option.Title" />
+    }
+</div>
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+
+    IReadOnlyList<object?> Selected
+        => Index < 0
+            ? Binding.List
+            : Binding.ValueAt(Index) is System.Collections.IEnumerable items and not string
+                ? items.Cast<object?>().ToList()
+                : [];
+
+    bool IsChecked(string key) => Selected.Any(value => value is string text && text == key);
+
+    void Toggle(string key, bool state)
+    {
+        var selected = Selected.Where(value => value is not string text || text != key).ToList();
+        if (state) selected.Add(key);
+
+        if (Index < 0) Binding.Values.SetList(Binding.Field, selected);
+        else Binding.SetValueAt(Index, selected);
+    }
+}

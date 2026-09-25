@@ -14,7 +14,6 @@ public interface ITokenService
     SigningCredentials GetSigningCredentials();
     List<Claim> GetClaims(AuthorizedUserInformationDto user);
     JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
-    string GenerateRefreshToken();
     ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     Task<string> CreateAccessToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken);
     long JwtExpireUnixSeconds();

@@ -1,7 +1,10 @@
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Admin.Framework.Components
-@using Mars.Datasource
-@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+@using Mars.Datasource.Front.Services
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <div class="vstack gap-4">
@@ -27,42 +30,66 @@
                                     <FormItem2 For="()=>config.Slug">
                                         <FluentTextField @bind-Value=@config.Slug />
                                     </FormItem2>
+                                    @if (SlugError(config) is string slugError)
+                                    {
+                                        <div class="text-danger fz14px">@slugError</div>
+                                    }
                                 </div>
                                 <div class="col col-lg-6">
-                                    <div class="">
-                                        <label>Driver</label>
-                                        @* <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@config.Driver
-                                                                                           class="form-select form-xs"
-                                                                                           TValue="string"
-                                                                                           @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))>
-                                            @foreach (var m in DatasourceConfig.DriverList)
-                                            {
-                                                <option value="@m">@m</option>
-                                            }
-                                        </Microsoft.AspNetCore.Components.Forms.InputSelect> *@
-
-                                        <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Driver"
-                                                                                               OptionText=@(s=>s.ToString())
-                                                                                               Items="DatasourceConfig.DriverList"
-                                                                                               @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
-                                                                                               Style="width: 250px;">
-
-                                        </Microsoft.FluentUI.AspNetCore.Components.FluentSelect>
-                                    </div>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="d-flex gap-5 fz14px">
-                                        <label>ConnectionString</label>
-                                        @if (string.IsNullOrEmpty(config.HelpLinkConnectionString) == false)
+                                    <div>
+                                        <label>Тип источника</label>
+                                        <FluentSelect @bind-Value="@config.Kind"
+                                                      OptionText="@KindLabel"
+                                                      OptionValue=@(kind => kind)
+                                                      Items="Kinds"
+                                                      @bind-Value:after=@(() => AfterChangeKind(config))
+                                                      Style="width: 250px;">
+                                        </FluentSelect>
+                                        @if (KindDescription(config) is string description)
                                         {
-                                            <a href="@config.HelpLinkConnectionString" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                            <div class="fz14px text-secondary">@description</div>
                                         }
                                     </div>
-                                    <div class="mt-2">
-                                        <FluentTextArea @bind-Value=@config.ConnectionString Rows="2" Class="w-100" />
-                                    </div>
                                 </div>
+                                @if (HasDrivers(config.Kind))
+                                {
+                                    <div class="col col-lg-6 mt-3">
+                                        <div>
+                                            <label>Driver</label>
+                                            <FluentSelect Items="DriversFor(config.Kind).ToList()"
+                                                          OptionText="@(profile => profile.Label)"
+                                                          OptionValue="@(profile => profile.Driver)"
+                                                          Value="@config.Driver"
+                                                          ValueChanged="@(value => AfterChangeDriver(config, value))"
+                                                          Style="width: 250px;">
+                                            </FluentSelect>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Profile(config) is { DefaultConnectionString.Length: > 0 } profile)
+                                {
+                                    <div class="col-12 mt-3">
+                                        <div class="d-flex gap-5 fz14px">
+                                            <label>ConnectionString</label>
+                                            @if (!string.IsNullOrEmpty(profile.HelpLink))
+                                            {
+                                                <a href="@profile.HelpLink" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                            }
+                                        </div>
+                                        <div class="mt-2">
+                                            <FluentTextArea @bind-Value=@config.ConnectionString Rows="2" Class="w-100" />
+                                        </div>
+                                        @if (SettingsError(config) is string connectionError)
+                                        {
+                                            <div class="text-danger fz14px">@connectionError</div>
+                                        }
+                                    </div>
+                                }
 
+                            </div>
+
+                            <div class="row">
+                                <DatasourceSettingFields Config="config" Fields="SettingsFields(config)" />
                             </div>
 
                         </div>
@@ -73,7 +100,7 @@
                     <div class="row">
                         <div class="col">
                             <div class="text-end">
-                                <Mars.Admin.Framework.Components.DFluentDeleteButton OnConfirm="e=>Delete(config)" />
+                                <Mars.Admin.Framework.Components.DFluentDeleteButton OnConfirm="e => Delete(config)" />
                             </div>
                         </div>
                     </div>
@@ -86,41 +113,3 @@
         <FluentButton OnClick="AddNew" IconStart=@(new Icons.Regular.Size16.Add())>Добавить</FluentButton>
     </div>
 </div>
-
-@code {
-    [CascadingParameter] public DatasourceOption opt { get; set; } = default!;
-
-    protected override void OnInitialized()
-    {
-        if (opt.Configs.Count == 0)
-        {
-            opt.Configs.Add(new DatasourceConfig());
-        }
-    }
-
-    void AddNew()
-    {
-        opt.Configs.Add(new DatasourceConfig());
-        opt = opt;
-    }
-
-    void Delete(DatasourceConfig cfg)
-    {
-        opt.Configs.Remove(cfg);
-    }
-
-    void DriverChanged(DatasourceConfig config, string value)
-    {
-        config.Driver = value;
-        AfterChangeDriverSuggestConnectionString(config);
-    }
-
-    void AfterChangeDriverSuggestConnectionString(DatasourceConfig cfg)
-    {
-        Console.WriteLine("Zee");
-        if (string.IsNullOrEmpty(cfg.ConnectionString) || cfg.IsDefaultString())
-        {
-            cfg.ConnectionString = cfg.GetDefaultConnectionString();
-        }
-    }
-}

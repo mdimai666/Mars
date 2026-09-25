@@ -1,12 +1,17 @@
+using Mars.Identity.Abstractions.Utils;
+
 namespace Mars.SSO.Host.OAuth.Models;
 
 // OAuthClient — зарегистрированные клиенты
 public class OAuthClient
 {
-    //public Guid Id { get; set; }
     public string ClientId { get; set; } = default!;
-    //public string? ClientSecretHash { get; set; } // hash secret для confidential clients
-    public string? ClientSecret { get; set; } // hash secret для confidential clients
+
+    /// <summary>
+    /// SHA-256 хэш секрета (base64, контракт <see cref="ApiKeyFormat.HashSecret"/>).
+    /// Plaintext-секрет показывается админу один раз при генерации и нигде не хранится.
+    /// </summary>
+    public string? ClientSecretHash { get; set; }
 
     /// <summary>
     /// ; separated
@@ -19,7 +24,21 @@ public class OAuthClient
     public bool AllowOfflineAccess { get; set; } = true;
     public string AllowedScopes { get; set; } = "openid profile email";
 
-    public bool VerifySecret(string secret) => ClientSecret == secret;
+    public bool VerifySecret(string? secret)
+    {
+        if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(ClientSecretHash))
+            return false;
+
+        try
+        {
+            return ApiKeyFormat.SecretMatchesHash(secret, ClientSecretHash);
+        }
+        catch (FormatException)
+        {
+            // значение не base64-хэш (старые plaintext-секреты не поддерживаются)
+            return false;
+        }
+    }
 }
 
 // Authorization code storage
@@ -42,7 +61,12 @@ public class AuthCode
 public class RefreshToken
 {
     public Guid Id { get; set; }
-    public string Token { get; set; } = default!;
+
+    /// <summary>
+    /// SHA-256 хэш токена (base64, контракт <see cref="ApiKeyFormat.HashSecret"/>) — plaintext не хранится.
+    /// </summary>
+    public string TokenHash { get; set; } = default!;
+
     public string ClientId { get; set; } = default!;
     public Guid SubjectId { get; set; } = default!; // user id
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

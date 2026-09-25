@@ -1,0 +1,68 @@
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+@using Mars.Datasource.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@foreach (var setting in Fields)
+{
+    <div class="@ColumnClass(setting)">
+        @if (setting.Editor != DatasourceSettingEditor.Checkbox)
+        {
+            <label class="fz14px">@setting.Label</label>
+        }
+
+        @switch (setting.Editor)
+        {
+            case DatasourceSettingEditor.Select:
+                <FluentSelect Class="w-100"
+                              Items="Values(setting)"
+                              OptionText="@(value => OptionLabel(setting, value))"
+                              OptionValue="@(value => value)"
+                              Value="@Value(setting)"
+                              ValueChanged="@(value => Set(setting.Key, value))" />
+                break;
+
+            case DatasourceSettingEditor.Checkbox:
+                <FluentCheckbox Label="@setting.Label"
+                                Value="@DatasourceSettingsEditor.Flag(Config, setting.Key)"
+                                ValueChanged="@(value => Set(setting.Key, value ? "true" : "false"))" />
+                break;
+
+            case DatasourceSettingEditor.Lines:
+                <FluentTextArea Class="w-100" Rows="3" placeholder="@setting.Placeholder"
+                                Value="@DatasourceSettingsEditor.LinesText(Config, setting.Key)"
+                                ValueChanged="@(value => SetLines(setting.Key, value))" />
+                break;
+
+            case DatasourceSettingEditor.Number:
+                <FluentTextField Class="w-100" type="number" placeholder="@setting.Placeholder"
+                                 Value="@Value(setting)"
+                                 ValueChanged="@(value => Set(setting.Key, value))" />
+                break;
+
+            case DatasourceSettingEditor.Password:
+                <FluentTextField Class="w-100" TextFieldType="TextFieldType.Password" placeholder="@setting.Placeholder"
+                                 Value="@Value(setting)"
+                                 ValueChanged="@(value => Set(setting.Key, value))" />
+                break;
+
+            case DatasourceSettingEditor.Auth:
+                <AuthConfigEditor Value="@DatasourceSettingsEditor.Auth(Config)"
+                                  ValueChanged="@(value => DatasourceSettingsEditor.SetAuth(Config, value))" />
+                break;
+
+            default:
+                <FluentTextField Class="w-100" placeholder="@setting.Placeholder"
+                                 Value="@Value(setting)"
+                                 ValueChanged="@(value => Set(setting.Key, value))" />
+                break;
+        }
+
+        @if (!string.IsNullOrEmpty(setting.Hint))
+        {
+            <div class="fz14px text-secondary">@setting.Hint</div>
+        }
+    </div>
+}

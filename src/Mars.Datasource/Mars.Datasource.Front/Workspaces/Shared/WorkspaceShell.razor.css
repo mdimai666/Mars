@@ -1,0 +1,81 @@
+/* Стили оболочки живут здесь, а не в CSS страниц мира: разметка принадлежит WorkspaceShell,
+   и scoped-правила страницы до неё не доходят (родительский b-атрибут получает только корень
+   дочернего компонента, вложенные элементы — нет). */
+
+.ds-workspace {
+    /* лэйаут админки растягивает @Body в main.flex-fill — заполняем родителя, а не считаем vh.
+       min-width:0 обязателен: без него flex-элемент не сжимается ниже контента, и широкая таблица
+       распирает страницу вместо внутреннего скролла. */
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+}
+
+/* Сплиттер и его панели рисует FluentUI: собственный b-атрибут Blazor вешает только на свои элементы,
+   поэтому правила без ::deep по ним не применялись вовсе — отсюда «страница расширяется по данным». */
+.ds-workspace ::deep .fluent-multi-splitter {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ds-workspace ::deep .fluent-multi-splitter-pane {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ds-pane {
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Контейнер вертикального сплиттера редактор/результат. flex-basis:0 — размер только из
+   свободного места колонки, контент на него не влияет; overflow:hidden — ничего не вылезает
+   наружу, даже если внутренности сплиттера посчитались неправильно. */
+.ds-split-host {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Панели сплиттера (div slot="1"/"2" рисует FluentSplitter): высота библиотекой им не задаётся,
+   без height:100% они растягиваются контентом. */
+.ds-split-host ::deep div[slot] {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.ds-editor {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.ds-result {
+    /* без min-height:0 вложенный overflow-scroll не ограничивается и содержимое срезается */
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ds-tabs {
+    overflow-x: auto;
+}
+
+.ds-tab {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-bottom: none;
+    border-radius: .25rem .25rem 0 0;
+    cursor: pointer;
+    color: var(--bs-secondary-color, #6c757d);
+    white-space: nowrap;
+}
+
+.ds-tab-active {
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-weight: 600;
+}

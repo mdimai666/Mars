@@ -1,12 +1,13 @@
 using Flurl.Http;
 using Mars.Admin;
 using Mars.Admin.Components;
-using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Startups;
 using Mars.AiChat.Front;
-using Mars.Cms.Contracts.MetaFields;
+using Mars.CodeCompletion.Front;
 using Mars.Datasource.Front;
+using Mars.Docker.Front;
+using Mars.Forms.Front;
 using Mars.Nodes.Workspace;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
@@ -42,8 +43,11 @@ if (string.IsNullOrEmpty(backendUrl))
 builder.ConfigureAppLanguage();
 
 var httpClient = new HttpClient() { BaseAddress = new Uri(backendUrl) };
+// FlurlClient в конструкторе мутирует httpClient.Timeout; после первого запроса HttpClient
+// запрещает менять настройки (net_http_operation_started) — поэтому один инстанс на приложение.
+var flurlClient = new FlurlClient(httpClient);
 builder.Services.AddScoped(sp => httpClient.EnableIntercept(sp));
-builder.Services.AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient));
+builder.Services.AddScoped<IFlurlClient>(sp => flurlClient);
 
 builder.Services.AddHttpClientInterceptor();
 
@@ -65,17 +69,16 @@ Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
 
-// блочный редактор мета-полей: модуль подключён только в админке
-// (общая фронт-библиотека от EditorJsBlazored не зависит)
-MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), MetaFieldType.String, MetaFieldType.Text);
-
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()
                 .AddMarsWebAppNodesFront()
                 .AddDatasourceWorkspace()
                 .AddSemanticKernelFront()
-                .AddAiChatFront();
+                .AddAiChatFront()
+                .AddDockerFront()
+                .AddCodeCompletionFront()
+                .AddMarsFormsFront();
 
 builder.ConfigureWebSockets(backendUrl);
 
@@ -98,7 +101,10 @@ app.Services.UseMarsAdminFramework()
             .UseMarsWebAppNodesFront()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront()
-            .UseAiChatFront();
+            .UseAiChatFront()
+            .UseDockerFront()
+            .UseMarsFormsFront()
+            .RegisterFormEditors();
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
 app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()

@@ -1,5 +1,7 @@
 using Flurl.Http;
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -8,7 +10,8 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// Одинарное значение Relation-поля: плитка выбранного объекта (заголовок + миниатюра),
-/// выбор через пикер в одиночном режиме, очистка.
+/// выбор через пикер в одиночном режиме, очистка. Значение — идентификатор из привязки поля,
+/// «не выбрано» пишется как null (строку-заглушку стор не хранит).
 /// </summary>
 public partial class MetaValueRelationSingle
 {
@@ -16,14 +19,16 @@ public partial class MetaValueRelationSingle
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
-    [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
 
     bool _busy;
     MetaValueRelationModelSummaryResponse? _model;
     Guid _loadedId = Guid.Empty;
 
-    Guid SelectedId => MetaValues.FirstOrDefault(v => v.MetaField.Key == Meta.Key && v.ModelId != Guid.Empty)?.ModelId ?? Guid.Empty;
+    /// <summary>Цель пикера (ключ реестра моделей связей) из дескриптора поля</summary>
+    string ModelName => Binding.Field.ModelName ?? "";
+
+    Guid SelectedId => Binding.Value is Guid id ? id : Guid.Empty;
 
     protected override void OnParametersSet()
     {
@@ -47,7 +52,7 @@ public partial class MetaValueRelationSingle
 
         try
         {
-            var models = await client.PostType.GetMetaValueRelationModels(Meta.ModelName, [id]);
+            var models = await client.PostType.GetMetaValueRelationModels(ModelName, [id]);
             _model = models.GetValueOrDefault(id);
         }
         catch (FlurlHttpException ex)
@@ -65,7 +70,7 @@ public partial class MetaValueRelationSingle
     {
         DialogParameters parameters = new()
         {
-            Title = Meta.ModelName,
+            Title = ModelName,
             SecondaryAction = null,
             Width = "500px",
             Modal = true,
@@ -74,7 +79,7 @@ public partial class MetaValueRelationSingle
 
         var data = new MetaValueRelationSelectDialogData
         {
-            ModelName = Meta.ModelName,
+            ModelName = ModelName,
             ValueId = SelectedId,
         };
 
@@ -83,7 +88,7 @@ public partial class MetaValueRelationSingle
 
         if (result.Cancelled || result.Data is not MetaValueRelationModelSummaryResponse selected) return;
 
-        SetValue(selected.Id);
+        Binding.Value = selected.Id;
         _model = selected;
         _loadedId = selected.Id;
         StateHasChanged();
@@ -91,33 +96,10 @@ public partial class MetaValueRelationSingle
 
     void ClearAsync()
     {
-        SetValue(Guid.Empty);
+        Binding.Value = null;
         _model = null;
         _loadedId = Guid.Empty;
 
-        // пустая строка необязательного поля (не выбрано) не сохраняется — вместо неё ничего
-        if (Meta.IsNullable)
-            MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key && v.ModelId == Guid.Empty);
-
         StateHasChanged();
-    }
-
-    void SetValue(Guid modelId)
-    {
-        var row = MetaValues.FirstOrDefault(v => v.MetaField.Key == Meta.Key);
-        if (row is null)
-        {
-            MetaValues.Add(new MetaValueEditModel
-            {
-                Id = Guid.NewGuid(),
-                Index = 0,
-                MetaField = Meta,
-                ModelId = modelId,
-            });
-            return;
-        }
-
-        row.ModelId = modelId;
-        row.Index = 0;
     }
 }

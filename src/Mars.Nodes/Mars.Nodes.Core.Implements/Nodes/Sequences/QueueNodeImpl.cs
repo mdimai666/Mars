@@ -1,8 +1,11 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Sequences;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Sequences;
 
+[NodeOutputValueSpec(typeof(int), OutputPort = 0, Description = "total processed")]
+[NodeOutputValueSpec(typeof(object), OutputPort = 1, Description = "queued item")]
 public class QueueNodeImpl : INodeImplement<QueueNode>
 {
     public QueueNode Node { get; }

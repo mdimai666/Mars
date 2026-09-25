@@ -1,14 +1,15 @@
 # Mars — фронты: как работает рендер сайтов
 
 Гайд по фронтовой подсистеме после фронт-реворка (завершён в августе 2026).
-Пользовательская документация — `docs/dev_docs/AppFront/Fronts.md` и `docs/dev_docs/AppFront/Handlebars/`.
-Общая структура решения — `ai/ProjectStructureGuide.md`.
+Архитектура модуля SiteEngine (проекты, движки, Providers-слой, точки расширения, грабли) —
+`ai/SiteEngineGuide.md`. Пользовательская документация — `docs/dev_docs/AppFront/Fronts.md` и
+`docs/dev_docs/AppFront/Handlebars/`. Общая структура решения — `ai/ProjectStructureGuide.md`.
 
 ## Что такое фронт
 
 Фронт — это папка с файлами-шаблонами и статикой:
 
-- `_root.hbs` — корневой шаблон;
+- `_root.hbs`/`_root.sbn` — корневой шаблон (расширение = движок фронта: `*.hbs` — Handlebars, `*.sbn` — Scriban);
 - `pages/` — страницы с атрибутом `@page "/url"`;
 - `blocks/`, `layout/` — блоки и layout'ы;
 - `wwwroot/` — статика фронта.
@@ -25,18 +26,15 @@
 
 ## Где лежит код
 
-- `Mars.SiteEngine.Abstractions` — контракты: `IFrontManager`, `MarsAppFront`, `IWebRenderEngine`,
-  `IWebRenderEngineFactory`, `IWebRenderEngineLocator`, `IFrontRequestHandler`, `IFrontFilesService`.
-- `Mars.SiteEngine.Contracts` — wire-DTO и опции (`FrontsOption`/`FrontItem`, `SEOOption`, `FaviconOption`).
-- `Mars.SiteEngine.Host` — реализация: `FrontManager`, `WebRenderEngineLocator`, `FrontFilesService`,
-  `FrontTemplateService`, `WebTemplateService`, `WebSiteRequestProcessor`; middleware пайплайна —
-  в `MainSiteEngine` (`AddMarsSiteEngine`/`UseMarsSiteEngineStartup`/`UseMarsSiteEngine`).
-- `Mars.SiteEngine.Handlebars` — встроенный движок рендера (фабрика `HandlebarsRenderEngineFactory`).
+- Модули `Mars.SiteEngine.*` (контракты, Host-ядро, движки Handlebars/Scriban), фабричный слой
+  `Mars.TemplateEngine.Providers.*` и QueryLang — карта проектов и поток рендера в
+  `ai/SiteEngineGuide.md`.
 - Админка: страница `/Settings/Front` (список фронтов) и редактор
   `src/Mars.Admin/Builder/FrontEditorViews/FrontEditorPage.razor` (`/front/editor/{Slug}`).
 - ИИ-инструменты: `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`.
 - Стартовые шаблоны: `Res/front_templates/<name>` в content root (в репо — `src/Mars.WebApp/Res/front_templates`:
-  `default`, `landing`, служебный `admin`).
+  `default`, `landing`, `scriban` (движок Scriban, `*.sbn`), служебный `admin`).
+  Движок шаблона определяется по наличию `*.sbn`-файлов (`FrontTemplateService.DetectTemplateEngine`).
 
 ## Пайплайн запроса фронта
 
@@ -62,22 +60,36 @@
 
 ## Движки рендера
 
-- Реестр фабрик `IWebRenderEngineFactory` в DI (`IEnumerable<>`). Встроенный —
-  `HandlebarsRenderEngineFactory` (регистрируется в `Mars.SiteEngine.Handlebars`); плагины могут
-  добавлять свои фабрики. Метаданные движка — через `[Display]`.
-- Движок фронта выбирается по `FrontItem.EngineId`. `WebRenderEngineLocator` кэширует движки
-  per-front, создаёт лениво на первом запросе и пересоздаёт по diff'у полей при изменении
-  `FrontsOption` (подписан на `FrontManager.Changed`).
+- Встроенные движки — Handlebars (`*.hbs`) и Scriban (`*.sbn`, Id `scriban`); движок фронта
+  выбирается по `FrontItem.EngineId`, плагины могут регистрировать свои фабрики.
+  Архитектура (фабрики, кэш per-front, Providers-слой и контрибьюторы, QueryLang-адаптеры) —
+  `ai/SiteEngineGuide.md`.
+- Конвенции Scriban-шаблонов: layout выводит страницу через `{{ body }}` (двухстадийный рендер:
+  страница → обёртка root+layout); блоки — `{{ include 'blocks/name' }}`; QueryLang —
+  `{{ context "posts = ef.Post.Take(3)" key? cache? }}`; `$`-переменные недоступны из глобалов
+  (`$errors` → `errors`); списки — `{{ x.size }}`, не `.Count`.
 - `IMarsAppProvider` — read-only фасад над фронт-менеджером для старых потребителей
   (`GetAppForUrl`, `Apps` и т.д.).
 - Демонтировано в реворк: DB-рендер (посты типов `page/template/block/layout`, `HostHtml` как `_root`)
   и Blazor-рендер. Шаблоны — только файлы.
+- **Маунт-фронты**: `FrontItem.Url` нормализуется в сеттере (ведущий `/` добавляется, `"/"` → `""`);
+  страницы объявляют url ОТНОСИТЕЛЬНО маунта (`@page "/"`, `@page "/second"`) — префикс срезается
+  `WebSiteRequestProcessor.StripMount` перед матчингом (`_req.Path`, кэш-ключ и route-переменные
+  тоже фронто-относительные). API by-url принимает и полный, и относительный url.
+- **`site_base`** — переменная данных рендера для `<base href="{{site_base}}">`: корень → `/`,
+  маунт → `/sbn/` (trailing slash обязателен). Фронтовые ссылки в шаблонах — относительные,
+  БЕЗ ведущего слеша (`posts`, `img/...`, home — `./`): их резолвит `<base>`; статика фронта
+  обслуживается под маунтом, поэтому относительные ассеты работают без правок. Системные роуты
+  (`/dev`, `/mars/js/*`, `/api/*`) — всегда от корня, со слешем. Грабля относительных ссылок:
+  на вложенных страницах (`posts/{slug}`) `posts` даст `posts/posts` — для ссылок с глубоких
+  страниц использовать `{{site_base}}posts` (hbs) / `{{ site_base + 'posts' }}` (sbn).
 
 ## Шаблоны и hot-reload
 
 - Файлы с атрибутами в шапке: `@page "/url"`, `@layout`, `@cache`/`@cache-force`, `@title`;
-  модели `WebSitePart`/`WebPage`. Данные в шаблонах — `{{#context}}` и QueryLang.
-- `WebTemplateService` сканирует папку фронта (только файловый источник); `FileSystemWatcher`
+  модели `WebSitePart`/`WebPage`. Данные в шаблонах — QueryLang: `{{#context}}` (Handlebars)
+  или `{{ context "..." }}` (Scriban); общий парсер/исполнение — `Mars.QueryLang`.
+- `WebTemplateService` сканирует папку фронта (`*.hbs` и `*.sbn`, только файловый источник); `FileSystemWatcher`
   следит за изменениями и шлёт SignalR-события `reload`/`refreshcss` через ChatHub (`/_ws/admin`);
   `hot-reload.js` в wwwroot перезагружает страницы.
 - **Важно**: движок кэширует скомпилированные шаблоны (~30 минут). Поэтому `FrontFilesService`
@@ -88,7 +100,12 @@
 ## Админка
 
 - `/Settings/Front` — список фронтов (`EditOptionForm<FrontsOption>`): карточки (Title/Url/Path/движок/вкл),
-  «Создать фронт» (из стартового шаблона), удаление (опционально с папкой; внешние папки через API не удаляются).
+  «Создать фронт» — из стартового шаблона (движок диктуется шаблоном, селект задизейблен)
+  или подключение существующей папки (пустой Path = `data/fronts/<slug>`, иначе внешняя папка;
+  движок выбирается вручную, валидируется по реестру фабрик), удаление (опционально с папкой;
+  внешние папки через API не удаляются).
+  Грабля FluentUI 4.14: `FluentSelect.Value` — **string** (значение опции), привязка к
+  объекту-элементу не компилируется — биндить имя/Id и резолвить объект в коде.
 - `/front/editor/{Slug}` — редактор в стиле VSCode: дерево файлов | `CodeEditor2` (Ctrl+S) | iframe-превью
   сайта; полноэкранный предпросмотр; live-reload превью через ChatHub; защита от затирания
   (по событию `reload` открытый файл перечитывается, только если пользователь не вносил несохранённых правок).
@@ -115,11 +132,13 @@
 
 ## Тесты
 
-- `tests/Mars.SiteEngine.Tests` — юниты рендера и QueryLang.
-- Docker-регрессия: `HandlebarsAppFrontTests` в `Mars.SiteEngine.Integration.Tests`
+- `tests/Mars.SiteEngine.Tests` — юниты рендера (Handlebars + `ScribanEngine/ScribanRenderEngineTests`) и QueryLang.
+- Docker-регрессия: `Mars.SiteEngine.Integration.Tests` — `HandlebarsAppFrontTests` +
+  `ScribanAppFrontTests` (тема `ScribanEngine/sbnTheme`, маунт `/sbn`)
   (полный пайплайн: `/dev` не перехватывается фолбэком, maintenance, мгновенный рендер после записи).
 - Лёгкий набор без Docker — см. память/гайды по фронтовым тестам (`FrontManagerTests`,
   `AiFrontFilesToolsTests` и др. в `Mars.Integration.Tests`).
+- Прогоны и остальные наборы — `ai/SiteEngineGuide.md` § Тесты.
 
 ## Краткая история
 
@@ -129,9 +148,16 @@
 фронтов в админке, редактор с live-превью и ИИ-чатом. Полный план с заметками по фазам —
 в истории git (`ai/FrontReworkPlan.md`, файл схлопнут).
 
+SiteEngine-реворк (сентябрь 2026): `MyHandlebars`/`IMarsHtmlTemplator` демонтированы — сайт-движки
+строятся на фабричном слое `TemplateEngine.Providers.*`, добавлен движок Scriban (`*.sbn`),
+выбор движка при создании фронта + Scriban-стартер, маунт-фронты (`site_base`, относительные
+ссылки). Решения, грабли и бэклог — `ai/SiteEngineGuide.md`; план с заметками по фазам —
+`git show 17ea5ffe:ai/SiteEngineReworkPlan.md`.
+
 ## Агентам
 
-- Изменения рендера/пайплайна фронтов обязательно проверять Docker-регрессией `HandlebarsAppFrontTests`.
+- Изменения рендера/пайплайна фронтов обязательно проверять Docker-регрессией
+  `Mars.SiteEngine.Integration.Tests` (Handlebars + Scriban фронты).
 - Middleware SiteEngine — последние в пайплайне; порядок внутри `UseSiteEngineMiddlewares` не ломать
   (особенно: фолбэк-рендер — middleware, а не endpoint).
 - Файловые операции над фронтами — только через `FrontFilesService` (защита путей);

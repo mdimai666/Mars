@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using Mars.CodeCompletion.Host.Abstractions;
 using Mars.CommandLine.Abstractions;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Abstractions;
@@ -11,6 +12,7 @@ using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
 using Mars.Nodes.Core.Locators;
 using Mars.Nodes.Core.Nodes.Common;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Host.CommandLine;
 using Mars.Nodes.Host.Factories;
 using Mars.Nodes.Host.Middlewares;
@@ -34,15 +36,19 @@ public static class MainNodes
         services.AddMemoryCache();
 
         services.AddSingleton<INodeImplementFactory, NodeImplementFactory>();
+        services.AddSingleton<ExpressionRunnerPool>();
 
         services.AddSingleton<INodeService, NodeService>();
         services.AddSingleton<INodeTaskManager, NodeTaskManager>();
+        services.AddSingleton<INodeDebugMode, DebugModeState>();
+        services.AddSingleton<INodeDebugStore, NodeDebugStore>();
         services.AddSingleton<INodeSchedulerService, NodeSchedulerService>();
         services.AddSingleton<INodeRuntime, NodeRuntime>();
         services.AddSingleton<INodesReader, NodesReader>();
         services.AddSingleton<MqttManager>();
         services.AddScoped<FunctionCodeSuggestService>();
         services.AddSingleton<CommandNodesActionProvider>();
+        services.AddSingleton<ICodeContextProvider, FunctionNodeContextProvider>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

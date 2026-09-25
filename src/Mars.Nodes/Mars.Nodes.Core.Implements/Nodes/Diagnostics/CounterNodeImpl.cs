@@ -1,9 +1,11 @@
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Diagnostics;
 
+[NodeOutputValueSpec(typeof(int))]
 public class CounterNodeImpl : INodeImplement<CounterNode>, INodeLifecycleOnAssigned, INodeLifecycleOnDelete
 {
     private readonly HybridCache _cache;
@@ -42,7 +44,7 @@ public class CounterNodeImpl : INodeImplement<CounterNode>, INodeLifecycleOnAssi
         Node.status = $"count = {Count}";
         RNS.Status(new NodeStatus(Node.status));
 
-        _debouncer.Debouce(() =>
+        _debouncer.Debounce(() =>
         {
             _cache.SetAsync<int>(KeyCount, Count, _entryOptions, ["nodes"]);
         });

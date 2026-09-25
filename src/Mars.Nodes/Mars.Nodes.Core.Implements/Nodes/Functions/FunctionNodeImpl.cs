@@ -3,8 +3,8 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Models;
-using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
+using Mars.Nodes.Expressions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -58,16 +58,14 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>
 
             ScriptOptions scriptOptions = ScriptOptions.Default
                 .WithLanguageVersion(LanguageVersion.Latest)
+                // BCL-база (как ImplicitUsings); остальное — явными `using` в коде скрипта:
+                // completion дописывает их сам через additionalTextEdits
                 .WithImports(
                 "System",
                 "System.Collections.Generic",
                 "System.Linq",
-                "System.Text",
                 "System.Threading.Tasks",
-                "System.Threading",
-                "Mars.Nodes.Core",
-                typeof(Node).Namespace!,
-                "Microsoft.Extensions.DependencyInjection"
+                "System.Threading"
                 )
                 .WithReferences(
                     comparedAssemblies

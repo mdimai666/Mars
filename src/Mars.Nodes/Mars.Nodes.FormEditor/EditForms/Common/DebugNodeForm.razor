@@ -1,0 +1,134 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Nodes.Contracts.Nodes
+@using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.Nodes.Front.Abstractions.Services
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DebugNode))]
+
+<div class="vstack gap-4">
+
+    <FluentCheckbox @bind-Value=Node.CompleteInputMessage Label="CompleteInputMessage" />
+
+    @if (!Node.CompleteInputMessage)
+    {
+        <MarsPathInput @bind-Value=Node.PropertyPath For="() => Node.PropertyPath" />
+    }
+
+    <FluentCheckbox @bind-Value=Node.WriteToConsole Label="WriteToConsole" />
+
+    <FluentCheckbox @bind-Value=Node.ShowPayloadTypeInStatus Label="ShowPayloadTypeInStatus" />
+
+    <FormItem2 For=@(() => Node.Level)>
+        <FluentSelect @bind-SelectedOption=SetLevel
+                      Multiple="false"
+                      OptionValue=@(s => s?.ToString())
+                      OptionText=@(s => s?.ToString() ?? "-payload")
+                      Items="MessageIntentItems()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    <FluentCheckbox @bind-Value=Node.StoreFullObject @bind-Value:after=OnStoreFullObjectChanged
+                    Label="StoreFullObject (last, ≤2 MB)" />
+
+    @if (Node.StoreFullObject)
+    {
+        <div class="hstack gap-3 align-items-center">
+            @if (_full is { CapturedAt: { } captured })
+            {
+                <span>@captured.ToLocalTime().ToString("HH:mm:ss")@(IsStale() ? " · stale" : "")</span>
+                <span>@_full.Size.ToString("N0") chars</span>
+                @if (_full.Truncated)
+                {
+                    <span class="badge text-bg-warning">truncated 2 MB</span>
+                }
+            }
+            else
+            {
+                <span>no stored object yet</span>
+            }
+            <FluentButton Appearance="Appearance.Stealth" OnClick=ShowFullObject>show object</FluentButton>
+            <FluentButton Appearance="Appearance.Stealth" OnClick=RefreshFull>refresh</FluentButton>
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    [Inject] IServiceProvider Services { get; set; } = default!;
+
+    DebugNode Node { get => (DebugNode)Value; set => Value = value; }
+
+    NodeDebugFullResponse? _full;
+    DateTime _receivedAtUtc;
+
+    INodeServiceClient? Client => Services.GetService(typeof(INodeServiceClient)) as INodeServiceClient;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Node.StoreFullObject)
+            await LoadFullInfo();
+    }
+
+    IEnumerable<string> MessageIntentItems() =>
+    ["payload", .. Enum.GetValues<Mars.Core.Models.MessageIntent>().Select(s => s.ToString())];
+
+    string? SetLevel
+    {
+        get => Node.Level?.ToString() ?? "payload";
+        set => Node.Level = Enum.TryParse<Mars.Core.Models.MessageIntent>(value, out var p) ? p : null;
+    }
+
+    async Task LoadFullInfo()
+    {
+        if (Client is not { } client) return;
+
+        try
+        {
+            _full = await client.DebugNodeFull(Node.Id);
+            _receivedAtUtc = DateTime.UtcNow;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception)
+        {
+            _full = null;
+        }
+    }
+
+    Task RefreshFull() => LoadFullInfo();
+
+    async Task OnStoreFullObjectChanged()
+    {
+        if (Node.StoreFullObject)
+            await LoadFullInfo();
+    }
+
+    async Task ShowFullObject()
+    {
+        if (Client is not { } client) return;
+
+        try
+        {
+            var full = await client.DebugNodeFull(Node.Id, includeJson: true);
+            _full = full;
+            _receivedAtUtc = DateTime.UtcNow;
+
+            if (Services.GetService(typeof(IDialogService)) is IDialogService dialogs)
+                DebugNodeFullObjectDialog.ShowDialog(dialogs, full);
+        }
+        catch (Exception)
+        {
+            _full = null;
+        }
+    }
+
+    bool IsStale()
+    {
+        if (_full?.CapturedAt is not { } captured) return false;
+
+        return (_full.ServerTimeUtc - captured) + (DateTime.UtcNow - _receivedAtUtc) > TimeSpan.FromMinutes(1);
+    }
+}

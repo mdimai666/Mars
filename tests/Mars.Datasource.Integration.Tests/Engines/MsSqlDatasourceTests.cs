@@ -1,7 +1,13 @@
 using FluentAssertions;
-using Mars.Datasource.Abstractions.Models;
-using Mars.Datasource.Host.MsSQL;
+using Mars.Datasource.Abstractions.Mappings;
+using Mars.Datasource.Abstractions.Sql;
+using Mars.Datasource.Contracts.Sql;
+using Mars.Datasource.Providers.MsSQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
+using Mars.Datasource.Contracts.Catalog;
+using Mars.Datasource.Contracts.Config;
+using Mars.Datasource.Contracts.Document;
+using Mars.Datasource.Contracts.Query;
 using Mars.Integration.Tests.Attributes;
 using Microsoft.Data.SqlClient;
 
@@ -54,22 +60,108 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
         await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
 
         string query = "SELECT TOP 10 * FROM [todo]";
         var se = new DatasourceMsSQLDriver(Config());
 
-        var result = await se.SqlQuery(query);
-        Assert.True(result.Data.Length > 0);
+        var result = await se.Query(new DatasourceRequest { Query = query });
+        result.Ok.Should().BeTrue(result.Message);
+        result.Fields.Select(c => c.Name).Should().Equal("Id", "Title", "Content", "Completed");
+        result.Rows.Should().HaveCount(2);
+        result.Truncated.Should().BeFalse();
 
         var columns = await se.Columns("todo");
-        Assert.True(columns.Count > 0);
+        columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        columns.Values.Single(c => c.ColumnName == "Title").IsNullable.Should().BeFalse();
 
         var tables = await se.Tables();
-        Assert.True(tables.Count > 0);
+        tables.Should().Contain(t => t.TableName == "todo" && t.Kind == QTableKind.Table);
 
         var structure = await se.DatabaseStructure();
-        Assert.True(structure.Tables.Count > 0);
-        Assert.NotNull(structure.DatabaseName);
+        var todo = structure.Tables.Single(t => t.TableName == "todo");
+        todo.TableSchema.Kind.Should().Be(QTableKind.Table);
+        todo.Columns.Values.Single(c => c.ColumnName == "Id").IsKey.Should().BeTrue();
+        structure.DatabaseName.Should().NotBeNullOrEmpty();
+    }
+
+    [IntegrationFact]
+    public async Task ViewDefinition_CreatedByBuilder_ReturnsBodyAndDrops()
+    {
+        await using var connection = new SqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+
+        var se = new DatasourceMsSQLDriver(Config());
+        var view = $"todo_view_{Guid.NewGuid():N}";
+
+        var create = ViewDdlBuilder.Create(SqlDialect.MsSql, "dbo", view, "SELECT Id, Title FROM todo", replace: false);
+        create.Ok.Should().BeTrue(create.Error);
+
+        var created = await se.NonQuery(create.Sql!);
+        created.Ok.Should().BeTrue(created.Message);
+
+        var definition = await se.ViewDefinition("dbo", view);
+        definition.Should().NotBeNullOrWhiteSpace();
+        definition.Should().Contain("todo");
+
+        // Замена поверх существующей вьюхи проходит через CREATE OR ALTER.
+        var replace = ViewDdlBuilder.Create(SqlDialect.MsSql, "dbo", view, "SELECT Id FROM todo", replace: true);
+        var replaced = await se.NonQuery(replace.Sql!);
+        replaced.Ok.Should().BeTrue(replaced.Message);
+        (await se.ViewDefinition("dbo", view)).Should().NotContain("Title");
+
+        var drop = ViewDdlBuilder.Drop(SqlDialect.MsSql, "dbo", view);
+        var dropped = await se.NonQuery(drop.Sql!);
+        dropped.Ok.Should().BeTrue(dropped.Message);
+
+        (await se.ViewDefinition("dbo", view)).Should().BeNull();
+    }
+
+    [IntegrationFact]
+    public async Task Query_MaxRows_LimitsRowsAndMarksTruncated()
+    {
+        await using var connection = new SqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMsSQLDriver(Config());
+
+        var result = await se.Query(new DatasourceRequest { Query = "SELECT * FROM [todo]", MaxRows = 1 });
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.Rows.Should().HaveCount(1);
+        result.Truncated.Should().BeTrue();
+    }
+
+    [IntegrationFact]
+    public async Task NonQuery_WithParameters_UpdatesRows()
+    {
+        await using var connection = new SqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+        await CreateTodoTableAsync(connection);
+        await SeedTodoAsync(connection);
+
+        var se = new DatasourceMsSQLDriver(Config());
+
+        var result = await se.NonQuery(
+            "UPDATE [todo] SET Title = @title WHERE Title = @from",
+            [
+                new DatasourceParam { Name = "title", Value = "edited" },
+                new DatasourceParam { Name = "from", Value = "first" },
+            ]);
+
+        result.Ok.Should().BeTrue(result.Message);
+        result.RowsAffected.Should().Be(1);
+    }
+
+    static async Task SeedTodoAsync(SqlConnection connection)
+    {
+        await using var command = new SqlCommand(
+            "INSERT INTO todo (Title, Content, Completed) VALUES ('first', 'a', 0), ('second', 'b', 1)", connection);
+
+        await command.ExecuteNonQueryAsync();
     }
 
     private static async Task<int> CreateTodoTableAsync(SqlConnection connection)

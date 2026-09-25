@@ -7,6 +7,7 @@ using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
+using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostTypeViews;
@@ -58,6 +59,9 @@ public class PostTypeEditModel : IBasicEntity
     [ValidateComplexType]
     public List<MetaFieldEditModel> MetaFields { get; set; } = [];
 
+    /// <summary>Параметры системных полей (правила, редактор) — <c>post_types.Options["systemFields"]</c></summary>
+    public List<FormFieldSettings> SystemFields { get; set; } = [];
+
     //==========================================
     //Internal
 
@@ -74,22 +78,97 @@ public class PostTypeEditModel : IBasicEntity
     /// дополнительно оркестрирует выбор/создание поля-указателя
     /// (см. <see cref="CreateFeatureImageField"/>); серверная согласованность —
     /// на валидаторе (<c>UpdatePostTypeQueryValidator</c>).
-    /// Поле контента создаётся сразу при включении фичи (ключ фиксированный,
-    /// кандидатов нет — диалог выбора не нужен).
+    /// Контент — системный слот: фича только открывает его, полей не создаёт.
     /// </summary>
     public void ToggleFeature(string feature, bool enabled)
     {
         if (enabled) EnabledFeatures.Add(feature);
         else EnabledFeatures.Remove(feature);
 
+        // состав системных слотов зависит от фич — определения полей пересобираются
+        InvalidateSystemFieldDefinitions();
+
         if (feature == PostTypeConstants.Features.PostImage && !enabled)
             ImageFieldKey = null;
+    }
 
-        if (feature == PostTypeConstants.Features.Content && enabled
-            && MetaFields.All(f => f.Key != FeatureFieldsCatalog.ContentFieldKey))
+    List<FormFieldDefinition>? _systemFieldDefinitions;
+
+    /// <summary>
+    /// Определения системных полей для общего редактора: слоты каталога, включённые фичами типа,
+    /// плюс сохранённые параметры. Каталог и признаки обязательности/чтения — те же, что на сервере
+    /// (<see cref="SystemFieldsCatalog"/>), поэтому строка редактора показывает поле как в форме.
+    /// </summary>
+    public IReadOnlyList<FormFieldDefinition> SystemFieldDefinitions()
+        => _systemFieldDefinitions ??= BuildSystemFieldDefinitions();
+
+    public void InvalidateSystemFieldDefinitions() => _systemFieldDefinitions = null;
+
+    List<FormFieldDefinition> BuildSystemFieldDefinitions()
+    {
+        var definitions = new List<FormFieldDefinition>();
+
+        foreach (var slot in SystemFieldsCatalog.All)
         {
-            CreateFeatureContentField();
+            if (slot.Feature is not null && !EnabledFeatures.Contains(slot.Feature)) continue;
+
+            var settings = SystemFieldSettings(slot.Key);
+            definitions.Add(new FormFieldDefinition
+            {
+                Key = slot.Key,
+                TitleKey = slot.TitleKey,
+                Type = slot.Type,
+                Required = SystemFieldsCatalog.IsRequired(slot),
+                ReadOnly = SystemFieldsCatalog.IsReadOnly(slot, EnabledFeatures),
+                Multiple = slot.Multiple,
+                ModelName = slot.ModelName,
+                Zone = slot.Zone,
+                Feature = slot.Feature,
+                Editor = settings?.Editor ?? slot.Editor,
+                Rules = settings?.Rules.ToList() ?? [],
+                Source = this,
+            });
         }
+
+        return definitions;
+    }
+
+    /// <summary>Параметры системного слота типа (null — не заданы)</summary>
+    public FormFieldSettings? SystemFieldSettings(string key)
+        => SystemFields.FirstOrDefault(s => s.Key == key);
+
+    /// <summary>Правка определения системного поля → параметры типа; пустые параметры не храним</summary>
+    public void ApplySystemFieldDefinition(FormFieldDefinition definition)
+    {
+        var existing = SystemFieldSettings(definition.Key);
+        SystemFields.RemoveAll(s => s.Key == definition.Key);
+
+        var settings = new FormFieldSettings
+        {
+            Key = definition.Key,
+            Editor = definition.Editor,
+            CodeLang = existing?.CodeLang,
+            Rules = definition.Rules.ToList(),
+        };
+
+        if (string.IsNullOrEmpty(settings.Editor) && string.IsNullOrEmpty(settings.CodeLang) && settings.Rules.Count == 0) return;
+
+        SystemFields.Add(settings);
+    }
+
+    /// <summary>Язык редактора кода слота (панель настроек контента)</summary>
+    public void SetSystemFieldCodeLang(string key, string codeLang)
+    {
+        var existing = SystemFieldSettings(key);
+        SystemFields.RemoveAll(s => s.Key == key);
+
+        SystemFields.Add(new FormFieldSettings
+        {
+            Key = key,
+            Editor = existing?.Editor,
+            CodeLang = string.IsNullOrEmpty(codeLang) ? null : codeLang,
+            Rules = existing?.Rules.ToList() ?? [],
+        });
     }
 
     /// <summary>Переименование ключа поля: указатель картинки следует за полем, к которому привязан</summary>
@@ -127,42 +206,6 @@ public class PostTypeEditModel : IBasicEntity
             {
                 [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.PostImage,
             },
-        };
-
-        MetaFields.Add(field);
-        return field;
-    }
-
-    /// <summary>Поле контента типа: фича включена и поле с фиксированным ключом существует</summary>
-    public MetaFieldEditModel? ContentField()
-        => FeatureActivated(PostTypeConstants.Features.Content)
-            ? MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
-            : null;
-
-    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
-    public string ContentEditorKey() => ContentField()?.Editor ?? "";
-
-    /// <summary>Язык кода редактора контента</summary>
-    public string ContentCodeLang() => ContentField()?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
-
-    /// <summary>Создаёт поле фичи «Контент» (ключ фиксированный) и добавляет в поля типа</summary>
-    public MetaFieldEditModel CreateFeatureContentField()
-    {
-        var field = new MetaFieldEditModel
-        {
-            Id = Guid.NewGuid(),
-            Title = FeatureFieldsCatalog.ContentFieldTitle,
-            Key = FeatureFieldsCatalog.ContentFieldKey,
-            Type = MetaFieldType.Text,
-            IsNullable = true,
-            IsNew = true,
-            Order = MetaFields.Count == 0 ? 0 : MetaFields.Max(f => f.Order) + 1,
-            Options = new JsonObject
-            {
-                [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
-                [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
-            },
-            Editor = MetaFieldEditorCatalog.BlockEditor
         };
 
         MetaFields.Add(field);
@@ -224,6 +267,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = PostStatusList.Select(s => s.ToCreateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToCreateRequest()).ToList(),
+            SystemFields = SystemFields,
         };
 
     public UpdatePostTypeRequest ToUpdateRequest()
@@ -239,6 +283,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = PostStatusList.Select(s => s.ToUpdateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToUpdateRequest()).ToList(),
+            SystemFields = SystemFields,
 
         };
 
@@ -260,6 +305,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = response.PostStatusList.Select(PostStatusEditModel.ToModel).ToList(),
             Tags = response.Tags.ToArray(),
             MetaFields = response.MetaFields.Select(MetaFieldEditModel.ToModel).ToList(),
+            SystemFields = response.SystemFields?.ToList() ?? [],
 
             MetaRelationModels = metaRelationModels,
         };

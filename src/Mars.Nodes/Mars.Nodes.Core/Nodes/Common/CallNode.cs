@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Common;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallNode/CallNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/CallNode/CallNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class CallNode : Node
 {
@@ -31,14 +31,13 @@ public class CallNode : Node
     }
 }
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallResponseNode/CallResponseNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/CallResponseNode/CallResponseNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class CallResponseNode : Node
 {
     public CallResponseNode()
     {
         Inputs = [new()];
-        isInjectable = false;
         Color = "#7a78fe";
         Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }

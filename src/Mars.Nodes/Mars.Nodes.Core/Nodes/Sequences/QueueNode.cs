@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Sequences;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/QueueNode/QueueNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/QueueNode/QueueNode{.lang}.md")]
 [Display(GroupName = "sequence")]
 public class QueueNode : Node
 {
@@ -25,7 +25,7 @@ public class QueueNode : Node
             new (){ Label = "Finish" },
             new (){ Label = "Iterate" },
         ];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/queue.svg";
     }
 
     public enum EQueueMode

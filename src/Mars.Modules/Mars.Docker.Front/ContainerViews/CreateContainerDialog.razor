@@ -1,0 +1,113 @@
+@using Mars.Contracts.Resources
+@using Mars.Docker.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Create container")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-column gap-3">
+        <FluentTextField Label="Image *" Placeholder="alpine:3.20" Hint="Pull from source if not local" @bind-Value="_image" />
+        <FluentTextField Label="Name" Placeholder="my-container" @bind-Value="_name" />
+        <FluentTextField Label="Command" Placeholder="echo hello" Hint="Split by spaces" @bind-Value="_cmd" />
+        <FluentTextArea Label="Environment" Placeholder="KEY=VALUE, one per line" Rows="3" @bind-Value="_env" />
+        <FluentTextArea Label="Ports" Placeholder="8080:80 or 5353:53/udp, one per line" Hint="host:container[/protocol]" Rows="2" @bind-Value="_ports" />
+        <FluentSelect TOption="string" Label="Restart policy" @bind-Value="_restartPolicy">
+            <FluentOption TOption="string" Value="">— default —</FluentOption>
+            <FluentOption TOption="string" Value="no">no</FluentOption>
+            <FluentOption TOption="string" Value="always">always</FluentOption>
+            <FluentOption TOption="string" Value="unless-stopped">unless-stopped</FluentOption>
+            <FluentOption TOption="string" Value="on-failure">on-failure</FluentOption>
+        </FluentSelect>
+        <FluentCheckbox Label="Remove container on exit" @bind-Value="_autoRemove" />
+        <FluentCheckbox Label="Start after creation" @bind-Value="_startAfterCreate" />
+
+        @if (_error is not null)
+        {
+            <div class="alert alert-warning mb-0 fz14px">@_error</div>
+        }
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" Disabled="@string.IsNullOrWhiteSpace(_image)" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    string _image = "";
+    string _name = "";
+    string _cmd = "";
+    string _env = "";
+    string _ports = "";
+    string _restartPolicy = "";
+    bool _autoRemove;
+    bool _startAfterCreate = true;
+    string? _error;
+
+    Task CancelAsync() => Dialog.CancelAsync();
+
+    async Task OkAsync()
+    {
+        var ports = new List<ContainerPortBindingRequest>();
+        foreach (var line in SplitLines(_ports))
+        {
+            if (!TryParsePort(line, out var binding))
+            {
+                _error = $"Invalid port mapping: {line} (expected host:container[/protocol])";
+                return;
+            }
+            ports.Add(binding);
+        }
+
+        _error = null;
+        var request = new CreateContainerRequest
+        {
+            Image = _image.Trim(),
+            Name = string.IsNullOrWhiteSpace(_name) ? null : _name.Trim(),
+            Cmd = string.IsNullOrWhiteSpace(_cmd) ? [] : _cmd.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            Env = SplitLines(_env).ToList(),
+            Ports = ports,
+            RestartPolicy = string.IsNullOrEmpty(_restartPolicy) ? null : _restartPolicy,
+            AutoRemove = _autoRemove,
+        };
+        await Dialog.CloseAsync(new CreateContainerDialogResult(request, _startAfterCreate));
+    }
+
+    static IEnumerable<string> SplitLines(string text)
+        => text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    internal static bool TryParsePort(string line, out ContainerPortBindingRequest binding)
+    {
+        var protocol = "tcp";
+        var slash = line.IndexOf('/');
+        if (slash >= 0)
+        {
+            protocol = line[(slash + 1)..].Trim();
+            line = line[..slash];
+        }
+
+        var parts = line.Split(':');
+        if (parts.Length == 2
+            && int.TryParse(parts[0].Trim(), out var hostPort)
+            && int.TryParse(parts[1].Trim(), out var containerPort)
+            && hostPort is > 0 and <= 65535
+            && containerPort is > 0 and <= 65535)
+        {
+            binding = new ContainerPortBindingRequest { HostPort = hostPort, ContainerPort = containerPort, Protocol = protocol };
+            return true;
+        }
+
+        binding = new ContainerPortBindingRequest { HostPort = 0, ContainerPort = 0 };
+        return false;
+    }
+}

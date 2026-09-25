@@ -46,4 +46,10 @@ public class BroadcastHub
     {
         _nodesClients.SendAsync("OnNodeExecuted", taskId, nodeId, trigger);
     }
+
+    /// <summary>Version-bump: данные не несёт, клиент реагирует повторным pull DebugSnapshots.</summary>
+    public void DebugSnapshotsChanged()
+    {
+        _nodesClients.SendAsync("DebugSnapshotsChanged");
+    }
 }

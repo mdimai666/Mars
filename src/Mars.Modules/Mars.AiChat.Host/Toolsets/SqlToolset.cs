@@ -4,7 +4,8 @@ using Microsoft.Extensions.AI;
 namespace Mars.AiChat.Host.Toolsets;
 
 /// <summary>
-/// SQL-доступ к базам; включён флагом AiChatOption.EnableSqlAccess.
+/// Доступ к источникам данных: SQL-базы (включая основную БД Mars) и источники из каталога DataSource
+/// (file, rest); включён флагом AiChatOption.EnableSqlAccess.
 /// Правила работы — в скилле mars-sql.
 /// </summary>
 public class SqlToolset : IAiToolset
@@ -23,7 +24,8 @@ public class SqlToolset : IAiToolset
     public IReadOnlyList<AIFunction> Build(AiToolsetContext ctx) =>
     [
         AIFunctionFactory.Create(_sqlTools.ListDataSources),
-        AIFunctionFactory.Create(_sqlTools.GetDatabaseSchema),
+        AIFunctionFactory.Create(_sqlTools.GetSourceSchema),
+        AIFunctionFactory.Create(_sqlTools.RunQuery),
         AIFunctionFactory.Create(_sqlTools.ExecuteSql),
     ];
 }

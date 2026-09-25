@@ -1,7 +1,9 @@
 using Mars.Core.Models;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Dto;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Connections;
+using Mars.Nodes.Expressions;
 using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,7 +29,9 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
 
             var adminConnectionService = RNS.ServiceProvider.GetRequiredService<IDevAdminConnectionService>();
 
-            var message = string.IsNullOrEmpty(Node.Message) ? input.Payload?.ToString()! : Node.Message;
+            var resolvedMessage = ResolveMessage();
+
+            var message = string.IsNullOrEmpty(resolvedMessage) ? input.Payload?.ToString()! : resolvedMessage;
             var messageIntent = Enum.TryParse(Node.MessageIntent, out MessageIntent intent) ? intent : MessageIntent.Info;
 
             var recepient = Node.MessageRecipient;
@@ -44,6 +48,12 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
                 await adminConnectionService.ShowNotifyMessageForAll(message.ToString(), messageIntent);
             }
             else throw new NotImplementedException($"MessageRecipient '{recepient}' not implement");
+
+            string? ResolveMessage()
+            {
+                using var expr = RNS.Expressions(Node);
+                return (string?)expr.Resolve(Node.MessageKind, Node.Message, "string", input, Node, "Message");
+            }
 
         }
         else

@@ -1,0 +1,16 @@
+.ds-pane {
+    min-height: 0;
+    min-width: 0;
+}
+
+/* Заголовок группы в дереве: сворачивается по клику (фон — вместо bootstrap-класса bg-light,
+   чтобы работал hover). */
+.ds-schema {
+    background: var(--bs-tertiary-bg, #f1f3f5);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ds-schema:hover {
+    background: var(--bs-secondary-bg, #e9ecef);
+}

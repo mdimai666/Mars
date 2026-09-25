@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Scriban" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
+		<ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+		<ProjectReference Include="..\Mars.TemplateEngine.Providers.Scriban\Mars.TemplateEngine.Providers.Scriban.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -6,6 +6,7 @@ using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Exceptions;
 using Mars.Core.Utils;
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Options;
 using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Contracts.Options;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +20,7 @@ public partial class LoginForm
     [Inject] IAuthenticationService _authenticationService { get; set; } = default!;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] PasskeyJs _passkeyJs { get; set; } = default!;
 
     [Inject] IFlurlClient _client { get; set; } = default!;
 
@@ -33,6 +35,7 @@ public partial class LoginForm
 
     private bool _isAlreadyAuth;
     private bool _loginOverlayVisible;
+    private bool _passkeyAvailable;
 
     public string AuthProvider { get; set; } = "";
 
@@ -65,6 +68,9 @@ public partial class LoginForm
 
         authVariantConstOption = Q.Site.GetOption<AuthVariantConstOption>();
 
+        _passkeyAvailable = Q.Site.GetOption<PasskeyOption>()?.Enabled != false && await _passkeyJs.IsAvailable();
+        StateHasChanged();
+
         if (DetectIsSsoAuthProcessingAndUrlHasStateCode())
         {
             Console.WriteLine("DetectIsSsoAuthProcessingAndUrlHasStateCode");
@@ -87,16 +93,41 @@ public partial class LoginForm
         }
         else
         {
-            await Task.Delay(10);//из-за редиректа какя то бага и не переходит по ссылке
+            // cookie-схема (A1): сессия уже установлена Set-Cookie в ответе сервера —
+            // полная перезагрузка, чтобы хост-страница отрендерилась авторизованной
+            _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl, forceLoad: true);
+        }
+    }
 
-            if (string.IsNullOrEmpty(ReturnUrl))
+    public async Task ExecutePasskeyLogin()
+    {
+        Error = null;
+        ShowAuthError = false;
+        _loginOverlayVisible = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await _passkeyJs.LoginWithPasskey();
+
+            if (result.IsAuthSuccessful)
             {
-                _navigationManager.NavigateTo(AfterLoginUrl);
+                _navigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? AfterLoginUrl : ReturnUrl, forceLoad: true);
+                return;
             }
-            else
-            {
-                _navigationManager.NavigateTo(ReturnUrl);
-            }
+
+            Error = result.ErrorMessage ?? "Ошибка входа по пасскею";
+            ShowAuthError = true;
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            ShowAuthError = true;
+        }
+        finally
+        {
+            _loginOverlayVisible = false;
+            StateHasChanged();
         }
     }
 
@@ -196,9 +227,8 @@ public partial class LoginForm
         }
         else
         {
-            await _authenticationService.MarkUserAsAuthenticated(auth.AccessToken, auth);
-            await Task.Delay(200);
-            _navigationManager.NavigateTo(AfterLoginUrl);
+            // серверный callback уже поставил Identity-cookie — полная перезагрузка
+            _navigationManager.NavigateTo(AfterLoginUrl, forceLoad: true);
         }
 
         _loginOverlayVisible = false;

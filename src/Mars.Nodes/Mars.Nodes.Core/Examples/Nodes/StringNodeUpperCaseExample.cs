@@ -11,7 +11,7 @@ public class StringNodeUpperCaseExample : INodeExample<StringNode>
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "text", Name = "text" })
+            .AddNext(new InjectNode().SetPayload("text"))
             .AddNext(new StringNode() { Operations = [new() { Method = nameof(StringNodeOperationUtils.ToUpper) }] })
             .AddNext(new DebugNode())
             .Build();

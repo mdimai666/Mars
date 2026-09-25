@@ -39,8 +39,10 @@ Cms, Media, Identity, Notifications, SiteEngine (+ Handlebars, Templators), Opti
 SSO, Scheduler, Docker, Excel, QueryLang, AiChat, SemanticKernel, TemplateEngines
 (Host + Providers.Handlebars/Scriban), WebApp.Nodes, MetaModelGenerator, CommandLine.
 
-`src/Mars.Nodes` — `Mars.Nodes.Core` (+ `.Core.Implements`), `Abstractions`, `Host`,
-`Front.Abstractions`, `Workspace` (Blazor-редактор), `FormEditor`.
+`src/Mars.Nodes` — `Mars.Nodes.Core` (+ `.Core.Implements`), `Contracts` (wire-DTO нод:
+`NodeTaskJob/`, `Nodes/`, `Hubs/`), `Abstractions`, `Expressions` (резолвер выражений), `Host`,
+`Front.Abstractions` (фронтовый SDK редактора: интерфейсы, компоненты, wire-геометрия),
+`Workspace` (Blazor-редактор), `FormEditor`.
 
 ### tests/
 

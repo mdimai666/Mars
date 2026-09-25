@@ -144,4 +144,28 @@ public class MetaFieldsDuplicateQueryValidatorTests
 
         _validator.Validate(dto).IsValid.Should().BeFalse();
     }
+
+    [Theory]
+    [InlineData("int")]
+    [InlineData("class")]
+    [InlineData("string")]
+    public void Validate_CSharpKeywordKey_Fails(string key)
+    {
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Int, key: key)] };
+
+        var result = _validator.Validate(dto);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("зарезервированное слово C#"));
+    }
+
+    [Theory]
+    [InlineData("var")]
+    [InlineData("record")]
+    [InlineData("value")]
+    public void Validate_ContextualKeywordKey_Passes(string key)
+    {
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Int, key: key)] };
+
+        _validator.Validate(dto).IsValid.Should().BeTrue();
+    }
 }

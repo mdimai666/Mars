@@ -45,7 +45,7 @@ public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuer
                 }
 
                 var ownerContext = new MetaValueValidationContext { ModelName = MetaValueOwnerCatalog.Post, OwnerId = x.Id };
-                foreach (var error in await metaValuesValidator.ValidateJsonAsync(postType.MetaFields, x.Meta, requireAll: false, ownerContext, postType.ContentField()?.Key, cancellationToken))
+                foreach (var error in await metaValuesValidator.ValidateJsonAsync(postType.MetaFields, x.Meta, requireAll: false, ownerContext, cancellationToken))
                     context.AddFailure(nameof(x.Meta), $"поле '{error.FieldKey}': {error.Message}");
             });
 

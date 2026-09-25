@@ -1,10 +1,9 @@
-using System.Dynamic;
 using System.Reflection;
+using DynamicExpresso;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Models;
-using Mars.Nodes.Core.Implements.Models;
-using Mars.SiteEngine.Abstractions.Templators;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 
@@ -25,7 +24,8 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
     {
         if (!Node.Setters.Any()) return Task.CompletedTask;
 
-        var ppt = CreateInterpreter(RNS, input);
+        using var expr = RNS.Expressions(Node);
+        var ppt = expr.GetInterpreter(input);
 
         foreach (var setter in Node.Setters)
         {
@@ -37,103 +37,6 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
         return Task.CompletedTask;
     }
 
-    class ContextPropertyAccesableObject : DynamicObject
-    {
-        private readonly VariablesContextDictionary _dict;
-
-        public ContextPropertyAccesableObject(VariablesContextDictionary dict)
-        {
-            _dict = dict;
-        }
-
-        // установка свойства
-        //public override bool TrySetMember(SetMemberBinder binder, object? value)
-        //{
-        //    if (value is not null)
-        //    {
-        //        members[binder.Name] = value;
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        // получение свойства
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
-        {
-            //result = null;
-            //if (members.ContainsKey(binder.Name))
-            //{
-            //    result = members[binder.Name];
-            //    return true;
-            //}
-            //return false;
-            return _dict.TryGetValue(binder.Name, out result);
-        }
-
-        // вызов метода
-        //public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
-        //{
-        //    result = null;
-        //    if (args?[0] is int number)
-        //    {
-        //        // получаем метод по имен
-        //        dynamic method = members[binder.Name];
-        //        // вызываем метод, передавая его параметру значение args?[0]
-        //        result = method(number);
-        //    }
-        //    // если result не равен null, то вызов метода прошел успешно
-        //    return result != null;
-        //}
-    }
-
-    class ContextVarNodesAccesableObject : DynamicObject
-    {
-        private readonly IReadOnlyDictionary<string, VarNode> _dict;
-
-        public ContextVarNodesAccesableObject(IReadOnlyDictionary<string, VarNode> _varNodesDict)
-        {
-            _dict = _varNodesDict;
-        }
-
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
-        {
-            if (_dict.TryGetValue(binder.Name, out var varNode))
-            {
-                result = varNode.Value;
-                return true;
-            }
-            result = null;
-            return false;
-        }
-    }
-
-    public static XInterpreter CreateInterpreter(IRuntimeNodeScope RNS, NodeMsg input)
-    {
-        return CreateInterpreter(RNS.GlobalContext, RNS.FlowContext, RNS.VarNodesDict, input);
-    }
-
-    public static XInterpreter CreateInterpreter(VariablesContextDictionary globalContext,
-                                                VariablesContextDictionary? flowContext,
-                                                IReadOnlyDictionary<string, VarNode> varNodesDict,
-                                                NodeMsg? input = null)
-    {
-        var globalContextAO = new ContextPropertyAccesableObject(globalContext);
-        var flowContextAO = new ContextPropertyAccesableObject(flowContext ?? new());
-        var varNodexContext = new ContextVarNodesAccesableObject(varNodesDict);
-
-        var executionContext = new Dictionary<string, object>()
-        {
-            [nameof(RNS.GlobalContext)] = globalContextAO,
-            [nameof(RNS.FlowContext)] = flowContextAO,
-            [nameof(VarNode)] = varNodexContext,
-            ["env"] = (string key) => Environment.GetEnvironmentVariable(key),
-        };
-        if (input != null)
-            executionContext["msg"] = new DynamicNodeMsgWrapper(input);
-
-        return new XInterpreter(null, executionContext);
-    }
-
     public static string SmartReplaceArrayInitializer(Type? type, string expression)
     {
         var isPureArrayInit = type?.IsArray ?? false && expression.StartsWith('[') && expression.EndsWith(']');
@@ -142,7 +45,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
         return value;
     }
 
-    public static object? SetExpression(VariableSetExpression setter, XInterpreter ppt, IRuntimeNodeScope RNS, NodeMsg input)
+    public static object? SetExpression(VariableSetExpression setter, Interpreter ppt, IRuntimeNodeScope RNS, NodeMsg input)
     {
         var segments = setter.ValuePath.Split(".");
         var valuePathRoot = segments[0];
@@ -158,18 +61,16 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
                 return new Guid(replaced.Trim('\"'));
             }
             return type is null
-                ? ppt.Get.Eval(replaced)
-                : ppt.Get.Eval(replaced, type);
+                ? ppt.Eval(replaced)
+                : ppt.Eval(replaced, type);
         };
 
         var targetPropertyPath = setter.ValuePath.Substring(valuePathRoot.Length + 1);
 
         if (valuePathRoot == "msg")
         {
-            //var value = calcValue(input.Payload?.GetType());
             var value = calcValue(null);
-            //SetProperty(input, targetPropertyPath, value);
-            var dmsg = ppt.parameters["msg"].Value as DynamicNodeMsgWrapper;
+            var dmsg = new DynamicNodeMsgWrapper(input);
             dmsg.SetValueByPath(targetPropertyPath, value);
             return value;
         }
@@ -344,26 +245,4 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
         }
     }
 #endif
-
-    public static string ReadFieldAsExpression(string value, IRuntimeNodeScope rns, NodeMsg input)
-    {
-        if (value.IsNullOrEmpty()) return value;
-
-        if (value.StartsWith('@'))
-        {
-            var ppt = VariableSetNodeImpl.CreateInterpreter(rns, input);
-            return ppt.Get.Eval<string>(value[1..]);
-        }
-        return value;
-    }
-    public static string ReadFieldAsExpression(string value, XInterpreter ppt)
-    {
-        if (value.IsNullOrEmpty()) return value;
-
-        if (value.StartsWith('@'))
-        {
-            return ppt.Get.Eval<string>(value[1..]);
-        }
-        return value;
-    }
 }

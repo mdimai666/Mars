@@ -39,10 +39,9 @@ internal class MetaValuesGeneratorService : IMetaValuesGeneratorService
 
     public async Task<CreatePostQuery> ApplyAsync(PostTypeDetail postType, CreatePostQuery query, CancellationToken cancellationToken)
     {
-        var contentFieldKey = postType.ContentField()?.Key;
         var generatorFields = postType.MetaFields
             .Select(f => (Field: f, Generator: MetaFieldGeneratorDefinition.FromOptions(f.Options)))
-            .Where(x => x.Generator is not null && x.Field.Type != MetaFieldType.Query && x.Field.Key != contentFieldKey)
+            .Where(x => x.Generator is not null && x.Field.Type != MetaFieldType.Query)
             .ToList();
 
         if (generatorFields.Count == 0) return query;
@@ -93,10 +92,9 @@ internal class MetaValuesGeneratorService : IMetaValuesGeneratorService
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.PostTypeName)
             ?? throw new NotFoundException($"post type '{query.PostTypeName}' not found");
 
-        var contentFieldKey = postType.ContentField()?.Key;
         var generatorFields = postType.MetaFields
             .Select(f => (Field: f, Generator: MetaFieldGeneratorDefinition.FromOptions(f.Options)))
-            .Where(x => x.Generator is not null && x.Field.Type != MetaFieldType.Query && x.Field.Key != contentFieldKey)
+            .Where(x => x.Generator is not null && x.Field.Type != MetaFieldType.Query)
             .ToList();
 
         if (generatorFields.Count == 0) return new RegenerateMetaValuesResult(0, 0);

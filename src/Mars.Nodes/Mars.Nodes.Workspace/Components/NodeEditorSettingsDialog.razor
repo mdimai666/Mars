@@ -1,9 +1,10 @@
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Workspace.Components.SettingsViews
 @using Mars.Contracts.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-@implements IDialogContentComponent<string>
+@implements IDialogContentComponent<NodeEditorSettingsDialogModel>
 
 <FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
     <div class="hstack">
@@ -21,14 +22,16 @@
             </FluentTreeView>
         </aside>
         <div class="settings-content flex-fill">
-            @if (_selectedMenu is not null)
-            {
-                <DynamicComponent Type="_selectedMenu.ComponentView" />
-            }
-            else
-            {
-                <Mars.Admin.Framework.Components.SharedContentNoRecords />
-            }
+            <CascadingValue Value="Content.Editor">
+                @if (_selectedMenu is not null)
+                {
+                    <DynamicComponent Type="_selectedMenu.ComponentView" />
+                }
+                else
+                {
+                    <Mars.Admin.Framework.Components.SharedContentNoRecords />
+                }
+            </CascadingValue>
         </div>
     </div>
 </FluentDialogBody>
@@ -39,9 +42,9 @@
     public FluentDialog Dialog { get; set; } = default!;
 
     [Parameter]
-    public string Content { get; set; } = default!;
+    public NodeEditorSettingsDialogModel Content { get; set; } = default!;
 
-    private string StartMenuName => Content;
+    private string StartMenuName => Content.StartMenuName;
 
     private Task OkAsync() => Dialog.CloseAsync();
 
@@ -75,7 +78,7 @@
         }
     }
 
-    public static void ShowDialog(IDialogService _dialogService, string startMenuName = "")
+    public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor, string startMenuName = "")
     {
         DialogParameters parameters = new()
         {
@@ -88,7 +91,7 @@
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<NodeEditorSettingsDialog>(startMenuName, parameters);
+        _dialogService.ShowDialogAsync<NodeEditorSettingsDialog>(new NodeEditorSettingsDialogModel(startMenuName, editor), parameters);
     }
 
     private class SettingsMenuItem : ITreeViewItem

@@ -78,19 +78,21 @@ public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
     }
 
     [Fact]
-    public void CreateJsonMetaValues_ArrayForNonRelationField_Throws()
+    public void CreateJsonMetaValues_ArrayForNonRelationField_CreatesMultiValues()
     {
         //Arrange
-        var metaField = _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1" };
+        var metaField = _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1", IsMultiple = true };
         var meta = new Dictionary<string, JsonNode>
         {
-            ["str1"] = new JsonArray(JsonValue.Create("a")!),
+            ["str1"] = new JsonArray(JsonValue.Create("a")!, JsonValue.Create("b")!),
         };
 
         //Act
-        var act = () => PostJsonService.CreateJsonMetaValuesToModifyDto(meta, [metaField], "xType");
+        var modified = PostJsonService.CreateJsonMetaValuesToModifyDto(meta, [metaField], "xType");
 
         //Assert
-        act.Should().Throw<InvalidOperationException>();
+        modified.Should().HaveCount(2);
+        modified.Select(s => s.StringShort).Should().Equal("a", "b");
+        modified.Select(s => s.Index).Should().Equal(0, 1);
     }
 }

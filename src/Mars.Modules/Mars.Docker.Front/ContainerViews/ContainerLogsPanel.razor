@@ -1,0 +1,155 @@
+@using Mars.Docker.Front.Services
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
+
+<div class="mt-2">
+    <div class="hstack gap-2 mb-2">
+        <FluentTextField Label="Tail" Style="width: 120px;" @bind-Value="_tailText" />
+        <FluentSwitch Label="Auto refresh" Disabled="@(!_canAutoRefresh)" @bind-Value="_autoRefresh" @bind-Value:after="OnAutoRefreshChanged" />
+        <FluentButton aria-label="refresh logs" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="() => LoadLogs()" />
+    </div>
+
+    @if (_busy)
+    {
+        <FluentProgressRing />
+    }
+    else if (_error is not null)
+    {
+        <div class="alert alert-warning fz14px">@_error</div>
+    }
+    else if (string.IsNullOrEmpty(_stdout) && string.IsNullOrEmpty(_stderr))
+    {
+        <div class="docker-logs-empty">No output yet.</div>
+    }
+    else
+    {
+        <pre class="docker-logs">@(_stdout + _stderr)</pre>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string ContainerId { get; set; } = default!;
+    [Parameter] public string? ContainerState { get; set; }
+    [Parameter] public int ReloadToken { get; set; }
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    const int AutoRefreshIntervalSeconds = 3;
+
+    string _tailText = "500";
+    bool _busy;
+    string _stdout = "";
+    string _stderr = "";
+    string? _error;
+    bool _autoRefresh;
+    bool _canAutoRefresh;
+    CancellationTokenSource? _autoCts;
+    string? _lastContainerId;
+    int _lastReloadToken = -1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _lastContainerId = ContainerId;
+        _lastReloadToken = ReloadToken;
+        await LoadLogs();
+        UpdateAutoRefreshState();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ContainerId != _lastContainerId || ReloadToken != _lastReloadToken)
+        {
+            _lastContainerId = ContainerId;
+            _lastReloadToken = ReloadToken;
+            await LoadLogs();
+        }
+
+        UpdateAutoRefreshState();
+    }
+
+    void UpdateAutoRefreshState()
+    {
+        var canAuto = ContainerState == "running";
+        if (canAuto == _canAutoRefresh)
+        {
+            return;
+        }
+
+        _canAutoRefresh = canAuto;
+        if (!canAuto && _autoRefresh)
+        {
+            _autoRefresh = false;
+            StopAutoLoop();
+        }
+    }
+
+    void OnAutoRefreshChanged()
+    {
+        if (_autoRefresh && _canAutoRefresh)
+        {
+            StartAutoLoop();
+        }
+        else
+        {
+            StopAutoLoop();
+        }
+    }
+
+    void StartAutoLoop()
+    {
+        StopAutoLoop();
+        _autoCts = new CancellationTokenSource();
+        _ = AutoLoopAsync(_autoCts.Token);
+    }
+
+    void StopAutoLoop()
+    {
+        _autoCts?.Cancel();
+        _autoCts?.Dispose();
+        _autoCts = null;
+    }
+
+    async Task AutoLoopAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(AutoRefreshIntervalSeconds));
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                await LoadLogs(silent: true);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    public async Task LoadLogs(bool silent = false)
+    {
+        if (!silent)
+        {
+            _busy = true;
+        }
+
+        _error = null;
+        try
+        {
+            var tail = int.TryParse(_tailText, out var parsed) && parsed > 0 ? parsed : 500;
+            var logs = await client.Docker().GetLogs(ContainerId, tail);
+            _stdout = logs.Stdout;
+            _stderr = logs.Stderr;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+
+        if (!silent)
+        {
+            _busy = false;
+        }
+    }
+}

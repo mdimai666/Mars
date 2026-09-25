@@ -2,10 +2,10 @@ using System.Text.Json;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Mars.Contracts.Common;
+using Mars.Nodes.Contracts.NodeTaskJob;
+using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.WebApiClient.Implements;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +47,22 @@ internal class NodeServiceClient : INodeServiceClient
     public Task<UserActionResult> Inject(string nodeId)
         => _client.Request($"{_basePath}{_controllerName}", "Inject", nodeId)
                     .GetJsonAsync<UserActionResult>();
+
+    public Task<UserActionResult> SetDebugMode(bool enabled)
+        => _client.Request($"{_basePath}{_controllerName}", "SetDebugMode")
+                    .AppendQueryParam("enabled", enabled)
+                    .PostAsync()
+                    .ReceiveJson<UserActionResult>();
+
+    public Task<NodeDebugSnapshotsResponse> DebugSnapshots(IReadOnlyCollection<string> nodeIds)
+        => _client.Request($"{_basePath}{_controllerName}", "DebugSnapshots")
+                    .SetQueryParam("nodeIds", string.Join(',', nodeIds))
+                    .GetJsonAsync<NodeDebugSnapshotsResponse>();
+
+    public Task<NodeDebugFullResponse> DebugNodeFull(string nodeId, bool includeJson = false)
+        => _client.Request($"{_basePath}{_controllerName}", "DebugNodeFull", nodeId)
+                    .SetQueryParam("includeJson", includeJson)
+                    .GetJsonAsync<NodeDebugFullResponse>();
 
     public Task<NodesDataResponse> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")

@@ -51,42 +51,12 @@ public class PostTypeQueryValidatorTests
         => new(Substitute.For<IMetaModelTypesLocator>());
 
     [Fact]
-    public async Task ContentFeature_NoContentField_Fails()
+    public async Task ContentFeature_NoMetaField_Passes()
     {
         var query = Query([PostTypeConstants.Features.Content], Field(MetaFieldType.String, "title"));
 
         var result = await Validator().ValidateAsync(query);
 
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(query.MetaFields));
-    }
-
-    [Fact]
-    public async Task ContentFeature_ContentFieldWrongType_Fails()
-    {
-        var query = Query([PostTypeConstants.Features.Content], Field(MetaFieldType.Int, FeatureFieldsCatalog.ContentFieldKey));
-
-        var result = await Validator().ValidateAsync(query);
-
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(query.MetaFields));
-    }
-
-    [Fact]
-    public async Task ContentFeature_ContentFieldText_Passes()
-    {
-        var query = Query([PostTypeConstants.Features.Content], Field(MetaFieldType.Text, FeatureFieldsCatalog.ContentFieldKey));
-
-        var result = await Validator().ValidateAsync(query);
-
-        result.IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task ContentFeatureDisabled_NoContentField_Passes()
-    {
-        var query = Query([], Field(MetaFieldType.String, "title"));
-
-        var result = await Validator().ValidateAsync(query);
-
-        result.IsValid.Should().BeTrue();
+        result.IsValid.Should().BeTrue("контент — системный слот, полей типа он не требует");
     }
 }

@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Mappings.Posts;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
@@ -13,6 +14,7 @@ using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
+using Mars.Forms.Abstractions;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
@@ -29,6 +31,7 @@ internal class PostService : IPostService
     private readonly IValidatorFactory _validatorFactory;
     private readonly IPostTransformer _postTransformer;
     private readonly IMetaValuesGeneratorService _metaValuesGenerator;
+    private readonly IFormDefinitionNormalizer _formNormalizer;
 
     public PostService(
         IPostRepository postRepository,
@@ -37,7 +40,8 @@ internal class PostService : IPostService
         IRequestContext requestContext,
         IValidatorFactory validatorFactory,
         IPostTransformer postTransformer,
-        IMetaValuesGeneratorService metaValuesGenerator)
+        IMetaValuesGeneratorService metaValuesGenerator,
+        IFormDefinitionNormalizer formNormalizer)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
@@ -46,6 +50,7 @@ internal class PostService : IPostService
         _validatorFactory = validatorFactory;
         _postTransformer = postTransformer;
         _metaValuesGenerator = metaValuesGenerator;
+        _formNormalizer = formNormalizer;
     }
 
     public Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -87,7 +92,6 @@ internal class PostService : IPostService
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
         if (postType is not null)
         {
-            query = StripContentFieldValue(query, postType);
             query = await _metaValuesGenerator.ApplyAsync(postType, query, cancellationToken);
         }
 
@@ -125,10 +129,8 @@ internal class PostService : IPostService
         for (var suffix = 2; await _postRepository.ExistAsync(typeName, slug, cancellationToken); suffix++)
             slug = $"{baseSlug}-{suffix}";
 
-        var contentField = postType.ContentField();
         var metaValues = postType.MetaFields
                                  .Where(mf => mf.Type != MetaFieldType.Query)
-                                 .Where(mf => contentField is null || mf.Key != contentField.Key)
                                  .Where(mf => !mf.Disabled)
                                  .Where(mf => !mf.IsMultiple) // множественные — бланк из нуля строк
                                  .Select(mf => ModifyMetaValueDetailQuery.GetBlank(mf))
@@ -157,10 +159,6 @@ internal class PostService : IPostService
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
-        var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
-        if (postType is not null)
-            query = StripContentFieldValue(query, postType);
-
         await _postRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, renderContent: false, cancellationToken);
 
@@ -168,28 +166,6 @@ internal class PostService : IPostService
         _eventManager.TriggerEvent(payload);
 
         return updated;
-    }
-
-    /// <summary>
-    /// Значения поля контента фичи не хранятся в мета-значениях (значение — колонка
-    /// posts.Content): присланные строки такого поля отбрасываются на общем пути записи.
-    /// </summary>
-    static CreatePostQuery StripContentFieldValue(CreatePostQuery query, PostTypeDetail postType)
-    {
-        var contentField = postType.ContentField();
-        if (contentField is null) return query;
-
-        var values = query.MetaValues.Where(v => v.MetaFieldId != contentField.Id).ToList();
-        return values.Count == query.MetaValues.Count ? query : query with { MetaValues = values };
-    }
-
-    static UpdatePostQuery StripContentFieldValue(UpdatePostQuery query, PostTypeDetail postType)
-    {
-        var contentField = postType.ContentField();
-        if (contentField is null || query.MetaValues is null) return query;
-
-        var values = query.MetaValues.Where(v => v.MetaFieldId != contentField.Id).ToList();
-        return values.Count == query.MetaValues.Count ? query : query with { MetaValues = values };
     }
 
     public async Task<PostSummary> Delete(Guid id, CancellationToken cancellationToken)
@@ -229,13 +205,14 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
+            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields) };
         }
 
         return new()
         {
             Post = post.ToResponse(),
-            PostType = postType.ToResponse()
+            PostType = postType.ToResponse(),
+            Form = PostFormBuilder.Build(postType, _formNormalizer),
         };
     }
 
@@ -247,13 +224,14 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
+            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields) };
         }
 
         return Task.FromResult<PostEditViewModel>(new()
         {
             Post = post.ToResponse(),
-            PostType = postType.ToResponse()
+            PostType = postType.ToResponse(),
+            Form = PostFormBuilder.Build(postType, _formNormalizer),
         });
     }
 

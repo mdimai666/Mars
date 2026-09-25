@@ -1,0 +1,58 @@
+@using Mars.Admin.Pages.PostTypeViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Cms.Contracts.PostTypes
+@using Mars.Forms.Contracts
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Доменные настройки системного слота в общем редакторе определений: строки статусов типа
+   и язык редактора кода. Всё остальное (редактор, правила) — общие параметры определения,
+   правит сам редактор. *@
+
+@if (Model is not null && Definition.Key == SystemFieldsCatalog.Status)
+{
+    <div class="vstack">
+        <label>Статусы</label>
+        <PostStatusesEditor Statuses="Model.PostStatusList" OnChanged="OnStatusesChangedAsync" />
+    </div>
+}
+
+@if (Model is not null && Definition.Editor == FormEditorCatalog.Code)
+{
+    <div class="vstack">
+        <label>Язык кода</label>
+        <FluentSelect TOption="string" Width="250px"
+                      Value="@CodeLang" ValueChanged="SetCodeLangAsync">
+            <FluentOption TOption="string" Value="">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
+            @foreach (var lang in CodeEditor2.Language.Array)
+            {
+                <FluentOption TOption="string" Value="@lang">@lang</FluentOption>
+            }
+        </FluentSelect>
+    </div>
+}
+
+@code {
+    /// <summary>Скоуп панели в <c>IFormFieldTypeSettingsLocator</c>: системные поля типа поста</summary>
+    public const string Scope = "post.systemfields";
+
+    [Parameter, EditorRequired] public FormFieldDefinition Definition { get; set; } = default!;
+
+    /// <summary>Правка доменной части источника — строка редактора перечитывает определение</summary>
+    [Parameter] public EventCallback<FormFieldDefinition> OnSourceChanged { get; set; }
+
+    /// <summary>Источник определений системных слотов — модель типа поста (её <c>SystemFields</c>)</summary>
+    PostTypeEditModel? Model => Definition.Source as PostTypeEditModel;
+
+    string CodeLang => SystemFieldsCatalog.CodeLang(Definition.Key, Model?.SystemFields);
+
+    Task OnStatusesChangedAsync() => OnSourceChanged.InvokeAsync(Definition);
+
+    async Task SetCodeLangAsync(string value)
+    {
+        if (Model is not { } model) return;
+
+        model.SetSystemFieldCodeLang(Definition.Key, value);
+        await OnSourceChanged.InvokeAsync(Definition);
+    }
+}

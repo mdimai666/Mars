@@ -27,6 +27,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.CodeCompletion.Contracts\Mars.CodeCompletion.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

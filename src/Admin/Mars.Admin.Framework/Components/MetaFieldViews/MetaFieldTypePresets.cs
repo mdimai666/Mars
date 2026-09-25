@@ -1,4 +1,5 @@
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Contracts;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
@@ -26,12 +27,12 @@ public static class MetaFieldTypePresets
     [
         new("text", "Текст", MetaFieldType.String, GroupText),
         new("longtext", "Длинный текст", MetaFieldType.Text, GroupText),
-        new("color", "Цвет", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Color),
-        new("url", "Ссылка", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Url),
-        new("email", "Email", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Email),
-        new("wysiwyg", "Текст (WYSIWYG)", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.Wysiwyg),
-        new("blockeditor", "Текст (Editor.js)", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.BlockEditor),
-        new("code", "Код", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.Code, CodeLang: MetaFieldEditorCatalog.DefaultCodeLang),
+        new("color", "Цвет", MetaFieldType.String, GroupText, FormEditorCatalog.Color),
+        new("url", "Ссылка", MetaFieldType.String, GroupText, FormEditorCatalog.Url),
+        new("email", "Email", MetaFieldType.String, GroupText, FormEditorCatalog.Email),
+        new("wysiwyg", "Текст (WYSIWYG)", MetaFieldType.Text, GroupText, FormEditorCatalog.Wysiwyg),
+        new("blockeditor", "Текст (Editor.js)", MetaFieldType.Text, GroupText, FormEditorCatalog.BlockEditor),
+        new("code", "Код", MetaFieldType.Text, GroupText, FormEditorCatalog.Code, CodeLang: FormEditorCatalog.DefaultCodeLang),
 
         new("number", "Число", MetaFieldType.Int, GroupNumber),
         new("longnumber", "Большое число", MetaFieldType.Long, GroupNumber),
@@ -41,9 +42,9 @@ public static class MetaFieldTypePresets
         new("select", "Выбор из списка", MetaFieldType.Select, GroupChoice),
         new("selectmany", "Множественный выбор", MetaFieldType.SelectMany, GroupChoice),
 
-        new("datetime", "Дата и время", MetaFieldType.DateTime, GroupDate, MetaFieldEditorCatalog.DateTime),
-        new("date", "Дата", MetaFieldType.DateTime, GroupDate, MetaFieldEditorCatalog.Date),
-        new("time", "Время", MetaFieldType.DateTime, GroupDate, MetaFieldEditorCatalog.Time),
+        new("datetime", "Дата и время", MetaFieldType.DateTime, GroupDate, FormEditorCatalog.DateTime),
+        new("date", "Дата", MetaFieldType.DateTime, GroupDate, FormEditorCatalog.Date),
+        new("time", "Время", MetaFieldType.DateTime, GroupDate, FormEditorCatalog.Time),
 
         new("relation", "Связь", MetaFieldType.Relation, GroupRelation),
         new("relationmulti", "Несколько связей", MetaFieldType.Relation, GroupRelation, IsMultiple: true),

@@ -15,7 +15,7 @@ public class EditUserPageTests : BaseE2ETests
     {
     }
 
-    [IntegrationFact(Skip = SkipE2ETests)]
+    [E2EFact]
     public async Task EditUserPage_UpdateFields_Persists()
     {
         // Arrange

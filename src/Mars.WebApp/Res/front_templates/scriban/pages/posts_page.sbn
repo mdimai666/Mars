@@ -1,0 +1,43 @@
+@page "/posts"
+
+{{ context '
+page == int.Parse(_req.Query["page"]??"1")
+table = ef.post.OrderByDescending(CreatedAt).Table(page,10)
+posts == table.Items
+' }}
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+        {{ for post in posts }}
+        <div class="col">
+            <div class="card mb-3 h-100 position-relative">
+                <div class="row g-0 h-100">
+                    <div class="col-md-4">
+                        <img src="img/image_placeholder.svg" class="img-fluid rounded-start h-100" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.Title }}</h5>
+                            <p class="card-text">
+                                {{ text_excerpt post.Content 60 }}
+                            </p>
+                            <p class="card-text">
+                                <small class="text-body-secondary">
+                                    {{ date_format post.CreatedAt 'dd/MM/yyyy HH:mm' }}
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <a href="posts/{{ post.Slug }}" class="stretched-link"></a>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+    <div class="my-4">
+        {{ paginator = table.Paginator }}
+        {{ url = '/posts' }}
+        {{ include 'blocks/paginator1' }}
+    </div>
+
+</div>

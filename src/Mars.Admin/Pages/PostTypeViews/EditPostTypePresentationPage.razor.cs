@@ -31,6 +31,16 @@ public partial class EditPostTypePresentationPage
         _ = _viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
     }
 
+    /// <summary>
+    /// Сброс раскладки формы: дерево по умолчанию собирает провайдер на сервере,
+    /// поэтому дизайнеру подменяем определение (сохранится null-раскладка).
+    /// </summary>
+    async Task ResetFormLayoutAsync(PostTypePresentationEditModel model)
+    {
+        model.FormDefinition = await _client.PostType.GetFormDefinition(model.Id, saved: false);
+        StateHasChanged();
+    }
+
     private async Task HandleOnMenuListViewTemplateChanged(MenuChangeEventArgs args)
     {
         if (args.Id == "open_presentation_template")

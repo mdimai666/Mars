@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Connections;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ExecXActionNode/ExecXActionNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/ExecXActionNode/ExecXActionNode{.lang}.md")]
 [Display(GroupName = "connections")]
 public class ExecXActionNode : Node
 {

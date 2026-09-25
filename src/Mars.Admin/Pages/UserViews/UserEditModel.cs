@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Pages.UserTypeViews;
+using Mars.Forms.Contracts;
 using Mars.Contracts.Resources;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
@@ -54,6 +55,9 @@ public class UserEditModel
     public string AvatarUrl { get; set; } = "";
 
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
+
+    /// <summary>Дерево формы метаполей владельца (общий слой Mars.Forms)</summary>
+    public FormDefinition? Form { get; set; }
     public UserTypeEditModel UserType { get; init; } = new();
 
     public IReadOnlyCollection<RoleSummaryResponse> AvailRoles { get; init; } = [];
@@ -136,7 +140,11 @@ public class UserEditModel
         };
 
     public static UserEditModel FromViewModel(UserEditViewModel vm)
-        => ToModel(vm.User, vm.AvailRoles, vm.UserType);
+    {
+        var model = ToModel(vm.User, vm.AvailRoles, vm.UserType);
+        model.Form = vm.Form;
+        return model;
+    }
 
     public static UserEditModel ToModel(UserEditResponse response, IEnumerable<RoleSummaryResponse> roles, UserTypeDetailResponse userType)
             => new()

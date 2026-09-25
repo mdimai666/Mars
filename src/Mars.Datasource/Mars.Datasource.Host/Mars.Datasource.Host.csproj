@@ -5,21 +5,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
 		<ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
-		<ProjectReference Include="..\Mars.Datasource\Mars.Datasource.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
-		<ProjectReference Include="..\Mars.Datasource.Host.MsSQL\Mars.Datasource.Host.MsSQL.csproj" />
-		<ProjectReference Include="..\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />
-		<ProjectReference Include="..\Mars.Datasource.Host.PostgreSQL\Mars.Datasource.Host.PostgreSQL.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>Mars.Datasource.Integration.Tests</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Mars.Datasource.Tests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 

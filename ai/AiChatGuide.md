@@ -21,8 +21,8 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 | Проект | Назначение |
 |---|---|
-| `Mars.AiChat.Shared` | Чистые DTO/опции, общие для фронта и хоста: `AiChatOption`, `AiProviderConnection`, `AiChatMessageDto`, события `AiChatHubEvents` |
-| `Mars.AiChat.Host.Shared` | Серверные интерфейсы (`IAiChatSessionStore`, `IAiChatClientFactory`, `IAiChatRunCoordinator`) и модель `AiChatSessionState` — для внешнего переиспользования |
+| `Mars.AiChat.Contracts` | Wire-DTO/опции, общие для фронта и хоста: `AiChatOption`, `AiProviderConnection`, `AiChatMessageDto`, события `AiChatHubEvents` |
+| `Mars.AiChat.Abstractions` | Серверные интерфейсы (`IAiChatSessionStore`, `IAiChatClientFactory`, `IAiChatRunCoordinator`) и модель `AiChatSessionState` — для внешнего переиспользования |
 | `Mars.AiChat.Host` | Бэкенд: контроллер, SignalR-хаб, координатор запусков, harness-сервис агента, инструменты |
 | `Mars.AiChat.Front` | Blazor RCL: контейнер в `App.razor`, терминал, форма настроек подключений, SignalR-клиент |
 
@@ -53,7 +53,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 ### Подключения к ИИ-сервисам
 
-Опция `AiChatOption` (`Mars.AiChat.Shared/Options`), форма в админке: Настройки → «ИИ-чат (агент)».
+Опция `AiChatOption` (`Mars.AiChat.Contracts/Options`), форма в админке: Настройки → «ИИ-чат (агент)».
 
 - `AiProviderType`: `OpenAI`, `Qwen` (DashScope compatible-mode), `DeepSeek`, `Ollama`, `Custom`.
 - Пустой endpoint → значение по умолчанию (`AiProviderTypeExtensions.GetDefaultEndpoint`).
@@ -145,6 +145,7 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/e
 - `-p` — контекст страницы: по нему срабатывает `PageSkillRouter` (preload скиллов) и включаются
   page-зависимые тулсеты (файлы фронта);
 - `--skills` / `--access` — A/B-флаги (тулсет скиллов и рабочая папка file_access_*), по умолчанию on;
+- сабкоманда не принимает глобальные флаги сервера (`--local` и т.п.) — она и так выполняется in-process;
 - веб-сервер не стартует; инструменты page bridge (GetOpenPage*) без открытого браузера ждут таймаут
   (~20 с) и возвращают ошибку, остальные (файлы фронта, память, SQL, HTTP) работают;
 - использовать для A/B-проверок промптов/тулзов и воспроизведения багов: сборка → прогон → виден
@@ -174,13 +175,20 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/e
 2. В `OnAfterRender(firstRender)` кладёт себя в `AiChatPageHandlerHolder.Current`,
    в `Dispose()` — снимает (паттерн тот же, что у `AiChatAppService.Setup`).
 
-Нюансы `EditPostView`:
+Нюансы `EditPostView` (хендлер целиком в partial-файле `EditPostView.AiChat.cs`):
 
-- Контент читается из активного редактора (`blockEditor1.ContentJson` / `codeEditor1.GetValue()` /
-  `editor1.GetHTML()`), для ИИ дополнительно отдаётся `contentText` (plain-text извлечение).
-- Запись контента — через экземпляр редактора, не через модель: BlockEditor получает Editor.js JSON
-  (текст бьётся на абзацы, `BuildBlockEditorJson`), Code — `SetValue`, PlainText — в модель.
-  WYSIWYG пока не поддерживается на запись (нет публичного сеттера).
+- Поля — дескрипторы общей формы (`Mars.Forms`): `GetInfo` отдаёт по каждому полю
+  тип/кратность/обязательность/readOnly/варианты/редактор + `imageFieldKey` и признак фичи
+  PostImage; `GetFields` — значения через `PostFormValueStore` (системные поля плоско,
+  метаполя — объектом `meta`; Select — ключ варианта, ссылки — Guid, пустая ссылка — null).
+- Тяжёлые редакторы (WYSIWYG, код, блочный) держат значение у себя: перед чтением полей
+  выполняется `FormCommitHooks.CommitAllAsync`, запись идёт в экземпляр редактора через
+  `FormLiveEditors.Find(key)`. WYSIWYG на запись не поддерживается (нет публичного сеттера);
+  тяжёлый редактор без live-регистрации — «ещё не инициализирован».
+- `SetField` — единый путь для системных слотов и метаполей: дескриптор из формы →
+  ReadOnly-отказ → live-редактор → `FormValueText.TryToClr` (парсинг строки по типу:
+  числа/даты invariant, Select — ключ варианта с валидацией, ссылки — Guid, множественные —
+  JSON-массив или CSV) → `SetValue`/`SetList` стора.
 - `SetOpenPageField` меняет форму БЕЗ сохранения (пользователь проверяет и жмёт «Сохранить»);
   `SaveOpenPage` — только по явной просьбе (правило задано в промпте).
 - Контекст «какая страница открыта» передаётся в send-запросе (`PageContext` = относительный URL)
@@ -277,24 +285,55 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 окружение, `IsRunningInDocker` и `IsPM2`, часовые поясы, аптайм и память. Реализация ничего не детектит сама —
 использует `IMarsSystemService` (`AboutSystem()`), поэтому источник данных тот же, что у страницы «Настройки → О системе».
 
-### Посты (создание без страницы)
+### Посты (серверные инструменты без страницы)
 
-`Mars.AiChat.Host/Tools/MarsPostTools.cs` — инструменты `CreatePost` / `GetPost` / `ListPosts`, работают через
-`IPostService` напрямую (страница не нужна). Экземпляр создаётся на каждый запуск с `userId` владельца чата —
-он становится автором поста.
+`Mars.AiChat.Host/Tools/MarsPostTools.cs` — инструменты `DescribePostType` / `CreatePost` /
+`GetPost` / `ListPosts` / `UpdatePost`, работают через JSON-путь CMS `IPostJsonService`
+(метаполя несёт целиком, поэтому серверный update безопасен для значений полей) и
+`IMetaModelTypesLocator` (определения типов). Экземпляр создаётся на каждый запуск с `userId`
+владельца чата — он становится автором новых постов (при update сохраняется исходный автор).
 
-- `CreatePost(type, title, contentText, tagsCsv, excerpt)`:
-  - редактор контента берётся из `IPostService.GetEditModelBlank(type)` (`PostType.ContentEditorKey()` —
-    редактор поля контента фичи «Контент»);
-  - текст адаптируется под редактор: BlockEditor → Editor.js JSON (абзацы, `BuildBlockEditorJson`),
-    WYSIWYG → `<p>…</p>`, обычный текст/код → как есть;
-  - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус — черновик;
+- `DescribePostType(type)` — discovery перед записью: фичи, статусы (slug), редактор контента,
+  `imageFieldKey`, дескрипторы метаполей (ключ/тип/кратность/обязательность/readOnly/варианты Select).
+- `CreatePost(type, title, contentText, tagsCsv, excerpt, metaJson, status)`:
+  - редактор контента берётся из `IPostService.GetEditModelBlank(type)` — ключ редактора системного
+    слота `content` читается **из дескриптора формы**; текст адаптируется (`AdaptContent`):
+    BlockEditor → Editor.js JSON (абзацы), WYSIWYG → `<p>…</p>`, обычный текст/код → как есть;
+  - `metaJson` — JSON-объект «ключ поля: значение», нормализуется `MetaJsonNormalizer`
+    (`Tools/MetaJsonNormalizer.cs`): терпимый вход модели → строгая форма JSON-пути
+    (числа/даты из строк, Select — ключ варианта → Guid, SelectMany — CLR-узел `Guid[]`
+    в обход wire-ограничения JSON-API, множественные — массив или CSV); скаляры выдаются
+    wire-узлами `JsonNode.Parse` — CLR-узлы `GetValue<T>` не конвертирует;
+  - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус по умолчанию резолвит JSON-сервис;
   - в ответе агенту возвращается ссылка на страницу редактирования `/EditPost/{type}/{id}`.
-- `GetPost(id)` и `ListPosts(type, take)` — чтение; контент отдаётся и «как хранится», и plain-text (`ExtractPlainText`).
+- `UpdatePost(postId, title?, contentText?, tagsCsv?, excerpt?, status?, metaJson?)` —
+  read-modify-write в одном вызове: `GetDetail(renderContent:false)` → патч только переданных
+  полей (пустая строка = не менять, `-` = очистить теги/анонс; метаполя — только ключи патча,
+  остальные значения сервер смержит сам) → `UpdatePostJsonQuery`; last-write-wins (в описании
+  инструмента и скилле — правило «сначала прочитай»).
+- `GetPost(id)` — значения метаполей (`meta` компактно: варианты — key/title, файлы — id/name/url),
+  excerpt/lang, `imageFieldKey`, контент «как хранится» + plain-text (`ExtractPlainText`);
+  `ListPosts(type, take)` — список.
+- Create/Update уведомляют админку через `ChatHub` `PostListChanged` (грид постов обновляется).
 
-Обновление существующего поста сознательно не делается серверным инструментом (полный `UpdatePostQuery`
-затирал бы метаполя): редактирование идёт через мост открытой страницы (`SetOpenPageField`),
-а «создать» и «прочитать» — серверными инструментами.
+Правка поста при открытой странице приоритетнее серверного UpdatePost (правило скилла
+`mars-posts`): изменения через мост попадают в форму, пользователь их видит и сам сохраняет.
+Форматы metaJson и рецепт картинки поста — в скилле (`ai-skills/mars-posts/SKILL.md`).
+
+Инварианты и грабли (история инициативы — `git show 97a5f3f9:ai/AiChatMetaFieldsPlan.md`):
+
+- JSON-путь CMS остаётся строгим; терпимость к форматам входа модели — задача только
+  `MetaJsonNormalizer`. `FormValueText` (парсер моста открытой страницы) на серверном
+  JSON-пути не использовать — каноны wire-форм различаются (decimal: строка vs число;
+  Select: ключ варианта vs Guid).
+- Выходные узлы нормализатора — wire-based (`JsonNode.Parse`): `JsonValue.GetValue<T>()`
+  не конвертирует CLR-узла (`JsonValue.Create("guid")` → InvalidOperationException).
+  Исключение — SelectMany: CLR-узел `JsonValue(Guid[])`, единственная форма, которую
+  `MetaValueFromJson` читает как массив вариантов (wire-массив SelectMany — известный
+  пробел JSON-API, бэклог в `ai/MetaFieldsGuide.md`).
+- Тесты: `tests/Mars.AiChat.Tests` (нормализатор, round-trip через `MetaValueFromJson`),
+  `tests/Mars.Cms.Tests` (`MetaFieldUtils`), PostJson-интеграция —
+  `tests/Mars.WebApiClient.Integration.Tests/Tests/PostJsons/`.
 
 ### SQL-базы (MarsSqlTools)
 
@@ -329,11 +368,11 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 ### Файлы фронта (MarsFrontFilesTools)
 
 `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs` — ИИ правит файлы фронта (Handlebars-шаблоны сайта)
-из редактора фронта (Фаза 6 фронт-рефакторинга, `ai/FrontReworkPlan.md`). Инструменты:
+из редактора фронта (фронт-рефакторинг, `ai/FrontsGuide.md`). Инструменты:
 `ListFrontFiles` (дерево файлов), `ReadFrontFile`, `WriteFrontFile` (создаёт/заменяет файл вместе
 с папками), `CreateFrontFile` (пустой файл/папка), `RenameFrontFile` (атомарное переименование/перемещение),
 `DeleteFrontFile`. Работают через `IFrontFilesService`
-(`Mars.Host.Shared/Services`, реализация `FrontFilesService` в `Mars.WebApp/Services`) — защита путей
+(`Mars.SiteEngine.Abstractions/Services`, реализация `FrontFilesService` в `Mars.SiteEngine.Host/Services`) — защита путей
 (только относительные, без выхода за корень фронта) наследуется; ошибки возвращаются модели строкой.
 
 Особенности подключения:
@@ -410,7 +449,7 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 ## Как добавить новое событие сервер → клиент
 
-1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
+1. Константа в `Mars.AiChat.Contracts/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
 2. Отправка в `AiChatAgentService`: `SendCoreAsync(group, AiChatHubEvents.Xxx, [chatId, runId, ...])`.
 3. Подписка в `Mars.AiChat.Front/Services/AiChatHubClient.cs`: `connection.On<...>` + событие.
 4. Обработка в `AiChatTerminal.razor.cs` (подписка в `SubscribeHub`, отписка в `Dispose`).
@@ -419,8 +458,10 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 ## Как развивать агента (roadmap-идеи)
 
-Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
-мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу),
+Реализовано: настройки сайта и любые опции, информация о системе, посты (описание типа,
+создание/чтение/список/обновление с метаполями и картинкой — см. «Посты»),
+мост открытой страницы редактирования поста (все поля формы, включая метаполя, status/lang;
+сохранение по запросу),
 SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
 файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`),
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
@@ -430,8 +471,6 @@ SQL-доступ к базам (схема/чтение/запись через 
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
 
-- **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
-  (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.
 - **WYSIWYG-контент**: запись пока не поддерживается (нет публичного сеттера у `WysiwygEditor`);
   добавить `SetHTML` и подключить в `SetContentValue`.
 - **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).

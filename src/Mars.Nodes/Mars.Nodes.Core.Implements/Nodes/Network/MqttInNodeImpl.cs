@@ -9,6 +9,8 @@ using MQTTnet;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;
 
+[NodeOutputValueSpec(typeof(string))]
+[NodeOutputValueSpec(typeof(MqttNodeMessagePayload), Name = nameof(MqttNodeMessagePayload))]
 public class MqttInNodeImpl : INodeImplement<MqttInNode>
 {
     public MqttInNode Node { get; }
@@ -37,7 +39,7 @@ public class MqttInNodeImpl : INodeImplement<MqttInNode>
     {
         _logger.LogTrace("Execute");
 
-        var mqttMessage = input.Get<MqttNodeMessagePaylad>();
+        var mqttMessage = input.Get<MqttNodeMessagePayload>();
 
         input.Payload = mqttMessage.Payload;
 
@@ -46,7 +48,7 @@ public class MqttInNodeImpl : INodeImplement<MqttInNode>
     }
 }
 
-public class MqttNodeMessagePaylad
+public class MqttNodeMessagePayload
 {
     public string? ContentType { get; set; }
     public bool Dup { get; set; }
@@ -60,12 +62,12 @@ public class MqttNodeMessagePaylad
 
     byte[] _payloadBytes = [];
 
-    public MqttNodeMessagePaylad()
+    public MqttNodeMessagePayload()
     {
 
     }
 
-    public MqttNodeMessagePaylad(MqttApplicationMessage message)
+    public MqttNodeMessagePayload(MqttApplicationMessage message)
     {
         ContentType = message.ContentType;
         Dup = message.Dup;

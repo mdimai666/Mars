@@ -8,9 +8,10 @@ public interface IFrontServiceClient
     Task<IReadOnlyCollection<FFrontEngineResponse>> Engines();
 
     /// <summary>
-    /// Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
+    /// Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных)
+    /// с движком шаблона.
     /// </summary>
-    Task<IReadOnlyCollection<string>> FrontTemplates();
+    Task<IReadOnlyCollection<FFrontTemplateResponse>> FrontTemplates();
     Task<FFrontTreeNodeResponse> FrontTree(string slug);
     Task<IReadOnlyCollection<FFrontPageResponse>> FrontPages(string slug);
     Task<FFrontFileContentResponse> ReadFrontFile(string slug, string relPath);

@@ -1,5 +1,6 @@
 using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Dto.Auth;
@@ -161,7 +162,10 @@ internal class UserService : IUserService
         {
             User = user.ToResponse(),
             UserType = user.UserTypeDetail.ToResponse(),
-            AvailRoles = availRoles.ToResponse()
+            AvailRoles = availRoles.ToResponse(),
+            Form = MetaFieldsFormBuilder.Build(
+                MetaFieldsFormBuilder.UserOwnerModel(user.UserTypeDetail.TypeName),
+                user.UserTypeDetail.MetaFields),
         };
     }
 
@@ -182,7 +186,10 @@ internal class UserService : IUserService
         {
             User = user.ToResponse(),
             UserType = userType.ToResponse(),
-            AvailRoles = availRoles.ToResponse()
+            AvailRoles = availRoles.ToResponse(),
+            Form = MetaFieldsFormBuilder.Build(
+                MetaFieldsFormBuilder.UserOwnerModel(userType.TypeName),
+                userType.MetaFields),
         };
     }
 
@@ -268,10 +275,6 @@ internal class UserService : IUserService
         //user.AvatarUrl = profile.AvatarUrl;
 
         //user.About = profile.About;
-
-        //user.GeoRegionId = profile.GeoRegionId;
-        //user.GeoMunicipalityId = profile.GeoMunicipalityId;
-        //user.GeoLocationId = profile.GeoLocationId;
 
         //var metaFields = UserMetaFields(ef);
 

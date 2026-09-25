@@ -77,6 +77,7 @@ public class WebTemplateService : IWebTemplateService
             _watcher.Error += OnError;
 
             _watcher.Filters.Add("*.hbs");
+            _watcher.Filters.Add("*.sbn");
             _watcher.Filters.Add("*.css");
             _watcher.Filters.Add("*.js");
             _watcher.Filters.Add("*.resx");
@@ -161,7 +162,7 @@ public class WebTemplateService : IWebTemplateService
 
     void UpdateFile(string path, WatcherChangeTypes changeType)
     {
-        _debouncer.Debouce(() => { _updateFile(path, changeType); });
+        _debouncer.Debounce(() => { _updateFile(path, changeType); });
     }
 
     public void NotifyFileChanged(string fullPath)
@@ -185,7 +186,7 @@ public class WebTemplateService : IWebTemplateService
             _hub.Clients.All.SendAsync("reload");
             return;
         }
-        else if (ext == ".hbs")
+        else if (ext == ".hbs" || ext == ".sbn")
         {
             Console.WriteLine($"Front file {changeType}: {path}");
             // TryScanSite: если шаблон в момент перечитывания битый, остаётся предыдущая версия

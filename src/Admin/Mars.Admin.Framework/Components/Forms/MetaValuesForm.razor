@@ -1,0 +1,12 @@
+@using Mars.Cms.Contracts.PostTypes
+@using Mars.Forms.Contracts
+@using Mars.Forms.Front
+
+@* Форма значений метаполей владельца (пользователь, категория поста): отдаёт рендереру
+   общего слоя дерево провайдера. Значения живут в EAV-строках владельца, стор отдаёт их
+   каноническими значениями формы. *@
+
+<div class="MetaValuesForm">
+    <FormRenderer Definition="Definition" Values="Store" Zone="@SystemFieldsCatalog.Zones.Main"
+                  Client="Client" Commits="Commits" LiveEditors="LiveEditors" />
+</div>

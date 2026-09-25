@@ -2,13 +2,15 @@ using EditorJsBlazored.Host;
 using Mars.Admin.Host;
 using Mars.AiChat.Host;
 using Mars.Cms.Host;
+using Mars.CodeCompletion.Host;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
-using Mars.Datasource.Front;
-using Mars.Datasource.Host;
+using Mars.CommandLine.Scripting;
+using Mars.Datasource;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
+using Mars.Forms.Abstractions;
 using Mars.Identity.Host;
 using Mars.Media.Host;
 using Mars.MetaModelGenerator;
@@ -32,6 +34,7 @@ using Mars.TemplateEngine.Host;
 using Mars.Server.Startup;
 using Mars.Setup;
 using Mars.SiteEngine.Handlebars;
+using Mars.SiteEngine.Scriban;
 using Mars.SiteEngine.Host;
 using Mars.SSO.Host;
 using Mars.SSO.Host.OAuth;
@@ -40,6 +43,8 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
 using Mars.XActions.Host;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -86,10 +91,19 @@ public static class MarsWebAppStartup
             builder.MarsAddLogging();
         }
 
+        if (commandsApi.CheckGlobalOption<bool>("--quiet", args))
+        {
+            builder.Logging.AddFilter<ConsoleLoggerProvider>(null, LogLevel.None);
+            // PluginManager логирует автономной LoggerFactory (создан в AddPlugins до Build) —
+            // фильтр выше на него не действует, тихий режим передаём через конфигурацию
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Cli:Quiet"] = bool.TrueString });
+        }
+
         //------------------------------------------
         // Mars
         builder.Services.AddMarsSwagger()
                         .AddMarsOptions()
+                        .AddMarsForms()
                         .AddMarsNotifications()
                         .AddMarsIdentity(builder.Configuration)
                         .AddMarsMedia()
@@ -101,28 +115,29 @@ public static class MarsWebAppStartup
                         .AddPostgresDistributedCache(builder.Configuration)
                         .AddMarsNodes()
                         .AddMarsWebAppNodes()
-                        .AddDatasourceHost()
+                        .AddDatasource()
                         .AddMarsScheduler()
                         .AddMarsExcel()
                         .AddMarsTemplateEngines()
                         .AddMarsSiteEngine()
                         .AddMarsSiteEngineHandlebars()
+                        .AddMarsSiteEngineScriban()
                         .AddEditorJsBlazored();
 
-        builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
+        builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker(b.Configuration));
         builder.AddIfFeatureEnabled(FeatureFlags.AITool, builder =>
         {
             builder.Services.AddMarsSemanticKernel();
             builder.AddMarsAiCms();
         });
         builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
+        builder.AddIfFeatureEnabled(FeatureFlags.CodeCompletion, b => b.Services.AddMarsCodeCompletion(b.Configuration));
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuth());
 
         //------------------------------------------
         // CLIENT
         builder.Services.AddMarsAdmin(builder.Configuration);
         builder.Services.AddNodeWorkspace();
-        builder.Services.AddDatasourceWorkspace();
         // end CLIENT
 
         //------------------------------------------
@@ -178,16 +193,19 @@ public static class MarsWebAppStartup
         app.UseCors();
         //app.UseIdentityServer();
         app.UseRouting();
+        app.UseRateLimiter();
         //app.UseAntiforgery();
         app.UseAuthentication();
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSO());
-#pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
         app.UseAuthorization();
-#pragma warning restore ASP0001 // Authorization middleware is incorrectly configured
 
         app.UseMarsSwagger();
         app.MapControllers();
         app.MapRazorPages();
+
+        // регистрация fn ДО старта CLI-сокета: удалённые исполнения лениво загружают
+        // типы команд один раз, к первому запросу дерево должно быть полным
+        app.UseMarsCommandLineScripting();
 
         app.UseMarsCliSocket(Instance);
 
@@ -203,18 +221,18 @@ public static class MarsWebAppStartup
         app.UseMarsCms();
         app.UseMarsMedia();
 
-        app.Services.UseNodeWorkspace()
-                    .UseDatasourceWorkspace();
+        app.Services.UseNodeWorkspace();
 
         app.UsePlugins();
         app.UseMarsAdmin();
         app.UseMarsNodes()
            .UseMarsWebAppNodes();
-        app.UseDatasourceHost();
+        app.UseDatasource();
         app.UseEditorJsBlazored();
         app.Services.UseMarsSiteEngineStartup();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
 
+        app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
         app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
         app.UseIfFeatureEnabled(FeatureFlags.AiChat, app => app.UseMarsAiChat());
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsOAuth());

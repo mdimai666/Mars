@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Diagnostics;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/LoggerNode/LoggerNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/LoggerNode/LoggerNode{.lang}.md")]
 [Display(GroupName = "diagnostic")]
 public class LoggerNode : Node
 {
@@ -15,7 +15,6 @@ public class LoggerNode : Node
     {
         Inputs = [new()];
         Color = "#e9d585";
-        hasTailButton = false;
         Icon = "_content/Mars.Nodes.Workspace/nodes/journal-text.svg";
     }
 

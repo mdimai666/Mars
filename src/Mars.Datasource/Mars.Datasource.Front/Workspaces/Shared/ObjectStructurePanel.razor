@@ -1,0 +1,25 @@
+@using Mars.Datasource.Contracts.Sql
+
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
+
+@if (Object is { Fields.Count: > 0 } current)
+{
+    <details class="flex-shrink-0 px-2 fz14px">
+        <summary class="text-secondary">структура: @current.Fields.Count полей</summary>
+        <div class="overflow-scroll pt-1" style="max-height:120px">
+            @foreach (var column in current.Fields.OrderBy(c => c.Ordinal))
+            {
+                <span class="badge bg-light text-dark border me-1 mb-1">
+                    @if (column.IsKey)
+                    {
+                        <i class="bi bi-key-fill text-warning me-1" title="primary key"></i>
+                    }
+                    @column.Name <span class="text-secondary">@FieldTypeMapping.ShortTypeName(column.DataTypeName)</span>
+                </span>
+            }
+        </div>
+    </details>
+}

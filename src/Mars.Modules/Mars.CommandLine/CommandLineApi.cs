@@ -16,6 +16,8 @@ public class CommandLineApi : ICommandLineApi
     WebApplication _app = default!;
     public WebApplication app => _app;
 
+    public bool InRemoteInvocation => Remote.InRemoteInvocation;
+
     public bool IsContinueRun = false;
 
     private readonly List<Type> _modules = [];
@@ -52,6 +54,9 @@ public class CommandLineApi : ICommandLineApi
 
         var noUdsOption = new Option<bool>("--no-uds") { Description = "start without the CLI unix domain socket (allows a second instance for the same directory)" };
         rootCommand.Add(noUdsOption);
+
+        var quietOption = new Option<bool>("--quiet", "-q") { Description = "suppress platform output (banner, info, remote-exec header, console logs) — leave only the command's own output" };
+        rootCommand.Add(quietOption);
 
         InitializeCliTypes(initialCommands);
 

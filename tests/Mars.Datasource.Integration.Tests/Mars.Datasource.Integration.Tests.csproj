@@ -17,7 +17,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
         <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Providers.MsSQL\Mars.Datasource.Providers.MsSQL.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Providers.MySQL\Mars.Datasource.Providers.MySQL.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Providers.PostgreSQL\Mars.Datasource.Providers.PostgreSQL.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Providers.File\Mars.Datasource.Providers.File.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Providers.Rest\Mars.Datasource.Providers.Rest.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Storage\Mars.Storage.csproj" />
         <ProjectReference Include="..\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
     </ItemGroup>
 

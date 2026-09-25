@@ -1,0 +1,36 @@
+/* Палитра типов: одинаковая категория — один цвет (как подсветка типов в редакторах).
+   Красятся и значения ячеек, и подписи типов; строковые значения остаются цветом по умолчанию
+   (их большинство), а подпись строкового типа — приглушённая серая.
+   Тёмная тема светлее, иначе цвета не читаются. */
+.ds-grid {
+    min-height: 0;
+    min-width: 0;
+    --ds-type-number: #1a63c9;
+    --ds-type-date: #1f7a45;
+    --ds-type-bool: #b25b00;
+    --ds-type-json: #7638c8;
+}
+
+body.dark .ds-grid {
+    --ds-type-number: #6ea8fe;
+    --ds-type-date: #66c98d;
+    --ds-type-bool: #ffb86b;
+    --ds-type-json: #c0a2f0;
+}
+
+/* Тёмная тема приходит двумя путями (см. base.less): класс на body и системная настройка. */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-mode) .ds-grid {
+        --ds-type-number: #6ea8fe;
+        --ds-type-date: #66c98d;
+        --ds-type-bool: #ffb86b;
+        --ds-type-json: #c0a2f0;
+    }
+}
+
+/* Скроллер json-вида: у таблицы тот же класс живёт в ResultTable. */
+.ds-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+}

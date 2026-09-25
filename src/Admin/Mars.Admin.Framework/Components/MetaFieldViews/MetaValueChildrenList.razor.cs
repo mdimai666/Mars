@@ -1,10 +1,12 @@
 using Flurl.Http;
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Core.Features;
+using Mars.Forms.Front;
 using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -15,7 +17,7 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// <summary>
 /// Секция «Список объектов» в карточке родителя: таблица детей (колонки — поля детского типа),
 /// создание и редактирование ребёнка в боковой панели, привязка существующих постов,
-/// удаление из списка по режиму поля.
+/// удаление из списка по режиму поля. Значения — список идентификаторов детей из привязки поля.
 /// </summary>
 public partial class MetaValueChildrenList
 {
@@ -24,8 +26,10 @@ public partial class MetaValueChildrenList
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IServiceProvider _services { get; set; } = default!;
 
-    [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
-    [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    /// <summary>Цель связи (ключ реестра моделей) из дескриптора поля</summary>
+    string ModelName => Binding.Field.ModelName ?? "";
 
     IChildPostEditor? _editor;
     bool _busy;
@@ -44,15 +48,15 @@ public partial class MetaValueChildrenList
     readonly string _cardsSortableId = "children-cards-" + Guid.NewGuid().ToString("N");
 
     /// <summary>Режим карточек (Options.viewMode)</summary>
-    bool IsCardsView => Meta.ViewMode == MetaFieldKindCatalog.ViewModes.Cards;
+    bool IsCardsView => Binding.Field.Options.GetViewMode() == MetaFieldKindCatalog.ViewModes.Cards;
+
+    /// <summary>Дроп-зона загрузки включена (отсутствие параметра = включена)</summary>
+    bool DropZoneEnabled => Binding.Field.Options.IsDropZoneEnabled();
 
     string GridColumns => $"minmax(180px, 2fr) {string.Concat(_metaColumns.Select(c => c.Type == MetaFieldType.Image ? "56px " : "1fr "))}100px 40px";
 
-    List<MetaValueEditModel> FieldRows()
-        => MetaValues.Where(v => v.MetaField.Key == Meta.Key)
-                     .Where(v => v.ModelId != Guid.Empty)
-                     .OrderBy(v => v.Index)
-                     .ToList();
+    List<Guid> SelectedIds()
+        => Binding.List.OfType<Guid>().Where(id => id != Guid.Empty).ToList();
 
     protected override void OnInitialized()
     {
@@ -71,11 +75,7 @@ public partial class MetaValueChildrenList
 
         try
         {
-            // пустая строка необязательного поля (не выбрано) не сохраняется — вместо неё ничего
-            if (Meta.IsNullable)
-                MetaValues.RemoveAll(v => v.MetaField.Key == Meta.Key && v.ModelId == Guid.Empty);
-
-            _childTypeName = MetaValueListHelper.GetTargetPostTypeName(Meta.ModelName);
+            _childTypeName = MetaValueListHelper.GetTargetPostTypeName(ModelName);
             if (_childTypeName is null)
             {
                 _unsupported = true;
@@ -103,7 +103,7 @@ public partial class MetaValueChildrenList
     {
         if (_childType is null || _childTypeName is null) return;
 
-        var ids = FieldRows().Select(r => r.ModelId).Where(id => id != Guid.Empty).ToArray();
+        var ids = SelectedIds().ToArray();
         if (ids.Length == 0)
         {
             _items = [];
@@ -155,7 +155,7 @@ public partial class MetaValueChildrenList
 
         DialogParameters parameters = new()
         {
-            Title = Meta.ModelName,
+            Title = ModelName,
             SecondaryAction = null,
             Width = "500px",
             Modal = true,
@@ -164,10 +164,10 @@ public partial class MetaValueChildrenList
 
         var data = new MetaValueRelationSelectDialogData
         {
-            ModelName = Meta.ModelName,
+            ModelName = ModelName,
             ValueId = Guid.Empty,
             MultiSelect = true,
-            SelectedIds = FieldRows().Select(r => r.ModelId).ToArray(),
+            SelectedIds = SelectedIds().ToArray(),
         };
 
         IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
@@ -178,18 +178,14 @@ public partial class MetaValueChildrenList
         foreach (var id in ids) LinkPost(id);
     }
 
-    /// <summary>Привязать пост-ребёнка строкой значения (при создании — после сохранения в панели)</summary>
+    /// <summary>Привязать пост-ребёнка значением поля (при создании — после сохранения в панели)</summary>
     void LinkPost(Guid postId)
     {
-        if (postId == Guid.Empty || MetaValues.Any(v => v.MetaField.Key == Meta.Key && v.ModelId == postId)) return;
+        var ids = SelectedIds();
+        if (postId == Guid.Empty || ids.Contains(postId)) return;
 
-        MetaValues.Add(new MetaValueEditModel
-        {
-            Id = Guid.NewGuid(),
-            Index = FieldRows().Count,
-            MetaField = Meta,
-            ModelId = postId,
-        });
+        ids.Add(postId);
+        Binding.Values.SetList(Binding.Field, ids.Cast<object?>().ToList());
 
         _ = InvokeAsync(async () =>
         {
@@ -200,10 +196,10 @@ public partial class MetaValueChildrenList
 
     async Task RemoveAsync(Guid postId)
     {
-        var row = FieldRows().FirstOrDefault(r => r.ModelId == postId);
-        if (row is null) return;
+        var ids = SelectedIds();
+        if (!ids.Contains(postId)) return;
 
-        if (MetaValueListHelper.ResolveRemoveMode(Meta) == MetaFieldKindCatalog.RemoveModes.DeleteConfirm)
+        if (MetaValueListHelper.ResolveRemoveMode(Binding.Field) == MetaFieldKindCatalog.RemoveModes.DeleteConfirm)
         {
             var ok = await _dialogService.MarsDeleteConfirmation(
                 "Удалить объект из системы вместе со всеми его данными?");
@@ -220,9 +216,8 @@ public partial class MetaValueChildrenList
             }
         }
 
-        MetaValues.Remove(row);
-        var rows = FieldRows();
-        for (var i = 0; i < rows.Count; i++) rows[i].Index = i;
+        ids.Remove(postId);
+        Binding.Values.SetList(Binding.Field, ids.Cast<object?>().ToList());
 
         await ReloadAsync();
         StateHasChanged();
@@ -272,7 +267,7 @@ public partial class MetaValueChildrenList
         }));
     }
 
-    /// <summary>Драг-порядок карточек: порядок строк значения следует за списком</summary>
+    /// <summary>Драг-порядок карточек: порядок значений следует за списком</summary>
     void OnSortCards(FluentSortableListEventArgs args)
     {
         if (args is null || args.OldIndex == args.NewIndex) return;
@@ -281,11 +276,7 @@ public partial class MetaValueChildrenList
         _items.RemoveAt(args.OldIndex);
         _items.Insert(args.NewIndex, item);
 
-        for (var i = 0; i < _items.Count; i++)
-        {
-            var row = FieldRows().FirstOrDefault(r => r.ModelId == _items[i].Id);
-            if (row is not null) row.Index = i;
-        }
+        Binding.Values.SetList(Binding.Field, _items.Select(child => (object?)child.Id).ToList());
 
         StateHasChanged();
     }

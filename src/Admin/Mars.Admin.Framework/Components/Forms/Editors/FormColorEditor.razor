@@ -1,0 +1,20 @@
+@using Mars.Forms.Front
+
+@* Общий редактор «Цвет»: палитра рядом с текстовым значением (#rrggbb) *@
+
+<div class="d-flex gap-2 align-items-center">
+    <input type="color" value="@(Text.StartsWith('#') ? Text : "#000000")" @onchange="OnChanged" style="width:48px; height:32px; padding:2px;" />
+    <input type="text" class="form-control" style="max-width:160px;" value="@Text" @onchange="OnChanged" placeholder="#000000" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    string Text
+    {
+        get => Binding.Value as string ?? "";
+        set => Binding.Value = value;
+    }
+
+    void OnChanged(ChangeEventArgs args) => Text = args.Value?.ToString() ?? "";
+}

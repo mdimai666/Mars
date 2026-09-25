@@ -15,21 +15,46 @@
     <h1>Фронты</h1>
 
     <div class="card mb-3">
-        <div class="card-body">
+        <div class="card-body vstack gap-2">
             <div class="hstack gap-2 flex-wrap align-items-end">
                 <FluentTextField @bind-Value="newSlug" Label="Slug" Placeholder="my-front"
                                  autocomplete="off" Style="min-width:180px;" />
                 <FluentTextField @bind-Value="newUrl" Label="Url" Placeholder="/my-front"
                                  autocomplete="off" Style="min-width:180px;" />
-                <FluentSelect @bind-Value="newTemplate" Label="Стартовый шаблон"
-                              Items="templates" OptionValue=@(t => t) OptionText=@(t => t)
-                              Style="min-width:180px;" />
+                <FluentSwitch @bind-Value="newUseTemplate" Style="min-width:210px; margin-bottom:6px;"
+                              Label=@(newUseTemplate ? "Из стартового шаблона" : "Существующая папка") />
+
+                @if (newUseTemplate)
+                {
+                    <FluentSelect @bind-Value="newTemplateName" @bind-Value:after="OnTemplateChanged"
+                                  Label="Стартовый шаблон"
+                                  Items="templates" OptionValue=@(t => t.Name) OptionText=@(t => t.Name)
+                                  Style="min-width:180px;" />
+                }
+                else
+                {
+                    <FluentTextField @bind-Value="newPath" Label="Path" autocomplete="off"
+                                     Placeholder=@($"пусто = data/fronts/{(string.IsNullOrWhiteSpace(newSlug) ? "<slug>" : newSlug.Trim())}")
+                                     Style="min-width:220px;" />
+                }
+
+                <FluentSelect @bind-Value="newEngineId" Label="Движок"
+                              Items="engines" OptionValue=@(e => e.Id) OptionText=@(e => e.Name)
+                              Disabled=@engineFromTemplate Style="min-width:160px;"
+                              Title=@(engineFromTemplate ? "Движок определяется стартовым шаблоном" : null) />
                 <FluentButton Appearance="Appearance.Accent" OnClick="CreateFront" Disabled=@creating>
                     Создать фронт
                 </FluentButton>
             </div>
-            <div class="text-secondary small mt-2">
-                Фронт создаётся из выбранного стартового шаблона в папку <mark>data/fronts/&lt;slug&gt;</mark>.
+            <div class="text-secondary small">
+                @if (newUseTemplate)
+                {
+                    <span>Фронт создаётся из стартового шаблона в папку <mark>data/fronts/&lt;slug&gt;</mark>; движок задаётся шаблоном (@TemplateEngineName(newEngineId)).</span>
+                }
+                else
+                {
+                    <span>Подключается существующая папка без разворачивания шаблона: пустой Path — <mark>data/fronts/&lt;slug&gt;</mark>, иначе абсолютный путь к внешней папке.</span>
+                }
             </div>
         </div>
     </div>
@@ -137,12 +162,17 @@
     EditOptionForm<FrontsOption> form = default!;
 
     IReadOnlyCollection<FFrontEngineResponse> engines = [];
-    IReadOnlyCollection<string> templates = [];
+    IReadOnlyCollection<FFrontTemplateResponse> templates = [];
 
     string newSlug = "";
     string newUrl = "";
-    string newTemplate = "default";
+    string newTemplateName = "default";
+    bool newUseTemplate = true;
+    string newPath = "";
+    string newEngineId = FrontItem.HandlebarsEngine;
     bool creating;
+
+    bool engineFromTemplate => newUseTemplate;
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,9 +184,24 @@
         }
         catch
         {
-            templates = ["default"];
+            templates = [];
         }
+
+        if (!templates.Any(t => t.Name == newTemplateName))
+            newTemplateName = templates.FirstOrDefault()?.Name ?? "default";
+
+        OnTemplateChanged();
     }
+
+    void OnTemplateChanged()
+    {
+        var tpl = templates.FirstOrDefault(t => t.Name == newTemplateName);
+        if (tpl is not null)
+            newEngineId = tpl.EngineId;
+    }
+
+    string TemplateEngineName(string engineId) =>
+        engines.FirstOrDefault(e => e.Id == engineId)?.Name ?? engineId;
 
     async Task CreateFront()
     {
@@ -167,14 +212,17 @@
         {
             Slug = newSlug.Trim(),
             Url = newUrl.Trim(),
-            UseTemplate = true,
-            Template = newTemplate,
+            UseTemplate = newUseTemplate,
+            Template = newTemplateName,
+            EngineId = newEngineId,
+            Path = newPath.Trim(),
         }).SmartActionResult();
 
         if (result.Ok)
         {
             newSlug = "";
             newUrl = "";
+            newPath = "";
             await form.Load();
         }
 

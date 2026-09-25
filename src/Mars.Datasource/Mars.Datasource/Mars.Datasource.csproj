@@ -1,9 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Contracts\Mars.Datasource.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.File\Mars.Datasource.Providers.File.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.MsSQL\Mars.Datasource.Providers.MsSQL.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.MySQL\Mars.Datasource.Providers.MySQL.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.PostgreSQL\Mars.Datasource.Providers.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Mars.Datasource.Providers.Rest\Mars.Datasource.Providers.Rest.csproj" />
     </ItemGroup>
 
 </Project>

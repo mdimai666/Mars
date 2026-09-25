@@ -1,0 +1,12 @@
+@using Mars.Docker.Front.ContainerViews
+@using Mars.Docker.Front.ImageViews
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentTabs Class="docker-manager-tabs">
+    <FluentTab Label="Containers">
+        <ListDockerContainer />
+    </FluentTab>
+    <FluentTab Label="Images">
+        <ListDockerImage />
+    </FluentTab>
+</FluentTabs>

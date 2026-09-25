@@ -13,7 +13,7 @@ using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace.EditorParts;
 
-public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrollObserver
+public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrollObserver, IAsyncDisposable
 {
     [Inject] ILogger<NodeWorkspace1> _logger { get; set; } = default!;
     [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
@@ -91,9 +91,27 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     NodeWirePointResolver _nodeWirePointResolver = new();
     private DotNetObjectReference<IResizeObserver> _dotNetRef = default!;
     private DotNetObjectReference<IScrollObserver> _dotNetRef2 = default!;
+    // fallback until the first JS measurement of the container position
     float containerOffsetX = 48;
     float containerOffsetY = 40;
     //--------------------------------------
+
+    /// <summary>
+    /// Position of the container on the page (getBoundingClientRect), used as the origin
+    /// for converting page mouse coordinates into flow coordinates.
+    /// Viewport coords equal page coords while the window itself is not scrolled.
+    /// </summary>
+    async Task UpdateContainerOffsetAsync()
+    {
+        var bounds = await _js.GetElementBounds(_containerRef);
+        if (bounds is null) return;
+        containerOffsetX = (float)bounds.Value.Left;
+        containerOffsetY = (float)bounds.Value.Top;
+    }
+
+    internal float ContainerOffsetX => containerOffsetX;
+    internal float ContainerOffsetY => containerOffsetY;
+    internal Task RefreshContainerOffsetAsync() => UpdateContainerOffsetAsync();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -104,6 +122,22 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
             _dotNetRef2 = DotNetObjectReference.Create<IScrollObserver>(this);
             await _js.ObserveScrollAsync(_containerRef, _dotNetRef2);
+
+            await UpdateContainerOffsetAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_dotNetRef is not null)
+        {
+            await _js.UnobserveSizeAsync(_containerRef);
+            _dotNetRef.Dispose();
+        }
+        if (_dotNetRef2 is not null)
+        {
+            await _js.UnobserveScrollAsync(_containerRef);
+            _dotNetRef2.Dispose();
         }
     }
 
@@ -116,8 +150,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             {
                 d.node.X = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
                 d.node.Y = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
-
-                //Console.WriteLine($"e.ClientY={e.ClientY}, d.nodeY={d.nodeY}, d.clickY={d.clickY}, ScrollInfo.ScrollTop={ScrollInfo.ScrollTop}");
 
                 if (!d.node.changed) d.node.changed = true;
             }
@@ -168,16 +200,17 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     /// <param name="startMoveUnderCursor">Это если истина перемещается под мышку, если нет относительно где был</param>
     void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor, float offsetX = 0, float offsetY = 0)
     {
+        var nodeList = nodes as IList<Node> ?? nodes.ToList();
+        if (nodeList.Count == 0) return;
+
         _dragElements.Clear();
         _allNodesInTheDragBundle.Clear();
 
-        var minX = nodes.Min(s => s.X);
-        var minY = nodes.Min(s => s.Y);
+        var minX = nodeList.Min(s => s.X);
+        var minY = nodeList.Min(s => s.Y);
 
-        foreach (var _node in nodes)
+        foreach (var _node in nodeList)
         {
-            //Console.WriteLine($"_node.X={_node.X}, _node.Y={_node.Y}, e.ClientX={e.ClientX}, e.ClientY={e.ClientY}");
-
             var drag = new DragElement
             {
                 node = _node,
@@ -190,7 +223,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             _dragElements.Add(drag);
         }
 
-        _allNodesInTheDragBundle = nodes.SelectMany(s => NodeWireUtil.GetInputNodes(s, FlowNodes)).ToHashSet();
+        _allNodesInTheDragBundle = nodeList.SelectMany(s => NodeWireUtil.GetInputNodes(s, FlowNodes)).ToHashSet();
         _drag = true;
         OnDragNodesStarted?.Invoke(_dragElements.Select(s => s.node.Id));
     }
@@ -211,10 +244,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         _drag = false;
 
         new_wire = null;
-        if (_sel_node != null)
-        {
-            OnNodeMoved(_sel_node);
-        }
         if (lasso.drag)
         {
             lasso.drag = false;
@@ -350,7 +379,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         //wire with self
         bool is_self = new_wire.Node1 == new_wire.Node2;
         bool same_slot = is_node1_set == output;
-        bool is_together_linkNodes = _flowNodes[new_wire.Node1.NodeId].IsLinkNode && _flowNodes[new_wire.Node2.NodeId].IsLinkNode;
+        bool is_together_linkNodes = _flowNodes.TryGetValue(new_wire.Node1.NodeId, out var node1)
+                                  && _flowNodes.TryGetValue(new_wire.Node2.NodeId, out var node2)
+                                  && node1.IsLinkNode && node2.IsLinkNode;
 
         if (!is_self && !same_slot && !is_together_linkNodes)
         {
@@ -378,13 +409,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             }
         }
     }
-    void OnNodeMoved(Node node)
-    {
-    }
-
     void RecreateWires()
     {
-        //_nodeEditor?.AddDebugMessage(DebugMessage.ConsoleMessage(">RecreateWires"));
         _logger.LogTrace(">RecreateWires");
         if (FlowNodes is null || FlowNodes.None())
         {
@@ -392,7 +418,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             return;
         }
 
-        _nodeWires = NodeWireUtil.DrawWires(FlowNodes, _nodeWirePointResolver)
+        var existingWires = _nodeWires.Values.SelectMany(s => s.wires.Values)
+                                      .ToDictionary(w => (w.Node1, w.Node2), w => w);
+
+        _nodeWires = WireDrawUtil.DrawWires(FlowNodes, _nodeWirePointResolver, existingWires)
                                     .GroupBy(s => s.Node1.NodeId)
                                     .ToDictionary(s => s.Key, s => new NodeWiresInfo
                                     {
@@ -407,7 +436,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         {
             if (_nodeWires.TryGetValue(d.node.Id, out var nodeWires))
             {
-                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+                WireDrawUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
             }
         }
 
@@ -415,7 +444,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         {
             if (_nodeWires.TryGetValue(d.Id, out var nodeWires))
             {
-                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+                WireDrawUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
             }
         }
     }
@@ -494,24 +523,15 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
     public void ScrollTo(float x, float y)
     {
-        _js.ScrollToCoordinates(_containerRef, x, y);
+        _ = _js.ScrollToCoordinates(_containerRef, x, y);
     }
 
-    /// <summary>
-    /// on click palette new node
-    /// </summary>
-    /// <param name="e"></param>
-    /// <param name="clickedPaletteNode">palette clicked node</param>
-    /// <param name="instance">new instance</param>
-    public void OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
+    public async Task OnClickPaletteNewNode(MouseEventArgs e, Node instance)
     {
         DeselectAll();
         _isProcessPasteNewNode = true;
 
-        //_logger.LogTrace($"SCR={ScrollInfo.ScrollLeft},{ScrollInfo.ScrollTop}");
-
-        //_containerRef.getBoundingClientRect().x = 48
-        //_containerRef.getBoundingClientRect().y = 40
+        await UpdateContainerOffsetAsync();
 
         instance.X = (float)(e.PageX - containerOffsetX - e.OffsetX + ScrollInfo.ScrollLeft);
         instance.Y = (float)(e.PageY - containerOffsetY - e.OffsetY + ScrollInfo.ScrollTop);
@@ -567,9 +587,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
         foreach (var node in FlowNodes.Values)
         {
-            Rectangle rect = new((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
+            Rectangle rect = new((int)node.X, (int)node.Y, (int)node.BodyRectWidth, (int)node.BodyRectHeight);
 
-            if (_lasso.Contains(rect))
+            if (_lasso.IntersectsWith(rect))
             {
                 node.selected = true;
             }
@@ -591,6 +611,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     {
         Width = (int)width;
         Height = (int)height;
+        _ = UpdateContainerOffsetAsync();
     }
 
     [JSInvokable]
@@ -605,8 +626,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             ScrollWidth = scrollWidth,
             ClientWidth = clientWidth
         };
-
-        //Console.WriteLine($"ScrollInfo: Top={ScrollInfo.ScrollTop}, Left={ScrollInfo.ScrollLeft}, Height={ScrollInfo.ScrollHeight}, ClientHeight={ScrollInfo.ClientHeight}, Width={ScrollInfo.ScrollWidth}, ClientWidth={ScrollInfo.ClientWidth}");
     }
 }
 

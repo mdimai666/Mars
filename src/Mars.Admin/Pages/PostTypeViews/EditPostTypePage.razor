@@ -1,7 +1,10 @@
 @page "/EditPostType"
 @page "/EditPostType/{ID:guid}"
 
+@using Mars.Admin.Components
+@using Mars.Admin.Framework.Components.Forms
 @using Mars.Cms.Contracts.PostTypes
+@using Mars.Forms.Contracts
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -36,17 +39,6 @@
                 <div class="">
                     <FluentTextField @bind-Value=@context.TypeName Label="TypeName" />
                     <FluentValidationMessage For="@(() => context.TypeName)" />
-                </div>
-                <div class="">
-                    <FluentSelect TOption="PostTypeVisibility" Label="Видимость"
-                                  Items="@(Enum.GetValues<PostTypeVisibility>())"
-                                  OptionText="@(v => v switch
-                                  {
-                                      PostTypeVisibility.Component => "Компонент (встроенный)",
-                                      _ => "Публичный",
-                                  })"
-                                  SelectedOption="context.Visibility"
-                                  SelectedOptionChanged="@(v => context.Visibility = v)" />
                 </div>
 
             </div>
@@ -111,68 +103,6 @@
                 </div>
                 *@
 
-                @if (context.FeatureActivated(PostTypeConstants.Features.Status))
-                {
-                    <div class="">
-                        <div class="spacer-2"></div>
-
-                        <div class="statuses">
-                            <div class="">
-                                Статусы
-                            </div>
-                            <div class="card">
-                                <div class="card-body small">
-                                    <div class="st-item row mb-3 ">
-                                        <div class="col-lg-3">@AppRes.Name</div>
-                                        <div class="col-lg-3">@AppRes.Slug</div>
-                                        <div class="col-lg-2">Цвет</div>
-                                        <div class="col-lg-2">Порядок</div>
-                                        <div class="col-lg-2 d-flex gap-2">
-                                            <FluentButton OnClick=@(e=>context.PostStatusList.Add(new () { Order = context.PostStatusList.Count }))>
-                                                Добавить
-                                            </FluentButton>
-                                            <FluentMenuButton ButtonAppearance="Appearance.Neutral" Text="@AppRes.Actions">
-                                                <FluentMenuItem OnClick=@(e=>context.PostStatusList.AddRange(PostStatusEditModel.DefaultStatuses()))>
-                                                    Добавить стандартные
-                                                </FluentMenuItem>
-                                            </FluentMenuButton>
-                                        </div>
-                                    </div>
-
-                                    @foreach (var _st in context.PostStatusList)
-                                    {
-                                        var st = _st;
-                                        <div class="st-item row mb-3">
-                                            <div class="col-lg-3">
-                                                <FluentTextField @bind-Value=@st.Title />
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <FluentTextField @bind-Value=@st.Slug />
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <FluentTextField @bind-Value=@st.Color />
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <FluentNumberField @bind-Value=@st.Order />
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <DFluentDeleteButton OnConfirm=@(e=>context.PostStatusList.Remove(st)) />
-                                            </div>
-                                        </div>
-                                    }
-                                    @if (context.PostStatusList.Count == 0)
-                                    {
-                                        <div class="text-secondary">
-                                            <SharedContentNoRecords />
-                                        </div>
-                                    }
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-
                 @*
                 @if (context.FeatureActivated(PostTypeConstants.Features.CategoryId))
                 {
@@ -190,33 +120,42 @@
                 *@
 
                 <div class="card">
-                    <div class="card-header">
-                        Meta fields
+                    <div class="card-header d-flex align-items-center gap-2" style="cursor:pointer" @onclick="ToggleSystemFields">
+                        Системные поля
+                        <i class="bi @(systemFieldsCollapsed ? "bi-chevron-down" : "bi-chevron-up")"></i>
                     </div>
-                    <div class="card-body">
-                        <div class="card-section">
+                    @if (!systemFieldsCollapsed)
+                    {
+                        <div class="card-body">
+                            <div class="text-secondary fz12px mb-2">
+                                Параметры полей поста, которые живут в колонках таблицы (не метаполя): правила и редактор.
+                                Порядок, зона и видимость — в «Форма редактирования поста» на странице представления.
+                            </div>
+                            <FieldDefinitionsEditor Definitions="context.SystemFieldDefinitions()"
+                                                    Capabilities="FormDefinitionCapabilities.SystemFields"
+                                                    SettingsScope="@SystemFieldSettingsPanel.Scope"
+                                                    OnChanged="context.ApplySystemFieldDefinition"
+                                                    OnSourceChanged="context.ApplySystemFieldDefinition" />
+                        </div>
+                    }
+                </div>
 
-                            @if (!context.MetaFields.Any())
-                            {
-                                <SharedContentNoRecords />
-                            }
-
-                            <CascadingValue Value="@context.MetaFields">
-                                <CascadingValue Value="@context.MetaRelationModels">
-                                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField
-                                        FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
-                                        ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
-                                        OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
-                                </CascadingValue>
-                            </CascadingValue>
-
-                            <div class="mt-2">
-                                <FluentButton Appearance="Appearance.Accent"
-                                              IconStart="@(new Icons.Regular.Size16.Add())"
-                                              OnClick="AddNewField">Добавить</FluentButton>
+                <div class="card">
+                    <div class="card-header d-flex align-items-center gap-2" style="cursor:pointer" @onclick="ToggleMetaFields">
+                        Meta fields
+                        <i class="bi @(metaFieldsCollapsed ? "bi-chevron-down" : "bi-chevron-up")"></i>
+                    </div>
+                    @if (!metaFieldsCollapsed)
+                    {
+                        <div class="card-body">
+                            <div class="card-section">
+                                <MetaFieldsGroup Fields="context.MetaFields"
+                                                 MetaRelationModels="context.MetaRelationModels"
+                                                 FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
+                                                 OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
             </div>
@@ -227,6 +166,16 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
+                    <div class="spacer-1"></div>
+                    <FluentSelect TOption="PostTypeVisibility" Label="Видимость" Class="w-100"
+                                  Items="@(Enum.GetValues<PostTypeVisibility>())"
+                                  OptionText="@(v => v switch
+                                  {
+                                      PostTypeVisibility.Component => "Компонент (встроенный)",
+                                      _ => "Публичный",
+                                  })"
+                                  SelectedOption="context.Visibility"
+                                  SelectedOptionChanged="@(v => context.Visibility = v)" />
                     <div class="spacer-1"></div>
                     <FormItem2 For="@(()=>context.Tags)">
                         <InputTags2 @bind-Value=context.Tags />

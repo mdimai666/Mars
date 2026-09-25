@@ -19,7 +19,7 @@ public class BlockList : IEditorJsBlock // TODO: nested
         sb.AppendLine($"<{listStyle}>");
         foreach (var item in Items)
         {
-            sb.AppendLine(item);
+            sb.AppendLine($"<li>{item}</li>");
         }
         sb.AppendLine($"</{listStyle}>");
         return sb.ToString();

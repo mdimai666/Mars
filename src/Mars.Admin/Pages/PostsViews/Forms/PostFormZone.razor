@@ -1,0 +1,19 @@
+@using Mars.Forms.Front
+
+@* Зона формы поста: каскадирует контекст формы (модель, хуки записи, живые редакторы),
+   затем рендерит свою часть дерева. *@
+
+<CascadingValue Value="@Context">
+    <FormRenderer Definition="@Context.Definition" Values="@Context.Values" Commits="@Context.Commits"
+                  LiveEditors="@Context.LiveEditors"
+                  Zone="@Zone" TitleResolver="@TitleResolver" />
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired] public PostFormContext Context { get; set; } = default!;
+
+    /// <summary>Ключ зоны из <c>SystemFieldsCatalog.Zones</c></summary>
+    [Parameter, EditorRequired] public string Zone { get; set; } = default!;
+
+    [Parameter] public Func<string, string>? TitleResolver { get; set; }
+}

@@ -67,6 +67,12 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.MetaFields)
                                     );
 
+        // параметры системных полей (правила → JsonObject) AutoFixture не создаёт:
+        // их задают явно в тестах, которые проверяют сохранение
+        fixture.Customize<UpdatePostTypeRequest>(composer => composer
+                                    .Without(s => s.SystemFields)
+                                    );
+
         fixture.Customize<CreateFeedbackRequest>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.Title, faker.Lorem.Sentence())

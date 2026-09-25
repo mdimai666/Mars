@@ -41,9 +41,8 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
         var postType = _metaModelTypesLocator.GetPostTypeByName(typeName);
         if (postType is null) return empty;
 
-        var contentFieldKey = postType.ContentField()?.Key;
         var fields = postType.MetaFields
-                             .Where(f => fieldKeys.Contains(f.Key) && f.Type != MetaFieldType.Query && f.Key != contentFieldKey)
+                             .Where(f => fieldKeys.Contains(f.Key) && f.Type != MetaFieldType.Query)
                              .ToList();
         if (fields.Count == 0) return empty;
 

@@ -1,5 +1,6 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
@@ -7,6 +8,8 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
+using Mars.Forms.Abstractions;
+using Mars.Forms.Contracts;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Server.Abstractions.Validators;
@@ -21,6 +24,7 @@ internal class PostTypeService : IPostTypeService
     private readonly IServiceProvider _serviceProvider;
     private readonly IValidatorFactory _validatorFactory;
     private readonly IPostTypeViewService _postTypeViewService;
+    private readonly IFormDefinitionNormalizer _formNormalizer;
 
     public PostTypeService(
         IPostTypeRepository postTypeRepository,
@@ -28,7 +32,8 @@ internal class PostTypeService : IPostTypeService
         IMetaModelTypesLocator metaModelTypesLocator,
         IServiceProvider serviceProvider,
         IValidatorFactory validatorFactory,
-        IPostTypeViewService postTypeViewService)
+        IPostTypeViewService postTypeViewService,
+        IFormDefinitionNormalizer formNormalizer)
     {
         _postTypeRepository = postTypeRepository;
         _eventManager = eventManager;
@@ -36,6 +41,7 @@ internal class PostTypeService : IPostTypeService
         _serviceProvider = serviceProvider;
         _validatorFactory = validatorFactory;
         _postTypeViewService = postTypeViewService;
+        _formNormalizer = formNormalizer;
     }
 
     public Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -183,7 +189,18 @@ internal class PostTypeService : IPostTypeService
         {
             PostType = postType.ToSummaryResponse(),
             Presentation = postType.Presentation.ToResponse(),
+            // дизайнер формы правит дерево провайдера, а сохраняет только раскладку
+            Form = PostFormBuilder.Build(postType, _formNormalizer),
+            FormLayout = postType.Form,
         };
+    }
+
+    public FormDefinition? GetFormDefinition(Guid id, bool saved, CancellationToken cancellationToken)
+    {
+        var postType = _metaModelTypesLocator.GetPostTypeById(id);
+        if (postType is null) return null;
+
+        return PostFormBuilder.Build(saved ? postType : postType with { Form = null }, _formNormalizer);
     }
 
 }

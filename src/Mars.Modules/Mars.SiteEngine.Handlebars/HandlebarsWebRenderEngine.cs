@@ -1,30 +1,27 @@
 using System.Text;
-using Mars.Nodes.Abstractions.Hubs;
+using HandlebarsDotNet;
 using Mars.SiteEngine.Abstractions.Models;
-using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.TemplateData;
 using Mars.SiteEngine.Abstractions.WebSite;
-using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.SiteEngine.Handlebars.TemplateData;
-using Mars.SiteEngine.Host.Services;
-using Microsoft.AspNetCore.SignalR;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SiteEngine.Handlebars;
 
 public class HandlebarsWebRenderEngine : IWebRenderEngine
 {
     protected MarsAppFront AppFront = default!;
-    private IMemoryCache? _memoryCache;
-    private IMarsHtmlTemplator? _marsHtmlTemplator;
+    private readonly IMemoryCache? _memoryCache;
+    private readonly IHandlebars _handlebars;
 
-    public HandlebarsWebRenderEngine(IMemoryCache? memoryCache, MarsAppFront marsAppFront)
+    public HandlebarsWebRenderEngine(IMemoryCache? memoryCache, IHandlebarsEngineFactory handlebarsEngineFactory, MarsAppFront marsAppFront)
     {
         AppFront = marsAppFront;
         _memoryCache = memoryCache;
+        _handlebars = handlebarsEngineFactory.Create(HandlebarsScopes.Site);
     }
 
     public virtual void Setup()
@@ -38,27 +35,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         {
             throw new DirectoryNotFoundException($"Front folder not found '{AppFront.Configuration.Path}'");
         }
-    }
-
-    /// <summary>
-    /// Инициализация движка вне пайплайна (создание через IWebRenderEngineFactory)
-    /// </summary>
-    public void InitializeEngine(IServiceProvider rootServices)
-    {
-        Initialize(AppFront, rootServices);
-    }
-
-    protected virtual void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
-    {
-        var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
-        var wts = new WebTemplateService(rootServices, hub, appFront);
-        appFront.Features.Set<IWebTemplateService>(wts);
-
-        wts.OnFileUpdated += (s, e) =>
-        {
-            wts.ClearCache();
-        };
-
     }
 
     public virtual string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)
@@ -83,7 +59,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
     {
         var af = MarsAppFront;
 
-        IMarsHtmlTemplator.MarsHtmlTemplate<object, object>? template_compiled;
+        HandlebarsTemplate<object, object>? template_compiled;
 
         if (ctx.RenderParam.UseCache && _memoryCache?.TryGetValue(AppCacheKey(af, page, ctx.RenderParam), out template_compiled) == true)
         {
@@ -135,17 +111,14 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
             Stopwatch stopwatch = Stopwatch.StartNew();
 #endif
 
-            IMarsHtmlTemplator handlebars = _marsHtmlTemplator ??= new MyHandlebars();
-            handlebars.RegisterContextFunctions();
-
             if (parts is not null)
             {
                 foreach (var block in parts.Where(s => s.Type == WebSitePartType.Block || s.Type == WebSitePartType.Layout))
                 {
-                    handlebars.RegisterTemplate(block.Name, block.Content);
+                    _handlebars.RegisterTemplate(block.Name, block.Content);
                 }
             }
-            template_compiled = handlebars.Compile(combined_html.ToString());
+            template_compiled = _handlebars.Compile(combined_html.ToString());
             _memoryCache?.Set(AppCacheKey(af, page, ctx.RenderParam), template_compiled, DateTimeOffset.Now.AddMinutes(30));
 
 #if DEBUG2
@@ -156,16 +129,18 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         }
 
         var tmpFillers = (ITemplateContextVariablesFiller[])[
-            new HandlebarsTmpCtxBasicDataContext(),
-            new HandlebarsTmpCtxLanguageDataFiller(),
-            new HandlebarsTmpCtxAppThemeFiller(),
-            new HandlebarsTmpCtxErrorsListFiller(),
+            new SiteTmpCtxBasicDataContext(),
+            new SiteTmpCtxLanguageDataFiller(),
+            new SiteTmpCtxAppThemeFiller(),
+            new SiteTmpCtxErrorsListFiller(),
         ];
 
         foreach (var filler in tmpFillers)
         {
             filler.FillTemplateDictionary(ctx, ctx.TemplateContextVariables);
         }
+
+        ctx.TemplateContextVariables[SiteTmpCtxBasicDataContext.SiteBaseParamKey] = SiteBaseHref.FromFrontUrl(af.Front?.Url);
 
         _ = nameof(HandlebarsHelperFunctionContext.HelperFunctionContextKey);
 

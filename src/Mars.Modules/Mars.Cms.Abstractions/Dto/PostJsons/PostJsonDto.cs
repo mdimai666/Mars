@@ -8,6 +8,10 @@ public record PostJsonDto : PostSummary
 {
     public required string? Content { get; init; }
 
+    public required string? Excerpt { get; init; }
+
+    public required string LangCode { get; init; }
+
     /// <summary>
     /// json Dto also may be
     /// <list type="bullet">

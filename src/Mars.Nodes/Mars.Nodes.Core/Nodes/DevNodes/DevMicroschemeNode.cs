@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes.DevNodes;
 
 #if DEBUG
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/Common/FeatureUnderDevelopment{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/Common/FeatureUnderDevelopment{.lang}.md")]
 [Display(GroupName = "dev")]
 public class DevMicroschemeNode : Node
 {

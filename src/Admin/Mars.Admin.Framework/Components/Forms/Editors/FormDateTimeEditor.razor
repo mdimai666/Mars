@@ -1,0 +1,32 @@
+@using Mars.Forms.Front
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Общий редактор «Дата и время»: пикер даты и время на одном значении *@
+
+<div class="d-flex gap-2 align-items-center">
+    <FluentDatePicker Value="@DatePart" ValueChanged="OnDateChanged" Disabled="@Binding.ReadOnly" />
+    <input type="time" value="@TimeValue" @onchange="OnTimeChanged" class="form-control" style="max-width:140px;"
+           disabled="@Binding.ReadOnly" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;
+
+    DateTimeOffset? Value => Binding.Value as DateTimeOffset?;
+
+    DateTime? DatePart => Value?.Date;
+
+    string TimeValue => Value?.ToString("HH:mm") ?? "";
+
+    void OnDateChanged(DateTime? date)
+        => Binding.Value = date is null
+            ? null
+            : new DateTimeOffset(date.Value.Date.Add(Value?.TimeOfDay ?? TimeSpan.Zero));
+
+    void OnTimeChanged(ChangeEventArgs args)
+    {
+        if (!TimeSpan.TryParse(args.Value?.ToString(), out var time)) return;
+
+        Binding.Value = new DateTimeOffset((Value?.Date ?? DateTime.Today).Add(time));
+    }
+}

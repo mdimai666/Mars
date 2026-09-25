@@ -1,22 +1,30 @@
 @using Mars.Contracts.Common
-@using Mars.Datasource
-@using Mars.Datasource.Abstractions.Models
+@using Mars.Datasource.Contracts.Catalog
+@using Mars.Datasource.Contracts.Config
+@using Mars.Datasource.Contracts.Document
+@using Mars.Datasource.Contracts.Query
 @using Mars.Datasource.Front.Services;
 @using Mars.WebApiClient.Interfaces
 
 <div class="DataSourceInfoComponent">
-    @*https://habr.com/ru/articles/696274/*@
-    <div class="d-flex gap-3 flex-wrap">
-        @*<a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("test"))>test</a>*@
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_size_pretty")) title="Размер табличных пространств">pg_size_pretty</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_database_size")) title="Размер баз данных">pg_database_size</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_namespaces_sizes")) title="Размер схем в базе данных">pg_namespaces_sizes</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_total_relation_size")) title="Размер таблиц">pg_total_relation_size</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("connections_count")) title="Показывает количество открытых подключений">connections_count</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("query_in_running")) title="Показывает выполняющиеся запросы">query_in_running</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("check_db_timezone")) title="Проверяет часовой пояс базы">check_db_timezone</a>
-        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("BackupAsSQLFile")) title="BackupAsSQLFile">BackupAsSQLFile</a>
-    </div>
+    @if (actions is null)
+    {
+        <Mars.Admin.Framework.Components.SharedLoader2 />
+    }
+    else if (actions.Count == 0)
+    {
+        <div class="text-secondary">У этого источника нет действий</div>
+    }
+    else
+    {
+        <div class="d-flex gap-3 flex-wrap">
+            @foreach (var action in actions)
+            {
+                <a class="btn btn-outline-primary" title="@action.Description"
+                   @onclick=@(e => SendTextAction(action.Id))>@action.Label</a>
+            }
+        </div>
+    }
 
     <hr />
 
@@ -75,21 +83,50 @@
 
 @code {
     [Inject] public IDatasourceServiceClient service { get; set; } = default!;
+
+    /// <summary>Источник, к которому применяются действия.</summary>
+    [Parameter]
+    public string Slug { get; set; } = DatasourceConfig.DefaultSlug;
+
+    /// <summary>Действия берём из каталога источника: список объявляет провайдер, а не страница.</summary>
+    IReadOnlyList<DatasourceActionDescriptor>? actions;
+
     bool Busy;
 
     UserActionResult<string[][]>? lastAction = null;
 
-    public async void SendTextAction(string actionName)
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var catalog = await service.Catalog(Slug);
+            actions = catalog.Actions;
+        }
+        catch (Exception ex)
+        {
+            actions = [];
+            lastAction = new UserActionResult<string[][]> { Ok = false, Message = ex.Message, Data = [] };
+        }
+    }
+
+    public async Task SendTextAction(string actionName)
     {
         Busy = true;
         StateHasChanged();
 
-        var res = await service.ExecuteAction("default", new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
-
-        lastAction = res;
-
-        Busy = false;
-        StateHasChanged();
+        try
+        {
+            lastAction = await service.ExecuteAction(Slug, new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
+        }
+        catch (Exception ex)
+        {
+            lastAction = new UserActionResult<string[][]> { Ok = false, Message = ex.Message, Data = [] };
+        }
+        finally
+        {
+            Busy = false;
+            StateHasChanged();
+        }
     }
 
 }

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Validators;
@@ -11,9 +12,10 @@ public class CreatePostQueryValidator : AbstractValidator<CreatePostQuery>
     public CreatePostQueryValidator(IMetaModelTypesLocator metaModelTypesLocator,
                                     IPostCategoryRepository postCategoryRepository,
                                     IMetaValuesValidator metaValuesValidator,
-                                    IPostRepository postRepository)
+                                    IPostRepository postRepository,
+                                    PostFormRulesValidator postFormRules)
     {
-        RuleFor(x => x).SetValidator(new GeneralPostQueryValidator(metaModelTypesLocator, postCategoryRepository));
+        RuleFor(x => x).SetValidator(new GeneralPostQueryValidator(metaModelTypesLocator, postCategoryRepository, postFormRules));
 
         RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.Post, x => x.Id);
 

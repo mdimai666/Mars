@@ -7,6 +7,16 @@ public class FFrontEngineResponse
     public string Description { get; set; } = "";
 }
 
+/// <summary>
+/// Стартовый шаблон фронта: имя папки в Res/front_templates и движок шаблона
+/// (определяется по расширению файлов: *.sbn — scriban, иначе handlebars).
+/// </summary>
+public class FFrontTemplateResponse
+{
+    public required string Name { get; set; }
+    public required string EngineId { get; set; }
+}
+
 public class FFrontTreeNodeResponse
 {
     public required string Name { get; set; }
@@ -47,4 +57,16 @@ public class FCreateFrontRequest
     /// Имя стартового шаблона из Res/front_templates. Пусто = шаблон по умолчанию.
     /// </summary>
     public string Template { get; set; } = "";
+
+    /// <summary>
+    /// Id рендер-движка (реестр IWebRenderEngineFactory). Пусто = движок по умолчанию.
+    /// При создании из стартового шаблона игнорируется — движок диктуется шаблоном.
+    /// </summary>
+    public string EngineId { get; set; } = "";
+
+    /// <summary>
+    /// Только при UseTemplate=false: пустая папка data/fronts/&lt;slug&gt; создаётся,
+    /// непустая — подключаемая существующая папка (абсолютный путь, должна существовать).
+    /// </summary>
+    public string Path { get; set; } = "";
 }

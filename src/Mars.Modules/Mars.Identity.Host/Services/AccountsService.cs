@@ -34,21 +34,26 @@ internal class AccountsService : IAccountsService
 
     public async Task<AuthResultDto> Login(AuthCredentialsDto authCredentials, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByNameAsync(authCredentials.Login);
+        var user = await _userManager.FindByNameAsync(authCredentials.Login) ?? await _userManager.FindByEmailAsync(authCredentials.Login);
 
-        if (user == null || !await _userManager.CheckPasswordAsync(user, authCredentials.Password))
+        if (user == null)
+        {
+            return AuthResultDto.InvalidDataResponse();
+        }
+
+        var signInResult = await _signInManager.PasswordSignInAsync(user, authCredentials.Password, isPersistent: true, lockoutOnFailure: true);
+
+        if (signInResult.IsLockedOut)
+        {
+            return AuthResultDto.ErrorResponse("Учётная запись временно заблокирована из-за неудачных попыток входа");
+        }
+
+        if (!signInResult.Succeeded)
         {
             return AuthResultDto.InvalidDataResponse();
         }
 
         var token = await _tokenService.CreateAccessToken(user.Id, _userRepository, cancellationToken);
-        var refreshToken = _tokenService.GenerateRefreshToken();
-
-        if (true)
-        {
-            await _signInManager.SignInAsync(user, true);
-
-        }
 
         return new AuthResultDto
         {
@@ -169,9 +174,9 @@ internal class AccountsService : IAccountsService
 
         if (user == null) return null;
 
-        var valid = await _userManager.CheckPasswordAsync(user, password);
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
 
-        return valid ? user.Id : null;
+        return signInResult.Succeeded ? user.Id : null;
     }
 
 }

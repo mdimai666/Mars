@@ -1,0 +1,49 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Docker.Contracts.Nodes
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DockerRunNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.Image">
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="alpine:3.20"
+                            Value="@DockerNodeFormUtil.KindValue(Node.ImageKind, Node.Image)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.ImageKind = k, x => Node.Image = x))"
+                            For="() => Node.Image" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Command">
+            <MarsValueInput Class="mvi-fill" VarType="string" Placeholder="sh -c 'echo hello'"
+                            Value="@DockerNodeFormUtil.KindValue(Node.CommandKind, Node.Command)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.CommandKind = k, x => Node.Command = x))"
+                            For="() => Node.Command" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Env">
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="3" Placeholder="KEY=VALUE"
+                            Value="@DockerNodeFormUtil.KindValue(Node.EnvKind, Node.Env)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.EnvKind = k, x => Node.Env = x))"
+                            For="() => Node.Env" />
+        </FormItem2>
+        <FormItem2 For="() => Node.Stdin">
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="3" Placeholder="empty = msg payload"
+                            Value="@DockerNodeFormUtil.KindValue(Node.StdinKind, Node.Stdin)"
+                            ValueChanged="@(v => DockerNodeFormUtil.SetKinded(v, k => Node.StdinKind = k, x => Node.Stdin = x))"
+                            For="() => Node.Stdin" />
+        </FormItem2>
+        <FormItem2 For="() => Node.TimeoutSeconds">
+            <FluentNumberField TValue="int" @bind-Value="Node.TimeoutSeconds" Min="0" Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="() => Node.KeepContainer">
+            <FluentSwitch @bind-Value="Node.KeepContainer" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    DockerRunNode Node { get => (DockerRunNode)Value!; set => Value = value; }
+}

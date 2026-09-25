@@ -1,0 +1,60 @@
+@using Mars.Admin.Framework.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(EmailSendNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="()=>Node.Config">
+            <InputConfigField @bind-Value=@Node.Config TConfig="SmtpConfigNode" />
+        </FormItem2>
+
+        <FormItem2 For="()=>Node.ToEmail">
+            <MarsValueInput Class="mvi-fill" VarType="string"
+                            Value="@KindValue(Node.ToEmailKind, Node.ToEmail)"
+                            ValueChanged="@(v => SetKinded(v, k => Node.ToEmailKind = k, x => Node.ToEmail = x))"
+                            For="() => Node.ToEmail" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Subject">
+            <MarsValueInput Class="mvi-fill" VarType="string"
+                            Value="@KindValue(Node.SubjectKind, Node.Subject)"
+                            ValueChanged="@(v => SetKinded(v, k => Node.SubjectKind = k, x => Node.Subject = x))"
+                            For="() => Node.Subject" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Message">
+            <MarsValueInput Class="mvi-fill" VarType="string" Multiline Rows="5"
+                            Placeholder="empty = msg.Payload"
+                            Value="@KindValue(Node.MessageKind, Node.Message)"
+                            ValueChanged="@(v => SetKinded(v, k => Node.MessageKind = k, x => Node.Message = x))"
+                            For="() => Node.Message" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    EmailSendNode Node { get => (EmailSendNode)Value!; set => Value = value; }
+
+    static string KindValue(string kind, string value) => kind switch
+    {
+        InputValueKind.Expression => "@" + value,
+        InputValueKind.Msg => "@msg." + value,
+        _ => value,
+    };
+
+    static void SetKinded(string value, Action<string> setKind, Action<string> setValue)
+    {
+        if (value.StartsWith('@'))
+        {
+            setKind(InputValueKind.Expression);
+            setValue(value[1..].Trim());
+        }
+        else
+        {
+            setKind(InputValueKind.Const);
+            setValue(value);
+        }
+    }
+}

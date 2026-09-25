@@ -10,7 +10,7 @@ public class SwitchNodeStringCompareExample : INodeExample<SwitchNode>
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         var builder = NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "good", Name = "good" })
+            .AddNext(new InjectNode().SetPayload("good"))
             .AddNext(new SwitchNode()
             {
                 BreakAfterFirst = false,

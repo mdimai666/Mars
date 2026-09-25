@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Mars.Data.Contexts;
 
@@ -14,6 +16,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
                 UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity, UserPasskeyEntity>
 {
     private readonly DbContextOptions<MarsDbContext> _options;
+    private readonly ILogger _logger;
     public bool IsPooled { get; }
 
     //--------Asp.Net defaults----------
@@ -49,6 +52,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
 
     //--------USER----------
     public virtual DbSet<UserMetaValueEntity> UserMetaValues { get; set; } = default!;
+    public virtual DbSet<UserApiKeyEntity> UserApiKeys { get; set; } = default!;
 
     //--------X----------
     public virtual DbSet<NavMenuEntity> NavMenus { get; set; } = default!;
@@ -57,12 +61,12 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     public MarsDbContext(DbContextOptions<MarsDbContext> options) : base(options)
     {
         _options = options;
-#if DEBUG
-        Console.WriteLine($"new {GetType().Name}()");
-#endif
         SaveChangesFailed += MarsDbContext_SaveChangesFailed;
 
         var infra = this.GetInfrastructure();
+        _logger = infra.GetService<ILoggerFactory>()?.CreateLogger(GetType()) ?? NullLogger.Instance;
+        _logger.LogDebug("new {ContextName}()", GetType().Name);
+
         //var type = typeof(IDbContextFactory<>).MakeGenericType(GetType());
         IsPooled = infra.GetService<IDbContextFactory<MarsDbContext>>() != null;
     }
@@ -86,13 +90,8 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
         var factory = extension.Factory;
         factory.OnModelCreating(builder);
 
-        bool isPluginInherit = typeof(PluginDbContextBase).IsAssignableFrom(GetType());
-        if (isPluginInherit)
-        {
-#if DEBUG
-            Console.WriteLine($"PLUGIN>>EF+init>{GetType().Name}");
-#endif
-        }
+        if (typeof(PluginDbContextBase).IsAssignableFrom(GetType()))
+            _logger.LogDebug("PLUGIN>>EF+init>{ContextName}", GetType().Name);
 
         OnModelCreatingPartial(builder);
     }

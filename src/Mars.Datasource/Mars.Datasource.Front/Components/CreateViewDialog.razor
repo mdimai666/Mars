@@ -1,0 +1,85 @@
+@using Mars.Contracts.Resources
+@using Mars.Datasource.Contracts.Sql
+
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<CreateViewDialogContent>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Вьюха")</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="hstack gap-3 align-items-end">
+        <FluentSelect TOption="string" Width="180px" Label="Схема"
+                      @bind-Value="_schema" @bind-Value:after="Refresh">
+            <FluentOption TOption="string" Value="">— без схемы —</FluentOption>
+            @foreach (var schema in Content.Schemas)
+            {
+                <FluentOption TOption="string" Value="@schema">@schema</FluentOption>
+            }
+        </FluentSelect>
+        <FluentTextField Label="Имя" Style="flex:1 1 auto"
+                         @bind-Value="_name" @bind-Value:after="Refresh" />
+        <FluentCheckbox Label="заменить, если есть" @bind-Value="_replace" @bind-Value:after="Refresh" />
+    </div>
+
+    <div class="fz14px text-secondary mt-3">
+        Тело вьюхи — первый SELECT из редактора рабочей области.
+    </div>
+
+    @if (_error is not null)
+    {
+        <div class="alert alert-warning mt-2 mb-0 fz14px">@_error</div>
+    }
+
+    @if (_sql is not null)
+    {
+        <pre class="ds-view-ddl">@_sql</pre>
+    }
+</FluentDialogBody>
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" Disabled="@(_sql is null)" OnClick="OkAsync">
+            @AppRes.Ok
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">
+            @AppRes.Cancel
+        </FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public CreateViewDialogContent Content { get; set; } = default!;
+
+    string _schema = "";
+    string _name = "";
+    bool _replace;
+
+    string? _sql;
+    string? _error;
+
+    protected override void OnParametersSet()
+    {
+        _schema = Content.Schema ?? Content.Schemas.FirstOrDefault() ?? "";
+        _name = Content.Name ?? "";
+        _replace = Content.Replace;
+
+        Refresh();
+    }
+
+    void Refresh()
+    {
+        var result = ViewDdlBuilder.Create(Content.Dialect, _schema, _name, Content.Body, _replace);
+
+        _sql = result.Sql;
+        _error = result.Error;
+    }
+
+    Task OkAsync() => Dialog.CloseAsync(new ViewDdlRequest(_sql!, _schema, _name.Trim()));
+
+    Task CancelAsync() => Dialog.CancelAsync();
+}

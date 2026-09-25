@@ -82,7 +82,7 @@ public class EditorJsContent
             isReplaced = true;
 
             if (LooksLikeHtml(input))
-                return WrapHtmlInRawBlock(input);
+                return new EditorJsContent { Blocks = HtmlToBlocksConverter.Convert(input) };
 
             return CreateParagraps(
                 SplitToParagraphs(input)
@@ -126,11 +126,10 @@ public class EditorJsContent
         if (!text.Contains('<') || !text.Contains('>'))
             return false;
 
-        // нормальные html-теги
-        return Regex.IsMatch(
-            text,
-            @"<\s*(p|div|br|span|a|img|ul|ol|li|h[1-6]|blockquote|pre|code|table|tr|td|th)\b",
-            RegexOptions.IgnoreCase);
+        // любой тег, а не белый список: иначе разметка с прочими тегами уходила бы в
+        // CreateParagraps и там экранировалась в видимый текст.
+        // Пробел сразу после '<' запрещён, чтобы «a < b и c > d» не считалось разметкой.
+        return Regex.IsMatch(text, @"</?[a-zA-Z][a-zA-Z0-9-]*[\s/>]");
     }
 
     private static string[] SplitToParagraphs(string text)

@@ -1,0 +1,43 @@
+@using Mars.Identity.Contracts.Options
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [OptionEditFormForOptionAttribute(typeof(AuthProtectionOption))]
+@attribute [Display(Name = "Защита авторизации")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="AuthProtectionOption">
+    <h3>Настройки защиты авторизации</h3>
+
+    <FormItem2 For="()=>context.Enabled" class="col">
+        <FluentSwitch @bind-Value="@context.Enabled" />
+    </FormItem2>
+
+    <h5>Rate limiting</h5>
+
+    <FormItem2 For="()=>context.RateWindowSeconds">
+        <FluentNumberField @bind-Value=@context.RateWindowSeconds Width="250px" />
+    </FormItem2>
+
+    <FormItem2 For="()=>context.RateMaxRequestsPerWindow">
+        <FluentNumberField @bind-Value=@context.RateMaxRequestsPerWindow Width="250px" />
+    </FormItem2>
+
+    <h5>Lockout</h5>
+
+    <FormItem2 For="()=>context.LockoutMaxFailedAccessAttempts">
+        <FluentNumberField @bind-Value=@context.LockoutMaxFailedAccessAttempts Width="250px" />
+    </FormItem2>
+
+    <FormItem2 For="()=>context.LockoutDefaultLockoutTimeSpanMinutes">
+        <FluentNumberField @bind-Value=@context.LockoutDefaultLockoutTimeSpanMinutes Width="250px" />
+    </FormItem2>
+
+    <h5>Security stamp</h5>
+
+    <FormItem2 For="()=>context.SecurityStampValidationIntervalMinutes">
+        <FluentNumberField @bind-Value=@context.SecurityStampValidationIntervalMinutes Width="250px" />
+    </FormItem2>
+</EditOptionForm>
+
+@code {
+    EditOptionForm<AuthProtectionOption>? form;
+}

@@ -66,6 +66,8 @@ public static class MainIdentity
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IKeyMaterialService, KeyMaterialService>();
         services.AddSingleton<IUserMetaLocator, UserMetaLocator>();
+        services.AddMemoryCache();
+        services.AddSingleton<ISecurityStampCache, SecurityStampCache>();
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();
@@ -84,8 +86,8 @@ public static class MainIdentity
     {
         var optionService = app.Services.GetRequiredService<IOptionService>();
         optionService.RegisterOption<PasskeyOption>(appendToInitialSiteData: true);
-        optionService.RegisterOption<AuthProtectionOption>(onChangeHook: protection => ApplyLockoutSettings(app.Services, protection));
-        ApplyLockoutSettings(app.Services, optionService.GetOption<AuthProtectionOption>());
+        optionService.RegisterOption<AuthProtectionOption>(onChangeHook: protection => ApplyAuthProtectionSettings(app.Services, protection));
+        ApplyAuthProtectionSettings(app.Services, optionService.GetOption<AuthProtectionOption>());
 
         var cli = app.Services.GetService<ICommandLineApi>();
         cli?.Register<UserCommandCli>();
@@ -94,11 +96,14 @@ public static class MainIdentity
         return app;
     }
 
-    private static void ApplyLockoutSettings(IServiceProvider services, AuthProtectionOption protection)
+    private static void ApplyAuthProtectionSettings(IServiceProvider services, AuthProtectionOption protection)
     {
         var lockout = services.GetRequiredService<IOptions<IdentityOptions>>().Value.Lockout;
         lockout.AllowedForNewUsers = true;
         lockout.MaxFailedAccessAttempts = protection.LockoutMaxFailedAccessAttempts;
         lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(protection.LockoutDefaultLockoutTimeSpanMinutes);
+
+        services.GetRequiredService<IOptions<SecurityStampValidatorOptions>>().Value.ValidationInterval =
+            TimeSpan.FromMinutes(protection.SecurityStampValidationIntervalMinutes);
     }
 }

@@ -25,4 +25,8 @@ public class AuthProtectionOption
     [Display(Name = "Длительность блокировки (минуты)")]
     [Range(1, 10080)]
     public int LockoutDefaultLockoutTimeSpanMinutes { get; set; } = 5;
+
+    [Display(Name = "Интервал сверки security stamp с БД (минуты)", Description = "0 — сверять на каждый запрос. Мгновенное обновление прав идёт через кэш stamp независимо от интервала")]
+    [Range(0, 10080)]
+    public int SecurityStampValidationIntervalMinutes { get; set; } = 30;
 }

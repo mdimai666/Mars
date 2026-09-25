@@ -113,6 +113,9 @@ internal static class MarsStartupPartCore
 
             options.Events = new CookieAuthenticationEvents()
             {
+                // Events пересоздаётся целиком — штатная привязка SecurityStampValidator теряется,
+                // поэтому валидация вызывается явно внутри CookiePrincipalValidator
+                OnValidatePrincipal = CookiePrincipalValidator.ValidateAsync,
                 OnRedirectToLogin = async (ctx) =>
                 {
                     if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)

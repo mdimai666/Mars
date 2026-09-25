@@ -22,9 +22,28 @@ Identity cookie (`.AspNetCore.Identity.Application`).
   следуют и срок JWT (`TokenService`), и cookie `ExpireTimeSpan` (`MarsStartupPartCore`).
 - Cookie: `SlidingExpiration = true` — активная сессия продлевается, неактивная умирает через
   3 дня → перелогин/пасскей. **Refresh-потока нет и не должно быть** (см. «Отклонено»).
-- Протухшие claims в куке освежает штатный SecurityStampValidator (~30 мин). Все пути правки
-  пользователей вызывают `UpdateSecurityStampAsync` (`src/Server/Mars.Data.Repositories/UserRepository.cs`:
-  `Update`, `SetRoles`, `RemoteUserUpsert`) — для новых путей редактирования это обязательно.
+
+## Свежесть claims в живой сессии
+
+Проблема: cookie хранит principal, снятый при логине; sliding-перевыпуск его не освежает.
+Решение — два слоя:
+
+- **Мгновенный (кэш)**: `ISecurityStampCache` (`Mars.Identity.Abstractions/Services`, реализация
+  `SecurityStampCache` на IMemoryCache в `Mars.Identity.Host/Services`, TTL 24 ч). Все точки
+  обновления stamp (`UserRepository.Update`, `UpdateUserRoles`, `RemoteUserUpsert`) пишут
+  `Mark(userId, newStamp)`. Валидация cookie (`CookiePrincipalValidator`, см. ниже) на КАЖДЫЙ
+  запрос сверяет stamp из куки с кэшем (без БД): не совпал → principal пересобирается из БД
+  (`CreateUserPrincipalAsync`) и кука перевыпускается (`ShouldRenew`); юзера нельзя впускать
+  (`CanSignInAsync` false / не найден) → `RejectPrincipal` + SignOut. Запись НЕ удаляется при
+  перевыпуске — сравнивается stamp, поэтому идемпотентна для всех устройств юзера.
+- **Бэкстоп (БД)**: штатный `SecurityStampValidator` со сверкой раз в `ValidationInterval`
+  (`AuthProtectionOption.SecurityStampValidationIntervalMinutes`, дефолт 30, 0 = на каждый
+  запрос; применяется мутацией singleton `SecurityStampValidatorOptions` в `UseMarsIdentity`
+  + onChangeHook). Покрывает промахи кэша: рестарт, прямой edit БД, другой инстанс
+  (IMemoryCache per-process).
+
+Итого: смена ролей/данных применяется на следующем же запросе юзера; блокировка — тоже.
+Push через SignalR (обновление без запроса) — в бэклоге.
 
 ## Логин/логаут — поток
 
@@ -113,6 +132,9 @@ POST/fetch куку не отправляют. См. инварианты.
   `PasswordSignInAsync`/`CheckPasswordSignInAsync`, иначе base-реализация портит last-call).
 - `tests/Mars.Integration.Tests/Modules/SSO/OAuthProviderTests.cs`, `OAuthLoginPageTests.cs` —
   клиент регистрируется с `ClientSecretHash = ApiKeyFormat.HashSecret(plaintext)`.
+- `tests/Mars.Integration.Tests/Services/SecurityStampCacheTests.cs` — mark/try-get кэша stamp.
+- `tests/Mars.WebApiClient.Integration.Tests/Tests/Accounts/RoleRefreshTests.cs` — смена ролей
+  применяется к живой cookie-сессии на следующем запросе (без перелогина).
 - `tests/Mars.WebApiClient.Integration.Tests/Tests/Accounts/LoginAccountTests.cs` — login/logout
   на живом хосте.
 - E2E: `E2EServerFixture.Seed` поднимает `RateMaxRequestsPerWindow` до 10000 через
@@ -120,6 +142,17 @@ POST/fetch куку не отправляют. См. инварианты.
 
 ## Грабли
 
+- **`ConfigureApplicationCookie` пересоздаёт `options.Events` целиком** (`MarsStartupPartCore.cs`) —
+  штатная привязка Identity `OnValidatePrincipal = SecurityStampValidator.ValidateAsync` при этом
+  ТЕРЯЕТСЯ (до 2026-09 stamp-валидация cookie в Mars не работала вовсе). Сейчас в Events явно
+  прописан `CookiePrincipalValidator.ValidateAsync`, который внутри сам вызывает
+  `SecurityStampValidator.ValidateAsync<ISecurityStampValidator>`. При любых правках Events —
+  не терять OnValidatePrincipal.
+- **`UserRepository.UpdateUserRoles`**: нельзя мешать ручную tracked-загрузку `Include(s => s.Roles)`
+  с Identity role-API (`AddToRolesAsync`/`RemoveFromRolesAsync`) — конфликт трекинга
+  `UserRoleEntity`/`UserEntity` и duplicate key. Используется внутренний `UpdateRoles`
+  (прямая работа с `entity.Roles` + нормализация имён), как в `Update`.
+- Имена ролей в claims — как в БД (`RoleEntity.Name`), сравнения в тестах/логике — case-insensitive.
 - В TestServer `Connection.RemoteIpAddress` = null → все запросы в одной партиции лимитера
   («unknown»): серии login-тестов могут упереться в лимит.
 - `PasswordSignInAsync` уважает `CanSignInAsync` (`SignIn.RequireConfirmedAccount = true` в
@@ -139,7 +172,8 @@ POST/fetch куку не отправляют. См. инварианты.
   держится CSRF-защита без antiforgery.
 - Никаких токенов в localStorage/JS-читаемых куках; смена сессии = full reload (forceLoad).
 - Логин-пути обязаны ставить cookie через SignInManager и не возвращать refresh-токенов.
-- Правки пользователей (роли, данные, блокировка) обязаны обновлять security stamp.
+- Правки пользователей (роли, данные, блокировка) обязаны обновлять security stamp И писать
+  `ISecurityStampCache.Mark` (иначе мгновенного обновления прав не будет, только 30-мин бэкстоп).
 - Секреты (client secret, refresh-токены, API-ключи) хранятся только как SHA-256
   (`ApiKeyFormat.HashSecret`), сравнение — `FixedTimeEquals`.
 
@@ -160,5 +194,5 @@ POST/fetch куку не отправляют. См. инварианты.
 - **Impersonation** (вход админа от имени юзера — заказан, дизайн согласован): эндпоинт
   `[Authorize(Roles=admin)]` → `SignInAsync(targetUser)` + claim `OriginalUserId`/
   `IsImpersonating` для возврата и аудита.
-- Интервал SecurityStampValidator (30 мин) не вынесен в настройки.
+- Push-обновление сессии через SignalR (применять права без ожидания следующего запроса).
 - Antiforgery — см. «Отклонено» (вернуться при cross-origin фронтах).

@@ -7,6 +7,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Host.Endpoints;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -50,7 +51,13 @@ public class FrontRenderErrorTests : IDisposable
     {
         var engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), appFront);
         engine.Setup();
-        engine.InitializeEngine(services);
+
+        // как WebRenderEngineLocator.Build: WebTemplateService создаётся Host'ом, не движком
+        var hub = services.GetRequiredService<IHubContext<ChatHub>>();
+        var wts = new WebTemplateService(services, hub, appFront);
+        appFront.Features.Set<IWebTemplateService>(wts);
+        wts.OnFileUpdated += (s, e) => wts.ClearCache();
+
         return engine;
     }
 

@@ -57,10 +57,13 @@ v1
             },
         };
 
-        // как HandlebarsRenderEngineFactory.Create: движок + WebTemplateService с подпиской на изменения
+        // как WebRenderEngineLocator.Build: движок создаётся фабрикой, WebTemplateService — Host'ом
         engine = new HandlebarsWebRenderEngine(services.GetRequiredService<IMemoryCache>(), appFront);
         engine.Setup();
-        engine.InitializeEngine(services);
+
+        var wts = new WebTemplateService(services, hub, appFront);
+        appFront.Features.Set<Mars.SiteEngine.Abstractions.WebSite.Interfaces.IWebTemplateService>(wts);
+        wts.OnFileUpdated += (s, e) => wts.ClearCache();
     }
 
     string IndexFile() => Path.Combine(dir, "index.hbs");

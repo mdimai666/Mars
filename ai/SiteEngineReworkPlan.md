@@ -61,25 +61,27 @@ QueryLang. Старт 2026-09-26.
 
 ## Фаза 1 — зависимости, контракты, мёртвый код
 
-- [ ] 1.1 Удалить мёртвые ProjectReference: в `SiteEngine.Abstractions` (Nodes.Core,
+- [x] 1.1 Удалить мёртвые ProjectReference: в `SiteEngine.Abstractions` (Nodes.Core,
       Cms.Abstractions, Media.Abstractions), в `SiteEngine.Host` (Mars.Data), внешние
       (`Mars.Media.Host`, `Mars.SemanticKernel.CMS` → SiteEngine.Abstractions).
-- [ ] 1.2 Удалить мёртвый код: `RenderRazorHost` (+ папка), `TemplatorQueryLangCacheService`,
+- [x] 1.2 Удалить мёртвый код: `RenderRazorHost` (+ папка), `TemplatorQueryLangCacheService`,
       `#if THINGS` в `WebSiteRequestProcessor`.
-- [ ] 1.3 Схлопнуть `Mars.SiteEngine.Templators`: `PaginatorHelper` →
+- [x] 1.3 Схлопнуть `Mars.SiteEngine.Templators`: `PaginatorHelper` →
       `SiteEngine.Abstractions` (рядом с Templators-типами); удалить проект из `Mars.slnx`,
       обновить ссылки в SiteEngine.Host и QueryLang.Host.
-- [ ] 1.4 Развязать `SiteEngine.Handlebars → SiteEngine.Host`: создание `WebTemplateService`
+- [x] 1.4 Развязать `SiteEngine.Handlebars → SiteEngine.Host`: создание `WebTemplateService`
       перенести в Host (`WebRenderEngineLocator` до вызова фабрики, либо
       `IWebTemplateServiceFactory` в Abstractions с реализацией в Host); движок берёт готовый
       сервис из `appFront.Features.Get<IWebTemplateService>()`. Убрать ProjectReference.
-- [ ] 1.5 Убрать ссылку `SiteEngine.Handlebars → Mars.Data`: `MyHandlebarsHelpBlock` использует
-      `MarsDbContext`/EF напрямую — перевести на существующие локаторы
-      (`ITemplatorFeaturesLocator`, `IMetaModelTypesLocator`, `IQueryLangHelperAvailableMethodsProvider`);
-      если чего-то не хватает — расширить интерфейс локатора, а не тянуть EF.
-- [ ] 1.6 Проверка: `dotnet build Mars.slnx`; `Mars.SiteEngine.Tests` (WebPageTests в том числе),
-      лёгкие фронт-тесты `Mars.Integration.Tests` (FrontManagerTests, RenderEngineRenderTests,
-      WebTemplateServiceWatcherTests, HandlebarsEngineCacheTests, FrontRenderErrorTests и пр.).
+      (сделано: создание в `WebRenderEngineLocator.Build()`, движку сервис не нужен —
+      `InitializeEngine`/`Initialize` удалены; тесты `HandlebarsEngineCacheTests`/
+      `FrontRenderErrorTests` создают WTS явно, как локатор)
+- [x] 1.5 Убрать ссылку `SiteEngine.Handlebars → Mars.Data`: `MyHandlebarsHelpBlock` переведён
+      на `IDatabaseEntityTypeCatalogService.ListEntities()` (Cms.Abstractions) вместо рефлексии
+      по `MarsDbContext`; в `Mars.SiteEngine.Tests` добавлена явная ссылка на SiteEngine.Host
+      (раньше была транзитивной через Handlebars).
+- [x] 1.6 Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.SiteEngine.Tests` — 62/62;
+      `Mars.Integration.Tests` (namespace Services) — 97/97.
 
 ## Фаза 2 — контрибьюторы в Providers.Handlebars + перестройка сайт-движка
 

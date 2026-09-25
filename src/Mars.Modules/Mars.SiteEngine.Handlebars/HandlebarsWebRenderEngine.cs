@@ -1,17 +1,12 @@
 using System.Text;
-using Mars.Nodes.Abstractions.Hubs;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite;
-using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Mars.SiteEngine.Handlebars.TemplateData;
-using Mars.SiteEngine.Host.Services;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SiteEngine.Handlebars;
 
@@ -38,27 +33,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         {
             throw new DirectoryNotFoundException($"Front folder not found '{AppFront.Configuration.Path}'");
         }
-    }
-
-    /// <summary>
-    /// Инициализация движка вне пайплайна (создание через IWebRenderEngineFactory)
-    /// </summary>
-    public void InitializeEngine(IServiceProvider rootServices)
-    {
-        Initialize(AppFront, rootServices);
-    }
-
-    protected virtual void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
-    {
-        var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
-        var wts = new WebTemplateService(rootServices, hub, appFront);
-        appFront.Features.Set<IWebTemplateService>(wts);
-
-        wts.OnFileUpdated += (s, e) =>
-        {
-            wts.ClearCache();
-        };
-
     }
 
     public virtual string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)

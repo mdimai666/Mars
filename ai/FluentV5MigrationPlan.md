@@ -245,11 +245,18 @@ wwwroot попадают в отдачу только после пересбо�
 ## Этап стилей — статус 2026-09-27
 
 Код-уровень (без обсуждений, сделано):
-- `FluentBadge Fill=` мёртв в v5 → `Color="BadgeColor.*"`: info→Informative, warning→Warning,
-  error→Danger, success→Success, black/neutral→Subtle, accent→Brand (ListPostTypePage,
-  FrontSettingsPage, Workspace JobViews: GetStatusColorFillName→GetStatusBadgeColor,
-  FillColorName→FillColor). Текст бейджа в ChildContent в v5 рендерится нормально (проверено
-  скриншотом) — в Content переносить не обязательно.
+- `FluentBadge Fill=` мёртв в v5. Дефолт библиотеки — brand-синий (компонент всегда пишет
+  `color="brand"`); через `AddFluentUIComponents`/LibraryConfiguration дефолты бейджей НЕ
+  настраиваются. Решение пользователя (2026-09-28): **серый дефолт глобально** — оверрайд в
+  `fluent-ui.less`: `fluent-badge[color="brand"]:not(.badge-accent)` → серый
+  (`--colorNeutralBackground5`/`--colorNeutralForeground3`), осознанный акцент — класс
+  `badge-accent` (4 места: Single, Рекомендован ×2, field-бейдж FormLayoutEditor).
+  Семантика атрибутами: warning→Warning, error→Danger, success→Success (зелёный; в css
+  библиотеки опечатка `[color=sucess]`, но компонент пишет `success` — работает),
+  black→Important (тёмный), neutral/теги/фичи→Informative (серый #ebebeb).
+  **Subtle НЕ использовать на светлых поверхностях**: `[color=subtle]` =
+  `--colorNeutralBackground1` = белый = невидимая пилюля.
+  ВАЖНО: less-часть видна только после компиляции style.css пользователем.
 - `FluentLabel` (Typo/Color удалены в v5) → `FluentText`: батч агента по всему репо кроме
   Workspace + Workspace вручную. Таблица: Body→Size300, Subject→Size400, Header→Size500,
   PaneHeader→Size600, EmailHeader→Size700, PageTitle→Size800, HeroTitle→Size900,
@@ -273,7 +280,8 @@ wwwroot попадают в отдачу только после пересбо�
 
 Открытые вопросы этапа стилей (обсудить):
 1. Маппинг токенов StyleDesignerPage (FluentDesignSystemProvider удалён) на v5 CSS-переменные.
-2. Дефолтный цвет `FluentBadge` стал brand-синим (v4 — neutral): глобально CSS или по местам?
+2. ~~Дефолт бейджей~~ — решено 2026-09-27: явные Color на использованиях (neutral→Informative,
+   black→Important), дефолт библиотеки не переопределяем.
 3. Дефолтный цвет `FluentIcon` Accent→currentColor: принять или вернуть акцент CSS-ом?
 4. ~~`FluentGrid.Spacing` default 3→0~~ — закрыто без действий: единственное использование
    (FormsBuilderPage) уже имеет явный `Spacing="3"`.

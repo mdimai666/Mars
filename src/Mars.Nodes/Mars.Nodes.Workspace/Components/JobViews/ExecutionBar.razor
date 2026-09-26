@@ -48,8 +48,8 @@
         NodeJobExecutionResultResponse.Success => BadgeColor.Success,
         NodeJobExecutionResultResponse.Fail => BadgeColor.Danger,
         NodeJobExecutionResultResponse.Pending => BadgeColor.Informative,
-        NodeJobExecutionResultResponse.Terminated => BadgeColor.Subtle,
-        _ => BadgeColor.Subtle
+        NodeJobExecutionResultResponse.Terminated => BadgeColor.Important,
+        _ => BadgeColor.Informative
     };
 }
 

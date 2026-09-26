@@ -96,11 +96,11 @@
                                                 @(item.Node.RolesInverse ? "!= " : "")
                                                 @foreach (var r in item.Node.Roles)
                                                 {
-                                                    <FluentBadge>@r</FluentBadge>
+                                                    <FluentBadge Color="BadgeColor.Informative">@r</FluentBadge>
                                                 }
                                                 @if (item.Node.IsSystem)
                                                 {
-                                                    <FluentBadge Appearance="BadgeAppearance.Outline">system</FluentBadge>
+                                                    <FluentBadge Appearance="BadgeAppearance.Outline" Color="BadgeColor.Informative">system</FluentBadge>
                                                 }
                                             </div>
                                         </div>

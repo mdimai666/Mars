@@ -49,7 +49,7 @@
                 <div class="hstack gap-1">
                     @foreach (var feature in context.PostType.EnabledFeatures)
                     {
-                        <FluentBadge>@(L[feature])</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Informative">@(L[feature])</FluentBadge>
                     }
                 </div>
             </FormItem2>

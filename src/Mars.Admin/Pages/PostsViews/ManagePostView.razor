@@ -91,7 +91,7 @@
                                                 <FluentOverflow TItem="string" Style="width: 100%;">
                                                     @foreach (var tag in context.Tags)
                                                     {
-                                                        <FluentBadge>@tag</FluentBadge>
+                                                        <FluentBadge Color="BadgeColor.Informative">@tag</FluentBadge>
                                                     }
                                                 </FluentOverflow>
                                             }
@@ -113,7 +113,7 @@
                                             <FluentOverflow TItem="string" Style="width: 100%;">
                                                 @foreach (var tag in context.Tags)
                                                 {
-                                                    <FluentBadge>@tag</FluentBadge>
+                                                    <FluentBadge Color="BadgeColor.Informative">@tag</FluentBadge>
                                                 }
                                             </FluentOverflow>
                                         </div>
@@ -130,7 +130,7 @@
                                     <FluentOverflow TItem="string" Style="width: 100%;">
                                         @foreach (var cat in context.Categories ?? [])
                                         {
-                                            <FluentBadge OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
+                                            <FluentBadge Color="BadgeColor.Informative" OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
                                         }
                                     </FluentOverflow>
                                 </TemplateColumn>

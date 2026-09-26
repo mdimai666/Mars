@@ -86,7 +86,7 @@
                                                 <h5 class="mb-0">@plugin.DisplayName</h5>
                                                 @if (plugin.IsRecommended)
                                                 {
-                                                    <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand">Рекомендован</FluentBadge>
+                                                    <FluentBadge Appearance="BadgeAppearance.Filled" Class="badge-accent">Рекомендован</FluentBadge>
                                                 }
                                             </div>
                                             <span class="text-secondary">@plugin.AuthorName</span>
@@ -113,7 +113,7 @@
                                         <div class="d-flex gap-1 flex-wrap">
                                             @foreach (var tag in plugin.Tags)
                                             {
-                                                <FluentBadge Color="BadgeColor.Subtle">@tag</FluentBadge>
+                                                <FluentBadge Color="BadgeColor.Informative">@tag</FluentBadge>
                                             }
                                         </div>
                                     }
@@ -131,7 +131,7 @@
                                             }
                                             else
                                             {
-                                                <FluentBadge Color="BadgeColor.Subtle">Установлен</FluentBadge>
+                                                <FluentBadge Color="BadgeColor.Informative">Установлен</FluentBadge>
                                             }
                                         }
                                         else

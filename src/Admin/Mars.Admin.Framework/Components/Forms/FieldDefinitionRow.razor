@@ -15,32 +15,32 @@
 
             @if (Definition.Required && !Capabilities.CanEditRequired)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" Content="обязательное" />
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" Content="обязательное" />
             }
             @if (Definition.ReadOnly)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" Content="только чтение" />
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" Content="только чтение" />
             }
             @if (Definition.Multiple && !Capabilities.CanEditMultiple)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" Content="несколько значений" />
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" Content="несколько значений" />
             }
             @if (Definition.Hidden && !Capabilities.CanHide)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" Content="hidden" />
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" Content="hidden" />
             }
             @if (Definition.Disabled && !Capabilities.CanDisable)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" Content="выключено" />
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" Content="выключено" />
             }
             @if (!string.IsNullOrEmpty(Definition.Feature))
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled" title="Поле доступно, пока включена фича типа"
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative" title="Поле доступно, пока включена фича типа"
                              Content="@($"фича: {L[Definition.Feature]}")" />
             }
             @if (Definition.Protected)
             {
-                <FluentBadge Appearance="BadgeAppearance.Filled"
+                <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative"
                              title="Поле защищено фичей типа: чтобы удалить его — снимите галочку фичи"
                              Content="фича" />
             }

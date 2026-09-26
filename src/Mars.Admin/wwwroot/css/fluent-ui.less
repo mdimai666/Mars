@@ -18,22 +18,14 @@
     }
 }
 
-fluent-badge {
-    --badge-fill-highlight: #ffd800;
-    --badge-color-highlight: #000;
-    //
-    --badge-fill-lowlight: #333;
-    --badge-color-lowlight: #fff;
-    //
-    --badge-fill-error: var(--error);
-    --badge-color-error: #fff;
-    //
-    --badge-fill-black: black;
-    --badge-color-black: #fff;
-    //
-    --badge-fill-success: #b6ff00;
-    --badge-color-success: #000;
-    //
-    --badge-fill-info: #73cdff;
-    --badge-color-info: #000;
+// v5: дефолт бейджа — brand-синий (компонент всегда пишет color="brand"), в v4 был neutral.
+// Возвращаем серый дефолт глобально; осознанный акцент — класс badge-accent.
+fluent-badge[color="brand"]:not(.badge-accent) {
+    background-color: var(--colorNeutralBackground5);
+    color: var(--colorNeutralForeground3);
+}
+
+fluent-badge.badge-accent[fuib] {
+    background-color: var(--colorBrandBackground);
+    color: var(--colorNeutralForegroundOnBrand);
 }

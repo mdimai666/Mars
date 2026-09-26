@@ -71,7 +71,7 @@
                                     <div class="__tags d-flex gap-1">
                                         @foreach (var tag in context.PackageTags)
                                         {
-                                            <FluentBadge Appearance="BadgeAppearance.Filled">
+                                            <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative">
                                                 @tag
                                             </FluentBadge>
                                         }
@@ -83,25 +83,25 @@
                                 <div class="hstack gap-2 mt-2">
                                     @if (context.Locked)
                                     {
-                                        <FluentBadge Appearance="BadgeAppearance.Filled">Locked (config)</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Warning">Locked (config)</FluentBadge>
                                     }
                                     else
                                     {
-                                        <FluentBadge Appearance="BadgeAppearance.Filled">
+                                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative">
                                             @(context.Source == PluginSource.NuGet ? "NuGet" : "Zip")
                                         </FluentBadge>
                                     }
                                     @if (context.PendingDelete)
                                     {
-                                        <FluentBadge Appearance="BadgeAppearance.Filled">Will be removed on restart</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Warning">Will be removed on restart</FluentBadge>
                                     }
                                     else if (context.Enabled)
                                     {
-                                        <FluentBadge Appearance="BadgeAppearance.Filled">Enabled</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Success">Enabled</FluentBadge>
                                     }
                                     else
                                     {
-                                        <FluentBadge Appearance="BadgeAppearance.Filled">Disabled</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Informative">Disabled</FluentBadge>
                                     }
                                 </div>
                             </div>

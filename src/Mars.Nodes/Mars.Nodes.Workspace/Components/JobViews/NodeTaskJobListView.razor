@@ -50,9 +50,9 @@
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.InjectNodeId))">
                     <div id="@($"task-inject-node-{context.TaskId}")" class="hstack gap-1 cursor-pointer" @onclick="@(() => OnClickItemEvent(context))">
-                        <FluentBadge>@context.FlowName</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Informative">@context.FlowName</FluentBadge>
                         /
-                        <FluentBadge>@context.InjectNodeDisplayName</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Informative">@context.InjectNodeDisplayName</FluentBadge>
                         <FluentIcon Value="_infoIcon" Class="ms-1" />
                     </div>
                 </TemplateColumn>
@@ -62,7 +62,7 @@
                     <div class="hstack" title="@($"NodesChainCount: {context.NodesChainCount}, ExecuteCount: {context.ExecuteCount}")">
                         <FluentText>@context.NodesChainCount</FluentText>
                         <i class="bi bi-arrow-right-short"></i>
-                        <FluentBadge>@context.ExecuteCount</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Informative">@context.ExecuteCount</FluentBadge>
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="Errors">

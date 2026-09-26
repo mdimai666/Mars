@@ -80,7 +80,7 @@ public partial class NodeTaskJobListView
     public static BadgeColor GetStatusBadgeColor(NodeTaskResultSummaryResponse task)
     {
         if (task.ErrorCount > 0) return BadgeColor.Danger;
-        if (task.IsTerminated) return BadgeColor.Subtle;
+        if (task.IsTerminated) return BadgeColor.Important;
         if (task.IsDone) return BadgeColor.Success;
         return BadgeColor.Informative;
     }

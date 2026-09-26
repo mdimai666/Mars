@@ -55,6 +55,7 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
             ff(nameof(b.MinBy),[ new() ]),
             ff(nameof(b.Sum),[ new() ]),
             ff(nameof(b.Average),[ new() ]),
+            ff(nameof(b.GroupBy),[ new() ]),
 
             ff(nameof(b.Include),[ new() ]),
             ff(nameof(b.Union),[ new() ]),

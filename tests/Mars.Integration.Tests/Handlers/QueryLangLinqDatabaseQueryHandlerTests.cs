@@ -154,6 +154,54 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_GroupBy_TranslateOnPostgres()
+    {
+        // Arrange — "gb-777" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "gb-777");
+        (createdPosts[0].Slug, createdPosts[1].Slug, createdPosts[2].Slug) = ("gb-x", "gb-x", "gb-y");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(
+            "Posts.Where(post.Title==\"gb-777\").GroupBy(Slug)", new(), default);
+
+        // Assert
+        var groups = ((IEnumerable<EfGrouping<string, PostEntity>>)result!)
+            .OrderBy(g => g.Key).ToList();
+        groups.Should().HaveCount(2);
+        groups[0].Key.Should().Be("gb-x");
+        groups[0].Items.Should().HaveCount(2);
+        groups[1].Key.Should().Be("gb-y");
+        groups[1].Count.Should().Be(1);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_GroupByOnMetaType_Works()
+    {
+        // Arrange
+        await _setupDataHelper.SetupPostTypeAndPosts(
+            "gbType",
+            [new() { Id = Guid.NewGuid(), Type = EMetaFieldType.Int, Key = "price", Title = "Price" }],
+            3,
+            (post, i) => post.Slug = $"gb-m-{i}",
+            (post, i) => [new() { Type = EMetaFieldType.Int, Int = i == 2 ? 10 : 30 }]);
+
+        // Act
+        var result = await _handler.Handle("gbType.GroupBy(price)", new(), default);
+
+        // Assert
+        var groups = ((IEnumerable<object>)result!)
+            .Select(g => (Key: (int?)((dynamic)g).Key, Count: (int)((dynamic)g).Count))
+            .OrderBy(g => g.Key).ToList();
+        groups.Select(g => g.Key).Should().ContainInOrder(10, 30);
+        groups.Select(g => g.Count).Should().ContainInOrder(1, 2);
+    }
+
+    [IntegrationFact]
     public async Task Handle_DistinctBy_TranslatesViaRowNumber()
     {
         // Arrange — "db-555" уникальный маркер (БД общая на класс-фикстуру)

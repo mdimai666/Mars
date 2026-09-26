@@ -398,6 +398,37 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return CallNumericAggregate(nameof(Queryable.Average), expr);
     }
 
+    [TemplatorHelperInfo("GroupBy", """GroupBy(@fieldName)""", "Группирует элементы по полю и возвращает список групп {Key, Items, Count}; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
+    public object GroupBy(string expr)
+    {
+        var selector = ParseKeySelector(expr);
+
+        var groupByMethod = FindQueryableMethod(nameof(Queryable.GroupBy), 2, "keySelector")
+            .MakeGenericMethod(query.ElementType, selector.ReturnType);
+        var grouped = (IQueryable)groupByMethod.Invoke(null, [query, selector])!;
+
+        var groupingType = typeof(IGrouping<,>).MakeGenericType(selector.ReturnType, query.ElementType);
+        var resultType = typeof(EfGrouping<,>).MakeGenericType(selector.ReturnType, query.ElementType);
+        var gParam = Expression.Parameter(groupingType, "g");
+
+        var projection = Expression.Lambda(
+            Expression.MemberInit(
+                Expression.New(resultType),
+                Expression.Bind(
+                    resultType.GetProperty(nameof(EfGrouping<object, object>.Key))!,
+                    Expression.Property(gParam, groupingType.GetProperty(nameof(IGrouping<object, object>.Key))!)),
+                Expression.Bind(
+                    resultType.GetProperty(nameof(EfGrouping<object, object>.Items))!,
+                    Expression.Call(ToListDefinition.MakeGenericMethod(query.ElementType), gParam))),
+            gParam);
+
+        var selectMethod = FindQueryableMethod(nameof(Queryable.Select), 2, "selector")
+            .MakeGenericMethod(groupingType, resultType);
+        var projected = (IQueryable)selectMethod.Invoke(null, [grouped, projection])!;
+
+        return ToListMaterialized(projected);
+    }
+
     [TemplatorHelperInfo("Select", """Select(@expr)""", "Проецирует элементы в поле. @expr — имя поля или путь через точку (User.Name); последующие методы применяются уже к проекции.")]
     public object Select(string expr)
     {
@@ -493,4 +524,11 @@ public class TotalResponse2<T> : PagingResult<T>
     }
 
     public PaginatorHelper Paginator { get; }
+}
+
+public class EfGrouping<TKey, TElement>
+{
+    public TKey Key { get; set; } = default!;
+    public List<TElement> Items { get; set; } = [];
+    public int Count => Items.Count;
 }

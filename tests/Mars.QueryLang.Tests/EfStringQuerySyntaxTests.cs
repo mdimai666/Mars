@@ -164,6 +164,31 @@ public class EfStringQuerySyntaxTests
     }
 
     [Fact]
+    public void GroupBy_ReturnsKeyedGroups_IsTerminal()
+    {
+        var q = Q();
+        var groups = ((IEnumerable<EfGrouping<string, PostEntity>>)q.GroupBy("Title"))
+            .OrderBy(g => g.Key).ToList();
+
+        groups.Should().HaveCount(2);
+        groups[0].Key.Should().Be("000");
+        groups[0].Count.Should().Be(1);
+        groups[1].Key.Should().Be("111");
+        groups[1].Items.Should().HaveCount(2);
+
+        q.ToList().Cast<PostEntity>().Should().HaveCount(3);
+    }
+
+    [Fact]
+    public void GroupBy_DottedKeySelector()
+    {
+        var groups = ((IEnumerable<EfGrouping<string, PostEntity>>)Q().GroupBy("PostType.TypeName")).ToList();
+
+        groups.Select(g => g.Key).Should().BeEquivalentTo(["z", "a", "m"]);
+        groups.Should().OnlyContain(g => g.Count == 1);
+    }
+
+    [Fact]
     public void Table_Paginates()
     {
         var table = Q().OrderBy("Slug").Table("1, 2") as TotalResponse2<PostEntity>;
@@ -200,6 +225,7 @@ public class EfStringQuerySyntaxTests
             nameof(EfStringQuery.Max), nameof(EfStringQuery.Min),
             nameof(EfStringQuery.MaxBy), nameof(EfStringQuery.MinBy),
             nameof(EfStringQuery.Sum), nameof(EfStringQuery.Average),
+            nameof(EfStringQuery.GroupBy),
             nameof(EfStringQuery.Select), nameof(EfStringQuery.Include), nameof(EfStringQuery.Table),
             nameof(EfStringQuery.Search), nameof(EfStringQuery.Union),
         ]);

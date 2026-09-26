@@ -1,5 +1,5 @@
 using System.Reflection;
-using Mars.Nodes.Core.Models.EntityQuery;
+using Mars.QueryLang.Contracts;
 using Mars.QueryLang.Host.Services;
 using Mars.SiteEngine.Abstractions.Templators;
 

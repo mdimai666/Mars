@@ -31,7 +31,8 @@ public static class DataQueryBodyParser
 
     public static TimeSpan? ParseTimespan(string timespanString)
     {
-        string[] formats = { @"m\m", @"h\h\m\m", @"s\s" };
+        // \m — литерал "m"; спецификатор минут не экранируется (h\hm\m = "1h30m")
+        string[] formats = { @"m\m", @"h\hm\m", @"s\s" };
         TimeSpan ts;
         if (TimeSpan.TryParseExact(timespanString, formats, null, out ts))
         {

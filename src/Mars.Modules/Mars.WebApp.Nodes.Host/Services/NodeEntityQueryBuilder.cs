@@ -1,6 +1,7 @@
 using Mars.Cms.Abstractions.Services;
 using Mars.Nodes.Core.Models.EntityQuery;
 using Mars.QueryLang;
+using Mars.QueryLang.Contracts;
 
 namespace Mars.WebApp.Nodes.Host.Services;
 

@@ -207,7 +207,7 @@
                   OnStateChange="@(e => { if (e.State == DialogState.Closed) { CancelSettingsDialog(); _settingsDialogShown = false; } })">
         <FluentDialogBody Class="text-start">
             <TitleTemplate>
-                <FluentLabel Typo="Typography.Header">Колонки списка</FluentLabel>
+                <FluentText Size="TextSize.Size500">Колонки списка</FluentText>
             </TitleTemplate>
             <ChildContent>
                 <PostTypeGridSettingsEditor @bind-Value="_gridDraft"

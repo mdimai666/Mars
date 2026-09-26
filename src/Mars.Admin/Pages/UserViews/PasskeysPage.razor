@@ -7,7 +7,7 @@
 <ContentWrapper Title="Пасскеи">
 
     <div class="hstack">
-        <FluentLabel>Пасскеи позволяют входить без пароля — через Windows Hello, Touch ID, Face ID или аппаратный ключ безопасности.</FluentLabel>
+        <FluentText>Пасскеи позволяют входить без пароля — через Windows Hello, Touch ID, Face ID или аппаратный ключ безопасности.</FluentText>
         <div class="ms-auto">
             <FluentButton Appearance="ButtonAppearance.Primary"
                           OnClick="OnClickAdd"
@@ -66,13 +66,13 @@
         <FluentDialogBody Class="text-start">
             <TitleTemplate>
                 <div class="hstack">
-                    <FluentLabel Typo="Typography.Header">Новый пасскей</FluentLabel>
+                    <FluentText Size="TextSize.Size500">Новый пасскей</FluentText>
                 </div>
             </TitleTemplate>
             <ChildContent>
                 <div class="vstack gap-2">
                     <FluentTextInput @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
-                    <FluentLabel>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentLabel>
+                    <FluentText>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentText>
                 </div>
             </ChildContent>
             <ActionTemplate>
@@ -90,7 +90,7 @@
         <FluentDialogBody Class="text-start">
             <TitleTemplate>
                 <div class="hstack">
-                    <FluentLabel Typo="Typography.Header">Переименовать пасскей</FluentLabel>
+                    <FluentText Size="TextSize.Size500">Переименовать пасскей</FluentText>
                 </div>
             </TitleTemplate>
             <ChildContent>

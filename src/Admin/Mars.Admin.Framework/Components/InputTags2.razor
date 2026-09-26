@@ -16,7 +16,7 @@
         <FluentTextInput @bind-Value=_current Immediate Appearance="TextInputAppearance.FilledDarker" @onkeydown=OnKeyPress />
         @if(validationMessage != null)
         {
-            <FluentLabel Color="@Color.Error" Style="font-size:12px;" >@validationMessage</FluentLabel>
+            <FluentText Color="Color.Error" Style="font-size:12px;" >@validationMessage</FluentText>
         }
     </EditForm>
 

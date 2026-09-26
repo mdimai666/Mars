@@ -67,15 +67,15 @@
                 <TemplateColumn Title="@AppRes.EnabledFeatures">
                     @if (context.Disabled)
                     {
-                        <FluentBadge Fill="black">@AppRes.Disabled</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Subtle">@AppRes.Disabled</FluentBadge>
                     }
                     @if (context.Visibility == PostTypeVisibility.Component)
                     {
-                        <FluentBadge Fill="neutral">Компонент</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Subtle">Компонент</FluentBadge>
                     }
                     @if (context.EnabledFeatures.Contains(PostTypeConstants.Features.Single))
                     {
-                        <FluentBadge Fill="accent">Single</FluentBadge>
+                        <FluentBadge Color="BadgeColor.Brand">Single</FluentBadge>
                     }
                     <FluentOverflow TItem="string" Style="width: 100%;">
                         @foreach (var tag in context.EnabledFeatures)

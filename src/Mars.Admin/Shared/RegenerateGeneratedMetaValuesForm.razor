@@ -27,7 +27,7 @@
             @if (_statuses.Count > 0)
             {
                 <div class="vstack">
-                    <FluentLabel>Статусы <span class="text-secondary small">(ничего не отмечено — все)</span></FluentLabel>
+                    <FluentText>Статусы <span class="text-secondary small">(ничего не отмечено — все)</span></FluentText>
                     @foreach (var status in _statuses)
                     {
                         <FluentCheckbox Label="@status.Title" Value="@_selectedStatuses.Contains(status.Slug)"

@@ -6,10 +6,10 @@
 <FluentDialogBody Class="text-start">
     <TitleTemplate>
         <div class="hstack gap-3">
-            <FluentLabel Typo="Typography.Header">DebugNode full object</FluentLabel>
+            <FluentText Size="TextSize.Size500">DebugNode full object</FluentText>
             @if (Content is { CapturedAt: { } captured })
             {
-                <FluentLabel>@captured.ToLocalTime().ToString("HH:mm:ss") · @($"{Content.Size:N0} chars")@(Content.Truncated ? " · truncated (2 MB)" : "")</FluentLabel>
+                <FluentText>@captured.ToLocalTime().ToString("HH:mm:ss") · @($"{Content.Size:N0} chars")@(Content.Truncated ? " · truncated (2 MB)" : "")</FluentText>
             }
         </div>
     </TitleTemplate>

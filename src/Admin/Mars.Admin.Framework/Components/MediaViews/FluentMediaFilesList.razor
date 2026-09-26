@@ -198,7 +198,7 @@
         <TitleTemplate>
             <div class="hstack">
                 @* <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Info" Class="me-2" /> *@
-                <FluentLabel Typo="Typography.Header">@AppRes.Action</FluentLabel>
+                <FluentText Size="TextSize.Size500">@AppRes.Action</FluentText>
             </div>
         </TitleTemplate>
         <ChildContent>
@@ -242,7 +242,7 @@
               OnStateChange="@(e => { if (e.State == DialogState.Closed) { _visibleFolderNameModal = false; _folderNameDialogShown = false; } })">
     <FluentDialogBody Class="text-start">
         <TitleTemplate>
-            <FluentLabel Typo="Typography.Header">@(_renamingFolder is null ? "Новая папка" : "Переименовать папку")</FluentLabel>
+            <FluentText Size="TextSize.Size500">@(_renamingFolder is null ? "Новая папка" : "Переименовать папку")</FluentText>
         </TitleTemplate>
         <ChildContent>
         @if (_folderNameError is not null)
@@ -270,7 +270,7 @@
               OnStateChange="@(e => { if (e.State == DialogState.Closed) { _visibleMoveModal = false; _moveDialogShown = false; } })">
     <FluentDialogBody Class="text-start">
         <TitleTemplate>
-            <FluentLabel Typo="Typography.Header">Переместить файл</FluentLabel>
+            <FluentText Size="TextSize.Size500">Переместить файл</FluentText>
         </TitleTemplate>
         <ChildContent>
         @if (_movingFile is not null)

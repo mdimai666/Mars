@@ -59,7 +59,8 @@
 
     void SelectNode(MouseEventArgs e, Node node)
     {
-        if (e.Button == (long)MouseButton.Right) return;
+        // 2 = right button per DOM MouseEvent.button
+        if (e.Button == 2) return;
 
         SelectNodeEvent a = new(e, node);
 

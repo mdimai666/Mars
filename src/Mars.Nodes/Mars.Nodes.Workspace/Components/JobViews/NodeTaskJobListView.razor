@@ -31,7 +31,7 @@
                 <TemplateColumn Title="Status"
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.IsDone))">
-                    <FluentBadge Fill="@GetStatusColorFillName(context)">
+                    <FluentBadge Color="@GetStatusBadgeColor(context)">
                         @GetStatusText(context)
                     </FluentBadge>
                 </TemplateColumn>
@@ -39,9 +39,9 @@
                 <TemplateColumn Title="Task ID"
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.TaskId))">
-                    <FluentLabel Id="@($"task-id-label-{context.TaskId}")" Typo="Typography.Body">
+                    <FluentText Id="@($"task-id-label-{context.TaskId}")" Size="TextSize.Size300">
                         @context.TaskId.ToString()[..8]…
-                    </FluentLabel>
+                    </FluentText>
                     <FluentTooltip Anchor="@($"task-id-label-{context.TaskId}")">
                         @context.TaskId
                     </FluentTooltip>
@@ -60,7 +60,7 @@
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.ExecuteCount))">
                     <div class="hstack" title="@($"NodesChainCount: {context.NodesChainCount}, ExecuteCount: {context.ExecuteCount}")">
-                        <FluentLabel>@context.NodesChainCount</FluentLabel>
+                        <FluentText>@context.NodesChainCount</FluentText>
                         <i class="bi bi-arrow-right-short"></i>
                         <FluentBadge>@context.ExecuteCount</FluentBadge>
                     </div>
@@ -68,13 +68,13 @@
                 <TemplateColumn Title="Errors">
                     @if (context.ErrorCount > 0)
                     {
-                        <FluentBadge Fill="error">
+                        <FluentBadge Color="BadgeColor.Danger">
                             @context.ErrorCount
                         </FluentBadge>
                     }
                     else
                     {
-                        <FluentLabel>-</FluentLabel>
+                        <FluentText>-</FluentText>
                     }
                 </TemplateColumn>
                 <TemplateColumn Title="Started"
@@ -83,17 +83,17 @@
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.StartDate))"
                                 Align="DataGridCellAlignment.End">
-                    <FluentLabel>
+                    <FluentText>
                         @context.StartDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-                    </FluentLabel>
+                    </FluentText>
                 </TemplateColumn>
                 <TemplateColumn Title="Finished"
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.EndDate))"
                                 Align="DataGridCellAlignment.End">
-                    <FluentLabel>
+                    <FluentText>
                         @(context.EndDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")
-                    </FluentLabel>
+                    </FluentText>
                 </TemplateColumn>
             </FluentDataGrid>
         </div>

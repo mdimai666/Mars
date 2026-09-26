@@ -9,36 +9,36 @@
 <div>
     <FormItem2 For="() => Temperature">
         <FluentNumberInput TValue="float?" @bind-Value=@Temperature Placeholder="0.8" Min="@(0f)" Max="@(1f)" Step="@(0.1f)" />
-        <FluentLabel>0..1</FluentLabel>
+        <FluentText>0..1</FluentText>
     </FormItem2>
-    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+    <FluentText Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
         Температура модели. Повышение температуры заставит модель
         отвечать более креативно. (По умолчанию: 0,8)
-    </FluentLabel>
+    </FluentText>
 </div>
 <div>
 
     <FormItem2 For="() => TopK">
         <FluentNumberInput TValue="int?" @bind-Value=@TopK Placeholder="40" Min="0" Max="100" Step="10" />
-        <FluentLabel>0..100</FluentLabel>
+        <FluentText>0..100</FluentText>
     </FormItem2>
-    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+    <FluentText Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
         Снижает вероятность генерации бессмыслицы.Более высокое значение(например, 100)
         даст более разнообразные ответы, тогда как более низкое значение (например, 10) будет более консервативным.
         (По умолчанию: 40)
-    </FluentLabel>
+    </FluentText>
 </div>
 <div>
 
     <FormItem2 For="() => TopP">
         <FluentNumberInput TValue="float?" @bind-Value=@TopP Placeholder="0.9" Min="@(0f)" Max="@(1f)" Step="@(0.1f)" />
-        <FluentLabel>0..1</FluentLabel>
+        <FluentText>0..1</FluentText>
     </FormItem2>
-    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+    <FluentText Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
         Работает вместе с top-k. Более высокое значение (например, 0,95) приведет к более разнообразному
         тексту, тогда как более низкое значение (например, 0,5) сгенерирует более сфокусированный и консервативный
         текст. (По умолчанию: 0,9)
-    </FluentLabel>
+    </FluentText>
 </div>
 
 @code {

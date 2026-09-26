@@ -9,25 +9,25 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="142" height="48" style="flex-shrink: 0;">
         <NodeComponent node="Item.Node" ShowLabelInsteadDisplayName=true FixedWidth="120" />
     </svg>
-    <FluentBadge Fill="@FillColorName" Id="@Id">
+    <FluentBadge Color="@FillColor" Id="@Id">
         @Item.Job.TaskDurationTotalMillisecondsText
     </FluentBadge>
 
     <FluentTooltip Anchor="@Id">
-        <FluentBadge Fill="@FillColorName">
+        <FluentBadge Color="@FillColor">
             @Item.Result
         </FluentBadge>
-        <FluentLabel>
+        <FluentText>
             @Item.Job.Start.ToLocalTime()
             →
             @(Item.Job.End?.ToLocalTime().ToString() ?? "running")
-        </FluentLabel>
+        </FluentText>
 
         @if (Item.Job.Exception is not null)
         {
-            <FluentLabel Typo="Typography.Subject">
+            <FluentText Size="TextSize.Size400">
                 @Item.Job.Exception.Message
-            </FluentLabel>
+            </FluentText>
         }
     </FluentTooltip>
 </div>
@@ -43,13 +43,13 @@
                         .AddStyle("width", Item.WidthPercentCssVal)
                         .Build();
 
-    private string FillColorName => Item.Result switch
+    private BadgeColor FillColor => Item.Result switch
     {
-        NodeJobExecutionResultResponse.Success => "success",
-        NodeJobExecutionResultResponse.Fail => "error",
-        NodeJobExecutionResultResponse.Pending => "info",
-        NodeJobExecutionResultResponse.Terminated => "black",
-        _ => ""
+        NodeJobExecutionResultResponse.Success => BadgeColor.Success,
+        NodeJobExecutionResultResponse.Fail => BadgeColor.Danger,
+        NodeJobExecutionResultResponse.Pending => BadgeColor.Informative,
+        NodeJobExecutionResultResponse.Terminated => BadgeColor.Subtle,
+        _ => BadgeColor.Subtle
     };
 }
 

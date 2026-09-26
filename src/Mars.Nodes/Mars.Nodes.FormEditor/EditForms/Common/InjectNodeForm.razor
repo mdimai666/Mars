@@ -41,22 +41,22 @@
     <div class="hstack gap-3">
         <div class="hstack gap-2">
             <i class="bi bi-clock"></i>
-            <FluentLabel>@(L[nameof(Node.RunAtStartup)])</FluentLabel>
+            <FluentText>@(L[nameof(Node.RunAtStartup)])</FluentText>
         </div>
         <FluentCheckbox @bind-Value=Node.RunAtStartup />
-        <FluentLabel>@(L["delay millis"])</FluentLabel>
+        <FluentText>@(L["delay millis"])</FluentText>
         <FluentNumberInput @bind-Value=Node.StartupDelayMillis Min="10" Disabled=!Node.RunAtStartup />
     </div>
 
     <div class="hstack gap-3" style="min-height:32px;">
         <div class="hstack gap-2">
             <i class="bi bi-repeat"></i>
-            <FluentLabel>@(L[nameof(Node.IsSchedule)])</FluentLabel>
+            <FluentText>@(L[nameof(Node.IsSchedule)])</FluentText>
         </div>
         <FluentCheckbox @bind-Value=Node.IsSchedule />
         @if (Node.IsSchedule)
         {
-            <FluentLabel>@(L["cron mask"])</FluentLabel>
+            <FluentText>@(L["cron mask"])</FluentText>
             <SchedulerMaskInput @bind-Value=Node.ScheduleCronMask />
             <div class="hstack gap-1 ms-2">
                 <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => Node.ScheduleCronMask = "0/5 * * * * ?")">every 5 seconds</FluentButton>

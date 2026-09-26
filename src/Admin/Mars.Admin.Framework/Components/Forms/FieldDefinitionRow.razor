@@ -130,7 +130,7 @@
                 @if (Capabilities.CanEditEditor)
                 {
                     <div class="vstack">
-                        <FluentLabel>Редактор значения</FluentLabel>
+                        <FluentText>Редактор значения</FluentText>
                         <FluentSelect TOption="string" TValue="string" Width="250px"
                                       Value="@(Definition.Editor ?? "")"
                                       ValueChanged="SetEditorAsync">
@@ -146,8 +146,8 @@
                 @if (Capabilities.CanEditLimits && Definition.SupportsLimits)
                 {
                     <div class="vstack">
-                        <FluentLabel>Ограничитель</FluentLabel>
-                        <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentLabel>
+                        <FluentText>Ограничитель</FluentText>
+                        <FluentText Color="Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentText>
                         <div class="mt-2 hstack gap-3">
                             <label>min</label>
                             <FluentNumberInput @bind-Value="MinValue" Style="width:100px;" />
@@ -167,7 +167,7 @@
             @if (Capabilities.CanEditRules && AvailableRules.Count > 0)
             {
                 <div class="vstack gap-2">
-                    <FluentLabel>Валидация</FluentLabel>
+                    <FluentText>Валидация</FluentText>
                     <div class="text-secondary fz12px">
                         Правила системных полей применяются на всех путях записи, не только в админ-форме
                     </div>

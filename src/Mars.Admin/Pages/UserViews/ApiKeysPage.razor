@@ -7,7 +7,7 @@
 <ContentWrapper Title="API-ключи">
 
     <div class="hstack">
-        <FluentLabel>Ключи для доступа к API через заголовок X-API-Key. Полный ключ показывается только один раз при создании.</FluentLabel>
+        <FluentText>Ключи для доступа к API через заголовок X-API-Key. Полный ключ показывается только один раз при создании.</FluentText>
         <div class="ms-auto">
             <FluentButton Appearance="ButtonAppearance.Primary"
                           OnClick="OnClickCreate"
@@ -42,7 +42,7 @@
         <FluentDialogBody Class="text-start">
             <TitleTemplate>
                 <div class="hstack">
-                    <FluentLabel Typo="Typography.Header">Новый ключ</FluentLabel>
+                    <FluentText Size="TextSize.Size500">Новый ключ</FluentText>
                 </div>
             </TitleTemplate>
             <ChildContent>
@@ -76,12 +76,12 @@
         <FluentDialogBody Class="text-start">
             <TitleTemplate>
                 <div class="hstack">
-                    <FluentLabel Typo="Typography.Header">Ключ создан</FluentLabel>
+                    <FluentText Size="TextSize.Size500">Ключ создан</FluentText>
                 </div>
             </TitleTemplate>
             <ChildContent>
                 <div class="vstack gap-2">
-                    <FluentLabel>Сохраните ключ — он показан в последний раз:</FluentLabel>
+                    <FluentText>Сохраните ключ — он показан в последний раз:</FluentText>
                     <div class="hstack gap-2">
                         <FluentTextInput Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
                         <FluentButton IconStart="@(new Icons.Regular.Size16.Copy())" OnClick="CopyCreatedKey" Title="Скопировать" />

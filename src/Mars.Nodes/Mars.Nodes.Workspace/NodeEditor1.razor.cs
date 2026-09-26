@@ -191,7 +191,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnMouseDownPaletteNode(NodeComponentMouseEventArgs e)
     {
-        if (e.MouseEvent.Button != (long)MouseButton.Left) return;
+        // 0 = left button per DOM MouseEvent.button
+        if (e.MouseEvent.Button != 0) return;
 
         _ = _paletteNodeContextMenu.CloseMenuAsync();
 

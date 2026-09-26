@@ -65,7 +65,7 @@
         <div class="card-body">
             <div class="hstack gap-2 flex-wrap align-items-center">
                 <span class="fs-5 fw-semibold">admin</span>
-                <FluentBadge Fill="info">специальный фронт админки</FluentBadge>
+                <FluentBadge Color="BadgeColor.Informative">специальный фронт админки</FluentBadge>
                 <span class="text-secondary small">data/admin/front · только в админ-панели</span>
                 <div class="ms-auto">
                     <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
@@ -107,7 +107,7 @@
                             <FluentBadge>@front.EngineId</FluentBadge>
                             @if (!front.Enabled)
                             {
-                                <FluentBadge Fill="warning">выключен</FluentBadge>
+                                <FluentBadge Color="BadgeColor.Warning">выключен</FluentBadge>
                             }
                             <div class="ms-auto hstack gap-2 align-items-center">
                                 <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => OpenEditor(front))>

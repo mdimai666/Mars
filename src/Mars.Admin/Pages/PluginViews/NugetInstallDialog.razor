@@ -6,7 +6,7 @@
 
 <FluentDialogBody Class="text-start">
     <TitleTemplate>
-        <FluentLabel Typo="Typography.Header">Установка плагина из NuGet</FluentLabel>
+        <FluentText Size="TextSize.Size500">Установка плагина из NuGet</FluentText>
     </TitleTemplate>
     <ChildContent>
         @if (busy)
@@ -18,9 +18,9 @@
             <div class="vstack gap-3 p-3" style="width: 420px;">
                 <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
                 <FluentTextInput Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
-                <FluentLabel Typo="Typography.Body" Color="@Color.Default">
+                <FluentText Size="TextSize.Size300" Color="Color.Default">
                     Плагин будет установлен в data/plugins и активируется после рестарта сервера.
-                </FluentLabel>
+                </FluentText>
 
                 @if (successResult)
                 {

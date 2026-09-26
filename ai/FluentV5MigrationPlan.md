@@ -242,6 +242,43 @@ wwwroot попадают в отдачу только после пересбо�
 - Стилевые мелочи сайдбара (токен `--neutral-fill-stealth-rest` в Style-атрибутах мёртв,
   ширина/отступы под v5-нав) — в этап стилей.
 
+## Этап стилей — статус 2026-09-27
+
+Код-уровень (без обсуждений, сделано):
+- `FluentBadge Fill=` мёртв в v5 → `Color="BadgeColor.*"`: info→Informative, warning→Warning,
+  error→Danger, success→Success, black/neutral→Subtle, accent→Brand (ListPostTypePage,
+  FrontSettingsPage, Workspace JobViews: GetStatusColorFillName→GetStatusBadgeColor,
+  FillColorName→FillColor). Текст бейджа в ChildContent в v5 рендерится нормально (проверено
+  скриншотом) — в Content переносить не обязательно.
+- `FluentLabel` (Typo/Color удалены в v5) → `FluentText`: батч агента по всему репо кроме
+  Workspace + Workspace вручную. Таблица: Body→Size300, Subject→Size400, Header→Size500,
+  PaneHeader→Size600, EmailHeader→Size700, PageTitle→Size800, HeroTitle→Size900,
+  H1–H6→As=TextTag.H1–H6 + Size800/700/600/500/400/300 (type-ramp v4: base14/+1 16/+2 20/
+  +3 24/+4 28/+6 40, снят с css пакета 4.14.4).
+- `MouseButton` obsolete → DOM-литералы (0 left / 2 right) в NodeEditor1.razor.cs и
+  QuickNodeAddMenu.razor.
+- `FluentTooltip Anchor` в v5 ЖИВ (удалён только Visible) — не трогали.
+
+Инвентарь less/токенов (по пакету 5.0.0, к обсуждению с пользователем):
+- МЁРТВЫЕ токены v4 во всём пакете: `--type-ramp-*`, `--neutral-layer-*`, `--badge-fill-*`,
+  `--design-unit`, `--neutral-base-color` и пр. FAST-токены → v5-переменные
+  (`--colorNeutralBackground*`, `--colorBrandBackground*`, …) или `--mars-*`.
+- ЖИВЫЕ классы/элементы v5: `.fluent-data-grid*`, `.fluent-sortable-list` (но её
+  `--fluent-sortable-list-*` значения сидят на мёртвых токенах), элемент `fluent-badge`
+  (но `--badge-fill-*` мертвы — цвета теперь BadgeColor).
+- МЁРТВЫЕ селекторы: `.fluent-input-label` (v5 рендерит `fluent-label` без класса) —
+  compact-формы в form.less; блок `fluent-badge { --badge-fill-* }` в fluent-ui.less.
+- Scoped css НЕ отключён (ScopedCssEnabled нигде нет) — razor.css работают; `::deep`
+  по-прежнему не пробивает shadow DOM веб-компонент (и в v4 не пробивал).
+
+Открытые вопросы этапа стилей (обсудить):
+1. Маппинг токенов StyleDesignerPage (FluentDesignSystemProvider удалён) на v5 CSS-переменные.
+2. Дефолтный цвет `FluentBadge` стал brand-синим (v4 — neutral): глобально CSS или по местам?
+3. Дефолтный цвет `FluentIcon` Accent→currentColor: принять или вернуть акцент CSS-ом?
+4. ~~`FluentGrid.Spacing` default 3→0~~ — закрыто без действий: единственное использование
+   (FormsBuilderPage) уже имеет явный `Spacing="3"`.
+5. Правки мёртвых less-блоков (см. инвентарь) — компилирует пользователь.
+
 ## Статус
 
 - [x] Ветка `feat/fluentui-v5`

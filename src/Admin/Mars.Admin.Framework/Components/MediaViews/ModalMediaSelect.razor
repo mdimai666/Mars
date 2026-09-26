@@ -9,7 +9,7 @@
               OnStateChange="@(e => { if (e.State == DialogState.Closed) _visible = false; })">
     <FluentDialogBody>
         <TitleTemplate>
-            <FluentLabel Typo="Typography.Header">Выбор файла</FluentLabel>
+            <FluentText Size="TextSize.Size500">Выбор файла</FluentText>
         </TitleTemplate>
         <ChildContent>
         @if (_visible)

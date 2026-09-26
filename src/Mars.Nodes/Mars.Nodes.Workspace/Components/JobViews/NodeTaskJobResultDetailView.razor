@@ -13,9 +13,9 @@
         <FluentCard Class="task-summary-card">
             <FluentStack Orientation="Orientation.Vertical" Gap="8">
 
-                <FluentLabel Typo="Typography.H2">
+                <FluentText As="TextTag.H2" Size="TextSize.Size700">
                     Task execution report
-                </FluentLabel>
+                </FluentText>
 
                 <FluentStack HorizontalGap="24">
                     <JobSummaryItem Label="Task ID" Value="@Model.TaskId.ToString()" />
@@ -34,7 +34,7 @@
 
                 <FluentStack HorizontalGap="24">
                     <JobSummaryItem Label="Status">
-                        <FluentBadge Fill="@NodeTaskJobListView.GetStatusColorFillName(Model)">
+                        <FluentBadge Color="@NodeTaskJobListView.GetStatusBadgeColor(Model)">
                             @NodeTaskJobListView.GetStatusText(Model)
                         </FluentBadge>
                     </JobSummaryItem>
@@ -58,9 +58,9 @@
 
         <!-- JOBS TIMELINE -->
         <FluentCard>
-            <FluentLabel Typo="Typography.H3">
+            <FluentText As="TextTag.H3" Size="TextSize.Size600">
                 Jobs execution timeline
-            </FluentLabel>
+            </FluentText>
 
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Class="jobs-timeline" Style="width: calc(100% - 180px);">
                 @foreach (var job in _ganttItems)

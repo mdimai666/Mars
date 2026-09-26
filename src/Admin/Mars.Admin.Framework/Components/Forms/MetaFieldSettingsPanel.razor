@@ -86,7 +86,7 @@
     @if (Field.IsTypeQuery)
     {
         <div class="vstack gap-2">
-            <FluentLabel>Определение вычислимого поля</FluentLabel>
+            <FluentText>Определение вычислимого поля</FluentText>
             <div class="d-flex gap-3 flex-wrap">
                 <div class="vstack">
                     <label>Целевой тип</label>
@@ -112,7 +112,7 @@
     @if (Field.Type is MetaFieldType.File or MetaFieldType.Image)
     {
         <div class="vstack gap-2">
-            <FluentLabel>Папка загрузки</FluentLabel>
+            <FluentText>Папка загрузки</FluentText>
             <div class="d-flex gap-2 align-items-center">
                 <span class="text-secondary">
                     @(string.IsNullOrEmpty(Field.UploadFolder) ? "— папка года (по умолчанию) —" : Field.UploadFolder)
@@ -143,8 +143,8 @@
     @if (Field.Type is MetaFieldType.String or MetaFieldType.DateTime)
     {
         <div class="vstack gap-2">
-            <FluentLabel>Генератор значения</FluentLabel>
-            <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Автозаполнение при создании объекта</FluentLabel>
+            <FluentText>Генератор значения</FluentText>
+            <FluentText Color="Color.Custom" CustomColor="#ddd">Автозаполнение при создании объекта</FluentText>
 
             <div class="hstack gap-2 align-items-center flex-wrap">
                 <FluentSelect TOption="string" TValue="string" Width="220px"
@@ -179,7 +179,7 @@
             @if (Field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
             {
                 <div class="vstack gap-2 ms-3">
-                    <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Префикс из категории (словарь категория → префикс)</FluentLabel>
+                    <FluentText Color="Color.Custom" CustomColor="#ddd">Префикс из категории (словарь категория → префикс)</FluentText>
                     @foreach (var row in Field.GeneratorCategoryPrefixes)
                     {
                         var category = row;

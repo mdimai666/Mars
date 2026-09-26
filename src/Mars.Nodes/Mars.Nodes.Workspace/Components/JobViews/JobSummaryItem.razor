@@ -1,9 +1,9 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-    <FluentLabel Typo="Typography.Header">
+    <FluentText Size="TextSize.Size500">
         @Label
-    </FluentLabel>
+    </FluentText>
 
     @if (ChildContent is not null)
     {
@@ -11,9 +11,9 @@
     }
     else
     {
-        <FluentLabel Typo="Typography.Body">
+        <FluentText Size="TextSize.Size300">
             @Value
-        </FluentLabel>
+        </FluentText>
     }
 </FluentStack>
 

@@ -6,7 +6,7 @@
 
     @if (_busy)
     {
-        <FluentProgressRing />
+        <FluentSpinner />
     }
     else if (_model is not null)
     {
@@ -22,8 +22,8 @@
                     <span class="text-secondary small ms-2">@_model.Description</span>
                 }
             </div>
-            <FluentButton Appearance="Appearance.Neutral" OnClick="SelectAsync">Заменить…</FluentButton>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="ClearAsync" Title="Очистить">
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="SelectAsync">Заменить…</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ClearAsync" Title="Очистить">
                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
             </FluentButton>
         </div>

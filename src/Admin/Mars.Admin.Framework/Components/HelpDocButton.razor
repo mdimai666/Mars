@@ -1,4 +1,5 @@
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Framework.Dialogs
 
 <mars-help-doc-button>
     @if (ChildContent is not null)
@@ -9,7 +10,7 @@
     }
     else
     {
-        <FluentButton OnClick=OnClick Appearance="Appearance.Stealth" IconStart="_infoIcon">@Label</FluentButton>
+        <FluentButton OnClick=OnClick Appearance="ButtonAppearance.Subtle" IconStart="_infoIcon">@Label</FluentButton>
     }
 </mars-help-doc-button>
 
@@ -32,8 +33,6 @@
         DialogParameters parameters = new()
         {
             Title = "Help",
-            PrimaryActionEnabled = false,
-            SecondaryActionEnabled = false,
             Width = "1200px",
             TrapFocus = false,
             Modal = true,

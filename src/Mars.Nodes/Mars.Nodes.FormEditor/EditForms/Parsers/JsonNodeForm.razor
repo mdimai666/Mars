@@ -11,7 +11,7 @@
         </FormItem2>
 
         <FormItem2 For="() => Node.Action">
-            <FluentSelect Items="Enum.GetValues<JsonNode.JsonNodeAction>()" @bind-SelectedOption=@Node.Action Class="" />
+            <FluentSelect TOption="JsonNode.JsonNodeAction" TValue="JsonNode.JsonNodeAction" Items="Enum.GetValues<JsonNode.JsonNodeAction>()" @bind-Value=@Node.Action Class="" />
         </FormItem2>
         <FormItem2 For="() => Node.FormatJsonString" Label="Format">
             <FluentCheckbox @bind-Value="@Node.FormatJsonString">

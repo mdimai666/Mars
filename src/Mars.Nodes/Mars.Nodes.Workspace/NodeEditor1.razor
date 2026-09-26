@@ -17,7 +17,7 @@
                 <div class="d-flex fs-5">
 
                     <div class="master-menu d-flex align-items-center">
-                        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size24.Settings())" OnClick="OnSettingsButtonClick" />
+                        <FluentButton Appearance="ButtonAppearance.Subtle" IconStart="@(new Icons.Regular.Size24.Settings())" OnClick="OnSettingsButtonClick" />
                         <div class="btn-group btn-group-sm ms-3" role="group">
                             @foreach (var _tab in masterTabs)
                             {
@@ -32,8 +32,8 @@
                     </div>
                     <div class="vr mx-3"></div>
                     <div class="btn-group" role="group" aria-label="Basic outlined example">
-                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons16R.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="Appearance.Stealth"></FluentButton>
-                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons16R.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="Appearance.Stealth"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons16R.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="ButtonAppearance.Subtle"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons16R.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="ButtonAppearance.Subtle"></FluentButton>
                     </div>
                 </div>
 
@@ -53,14 +53,14 @@
                                   ValueChanged="OnDebugModeSwitchChanged"
                                   Label="DEBUG">
                     </FluentSwitch>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
-                        <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Neutral))" />
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="OnJobListHistoryButtonClick" Title="task history">
+                        <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Default))" />
                     </FluentButton>
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
-                                  IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Neutral))"
+                                  IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Default))"
                                   Class="btn-terminate-all-tasks"
                                   Title="terminate all task"
-                                  Appearance="Appearance.Stealth">
+                                  Appearance="ButtonAppearance.Subtle">
                         <FluentBadge title="running tasks count">
                             @runningTaskCountDisplayText
                         </FluentBadge>
@@ -74,14 +74,14 @@
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<DeployNodesAction>)"
                                   IconEnd="@(new Icons16R.SaveMultiple())"
                                   Title="Deploy nodes"
-                                  Appearance="Appearance.Accent">
+                                  Appearance="ButtonAppearance.Primary">
                         Deploy
                     </FluentButton>
                 </div>
             </div>
         </div>
         <main class="d-flex no-gutters g-0 flex-fill w-100" style="min-height:0">
-            <div @ref="_paletteSidebarRef" class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
+            <div @ref="_paletteSidebarRef" id="nodes-palette-sidebar" class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
                 <div class="bg-white custom-scroll1" style="overflow-y:scroll;overflow-x:hidden;scroll-behavior: auto;width:190px;max-height:500px">
                     @if (activeMasterTab == "nodes")
                     {
@@ -101,25 +101,23 @@
                     {
                         <ConfigsTabList ConfigNodes="AllNodes.Values.OfType<ConfigNode>()" OnEditNode="StartEditNode" />
                     }
-                    <FluentMenu UseMenuService="!true"
-                                @ref="_paletteNodeContextMenu"
-                                @bind-Open="_showPaletteNodeContextMenu"
-                                Style="position:absolute !important;"
-                                VerticalThreshold="170">
-                        <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
-                            <MenuItems>
-                                @foreach (var _example in _currentPaletteNodeExamples)
-                                {
-                                    var example = _example;
-                                    <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
-                                }
-                            </MenuItems>
-                        </FluentMenuItem>
+                    <FluentMenu @ref="_paletteNodeContextMenu">
+                        <FluentMenuList>
+                            <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
+                                <MenuItems>
+                                    @foreach (var _example in _currentPaletteNodeExamples)
+                                    {
+                                        var example = _example;
+                                        <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
+                                    }
+                                </MenuItems>
+                            </FluentMenuItem>
+                        </FluentMenuList>
                     </FluentMenu>
                 </div>
             </div>
-            <FluentSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6" Class="w-100 h-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
-                <Panel1>
+            <FluentMultiSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6px" Class="w-100 h-100">
+                <FluentMultiSplitterPane Min="15%">
                     <div class="h-100 w-100" style="position:relative">
                         <NodeWorkspace1 @ref=_nodeWorkspace1
                                         Style=""
@@ -137,16 +135,13 @@
                                               @ref=quickNodeAddMenu
                                               OnSelectNode="QuickNodeAddMenuOnSelectNode"
                                               OnNodeContextMenu="OnPaletteNodeContextMenu" />
-                            <FluentMenu UseMenuService="!true"
-                                        @ref="_workspaceContextMenu"
-                                        @bind-Open="_showWorkspaceContextMenu"
-                                        Style="position:absolute !important;"
-                                        VerticalThreshold="170">
+                            <FluentMenu @ref="_workspaceContextMenu">
+                                <FluentMenuList>
                                 @if (_selectContext == typeof(Node))
                                 {
                                     foreach (var item in NodeContextMenuItems)
                                     {
-                                        <FluentMenuItem OnClick="@((e) => OnNodeContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                        <FluentMenuItem OnClick="@(() => OnNodeContextMenuItemClick(item.Key))">@item.Value</FluentMenuItem>
                                     }
                                     <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
                                         <MenuItems>
@@ -162,14 +157,15 @@
                                 {
                                     foreach (var item in WireContextMenuItems)
                                     {
-                                        <FluentMenuItem OnClick="@((e) => OnWireContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                        <FluentMenuItem OnClick="@(() => OnWireContextMenuItemClick(item.Key))">@item.Value</FluentMenuItem>
                                     }
                                 }
+                                </FluentMenuList>
                             </FluentMenu>
                         </NodeWorkspace1>
                     </div>
-                </Panel1>
-                <Panel2>
+                </FluentMultiSplitterPane>
+                <FluentMultiSplitterPane Size="20%" Min="200px">
                     <div class="console-panel d-flex flex-column" style="height: 100%; min-height: 0;">
                         @if (DebugMode)
                         {
@@ -177,8 +173,8 @@
                         }
                         <DebugMessagesConsole @ref="_debugMessagesConsole" />
                     </div>
-                </Panel2>
-            </FluentSplitter>
+                </FluentMultiSplitterPane>
+            </FluentMultiSplitter>
             <NodeEditContainer1 @ref=nodeEditContainer1
                                 OnSave="OnEditFormSaveNodeClick"
                                 OnDelete="DeleteNode"

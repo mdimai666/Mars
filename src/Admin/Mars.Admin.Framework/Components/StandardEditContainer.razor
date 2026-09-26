@@ -31,12 +31,12 @@
                     <div class="float-end">
                         @if (isEditJsonMode)
                         {
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="CancelJsonEditMode">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CancelJsonEditMode">
                                 Отмена
                             </FluentButton>
                         }
-                        <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleEditMode">
-                            <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Neutral" />
+                        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ToggleEditMode">
+                            <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Default" />
                         </FluentButton>
                     </div>
                     @if (SectionActions is not null)
@@ -86,7 +86,7 @@
                                 else
                                 {
                                     <section class="StandardEditContainer-main__fields d-flex flex-column">
-                                        <FluentMessageBar Title="@AppRes.ValidationErrorsOccurredTitle" Intent="@MessageIntent.Warning" Visible="_isInvalidState" Class="mb-3">
+                                        <FluentMessageBar Title="@AppRes.ValidationErrorsOccurredTitle" Intent="@MessageBarIntent.Warning" Visible="_isInvalidState" Class="mb-3">
                                             <FluentValidationSummary />
                                         </FluentMessageBar>
                                         @ChildContent?.Invoke(model)
@@ -115,7 +115,7 @@
                                             @if (HidePublishCard)
                                             {
                                                 <div class="d-flex justify-content-end">
-                                                    <FluentButton Appearance="Appearance.Accent" Loading="saveButtonBusy" Type="@ButtonType.Submit">
+                                                    <FluentButton Appearance="ButtonAppearance.Primary" Loading="saveButtonBusy" Type="@ButtonType.Submit">
                                                         @AppRes.Save
                                                     </FluentButton>
                                                 </div>
@@ -156,7 +156,7 @@
                                                                 <DFluentDeleteButton OnConfirm=OnDeleteClick Disabled=saveButtonBusy />
                                                             }
 
-                                                            <FluentButton Appearance="Appearance.Accent" Loading="saveButtonBusy" Type="@ButtonType.Submit">
+                                                            <FluentButton Appearance="ButtonAppearance.Primary" Loading="saveButtonBusy" Type="@ButtonType.Submit">
                                                                 @AppRes.Save
                                                             </FluentButton>
 

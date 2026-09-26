@@ -24,7 +24,7 @@
                           AriaLabel="Search" />
             <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
             <FluentButton aria-label="filters" Title="Фильтры"
-                          Appearance="@(_filtersVisible ? Appearance.Accent : Appearance.Neutral)"
+                          Appearance="@(_filtersVisible ? ButtonAppearance.Primary : ButtonAppearance.Default)"
                           IconEnd="@(new Icons.Regular.Size16.Filter())"
                           OnClick="ToggleFilters" />
             <FluentButton aria-label="grid settings" Title="Настроить колонки"
@@ -44,7 +44,7 @@
                     AI help
                 </FluentButton>
                 <a href="@urlEditPage/@PostType.TypeName">
-                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
                 </a>
             </div>
         </div>
@@ -67,7 +67,7 @@
                                 ItemSize="76"
                                 Virtualize
                                 GridTemplateColumns="@GridTemplateColumns"
-                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                                 OverscanCount="10"
                                 Class="data-table--adaptive"
                                 TGridItem="PostListItemResponse">
@@ -88,10 +88,10 @@
                                             <div class="text-secondary small">@context.CreatedAt.ToString("d")</div>
                                             @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
                                             {
-                                                <FluentOverflow Style="width: 100%;">
+                                                <FluentOverflow TItem="string" Style="width: 100%;">
                                                     @foreach (var tag in context.Tags)
                                                     {
-                                                        <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                                        <FluentBadge>@tag</FluentBadge>
                                                     }
                                                 </FluentOverflow>
                                             }
@@ -110,10 +110,10 @@
                                     @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
                                     {
                                         <div class="mt-1">
-                                            <FluentOverflow Style="width: 100%;">
+                                            <FluentOverflow TItem="string" Style="width: 100%;">
                                                 @foreach (var tag in context.Tags)
                                                 {
-                                                    <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                                    <FluentBadge>@tag</FluentBadge>
                                                 }
                                             </FluentOverflow>
                                         </div>
@@ -127,12 +127,10 @@
                                                 Sortable="true"
                                                 IsDefaultSortColumn="@col.IsDefaultSort"
                                                 InitialSortDirection="@col.DefaultSortDirection">
-                                    <FluentOverflow Style="width: 100%;">
+                                    <FluentOverflow TItem="string" Style="width: 100%;">
                                         @foreach (var cat in context.Categories ?? [])
                                         {
-                                            <FluentOverflowItem>
-                                                <FluentBadge OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
-                                            </FluentOverflowItem>
+                                            <FluentBadge OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
                                         }
                                     </FluentOverflow>
                                 </TemplateColumn>
@@ -164,7 +162,7 @@
                                                 Format="d"
                                                 IsDefaultSortColumn="@col.IsDefaultSort"
                                                 InitialSortDirection="@col.DefaultSortDirection"
-                                                Sortable="true" Align="Align.End" />
+                                                Sortable="true" Align="DataGridCellAlignment.End" />
                                 break;
 
                             default:
@@ -185,7 +183,7 @@
                                 break;
                         }
                     }
-                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                         <div class="hstack">
                             <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
@@ -203,23 +201,26 @@
         </div>
     }
 
-    <FluentDialog Hidden="@(!_settingsDialogVisible)" aria-label="grid settings dialog"
+    <FluentDialog @ref="_settingsDialog" aria-label="grid settings dialog"
                   Modal=true
-                  Width="520"
-                  PreventScroll=true
-                  @ondialogdismiss="CancelSettingsDialog">
-        <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
-            <FluentLabel Typo="Typography.Header">Колонки списка</FluentLabel>
-        </FluentDialogHeader>
-        <FluentDialogBody>
-            <PostTypeGridSettingsEditor @bind-Value="_gridDraft"
-                                        EnabledFeatures="PostType.EnabledFeatures"
-                                        MetaFields="_metaFields" />
+                  Style="width: 520px;"
+                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { CancelSettingsDialog(); _settingsDialogShown = false; } })">
+        <FluentDialogBody Class="text-start">
+            <TitleTemplate>
+                <FluentLabel Typo="Typography.Header">Колонки списка</FluentLabel>
+            </TitleTemplate>
+            <ChildContent>
+                <PostTypeGridSettingsEditor @bind-Value="_gridDraft"
+                                            EnabledFeatures="PostType.EnabledFeatures"
+                                            MetaFields="_metaFields" />
+            </ChildContent>
+            <ActionTemplate>
+                <div class="hstack gap-2 justify-content-end">
+                    <FluentButton OnClick="CancelSettingsDialog">@AppRes.Cancel</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="SaveSettingsAsync">@AppRes.Save</FluentButton>
+                </div>
+            </ActionTemplate>
         </FluentDialogBody>
-        <FluentDialogFooter>
-            <FluentButton OnClick="CancelSettingsDialog">@AppRes.Cancel</FluentButton>
-            <FluentButton Appearance="Appearance.Accent" OnClick="SaveSettingsAsync">@AppRes.Save</FluentButton>
-        </FluentDialogFooter>
     </FluentDialog>
 </d-manage-post-view>
 

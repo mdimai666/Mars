@@ -10,9 +10,10 @@
     <FormItem2 For=@(()=>context.ViewMode)>
 
         <FluentSelect TOption="ApiOption.EViewMode"
+                      TValue="ApiOption.EViewMode"
                       Items="Enum.GetValues<ApiOption.EViewMode>()"
                       Width="250px"
-                      @bind-SelectedOption="@context.ViewMode" />
+                      @bind-Value="@context.ViewMode" />
 
     </FormItem2>
     <FormItem2 For=@(()=>context.ApiKeysMaxPerUser)>

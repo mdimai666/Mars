@@ -1,4 +1,5 @@
 using Mars.Admin.Framework.Components;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -13,13 +14,7 @@ public static class DialogExtensions
 
         var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(content, new DialogParameters()
         {
-            //Height = "240px",
-            //Title = $"Updating the {DialogData.Name} sheet",
-            PreventDismissOnOverlayClick = false,
-            PreventScroll = true,
             Modal = true,
-            TrapFocus = false,
-            //Class = "DeletionConfirmationDialog" class not support
         });
 
         var result = await dialog.Result;

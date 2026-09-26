@@ -1,4 +1,5 @@
 using Mars.Admin.Framework.Components;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Contracts.Resources;
@@ -171,7 +172,7 @@ public partial class ListDockerContainer
             return;
         }
 
-        if (result.Data is not CreateContainerDialogResult created)
+        if (result.Value is not CreateContainerDialogResult created)
         {
             return;
         }

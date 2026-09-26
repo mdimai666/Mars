@@ -4,11 +4,17 @@ using System.Reflection;
 using Mars.Core.Attributes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components;
 
 public partial class DocViewer<TValue>
 {
+    public DocViewer(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
+    public ElementReference Element { get; set; }
 
     [Parameter, Required] public Expression<Func<TValue>> For { get; set; } = default!;
 

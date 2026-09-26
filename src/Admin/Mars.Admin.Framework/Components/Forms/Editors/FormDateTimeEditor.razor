@@ -4,7 +4,7 @@
 @* Общий редактор «Дата и время»: пикер даты и время на одном значении *@
 
 <div class="d-flex gap-2 align-items-center">
-    <FluentDatePicker Value="@DatePart" ValueChanged="OnDateChanged" Disabled="@Binding.ReadOnly" />
+    <FluentDatePicker TValue="DateTime?" Value="@DatePart" ValueChanged="OnDateChanged" Disabled="@Binding.ReadOnly" />
     <input type="time" value="@TimeValue" @onchange="OnTimeChanged" class="form-control" style="max-width:140px;"
            disabled="@Binding.ReadOnly" />
 </div>

@@ -12,9 +12,10 @@
         <div class="col-lg-2">Порядок</div>
         <div class="col-lg-2 d-flex gap-2">
             <FluentButton OnClick="AddAsync">Добавить</FluentButton>
-            <FluentMenuButton ButtonAppearance="Appearance.Neutral" Text="@AppRes.Actions">
+            <FluentButton Id="@_actionsMenuId" Appearance="ButtonAppearance.Default">@AppRes.Actions</FluentButton>
+            <FluentMenu Trigger="@_actionsMenuId">
                 <FluentMenuItem OnClick="AddDefaultsAsync">Добавить стандартные</FluentMenuItem>
-            </FluentMenuButton>
+            </FluentMenu>
         </div>
     </div>
 
@@ -49,6 +50,8 @@
 </div>
 
 @code {
+    readonly string _actionsMenuId = "post-statuses-menu-" + Guid.NewGuid();
+
     [Parameter, EditorRequired] public List<PostStatusEditModel> Statuses { get; set; } = default!;
 
     /// <summary>Правка списка: строка редактора перечитывает источник</summary>

@@ -5,6 +5,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Mars.Admin.Framework.Dialogs;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
@@ -16,6 +17,9 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// </summary>
 public partial class MetaValueRelationMulti
 {
+    public MetaValueRelationMulti(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
@@ -78,7 +82,6 @@ public partial class MetaValueRelationMulti
         DialogParameters parameters = new()
         {
             Title = ModelName,
-            SecondaryAction = null,
             Width = "500px",
             Modal = true,
             PreventScroll = true
@@ -95,7 +98,7 @@ public partial class MetaValueRelationMulti
         IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
         DialogResult? result = await dialog.Result;
 
-        if (result.Cancelled || result.Data is not IReadOnlyCollection<Guid> ids) return;
+        if (result.Cancelled || result.Value is not IReadOnlyCollection<Guid> ids) return;
 
         foreach (var id in ids)
         {

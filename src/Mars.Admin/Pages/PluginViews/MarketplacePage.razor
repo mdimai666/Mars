@@ -12,16 +12,16 @@
         }
         else if (_initError is not null)
         {
-            <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss="false">
+            <FluentMessageBar Title="@AppRes.Error" Intent="@MessageBarIntent.Error" AllowDismiss="false">
                 @_initError
             </FluentMessageBar>
             <div class="mt-2">
-                <FluentButton Appearance="Appearance.Accent" OnClick="InitAsync">Повторить</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="InitAsync">Повторить</FluentButton>
             </div>
         }
         else if (!_catalogEnabled)
         {
-            <FluentMessageBar Title="Каталог плагинов выключен" Intent="@MessageIntent.Info" AllowDismiss="false">
+            <FluentMessageBar Title="Каталог плагинов выключен" Intent="@MessageBarIntent.Info" AllowDismiss="false">
                 Витрина маркетплейса питается от каталога плагинов. Настройте секцию <code>PluginCatalog</code>
                 (Url и Enabled) в <code>appsettings.json</code> инстанса и перезапустите его.
             </FluentMessageBar>
@@ -40,20 +40,20 @@
                     Только рекомендованные
                 </FluentSwitch>
                 <FluentSpacer />
-                <FluentSelect TOption="string" @bind-Value=_sort @bind-Value:after=ReloadAsync Width="200px" AriaLabel="Сортировка">
-                    <FluentOption TOption="string" Value="downloads">По загрузкам</FluentOption>
-                    <FluentOption TOption="string" Value="rating">По рейтингу</FluentOption>
-                    <FluentOption TOption="string" Value="newest">Сначала новые</FluentOption>
+                <FluentSelect TOption="string" TValue="string" @bind-Value=_sort @bind-Value:after=ReloadAsync Width="200px" AriaLabel="Сортировка">
+                    <FluentOption TValue="string" Value="@("downloads")">По загрузкам</FluentOption>
+                    <FluentOption TValue="string" Value="@("rating")">По рейтингу</FluentOption>
+                    <FluentOption TValue="string" Value="@("newest")">Сначала новые</FluentOption>
                 </FluentSelect>
             </div>
 
             @if (_errorMessage is not null)
             {
-                <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss="false" Class="mt-4">
+                <FluentMessageBar Title="@AppRes.Error" Intent="@MessageBarIntent.Error" AllowDismiss="false" Class="mt-4">
                     @_errorMessage
                 </FluentMessageBar>
                 <div class="mt-2">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="RetryAsync">Повторить</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RetryAsync">Повторить</FluentButton>
                 </div>
             }
             else if (_loading && _plugins.Count == 0)
@@ -86,7 +86,7 @@
                                                 <h5 class="mb-0">@plugin.DisplayName</h5>
                                                 @if (plugin.IsRecommended)
                                                 {
-                                                    <FluentBadge Appearance="Appearance.Accent">Рекомендован</FluentBadge>
+                                                    <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand">Рекомендован</FluentBadge>
                                                 }
                                             </div>
                                             <span class="text-secondary">@plugin.AuthorName</span>
@@ -97,9 +97,8 @@
 
                                     <div class="hstack gap-3 flex-wrap">
                                         <span class="hstack gap-1" title="Рейтинг">
-                                            <FluentRating Max="5" Value="@((int)Math.Round(plugin.AvgRating))" ReadOnly="true"
-                                                          Style="zoom:0.5" IconColor="@Color.Accent" />
-                                            <span class="text-secondary">@plugin.AvgRating.ToString("0.#") (@plugin.ReviewsCount)</span>
+                                            <FluentRatingDisplay Max="5" Value="@plugin.AvgRating" Count="@plugin.ReviewsCount"
+                                                                  Style="zoom:0.5" Color="@RatingDisplayColor.Brand" />
                                         </span>
                                         <span class="text-secondary" title="Загрузки">
                                             <i class="bi bi-download"></i> @plugin.TotalDownloads.ToString("N0")
@@ -114,7 +113,7 @@
                                         <div class="d-flex gap-1 flex-wrap">
                                             @foreach (var tag in plugin.Tags)
                                             {
-                                                <FluentBadge Appearance="Appearance.Neutral">@tag</FluentBadge>
+                                                <FluentBadge Color="BadgeColor.Subtle">@tag</FluentBadge>
                                             }
                                         </div>
                                     }
@@ -124,7 +123,7 @@
                                         {
                                             @if (HasUpdate(plugin))
                                             {
-                                                <FluentButton Appearance="Appearance.Accent"
+                                                <FluentButton Appearance="ButtonAppearance.Primary"
                                                               Disabled="_installing.Contains(plugin.PackageId)"
                                                               OnClick="() => InstallAsync(plugin)">
                                                     @(_installing.Contains(plugin.PackageId) ? "Установка…" : "Обновить")
@@ -132,19 +131,19 @@
                                             }
                                             else
                                             {
-                                                <FluentBadge Appearance="Appearance.Neutral">Установлен</FluentBadge>
+                                                <FluentBadge Color="BadgeColor.Subtle">Установлен</FluentBadge>
                                             }
                                         }
                                         else
                                         {
-                                            <FluentButton Appearance="Appearance.Accent"
+                                            <FluentButton Appearance="ButtonAppearance.Primary"
                                                           Disabled="_installing.Contains(plugin.PackageId)"
                                                           OnClick="() => InstallAsync(plugin)">
                                                 @(_installing.Contains(plugin.PackageId) ? "Установка…" : "Установить")
                                             </FluentButton>
                                         }
                                         <FluentSpacer />
-                                        <FluentButton Appearance="Appearance.Lightweight" OnClick="() => OpenDetails(plugin)">
+                                        <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="() => OpenDetails(plugin)">
                                             Подробнее
                                         </FluentButton>
                                     </div>
@@ -158,7 +157,7 @@
                 {
                     <div class="hstack mt-3">
                         <FluentSpacer />
-                        <FluentButton Appearance="Appearance.Lightweight" Disabled="_loading" OnClick="LoadMoreAsync">
+                        <FluentButton Appearance="ButtonAppearance.Transparent" Disabled="_loading" OnClick="LoadMoreAsync">
                             Загрузить ещё (@(_total - _plugins.Count))
                         </FluentButton>
                         <FluentSpacer />

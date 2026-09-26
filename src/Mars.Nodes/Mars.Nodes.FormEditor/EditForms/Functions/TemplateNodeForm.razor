@@ -16,10 +16,12 @@
             <MarsPathInput Root="msg" @bind-Value=@Node.Property For="() => Node.Property" />
         </FormItem2>
         <FormItem2 For="() => Node.TemplateEngineId">
-            <FluentSelect Items="_templateEngines"
+            <FluentSelect TOption="TitleItem<string>"
+                          TValue="string"
+                          Items="_templateEngines"
                           OptionText="v=>v.Title"
                           OptionValue="v=>v.Key"
-                          @bind-SelectedOption="@_templateEngineIdSetter" />
+                          @bind-Value="Node.TemplateEngineId" />
         </FormItem2>
     </div>
 
@@ -31,7 +33,9 @@
             <HeaderArea>
                 <div class="hstack px-2">
                     <span>Syntax</span>
-                    <FluentSelect Items="CodeEditor2.Language.Array"
+                    <FluentSelect TOption="string"
+                                  TValue="string"
+                                  Items="CodeEditor2.Language.Array"
                                   Class="ms-2"
                                   Width="160px"
                                   Value="@(Node.SyntaxLanguage ?? TemplateNode.DefaultSyntaxLanguage)"
@@ -53,12 +57,6 @@
     CodeEditor2? editor1;
 
     TitleItem<string>[] _templateEngines = [new("Core.PlainText", "Plain Text")];
-
-    TitleItem<string> _templateEngineIdSetter
-    {
-        get => _templateEngines.FirstOrDefault(s => s.Key == Node.TemplateEngineId) ?? _templateEngines[0];
-        set => Node.TemplateEngineId = value.Key;
-    }
 
     protected override void OnAfterRender(bool firstRender)
     {

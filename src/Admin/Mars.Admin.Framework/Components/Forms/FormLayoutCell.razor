@@ -30,7 +30,7 @@
                             <span class="text-secondary">в конец строки</span>
                         </FluentDropZone>
                         <div class="hstack gap-2 flex-wrap my-2 layout-actions">
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="AddColumnAsync" IconStart="@(new Icons.Regular.Size16.Add())">Колонка</FluentButton>
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="AddColumnAsync" IconStart="@(new Icons.Regular.Size16.Add())">Колонка</FluentButton>
                         </div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
             else if (Node.Item.Kind == FormItemKind.Column)
             {
                 <div class="hstack gap-1 align-items-center justify-content-end">
-                    <FluentSelect TOption="string" Value="@Width" ValueChanged="SetWidthAsync" Style="width:80px;min-width:50px;">
+                    <FluentSelect TOption="string" TValue="string" Value="@Width" ValueChanged="SetWidthAsync" Style="width:80px;min-width:50px;">
                         @foreach (var (key, title) in FormLayoutEditor.Widths)
                         {
                             <FluentOption Value="@key">@title</FluentOption>
@@ -58,9 +58,9 @@
                     <span class="text-secondary">в конец колонки</span>
                 </FluentDropZone>
                 <div class="hstack gap-2 flex-wrap layout-actions">
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddRowAsync">+ Строка</FluentButton>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddHeadingAsync">+ Заголовок</FluentButton>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="AddDividerAsync">+ Разделитель</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="AddRowAsync">+ Строка</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="AddHeadingAsync">+ Заголовок</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="AddDividerAsync">+ Разделитель</FluentButton>
                 </div>
             }
             else if (Node.Item.Kind == FormItemKind.Container)

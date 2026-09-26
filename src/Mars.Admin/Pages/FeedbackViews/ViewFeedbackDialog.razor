@@ -1,28 +1,29 @@
-@implements IDialogContentComponent<FeedbackDetailResponse>
-
 @using Mars.Cms.Contracts.Feedbacks
 @using Microsoft.FluentUI.AspNetCore.Components
 @* <FluentMessageBarProvider Section="@App.MESSAGES_DIALOG" MaxMessageCount="1" /> *@
 
-<EditForm Model="@Model" novalidate Context="model">
-    <FluentStack Orientation="Orientation.Vertical">
-        <FluentTextInput Value="@Model.Title" Label="Title" ReadOnly Class="w-100" />
-        <FluentTextInput Value="@Model.Email" Label="Email" ReadOnly Class="w-100" />
-        <FluentTextInput Value="@Model.Phone" Label="Phone" ReadOnly Class="w-100" />
-        <FluentTextInput Value="@Model.Type" Label="Type" ReadOnly Class="w-100" />
-        <FluentTextArea Value="@Model.Content" Label="Content" Rows="10" ReadOnly Class="w-100" />
-        <FluentTextInput Value="@Model.FilledUsername" Label="FilledUsername" ReadOnly Class="w-100" />
-        <FluentCheckbox Value=@Model.IsAuthorizedUser Label="IsAuthorizedUser" ReadOnly Class="w-100" />
-    </FluentStack>
-</EditForm>
-
+<FluentDialogBody Class="text-start">
+    <ChildContent>
+        <EditForm Model="@Model" novalidate Context="model">
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentTextInput Value="@Model.Title" Label="Title" ReadOnly Class="w-100" />
+                <FluentTextInput Value="@Model.Email" Label="Email" ReadOnly Class="w-100" />
+                <FluentTextInput Value="@Model.Phone" Label="Phone" ReadOnly Class="w-100" />
+                <FluentTextInput Value="@Model.Type" Label="Type" ReadOnly Class="w-100" />
+                <FluentTextArea Value="@Model.Content" Label="Content" Rows="10" ReadOnly Class="w-100" />
+                <FluentTextInput Value="@Model.FilledUsername" Label="FilledUsername" ReadOnly Class="w-100" />
+                <FluentCheckbox Value=@Model.IsAuthorizedUser Label="IsAuthorizedUser" ReadOnly Class="w-100" />
+            </FluentStack>
+        </EditForm>
+    </ChildContent>
+</FluentDialogBody>
 
 @code {
     [Parameter]
     public FeedbackDetailResponse Content { get; set; } = default!;
 
     [CascadingParameter]
-    public FluentDialog? Dialog { get; set; }
+    public IDialogInstance? Dialog { get; set; }
 
     FeedbackDetailResponse Model => Content;
 }

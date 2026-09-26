@@ -29,10 +29,9 @@ else
                 @* <div class="user-avatar user-select-none"> *@
                 @* <div class="icon-user"></div> *@
 
-                <Microsoft.FluentUI.AspNetCore.Components.FluentPersona Initials=@Q.User.Initials()
-                                                                        Style="width:50px"
+                <Microsoft.FluentUI.AspNetCore.Components.FluentAvatar Initials=@Q.User.Initials()
                                                                         Image="@Q.User.AvatarUrl"
-                                                                        ImageSize="50px" />
+                                                                        Size="Microsoft.FluentUI.AspNetCore.Components.AvatarSize.Size56" />
 
                 @* </div> *@
                 <div class="user-name text-black2 d-none d-lg-block ms-3">

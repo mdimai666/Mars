@@ -3,16 +3,14 @@
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
 <d-aitool-chat-modal>
-    <FluentDialog Hidden="@(!_visible)" aria-label="AI prompt dialog"
+    <FluentDialog aria-label="AI prompt dialog"
                   @ref=_dialog
                   Modal=true
                   Class="AIToolChatModal"
                   Style="--dialog-width: 600px;"
-                  @onclose="CloseClick"
-                  @ondialogdismiss=OnDialogDismiss
-                  PreventScroll=true>
-        <div class="vstack gap-2">
-            <FluentDialogHeader TabIndex="-1">
+                  OnStateChange="OnDialogStateChange">
+        <FluentDialogBody>
+            <TitleTemplate>
                 <FluentStack VerticalAlignment="VerticalAlignment.Center">
                     <FluentIcon Value="@(new Icons.Regular.Size20.WindowApps())" />
                     <FluentLabel Typo="Typography.PaneHeader">
@@ -20,53 +18,90 @@
                     </FluentLabel>
 
                     <FluentSpacer />
-                    <FluentButton Appearance="Appearance.Stealth"
+                    <FluentButton Appearance="ButtonAppearance.Subtle"
                                   Color="var(--bs-danger)"
                                   OnClick="CloseClick">
                         <FluentIcon Value="@(new Icons.Filled.Size20.Dismiss())"
-                                    Width="20px" Color="Color.Neutral" />
+                                    Width="20px" Color="Color.Default" />
                     </FluentButton>
                 </FluentStack>
-            </FluentDialogHeader>
-            <div>
-                @if (_busy)
-                {
-                    <FluentProgressRing />
-                }
-                else if (response is not null)
-                {
-                    <div style="user-select:none">
-                        <strong>AI: </strong>
-                        <a @onclick=CopyClick role="button" style="float:right">[copy]</a>
-                        <pre @ref=aiResponsePreElement
-                             class="form-control w-100 position-relative"
-                             style="user-select:text"> @response.Content </pre>
-                        <FluentSpacer />
+            </TitleTemplate>
+            <ChildContent>
+                <div class="vstack gap-2">
+                    <div>
+                        @if (_busy)
+                        {
+                            <FluentSpinner />
+                        }
+                        else if (response is not null)
+                        {
+                            <div style="user-select:none">
+                                <strong>AI: </strong>
+                                <a @onclick=CopyClick role="button" style="float:right">[copy]</a>
+                                <pre @ref=aiResponsePreElement
+                                     class="form-control w-100 position-relative"
+                                     style="user-select:text"> @response.Content </pre>
+                                <FluentSpacer />
+                            </div>
+                        }
                     </div>
-                }
-            </div>
 
-            <FluentTextArea @bind-Value="@ChatInput"
-                            Placeholder="Type your prompt here..."
-                            @onkeydown="HandleKeyDown"
-                            tabindex="1"
-                            Autofocus
-                            Class="w-100" />
-            <div class="d-flex justify-content-end">
-
-                <FluentButton OnClick="SendMessage"
-                              Loading=@_busy
-                              tabindex="2"
-                              Title="(Ctrl+Enter) Send message"
-                              IconStart="@(new Icons.Regular.Size16.Send())"
-                              Appearance="Appearance.Accent">
-                    Send
-                </FluentButton>
-            </div>
-        </div>
-
+                    <FluentTextArea @bind-Value="@ChatInput"
+                                    Placeholder="Type your prompt here..."
+                                    @onkeydown="HandleKeyDown"
+                                    tabindex="1"
+                                    Autofocus
+                                    Class="w-100" />
+                </div>
+            </ChildContent>
+            <ActionTemplate>
+                <div class="d-flex justify-content-end">
+                    <FluentButton OnClick="SendMessage"
+                                  Loading=@_busy
+                                  tabindex="2"
+                                  Title="(Ctrl+Enter) Send message"
+                                  IconStart="@(new Icons.Regular.Size16.Send())"
+                                  Appearance="ButtonAppearance.Primary">
+                        Send
+                    </FluentButton>
+                </div>
+            </ActionTemplate>
+        </FluentDialogBody>
     </FluentDialog>
 </d-aitool-chat-modal>
+
+@code {
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; _visible остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) обрабатывает dismiss (ESC/backdrop).
+    bool _dialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_dialog is null) return;
+
+        if (_visible && !_dialogShown)
+        {
+            await _dialog.ShowAsync();
+            _dialogShown = true;
+        }
+        else if (!_visible && _dialogShown)
+        {
+            await _dialog.HideAsync();
+            _dialogShown = false;
+        }
+    }
+
+    void OnDialogStateChange(DialogEventArgs e)
+    {
+        if (e.State != DialogState.Closed) return;
+
+        _dialogShown = false;
+        if (_visible)
+        {
+            OnDialogDismiss(e);
+        }
+    }
+}
 
 <style>
     .fluent-dialog-main {

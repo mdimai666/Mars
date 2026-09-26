@@ -13,7 +13,7 @@
                       AriaLabel="Search" />
         <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
         <div class="ms-auto">
-            <FluentButton Appearance="Appearance.Accent"
+            <FluentButton Appearance="ButtonAppearance.Primary"
                           OnClick="ClickCreate"
                           IconStart="@(new Icons.Regular.Size16.Add())">
                 @AppRes.Create
@@ -28,12 +28,12 @@
                             ItemSize="48"
                             Virtualize
                             GridTemplateColumns="auto min-content"
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             Class="data-table--adaptive"
                             TGridItem="PostCategoryListItemResponse">
                 <TemplateColumn SortBy="@(GridSort<PostCategoryListItemResponse>.ByDescending(f => f.SlugPath))"
                                 Title="@AppRes.Title"
-                                InitialSortDirection="SortDirection.Ascending"
+                                InitialSortDirection="DataGridSortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     @{
@@ -50,10 +50,10 @@
                         <div class="hstack gap-4">
                             <div class="text-secondary small">@context.CreatedAt.ToString("d")</div>
                             @{
-                                <FluentOverflow Style="width: 100%;">
+                                <FluentOverflow TItem="string" Style="width: 100%;">
                                     @foreach (var tag in context.Tags)
                                     {
-                                        <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                        <FluentBadge>@tag</FluentBadge>
                                     }
                                 </FluentOverflow>
                             }
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </TemplateColumn>
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                     <div class="hstack">
                         <DFluentDeleteButton OnConfirm=@(e => DeleteItem(context))>
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />

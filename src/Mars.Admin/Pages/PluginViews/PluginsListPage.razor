@@ -32,7 +32,7 @@
                                 ItemSize="100"
                                 Virtualize
                                 EmptyContent="DataGrid_EmptyContent"
-                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                                 OnRowClick="OnRowClick"
                                 GridTemplateColumns="* 0.1fr 0.1fr"
                                 TGridItem="PluginInfoResponse">
@@ -62,16 +62,16 @@
                                         </a>
                                     }
                                     <div class="vr"></div>
-                                    <FluentRating Max="5" Value="0" ReadOnly="true"
-                                                  Style="zoom:0.5"
-                                                  IconColor="@Color.Neutral" />
+                                    <FluentRatingDisplay Max="5" Value="0"
+                                                          Style="zoom:0.5"
+                                                          Color="@RatingDisplayColor.Neutral" />
                                 </div>
                                 <div class="d-flex gap-3">
-                                    <FluentLabel Color="@Color.Neutral">@context.Version</FluentLabel>
+                                    <FluentLabel Color="@Color.Default">@context.Version</FluentLabel>
                                     <div class="__tags d-flex gap-1">
                                         @foreach (var tag in context.PackageTags)
                                         {
-                                            <FluentBadge Appearance="Appearance.Neutral">
+                                            <FluentBadge Appearance="BadgeAppearance.Filled">
                                                 @tag
                                             </FluentBadge>
                                         }
@@ -83,25 +83,25 @@
                                 <div class="hstack gap-2 mt-2">
                                     @if (context.Locked)
                                     {
-                                        <FluentBadge Appearance="Appearance.Neutral">Locked (config)</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled">Locked (config)</FluentBadge>
                                     }
                                     else
                                     {
-                                        <FluentBadge Appearance="Appearance.Neutral">
+                                        <FluentBadge Appearance="BadgeAppearance.Filled">
                                             @(context.Source == PluginSource.NuGet ? "NuGet" : "Zip")
                                         </FluentBadge>
                                     }
                                     @if (context.PendingDelete)
                                     {
-                                        <FluentBadge Appearance="Appearance.Neutral">Will be removed on restart</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled">Will be removed on restart</FluentBadge>
                                     }
                                     else if (context.Enabled)
                                     {
-                                        <FluentBadge Appearance="Appearance.Accent">Enabled</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled">Enabled</FluentBadge>
                                     }
                                     else
                                     {
-                                        <FluentBadge Appearance="Appearance.Neutral">Disabled</FluentBadge>
+                                        <FluentBadge Appearance="BadgeAppearance.Filled">Disabled</FluentBadge>
                                     }
                                 </div>
                             </div>
@@ -109,20 +109,20 @@
                     </TemplateColumn>
                     <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f => f.InstalledAt))"
                                     Title="Installed at"
-                                    InitialSortDirection="SortDirection.Descending"
+                                    InitialSortDirection="DataGridSortDirection.Descending"
                                     IsDefaultSortColumn="true"
                                     Sortable="true"
                                     Tooltip
                                     TooltipText="@(f => f.InstalledAt.LocalDateTime.ToString())"
-                                    Align="@Align.End">
+                                    Align="DataGridCellAlignment.End">
                         @context.InstalledAt.ToString("d")
                     </TemplateColumn>
-                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                         <div class="hstack gap-2">
-                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@(context.Locked || context.PendingDelete)" OnClick="() => ToggleEnabled(context)">
+                            <FluentButton Appearance="ButtonAppearance.Transparent" Disabled="@(context.Locked || context.PendingDelete)" OnClick="@((MouseEventArgs e) => ToggleEnabled(context))">
                                 @(context.Enabled ? "Disable" : "Enable")
                             </FluentButton>
-                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@(context.Locked || context.Source != PluginSource.NuGet)" OnClick="() => Update(context)">
+                            <FluentButton Appearance="ButtonAppearance.Transparent" Disabled="@(context.Locked || context.Source != PluginSource.NuGet)" OnClick="@((MouseEventArgs e) => Update(context))">
                                 Update
                             </FluentButton>
                             <DFluentDeleteButton OnConfirm=@(e => Delete(context)) Disabled="@(context.Locked || context.PendingDelete)" />

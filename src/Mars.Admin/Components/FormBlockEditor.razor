@@ -11,7 +11,7 @@
    при каждом изменении. *@
 
 <div class="text-end">
-    <FluentButton id="@_menuButtonId" Appearance="Appearance.Stealth" @onclick="@(() => _menuOpen = !_menuOpen)">
+    <FluentButton id="@_menuButtonId" Appearance="ButtonAppearance.Subtle">
         Действия
         <span slot="end">
             <i class="bi bi-chevron-down"></i>
@@ -19,9 +19,11 @@
     </FluentButton>
 </div>
 
-<FluentMenu Anchor="@_menuButtonId" @bind-Open="_menuOpen">
-    <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => _editor?.Clear()) />
-    <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
+<FluentMenu Trigger="@_menuButtonId">
+    <FluentMenuList>
+        <FluentMenuItem Label="@AppRes.Clear" OnClick=@((MenuItemEventArgs e) => _editor?.Clear()) />
+        <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
+    </FluentMenuList>
 </FluentMenu>
 
 <EditorJsBlazored.BlockEditor1 @bind-ContentJson=Json
@@ -39,7 +41,6 @@
 
     BlockEditor1? _editor;
     readonly string _menuButtonId = "blockEditorMenuButton-" + Guid.NewGuid();
-    bool _menuOpen;
 
     string Json
     {

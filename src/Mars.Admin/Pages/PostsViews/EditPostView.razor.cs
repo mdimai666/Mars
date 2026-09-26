@@ -1,3 +1,4 @@
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Pages.PostsViews.Forms;
 using Mars.Admin.Pages.PostTypeViews;
 using Mars.Forms.Front;
@@ -74,7 +75,6 @@ public partial class EditPostView
         DialogParameters parameters = new()
         {
             Title = "Форма редактирования поста",
-            SecondaryAction = null,
             Width = "min(1100px, 94vw)",
             Modal = true,
             PreventScroll = true,

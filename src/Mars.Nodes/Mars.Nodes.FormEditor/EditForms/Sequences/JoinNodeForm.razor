@@ -9,8 +9,8 @@
     <div class="vstack gap-2">
 
         <FormItem2 For=@(() => Node.Mode)>
-            <FluentSelect @bind-SelectedOption="@ModeSetter"
-                          TOption="JoinNode.JoinMode"
+            <FluentSelect @bind-Value="@ModeSetter"
+                          TOption="JoinNode.JoinMode" TValue="JoinNode.JoinMode"
                           Items="Enum.GetValues<JoinNode.JoinMode>()"
                           Style="width: 250px;">
             </FluentSelect>

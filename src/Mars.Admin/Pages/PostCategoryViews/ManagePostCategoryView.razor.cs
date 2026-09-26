@@ -38,12 +38,10 @@ public partial class ManagePostCategoryView
             dataProvider = new GridItemsProvider<PostCategoryListItemResponse>(
                 async req =>
                 {
-                    _ = req.SortByAscending;
-                    _ = req.SortByColumn;
+                    var sortBy = req.GetSortByProperties();
+                    var sortColumn = sortBy.Count == 0 ? nameof(PostCategoryListItemResponse.SlugPath) : sortBy.First().PropertyName;
 
-                    var sortColumn = req.GetSortByProperties().Count == 0 ? nameof(PostCategoryListItemResponse.SlugPath) : req.GetSortByProperties().First().PropertyName;
-
-                    var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                    var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                     data = await client.PostCategory.ListForPostType(PostType.TypeName, new()
                     {

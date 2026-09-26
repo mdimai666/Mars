@@ -23,11 +23,11 @@
                              Appearance="@TextInputAppearance.FilledDarker"
                              Required
                              Style="zoom:1.1" />
-            <FluentValidationMessage For="@(() => context.Title)" />
+            <ValidationMessage For="@(() => context.Title)" />
         </div>
         <div class="">
             <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" />
-            <FluentValidationMessage For="@(() => context.Slug)" />
+            <ValidationMessage For="@(() => context.Slug)" />
         </div>
 
         <FormItem2 For="@(() => context.ParentId)">

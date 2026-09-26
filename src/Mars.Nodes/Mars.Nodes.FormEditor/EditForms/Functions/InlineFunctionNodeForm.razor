@@ -39,10 +39,9 @@
 
                         <div class="form-item__content">
 
-                            <FluentInputLabel ForId="@f.HtmlElementId"
-                                              Required="f.IsRequired">
+                            <FluentLabel Required="f.IsRequired">
                                 @f.Name (@(ModelInfo.ShortName(f.Type.ToString())))
-                            </FluentInputLabel>
+                            </FluentLabel>
                             <div class="__input_content ">
 
                                 @if (f.Type == TypeCode.String)

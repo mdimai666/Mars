@@ -8,7 +8,6 @@ namespace Mars.Admin.Builder.SchedulerViews;
 public partial class SchedulerPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] IMessageService messageService { get; set; } = default!;
 
     PaginationState pagination = new() { ItemsPerPage = 20 };
 
@@ -34,8 +33,8 @@ public partial class SchedulerPage
         _ = Load();
     }
 
-    private Appearance PageButtonAppearance(int pageIndex)
-        => pagination.CurrentPageIndex == pageIndex ? Appearance.Accent : Appearance.Neutral;
+    private ButtonAppearance PageButtonAppearance(int pageIndex)
+        => pagination.CurrentPageIndex == pageIndex ? ButtonAppearance.Primary : ButtonAppearance.Default;
 
     private string? AriaCurrentValue(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;

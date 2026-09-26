@@ -10,9 +10,9 @@
     <div class="vstack gap-2">
 
         <FormItem2 For="() => Node.Mode">
-            <FluentSelect TOption="AuthFlowNodeMode"
+            <FluentSelect TOption="AuthFlowNodeMode" TValue="AuthFlowNodeMode"
                           Items="Enum.GetValues<AuthFlowNodeMode>()"
-                          @bind-SelectedOption=@Node.Mode />
+                          @bind-Value=@Node.Mode />
         </FormItem2>
 
         <FormItem2 For="() => Node.TimeoutSeconds">
@@ -79,9 +79,9 @@
                 <DictionaryTextArea @bind-Value="Node.CookieEndpointConfig.AdditionalFields" Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.ContentType">
-                <FluentSelect TOption="AuthFlowLoginEndpointContentType"
+                <FluentSelect TOption="AuthFlowLoginEndpointContentType" TValue="AuthFlowLoginEndpointContentType"
                               Items="Enum.GetValues<AuthFlowLoginEndpointContentType>()"
-                              @bind-SelectedOption=@Node.CookieEndpointConfig.ContentType />
+                              @bind-Value=@Node.CookieEndpointConfig.ContentType />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.LoginHeaders">
                 <DictionaryTextArea @bind-Value="Node.CookieEndpointConfig.LoginHeaders" Class="flex-fill" />

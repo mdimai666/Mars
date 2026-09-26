@@ -44,31 +44,31 @@
             }
             else if (col.IsSystem && col.Key == SystemFieldsCatalog.Status)
             {
-                <FluentAutocomplete TOption="string" Multiple
+                <FluentAutocomplete TOption="string" TValue="string" Multiple
                                     Items="PostStatuses.Select(s => s.Slug).ToList()"
                                     OptionText="@(slug => PostStatuses.FirstOrDefault(s => s.Slug == slug)?.Title ?? slug)"
                                     Placeholder="статусы…"
-                                    @bind-SelectedOptions="f.Selected"
-                                    @bind-SelectedOptions:after="RaiseNow"
+                                    @bind-SelectedItems="f.Selected"
+                                    @bind-SelectedItems:after="RaiseNow"
                                     Style="min-width:150px;" />
             }
             else if (metaField is { Type: MetaFieldType.Select } && metaField.Variants is not null)
             {
-                <FluentAutocomplete TOption="string" Multiple
+                <FluentAutocomplete TOption="string" TValue="string" Multiple
                                     Items="metaField.Variants.Select(v => v.Id.ToString()).ToList()"
                                     OptionText="@(id => metaField.Variants.FirstOrDefault(v => v.Id.ToString() == id)?.Title ?? id)"
                                     Placeholder="варианты…"
-                                    @bind-SelectedOptions="f.Selected"
-                                    @bind-SelectedOptions:after="RaiseNow"
+                                    @bind-SelectedItems="f.Selected"
+                                    @bind-SelectedItems:after="RaiseNow"
                                     Style="min-width:150px;" />
             }
 
             @if (!col.IsSystem)
             {
-                <FluentSelect TOption="string" @bind-Value="f.Presence" @bind-Value:after="RaiseNow" Style="min-width:150px;">
-                    <FluentOption TOption="string" Value="">значение: любое</FluentOption>
-                    <FluentOption TOption="string" Value="@PostGridFilterOps.NotEmpty">заполнено</FluentOption>
-                    <FluentOption TOption="string" Value="@PostGridFilterOps.Empty">пусто</FluentOption>
+                <FluentSelect TOption="string" TValue="string" @bind-Value="f.Presence" @bind-Value:after="RaiseNow" Style="min-width:150px;">
+                    <FluentOption TValue="string" Value="@string.Empty">значение: любое</FluentOption>
+                    <FluentOption TValue="string" Value="@PostGridFilterOps.NotEmpty">заполнено</FluentOption>
+                    <FluentOption TValue="string" Value="@PostGridFilterOps.Empty">пусто</FluentOption>
                 </FluentSelect>
             }
         </div>

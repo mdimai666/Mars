@@ -9,30 +9,30 @@
             var index = i;
             var row = _rows[i];
             <div class="d-flex gap-2 align-items-center">
-                <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                <FluentButton Appearance="ButtonAppearance.Subtle" Style="min-width:28px; width:28px; padding:2px 4px;"
                               Disabled="@(index == 0)"
                               OnClick="@(() => MoveAsync(row, -1))">
                     <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
                 </FluentButton>
-                <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                <FluentButton Appearance="ButtonAppearance.Subtle" Style="min-width:28px; width:28px; padding:2px 4px;"
                               Disabled="@(index == _rows.Count - 1)"
                               OnClick="@(() => MoveAsync(row, 1))">
                     <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
                 </FluentButton>
-                <FluentCheckbox Value="row.Visible" ValueChanged="@(v => ToggleAsync(row, v))" />
+                <FluentCheckbox Value="@row.Visible" ValueChanged="@(v => ToggleAsync(row, v))" />
                 <div class="flex-fill">@row.Title</div>
                 @if (!row.IsSystem)
                 {
-                    <FluentBadge Appearance="Appearance.Neutral">meta</FluentBadge>
+                    <FluentBadge Color="BadgeColor.Subtle">meta</FluentBadge>
                 }
             </div>
         }
     </div>
 
     <div class="hstack gap-3">
-        <FluentSelect TOption="string" Label="Сортировка по умолчанию" Width="240px"
+        <FluentSelect TOption="string" TValue="string" Label="Сортировка по умолчанию" Width="240px"
                       @bind-Value="_sortKey" @bind-Value:after="EmitAsync">
-            <FluentOption Value="">—</FluentOption>
+            <FluentOption Value="@string.Empty">—</FluentOption>
             @foreach (var row in _rows.Where(r => r.IsSystem))
             {
                 <FluentOption Value="@row.Key">@row.Title</FluentOption>
@@ -42,7 +42,7 @@
     </div>
 
     <div>
-        <FluentButton Appearance="Appearance.Neutral" OnClick="ResetAsync">Сбросить к стандартным</FluentButton>
+        <FluentButton Appearance="ButtonAppearance.Default" OnClick="ResetAsync">Сбросить к стандартным</FluentButton>
     </div>
 
 </div>

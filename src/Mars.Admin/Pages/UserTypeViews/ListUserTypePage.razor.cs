@@ -24,12 +24,10 @@ public partial class ListUserTypePage
         dataProvider = new GridItemsProvider<UserTypeListItemResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
+                var sortBy = req.GetSortByProperties();
+                var sortColumn = sortBy.Count == 0 ? nameof(UserTypeListItemResponse.Title) : sortBy.First().PropertyName;
 
-                var sortColumn = req.GetSortByProperties().Count == 0 ? nameof(UserTypeListItemResponse.Title) : req.GetSortByProperties().First().PropertyName;
-
-                var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                 data = await client.UserType.List(new()
                 {

@@ -1,16 +1,15 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<List<MenuItem>>
-
 <FluentDialogBody Class="d-flex flex-column">
-    <div class="__top flex-fill">
-        <Menu2 Class="menu-admin1" Items=Content />
-    </div>
-    <div class="__bottom_menu">
-        <AsideBottomItems />
-    </div>
+    <ChildContent>
+        <div class="__top flex-fill">
+            <Menu2 Class="menu-admin1" Items=Content />
+        </div>
+        <div class="__bottom_menu">
+            <AsideBottomItems />
+        </div>
+    </ChildContent>
 </FluentDialogBody>
-<FluentDialogFooter Visible=false />
 
 @code {
     [Parameter] public List<MenuItem> Content { get; set; } = default!;

@@ -37,8 +37,8 @@
     }
 
     <FormItem2 For=@(() => Node.OutputMode)>
-        <FluentSelect @bind-SelectedOption="@Node.OutputMode"
-                      TOption="FileServiceReadNode.FileOutputMode"
+        <FluentSelect @bind-Value="@Node.OutputMode"
+                      TOption="FileServiceReadNode.FileOutputMode" TValue="FileServiceReadNode.FileOutputMode"
                       Items="Enum.GetValues<FileServiceReadNode.FileOutputMode>()"
                       Style="width: 250px;">
         </FluentSelect>

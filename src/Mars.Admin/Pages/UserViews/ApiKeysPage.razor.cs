@@ -99,4 +99,36 @@ public partial class ApiKeysPage
         await adminJs.CopyToClipboard(createdKey.Key);
         _ = messageService.Success("Скопировано");
     }
+
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаги остаются источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает флаг при dismiss.
+    FluentDialog _createDialog = default!;
+    FluentDialog _createdKeyDialog = default!;
+    bool _createDialogShown;
+    bool _createdKeyDialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _createDialogShown = await SyncDialogAsync(_createDialog, createVisible, _createDialogShown);
+        _createdKeyDialogShown = await SyncDialogAsync(_createdKeyDialog, createdKeyVisible, _createdKeyDialogShown);
+    }
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
+    }
 }

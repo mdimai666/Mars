@@ -1,5 +1,3 @@
-@implements IDialogContentComponent<XActionCommand>
-
 @using Mars.Cms.Contracts.PostTypes
 @using Mars.WebApiClient.Interfaces
 @using Mars.XActions.Contracts
@@ -13,35 +11,39 @@
     тип поста → статусы этого типа (мультивыбор), режим перенумерации.
     Перекрывает генерик-форму по схеме (реестр IXActionFormProvider). *@
 
-<FluentStack Orientation="Orientation.Vertical" Gap="12">
-    <FluentSelect TOption="PostTypeListItemResponse" Label="Тип записи"
-                  Items="_postTypes" OptionText="@(t => t.Title)"
-                  SelectedOption="_selectedType" SelectedOptionChanged="@(v => OnTypeChanged(v))" Class="w-100" />
+<FluentDialogBody Class="text-start">
+    <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical" Gap="12">
+            <FluentSelect TOption="PostTypeListItemResponse" TValue="PostTypeListItemResponse" Label="Тип записи"
+                          Items="_postTypes" OptionText="@(t => t.Title)"
+                          Value="_selectedType" ValueChanged="@(v => OnTypeChanged(v))" Class="w-100" />
 
-    <FluentSelect TOption="string" Label="Режим" Value="_mode" ValueChanged="@(v => _mode = v)" Class="w-100">
-        <FluentOption TOption="string" Value="all">Перенумеровать с первого</FluentOption>
-        <FluentOption TOption="string" Value="today">Перенумеровать за сегодня</FluentOption>
-        <FluentOption TOption="string" Value="fromLast">Дозаполнить пустые (продолжить с последнего)</FluentOption>
-    </FluentSelect>
+            <FluentSelect TOption="string" TValue="string" Label="Режим" Value="_mode" ValueChanged="@(v => _mode = v)" Class="w-100">
+                <FluentOption TValue="string" Value="@("all")">Перенумеровать с первого</FluentOption>
+                <FluentOption TValue="string" Value="@("today")">Перенумеровать за сегодня</FluentOption>
+                <FluentOption TValue="string" Value="@("fromLast")">Дозаполнить пустые (продолжить с последнего)</FluentOption>
+            </FluentSelect>
 
-    @if (_statuses.Count > 0)
-    {
-        <div class="vstack">
-            <FluentLabel>Статусы <span class="text-secondary small">(ничего не отмечено — все)</span></FluentLabel>
-            @foreach (var status in _statuses)
+            @if (_statuses.Count > 0)
             {
-                <FluentCheckbox Label="@status.Title" Value="@_selectedStatuses.Contains(status.Slug)"
-                                ValueChanged="@(v => ToggleStatus(status.Slug, v))" />
+                <div class="vstack">
+                    <FluentLabel>Статусы <span class="text-secondary small">(ничего не отмечено — все)</span></FluentLabel>
+                    @foreach (var status in _statuses)
+                    {
+                        <FluentCheckbox Label="@status.Title" Value="@_selectedStatuses.Contains(status.Slug)"
+                                        ValueChanged="@(v => ToggleStatus(status.Slug, v))" />
+                    }
+                </div>
             }
+        </FluentStack>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end">
+            <FluentButton Appearance="ButtonAppearance.Default" @onclick="Cancel">Отмена</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" @onclick="Submit" Disabled="@(_selectedType is null)">Выполнить</FluentButton>
         </div>
-    }
-
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
-        <FluentButton Appearance="Appearance.Neutral" @onclick="Cancel">Отмена</FluentButton>
-        <FluentButton Appearance="Appearance.Accent" @onclick="Submit" Disabled="@(_selectedType is null)">Выполнить</FluentButton>
-    </FluentStack>
-</FluentStack>
-<FluentDialogFooter Visible="false" />
+    </ActionTemplate>
+</FluentDialogBody>
 
 @code {
     /// <summary>Id экшена (совпадает с RegenerateGeneratedMetaValuesAct.CommandId в Mars.WebApp)</summary>
@@ -51,7 +53,7 @@
     public XActionCommand Content { get; set; } = default!;
 
     [CascadingParameter]
-    public FluentDialog? Dialog { get; set; }
+    public IDialogInstance? Dialog { get; set; }
 
     List<PostTypeListItemResponse> _postTypes = [];
     PostTypeListItemResponse? _selectedType;

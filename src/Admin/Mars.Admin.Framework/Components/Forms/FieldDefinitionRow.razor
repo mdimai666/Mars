@@ -15,43 +15,41 @@
 
             @if (Definition.Required && !Capabilities.CanEditRequired)
             {
-                <FluentBadge Appearance="Appearance.Neutral">обязательное</FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" Content="обязательное" />
             }
             @if (Definition.ReadOnly)
             {
-                <FluentBadge Appearance="Appearance.Neutral">только чтение</FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" Content="только чтение" />
             }
             @if (Definition.Multiple && !Capabilities.CanEditMultiple)
             {
-                <FluentBadge Appearance="Appearance.Neutral">несколько значений</FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" Content="несколько значений" />
             }
             @if (Definition.Hidden && !Capabilities.CanHide)
             {
-                <FluentBadge Appearance="Appearance.Neutral">hidden</FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" Content="hidden" />
             }
             @if (Definition.Disabled && !Capabilities.CanDisable)
             {
-                <FluentBadge Appearance="Appearance.Neutral">выключено</FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" Content="выключено" />
             }
             @if (!string.IsNullOrEmpty(Definition.Feature))
             {
-                <FluentBadge Appearance="Appearance.Neutral" title="Поле доступно, пока включена фича типа">
-                    фича: @L[Definition.Feature]
-                </FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled" title="Поле доступно, пока включена фича типа"
+                             Content="@($"фича: {L[Definition.Feature]}")" />
             }
             @if (Definition.Protected)
             {
-                <FluentBadge Appearance="Appearance.Neutral"
-                             title="Поле защищено фичей типа: чтобы удалить его — снимите галочку фичи">
-                    фича
-                </FluentBadge>
+                <FluentBadge Appearance="BadgeAppearance.Filled"
+                             title="Поле защищено фичей типа: чтобы удалить его — снимите галочку фичи"
+                             Content="фича" />
             }
         </div>
 
         <div class="hstack gap-3">
             @if (Capabilities.CanClone)
             {
-                <FluentButton Appearance="Appearance.Stealth" OnClick="CloneAsync">
+                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CloneAsync">
                     <span class="text-secondary">дублировать</span>
                 </FluentButton>
             }
@@ -133,13 +131,13 @@
                 {
                     <div class="vstack">
                         <FluentLabel>Редактор значения</FluentLabel>
-                        <FluentSelect TOption="string" Width="250px"
+                        <FluentSelect TOption="string" TValue="string" Width="250px"
                                       Value="@(Definition.Editor ?? "")"
                                       ValueChanged="SetEditorAsync">
-                            <FluentOption TOption="string" Value="">— обычный для типа —</FluentOption>
+                            <FluentOption TValue="string" Value="@string.Empty">— обычный для типа —</FluentOption>
                             @foreach (var editor in Editors)
                             {
-                                <FluentOption TOption="string" Value="@editor.Key">@editor.Title</FluentOption>
+                                <FluentOption TValue="string" Value="@editor.Key">@editor.Title</FluentOption>
                             }
                         </FluentSelect>
                     </div>
@@ -179,7 +177,7 @@
                         var index = i;
                         var rule = Definition.Rules[index];
                         <div class="hstack gap-2 align-items-center flex-wrap">
-                            <FluentSelect TOption="string" Width="220px" Value="@rule.Type"
+                            <FluentSelect TOption="string" TValue="string" Width="220px" Value="@rule.Type"
                                           ValueChanged="@(type => SetRuleTypeAsync(index, type))">
                                 @foreach (var (key, title) in AvailableRules)
                                 {
@@ -193,7 +191,7 @@
                                                  Value="@FormRuleParams.Read(rule, parameter)"
                                                  ValueChanged="@(value => SetRuleParamAsync(index, parameter, value))" />
                             }
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveRuleAsync(index))">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveRuleAsync(index))">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </FluentButton>
                         </div>

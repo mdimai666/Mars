@@ -15,12 +15,12 @@
     {
         <div class="vstack">
             <label>Язык кода</label>
-            <FluentSelect TOption="string" Width="250px"
+            <FluentSelect TOption="string" TValue="string" Width="250px"
                           Value="@Field.CodeLang" ValueChanged="SetCodeLangAsync">
-                <FluentOption TOption="string" Value="">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
+                <FluentOption TValue="string" Value="@string.Empty">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
                 @foreach (var lang in CodeEditor2.Language.Array)
                 {
-                    <FluentOption TOption="string" Value="@lang">@lang</FluentOption>
+                    <FluentOption TValue="string" Value="@lang">@lang</FluentOption>
                 }
             </FluentSelect>
         </div>
@@ -30,7 +30,7 @@
     {
         <div class="vstack">
             <label>Тип связи</label>
-            <FluentSelect TOption="string" Width="250px"
+            <FluentSelect TOption="string" TValue="string" Width="250px"
                           Value="@Field.ModelName" ValueChanged="SetModelNameAsync">
                 @foreach (var relModel in MetaRelationModels)
                 {
@@ -48,9 +48,9 @@
         {
             <div class="vstack">
                 <label>Вид поля</label>
-                <FluentSelect TOption="string" Width="250px"
+                <FluentSelect TOption="string" TValue="string" Width="250px"
                               Value="@Field.Kind" ValueChanged="SetKindAsync">
-                    <FluentOption TOption="string" Value="">Обычный</FluentOption>
+                    <FluentOption TValue="string" Value="@string.Empty">Обычный</FluentOption>
                     <FluentOption Value="@MetaFieldKindCatalog.List">Список объектов</FluentOption>
                 </FluentSelect>
             </div>
@@ -61,18 +61,18 @@
             <div class="d-flex gap-3 flex-wrap align-items-end">
                 <div class="vstack">
                     <label>Удаление из списка</label>
-                    <FluentSelect TOption="string" Width="250px"
+                    <FluentSelect TOption="string" TValue="string" Width="250px"
                                   Value="@Field.RemoveMode" ValueChanged="SetRemoveModeAsync">
-                        <FluentOption TOption="string" Value="">— по типу цели —</FluentOption>
+                        <FluentOption TValue="string" Value="@string.Empty">— по типу цели —</FluentOption>
                         <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.Unlink">Отвязать</FluentOption>
                         <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.DeleteConfirm">Удалить объект (с подтверждением)</FluentOption>
                     </FluentSelect>
                 </div>
                 <div class="vstack">
                     <label>Вид списка</label>
-                    <FluentSelect TOption="string" Width="250px"
+                    <FluentSelect TOption="string" TValue="string" Width="250px"
                                   Value="@Field.ViewMode" ValueChanged="SetViewModeAsync">
-                        <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                        <FluentOption TValue="string" Value="@string.Empty">Таблица</FluentOption>
                         <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
                     </FluentSelect>
                 </div>
@@ -90,7 +90,7 @@
             <div class="d-flex gap-3 flex-wrap">
                 <div class="vstack">
                     <label>Целевой тип</label>
-                    <FluentSelect TOption="string" Width="250px"
+                    <FluentSelect TOption="string" TValue="string" Width="250px"
                                   Value="@Field.QueryTarget" ValueChanged="SetQueryTargetAsync">
                         @foreach (var relModel in MetaRelationModels)
                         {
@@ -117,10 +117,10 @@
                 <span class="text-secondary">
                     @(string.IsNullOrEmpty(Field.UploadFolder) ? "— папка года (по умолчанию) —" : Field.UploadFolder)
                 </span>
-                <FluentButton Size="small" OnClick="OpenFolderPickerAsync">Выбрать…</FluentButton>
+                <FluentButton Size="ButtonSize.Small" OnClick="OpenFolderPickerAsync">Выбрать…</FluentButton>
                 @if (!string.IsNullOrEmpty(Field.UploadFolder))
                 {
-                    <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="ResetUploadFolderAsync">Сбросить</FluentButton>
+                    <FluentButton Size="ButtonSize.Small" Appearance="ButtonAppearance.Subtle" OnClick="ResetUploadFolderAsync">Сбросить</FluentButton>
                 }
             </div>
             <div class="d-flex gap-4 align-items-center">
@@ -128,9 +128,9 @@
                 {
                     <div class="vstack">
                         <label>Вид списка</label>
-                        <FluentSelect TOption="string" Width="180px"
+                        <FluentSelect TOption="string" TValue="string" Width="180px"
                                       Value="@Field.ViewMode" ValueChanged="SetViewModeAsync">
-                            <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                            <FluentOption TValue="string" Value="@string.Empty">Таблица</FluentOption>
                             <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
                         </FluentSelect>
                     </div>
@@ -147,9 +147,9 @@
             <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Автозаполнение при создании объекта</FluentLabel>
 
             <div class="hstack gap-2 align-items-center flex-wrap">
-                <FluentSelect TOption="string" Width="220px"
+                <FluentSelect TOption="string" TValue="string" Width="220px"
                               Value="@Field.GeneratorType" ValueChanged="SetGeneratorTypeAsync">
-                    <FluentOption Value="">— нет —</FluentOption>
+                    <FluentOption TValue="string" Value="@string.Empty">— нет —</FluentOption>
                     @foreach (var g in MetaFieldGeneratorCatalog.All)
                     {
                         @if ((g.Key == MetaFieldGeneratorCatalog.Sequence && Field.Type == MetaFieldType.String)
@@ -167,7 +167,7 @@
                     <FluentNumberInput @bind-Value="GeneratorPadding" Label="Разрядов числа" Style="width:110px;" />
                     <div class="vstack">
                         <label>Счётчик</label>
-                        <FluentSelect TOption="string" Width="180px"
+                        <FluentSelect TOption="string" TValue="string" Width="180px"
                                       Value="@Field.GeneratorMode" ValueChanged="SetGeneratorModeAsync">
                             <FluentOption Value="@MetaFieldGeneratorCatalog.ModeContinue">продолжается</FluentOption>
                             <FluentOption Value="@MetaFieldGeneratorCatalog.ModeDaily">сброс каждый день</FluentOption>
@@ -188,7 +188,7 @@
                                              Label="Slug категории" Style="min-width:180px;" />
                             <FluentTextInput Value="@category.Prefix" ValueChanged="@(v => SetCategoryPrefixAsync(category, v))"
                                              Label="Префикс" Style="width:120px;" />
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveGeneratorCategoryAsync(category))">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveGeneratorCategoryAsync(category))">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </FluentButton>
                         </div>

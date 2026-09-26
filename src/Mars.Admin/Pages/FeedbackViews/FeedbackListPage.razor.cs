@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Cms.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -25,12 +26,10 @@ public partial class FeedbackListPage
         dataProvider = new GridItemsProvider<FeedbackSummaryResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
+                var sortBy = req.GetSortByProperties();
+                var sortColumn = sortBy.Count == 0 ? nameof(FeedbackSummaryResponse.CreatedAt) : sortBy.First().PropertyName;
 
-                var sortColumn = req.GetSortByProperties().Count == 0 ? nameof(FeedbackSummaryResponse.CreatedAt) : req.GetSortByProperties().First().PropertyName;
-
-                var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                 data = await client.Feedback.List(new()
                 {
@@ -66,7 +65,6 @@ public partial class FeedbackListPage
             Title = row.Item.Title,
             //PrimaryActionEnabled = false,
             //PrimaryAction = "Yes",
-            SecondaryAction = null,
             //Width = "500px",
             //TrapFocus = _trapFocus,
             //Modal = _modal,

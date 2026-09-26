@@ -15,7 +15,7 @@ public partial class MetaValueRelationSelectDialog
 
 
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public MetaValueRelationSelectDialogData Content { get; set; } = default!;
@@ -54,9 +54,6 @@ public partial class MetaValueRelationSelectDialog
         dataProvider = new GridItemsProvider<MetaValueRelationModelSummaryResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
-
                 //var sortColumn = req.GetSortByProperties().Count == 0
                 //                        ? nameof(MetaValueRelationModelSummaryResponse.CreatedAt)
                 //                        : req.GetSortByProperties().First().PropertyName;
@@ -113,8 +110,9 @@ public partial class MetaValueRelationSelectDialog
     /// <summary>Выбранные строки (только загруженные в текущей странице — заголовки дозапрашивает вызывающий)</summary>
     IReadOnlyCollection<Guid> GetSelectedSummaries() => _selectedIds;
 
-    void SelectSortOption(KeyValuePair<string, string> value)
+    void SelectSortOption(string value)
     {
+        _sortValue = value;
         HandleSearchInput();
     }
 

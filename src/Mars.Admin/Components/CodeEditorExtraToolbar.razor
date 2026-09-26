@@ -2,23 +2,22 @@
 @using BlazorMonaco.Editor
 @using System.Collections.Immutable;
 
-<FluentToolbar>
-    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e=>open=!open) slot="end">
+<div class="d-flex align-items-center gap-2">
+    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 slot="end">
         Action
         <FluentIcon Slot="end" Value="@(new Icons.Regular.Size16.ChevronDown())" />
     </FluentButton>
 
-    <FluentMenu @bind-Open=open Anchor="editor2-actionmenu-button" @ref=actionMenu>
+    <FluentMenu Trigger="editor2-actionmenu-button" @ref=actionMenu>
         <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
         @* <FluentDivider></FluentDivider> *@
         @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
     </FluentMenu>
-</FluentToolbar>
+</div>
 
 @code {
     FluentButton actionMenuButton1 = default!;
     FluentMenu actionMenu = default!;
-    bool open = false;
 
     [CascadingParameter]
     MarsCodeEditor2.CodeEditor2 editor2 { get; set; } = default!;

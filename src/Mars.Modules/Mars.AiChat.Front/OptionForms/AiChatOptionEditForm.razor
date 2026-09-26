@@ -30,11 +30,11 @@
                         <div class="d-flex align-items-center gap-2">
                             <strong>@(string.IsNullOrEmpty(conn.Name) ? $"Подключение #{index + 1}" : conn.Name)</strong>
                             <div class="ms-auto d-flex gap-2">
-                                <FluentButton Appearance="@(context.DefaultConnectionName == conn.Name ? Appearance.Accent : Appearance.Neutral)"
+                                <FluentButton Appearance="@(context.DefaultConnectionName == conn.Name ? ButtonAppearance.Primary : ButtonAppearance.Default)"
                                               OnClick="() => SetDefaultConnection(conn)">
                                     По умолчанию
                                 </FluentButton>
-                                <FluentButton Appearance="Appearance.Stealth"
+                                <FluentButton Appearance="ButtonAppearance.Subtle"
                                               Color="var(--bs-danger)"
                                               OnClick="() => RemoveConnection(conn)">
                                     Удалить
@@ -50,9 +50,10 @@
                             <div class="col-md-4">
                                 <label class="fz12px text-fade">Провайдер</label>
                                 <FluentSelect TOption="AiProviderType"
+                                              TValue="AiProviderType"
                                               Items="_providerTypes"
                                               OptionText="t => t.ToString()"
-                                              @bind-SelectedOption=conn.ProviderType
+                                              @bind-Value=conn.ProviderType
                                               Class="w-100" />
                             </div>
                             <div class="col-md-4">
@@ -75,7 +76,7 @@
                 }
             </div>
 
-            <FluentButton class="mt-2" Appearance="Appearance.Outline" OnClick="AddConnection">
+            <FluentButton class="mt-2" Appearance="ButtonAppearance.Outline" OnClick="AddConnection">
                 ＋ Добавить подключение
             </FluentButton>
         </div>

@@ -7,8 +7,7 @@
 
 <d-grouped-select-dropdown id="@Id" class="@Class" style="@Style">
     @_customButtonStyle
-    <FluentButton @onclick="OpenMenu"
-                  Appearance="Appearance.Neutral"
+    <FluentButton Appearance="ButtonAppearance.Default"
                   Style="@ButtonStyle"
                   Class="@ButtonClass"
                   IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
@@ -17,11 +16,8 @@
     </FluentButton>
 </d-grouped-select-dropdown>
 
-@* без UseMenuService="false" не срабатывают клики на вложенных меню *@
-<FluentMenu Anchor="@_buttonId"
-            @bind-Open="isMenuOpen"
-            UseMenuService="false"
-            Anchored="true">
+<FluentMenu Trigger="@_buttonId">
+    <FluentMenuList>
     @foreach (var group in Items)
     {
         @if (group.Count() > 1)
@@ -47,25 +43,30 @@
             }
         }
     }
+    </FluentMenuList>
 </FluentMenu>
 
 @code {
+    public GroupedSelectDropDown(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
     string _buttonId = "menuButton-" + Guid.NewGuid().ToString();
 
     [Parameter, EditorRequired] public IEnumerable<IGrouping<string?, TOption>> Items { get; set; } = default!;
 
-    [Parameter, EditorRequired] public virtual Func<TOption, string?> OptionText { get; set; }
-    [Parameter, EditorRequired] public virtual Func<TOption, string?> OptionValue { get; set; }
+    [Parameter, EditorRequired] public virtual Func<TOption, string?> OptionText { get; set; } = default!;
+    [Parameter, EditorRequired] public virtual Func<TOption, string?> OptionValue { get; set; } = default!;
     [Parameter] public virtual Func<TOption, bool>? OptionDisabled { get; set; }
     [Parameter] public virtual EventCallback<TOption?> SelectedOptionChanged { get; set; }
 
     [Parameter] public string ButtonClass { get; set; } = string.Empty;
     [Parameter] public string ButtonStyle { get; set; } = string.Empty;
 
-    MarkupString _customButtonStyle => new InlineStyleBuilder()
+    MarkupString _customButtonStyle => new MarkupString(new InlineStyleBuilder()
         .AddStyle($"#{_buttonId}::part(content)", "width", "stretch")
         .AddStyle($"#{_buttonId}::part(content)", "text-align", "start")
-        .BuildMarkupString();
+        .Build() ?? string.Empty);
 
     public string _value = "";
     [Parameter, EditorRequired]
@@ -83,17 +84,9 @@
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    private bool isMenuOpen = false;
-
-    private void OpenMenu()
-    {
-        isMenuOpen = true;
-    }
-
     private void SelectItem(TOption item)
     {
         Value = OptionValue(item) ?? string.Empty;
-        isMenuOpen = false;
         SelectedOptionChanged.InvokeAsync(item);
     }
 }

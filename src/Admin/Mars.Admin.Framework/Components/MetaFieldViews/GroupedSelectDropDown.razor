@@ -10,8 +10,7 @@
 
 <d-grouped-select-dropdown id="@Id" class="@Class" style="@Style">
     @_customButtonStyle
-    <FluentButton @onclick="OpenMenu"
-                  Appearance="Appearance.Neutral"
+    <FluentButton Appearance="ButtonAppearance.Default"
                   Style="@ButtonStyle"
                   Class="@ButtonClass"
                   Disabled="@Disabled"
@@ -21,11 +20,8 @@
     </FluentButton>
 </d-grouped-select-dropdown>
 
-@* без UseMenuService="false" не срабатывают клики на вложенных меню *@
-<FluentMenu Anchor="@_buttonId"
-            @bind-Open="isMenuOpen"
-            UseMenuService="false"
-            Anchored="true">
+<FluentMenu Trigger="@_buttonId">
+    <FluentMenuList>
     @foreach (var group in Items)
     {
         @if (group.Count() > 1)
@@ -51,9 +47,14 @@
             }
         }
     }
+    </FluentMenuList>
 </FluentMenu>
 
 @code {
+    public GroupedSelectDropDown(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
     string _buttonId = "menuButton-" + Guid.NewGuid().ToString();
 
     [Parameter, EditorRequired] public IEnumerable<IGrouping<string?, TOption>> Items { get; set; } = default!;
@@ -68,10 +69,10 @@
 
     [Parameter] public bool Disabled { get; set; }
 
-    MarkupString _customButtonStyle => new InlineStyleBuilder()
+    MarkupString _customButtonStyle => new MarkupString(new InlineStyleBuilder()
         .AddStyle($"#{_buttonId}::part(content)", "width", "stretch")
         .AddStyle($"#{_buttonId}::part(content)", "text-align", "start")
-        .BuildMarkupString();
+        .Build() ?? string.Empty);
 
     public string _value = "";
     [Parameter, EditorRequired]
@@ -89,8 +90,6 @@
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    private bool isMenuOpen = false;
-
     /// <summary>Название выбранного пункта (вместо сырого значения-ключа)</summary>
     string DisplayValue
     {
@@ -103,16 +102,9 @@
         }
     }
 
-    private void OpenMenu()
-    {
-        if (Disabled) return;
-        isMenuOpen = true;
-    }
-
     private void SelectItem(TOption item)
     {
         Value = OptionValue(item) ?? string.Empty;
-        isMenuOpen = false;
         SelectedOptionChanged.InvokeAsync(item);
     }
 }

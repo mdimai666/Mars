@@ -4,6 +4,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Mars.Admin.Framework.Dialogs;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.Forms;
@@ -96,7 +97,6 @@ public partial class MetaFieldSettingsPanel
         DialogParameters parameters = new()
         {
             Title = "Папка загрузки",
-            SecondaryAction = null,
             Width = "500px",
             Modal = true,
             PreventScroll = true,
@@ -105,7 +105,7 @@ public partial class MetaFieldSettingsPanel
         var dialog = await DialogService.ShowDialogAsync<MediaFolderSelectDialog>("", parameters);
         var result = await dialog.Result;
 
-        if (result.Cancelled || result.Data is not string path) return;
+        if (result.Cancelled || result.Value is not string path) return;
 
         field.UploadFolder = path;
         await ChangedAsync();

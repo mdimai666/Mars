@@ -49,6 +49,10 @@
 </style>
 
 @code {
+    public DropTileZone(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
     /// <summary>Папка загрузки (пусто = папка года)</summary>
     [Parameter] public string? FolderPath { get; set; }
 

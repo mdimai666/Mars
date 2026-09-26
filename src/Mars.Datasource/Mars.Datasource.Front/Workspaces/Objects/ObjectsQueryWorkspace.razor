@@ -17,26 +17,25 @@
     <ToolbarActions>
         @if (activeTab?.IsDocument == true)
         {
-            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="SaveDocumentAsync"
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@Busy" OnClick="SaveDocumentAsync"
                           Title="Записать документ на сервер (Ctrl+S)">
                 Сохранить
             </FluentButton>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="DuplicateDocumentBlockAsync"
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="DuplicateDocumentBlockAsync"
                           Title="Скопировать блок под курсором">
                 дубль
             </FluentButton>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="RemoveDocumentBlockAsync"
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="RemoveDocumentBlockAsync"
                           Title="Убрать блок под курсором из документа">
                 удалить блок
             </FluentButton>
-            <FluentButton id="@_examplesButtonId" Appearance="Appearance.Stealth" Title="Добавить пример запроса в конец документа"
-                          @onclick="@(() => _examplesOpen = !_examplesOpen)">
+            <FluentButton id="@_examplesButtonId" Appearance="ButtonAppearance.Subtle" Title="Добавить пример запроса в конец документа">
                 примеры
                 <span slot="end">
                     <i class="bi bi-chevron-down"></i>
                 </span>
             </FluentButton>
-            <FluentMenu Anchor="@_examplesButtonId" @bind-Open="_examplesOpen">
+            <FluentMenu Trigger="@_examplesButtonId">
                 @foreach (var item in HttpDocumentExamples.All)
                 {
                     var example = item;
@@ -46,15 +45,14 @@
         }
         else if (activeTab is { IsDocument: false, Language: DatasourceLanguage.Linq })
         {
-            <FluentButton id="@_fileExamplesButtonId" Appearance="Appearance.Stealth"
-                          Title="Вставить пример условия фильтра в редактор"
-                          @onclick="@(() => _fileExamplesOpen = !_fileExamplesOpen)">
+            <FluentButton id="@_fileExamplesButtonId" Appearance="ButtonAppearance.Subtle"
+                          Title="Вставить пример условия фильтра в редактор">
                 примеры
                 <span slot="end">
                     <i class="bi bi-chevron-down"></i>
                 </span>
             </FluentButton>
-            <FluentMenu Anchor="@_fileExamplesButtonId" @bind-Open="_fileExamplesOpen">
+            <FluentMenu Trigger="@_fileExamplesButtonId">
                 @foreach (var item in FileQueryExamples.All)
                 {
                     var example = item;

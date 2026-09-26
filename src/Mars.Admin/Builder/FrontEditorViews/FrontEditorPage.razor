@@ -20,11 +20,12 @@
 @inject Mars.Admin.Framework.Interfaces.IMessageService messageService
 @inject NavigationManager nav
 @inject IDialogService dialogService
+@inject IJSRuntime jsRuntime
 
 <div class="FrontEditorPage d-flex flex-column flex-fill" style="height: calc(100vh - 32px);">
 
     <div class="hstack gap-2 p-2 border-bottom flex-wrap">
-        <FluentButton Appearance="Appearance.Stealth" OnClick=@(() => nav.NavigateTo("Settings/Front"))>
+        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=@(() => nav.NavigateTo("Settings/Front"))>
             <FluentIcon Value=@(new Icons.Regular.Size24.ArrowLeft()) />
         </FluentButton>
         <span class="fw-semibold">Фронт: @Slug</span>
@@ -34,7 +35,7 @@
         }
 
         <div class="ms-auto hstack gap-2">
-            <FluentButton Appearance="Appearance.Accent" OnClick="ToggleFullPreview">
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="ToggleFullPreview">
                 @(fullPreview ? "Редактор" : "Предпросмотр на всю страницу")
             </FluentButton>
         </div>
@@ -44,14 +45,14 @@
 
         @if (!fullPreview)
         {
-            <div class="front-editor-tree border-end d-flex flex-column" style="width:300px; min-width:240px;">
+            <div id="front-editor-tree-panel" class="front-editor-tree border-end d-flex flex-column" style="width:300px; min-width:240px;">
 
                 <div class="p-2 border-bottom gap-1">
                     <input class="form-control form-control-sm" placeholder="pages/new_page.hbs" @bind="newPath" autocomplete="off" />
                     <div class="hstack gap-1">
-                        <FluentButton Appearance="Appearance.Neutral" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: false))>+ файл</FluentButton>
-                        <FluentButton Appearance="Appearance.Neutral" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: true))>+ папка</FluentButton>
-                        <FluentButton Appearance="Appearance.Neutral" Title="Обновить список файлов"
+                        <FluentButton Appearance="ButtonAppearance.Default" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: false))>+ файл</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Default" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: true))>+ папка</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Default" Title="Обновить список файлов"
                                       OnClick="LoadTree" IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" />
                     </div>
                 </div>
@@ -90,7 +91,7 @@
                                         <span class="ms-auto"></span>
                                         @if (IsPage(node))
                                         {
-                                            <FluentButton Class="tree-hover-btn" Appearance="Appearance.Stealth"
+                                            <FluentButton Class="tree-hover-btn" Appearance="ButtonAppearance.Subtle"
                                                           Title="Открыть в предпросмотре"
                                                           StopPropagation="true"
                                                           OnClick=@(() => OpenNodeInPreview(node))>
@@ -104,13 +105,15 @@
                     }
                 </div>
 
-                <FluentMenu @ref="nodeMenu" @bind-Open="showNodeMenu" VerticalThreshold="170">
-                    @if (menuNode is not null && IsPage(menuNode))
-                    {
-                        <FluentMenuItem Label="Открыть в предпросмотре" OnClick="MenuOpenInPreview" />
-                    }
-                    <FluentMenuItem Label="Переименовать" OnClick="MenuRename" />
-                    <FluentMenuItem Label="Удалить" OnClick="MenuDelete" />
+                <FluentMenu @ref="nodeMenu" OpenedChanged="OnNodeMenuOpenedChanged">
+                    <FluentMenuList>
+                        @if (menuNode is not null && IsPage(menuNode))
+                        {
+                            <FluentMenuItem Label="Открыть в предпросмотре" OnClick="MenuOpenInPreview" />
+                        }
+                        <FluentMenuItem Label="Переименовать" OnClick="MenuRename" />
+                        <FluentMenuItem Label="Удалить" OnClick="MenuDelete" />
+                    </FluentMenuList>
                 </FluentMenu>
             </div>
 
@@ -134,11 +137,11 @@
 
         <div class="border-start d-flex flex-column" style="flex:@(fullPreview ? "1" : "0 0 42%"); min-width:0;">
             <div class="px-2 py-1 border-bottom hstack gap-1 align-items-center">
-                <FluentButton Appearance="Appearance.Stealth" Title="Назад" Disabled="!CanGoBack" OnClick="NavBack"
+                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Назад" Disabled="!CanGoBack" OnClick="NavBack"
                               IconStart="@(new Icons.Regular.Size16.ArrowLeft())" />
-                <FluentButton Appearance="Appearance.Stealth" Title="Вперёд" Disabled="!CanGoForward" OnClick="NavForward"
+                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Вперёд" Disabled="!CanGoForward" OnClick="NavForward"
                               IconStart="@(new Icons.Regular.Size16.ArrowRight())" />
-                <FluentButton Appearance="Appearance.Stealth" Title="Обновить" OnClick="ReloadPreview"
+                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Обновить" OnClick="ReloadPreview"
                               IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" />
                 <input class="form-control form-control-sm preview-address" @bind="addressInput"
                        @onkeydown="OnAddressKeyDown" autocomplete="off" spellcheck="false" />
@@ -471,17 +474,39 @@
 
     #region Контекстное меню
 
-    Task OpenNodeMenu(FFrontTreeNodeResponse node, MouseEventArgs e)
+    const string TreePanelId = "front-editor-tree-panel";
+
+    async Task OpenNodeMenu(FFrontTreeNodeResponse node, MouseEventArgs e)
     {
-        //TODO: он открывается в неправильном месте. поправить.
         menuNode = node;
         StateHasChanged();
-        return nodeMenu.OpenAsync(800, 800, (int)e.ClientX, (int)e.ClientY);
+
+        // v5: OpenAsync(w,h,x,y) больше нет — меню якорится к элементу по id,
+        // поэтому координаты курсора переводим в систему координат панели дерева.
+        var (left, top) = await GetTreePanelOffsetAsync();
+        await nodeMenu.OpenMenuAsync(TreePanelId, (int)(e.ClientX - left), (int)(e.ClientY - top));
     }
+
+    async Task<(double Left, double Top)> GetTreePanelOffsetAsync()
+    {
+        try
+        {
+            var json = await jsRuntime.InvokeAsync<string>("eval",
+                $"JSON.stringify(document.getElementById('{TreePanelId}')?.getBoundingClientRect() ?? {{left:0,top:0}})");
+            using var doc = JsonDocument.Parse(json);
+            return (doc.RootElement.GetProperty("left").GetDouble(), doc.RootElement.GetProperty("top").GetDouble());
+        }
+        catch
+        {
+            return (0, 0);
+        }
+    }
+
+    void OnNodeMenuOpenedChanged(bool open) => showNodeMenu = open;
 
     void CloseNodeMenu()
     {
-        if (showNodeMenu) showNodeMenu = false;
+        if (showNodeMenu) _ = nodeMenu.CloseMenuAsync();
     }
 
     Task MenuOpenInPreview()
@@ -691,6 +716,9 @@
         public required string Text { get; set; }
         public required FFrontTreeNodeResponse Node { get; set; }
         public IEnumerable<ITreeViewItem>? Items { get; set; }
+        public Icon? IconStart { get; set; }
+        public Icon? IconEnd { get; set; }
+        public Icon? IconAside { get; set; }
         public Icon? IconCollapsed { get; set; }
         public Icon? IconExpanded { get; set; }
         public bool Disabled { get; set; }

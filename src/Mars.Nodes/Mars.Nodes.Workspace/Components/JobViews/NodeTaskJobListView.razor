@@ -24,7 +24,7 @@
                             ItemSize="48"
                             Virtualize
                             ShowHover
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             Class="data-table--adaptive"
                             GridTemplateColumns="min-content min-content auto min-content min-content min-content min-content"
                             TGridItem="NodeTaskResultSummaryResponse">
@@ -78,11 +78,11 @@
                     }
                 </TemplateColumn>
                 <TemplateColumn Title="Started"
-                                InitialSortDirection="SortDirection.Descending"
+                                InitialSortDirection="DataGridSortDirection.Descending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.StartDate))"
-                                Align="Align.End">
+                                Align="DataGridCellAlignment.End">
                     <FluentLabel>
                         @context.StartDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                     </FluentLabel>
@@ -90,7 +90,7 @@
                 <TemplateColumn Title="Finished"
                                 Sortable="true"
                                 SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.EndDate))"
-                                Align="Align.End">
+                                Align="DataGridCellAlignment.End">
                     <FluentLabel>
                         @(context.EndDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")
                     </FluentLabel>

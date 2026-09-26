@@ -1,4 +1,5 @@
 using Mars.Admin.Framework.Components;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Docker.Contracts;
 using Mars.Docker.Front.Services;
@@ -119,7 +120,7 @@ public partial class ListDockerImage
             return;
         }
 
-        if (result.Data is true)
+        if (result.Value is true)
         {
             await LoadAsync();
         }

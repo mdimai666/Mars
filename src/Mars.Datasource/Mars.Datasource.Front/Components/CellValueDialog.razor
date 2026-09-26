@@ -2,31 +2,31 @@
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<CellValueDialogContent>
-
-<FluentDialogHeader ShowDismiss="false">
-    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Значение ячейки")</FluentLabel>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="ds-cell-dialog">
-        <CodeEditor2 @ref="_editor" Lang="@Content.Language" Value="@Content.Value"
-                     ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
-    </div>
+    <TitleTemplate>
+        <FluentLabel Typo="Typography.Header">@(Dialog.Options.Header.Title ?? "Значение ячейки")</FluentLabel>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="ds-cell-dialog">
+            <CodeEditor2 @ref="_editor" Lang="@Content.Language" Value="@Content.Value"
+                         ContainerCssStyle="height:100%;border:1px solid #dfdfdf;border-radius:4px;overflow:hidden;" />
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end">
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="OkAsync">
+                @(AppRes.Ok)
+            </FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="CancelAsync">
+                @(AppRes.Cancel)
+            </FluentButton>
+        </div>
+    </ActionTemplate>
 </FluentDialogBody>
-<FluentDialogFooter>
-    <div class="hstack gap-2 justify-content-end">
-        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">
-            @(AppRes.Ok)
-        </FluentButton>
-        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">
-            @(AppRes.Cancel)
-        </FluentButton>
-    </div>
-</FluentDialogFooter>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public CellValueDialogContent Content { get; set; } = default!;

@@ -27,5 +27,9 @@
 </FluentNavMenu>
 
 @code {
+    public DocsTreeMenu(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
     [Parameter] public MenuItem[] Items { get; set; } = default!;
 }

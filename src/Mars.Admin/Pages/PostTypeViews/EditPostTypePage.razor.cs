@@ -1,3 +1,4 @@
+using Mars.Admin.Framework.Dialogs;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -56,7 +57,6 @@ public partial class EditPostTypePage
         DialogParameters parameters = new()
         {
             Title = "Поле картинки поста",
-            SecondaryAction = null,
             Width = "500px",
             Modal = true,
             PreventScroll = true,
@@ -70,7 +70,7 @@ public partial class EditPostTypePage
             parameters);
         var result = await dialog.Result;
 
-        if (result.Cancelled || result.Data is not string choice) return;
+        if (result.Cancelled || result.Value is not string choice) return;
 
         if (choice == PostImageSelectDialog.CreateNewMarker)
         {
@@ -134,5 +134,34 @@ public partial class EditPostTypePage
         //    _ = messageService.Error(result.Message);
         //}
         throw new NotImplementedException();
+    }
+
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаг остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает флаг при dismiss.
+    FluentDialog _importDialog = default!;
+    bool _importDialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _importDialogShown = await SyncDialogAsync(_importDialog, visibleImportModal, _importDialogShown);
+    }
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
     }
 }

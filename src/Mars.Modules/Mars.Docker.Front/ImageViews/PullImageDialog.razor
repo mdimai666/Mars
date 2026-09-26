@@ -5,40 +5,40 @@
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<string>
-
-<FluentDialogHeader ShowDismiss="false">
-    <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Pull image")</FluentLabel>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="d-flex flex-column gap-3">
-        <FluentTextInput Label="Image *" Placeholder="alpine" Disabled="_busy" @bind-Value="_image" />
-        <FluentTextInput Label="Tag" Placeholder="latest" Disabled="_busy" @bind-Value="_tag" />
+    <TitleTemplate>
+        <FluentLabel Typo="Typography.Header">@(Dialog.Options.Header.Title ?? "Pull image")</FluentLabel>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="d-flex flex-column gap-3">
+            <FluentTextInput Label="Image *" Placeholder="alpine" Disabled="_busy" @bind-Value="_image" />
+            <FluentTextInput Label="Tag" Placeholder="latest" Disabled="_busy" @bind-Value="_tag" />
 
-        @if (_busy)
-        {
-            <div class="hstack gap-2">
-                <FluentProgressRing />
-                <span class="fz14px text-secondary">Pulling… this can take a while</span>
-            </div>
-        }
+            @if (_busy)
+            {
+                <div class="hstack gap-2">
+                    <FluentSpinner />
+                    <span class="fz14px text-secondary">Pulling… this can take a while</span>
+                </div>
+            }
 
-        @if (_error is not null)
-        {
-            <div class="alert alert-warning mb-0 fz14px">@_error</div>
-        }
-    </div>
+            @if (_error is not null)
+            {
+                <div class="alert alert-warning mb-0 fz14px">@_error</div>
+            }
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end">
+            <FluentButton Appearance="ButtonAppearance.Primary" Disabled="@(string.IsNullOrWhiteSpace(_image) || _busy)" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="_busy" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+        </div>
+    </ActionTemplate>
 </FluentDialogBody>
-<FluentDialogFooter>
-    <div class="hstack gap-2 justify-content-end">
-        <FluentButton Appearance="Appearance.Accent" Disabled="@(string.IsNullOrWhiteSpace(_image) || _busy)" OnClick="OkAsync">@AppRes.Ok</FluentButton>
-        <FluentButton Appearance="Appearance.Neutral" Disabled="_busy" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
-    </div>
-</FluentDialogFooter>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public string Content { get; set; } = default!;

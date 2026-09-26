@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Pages.FeedbackViews;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
@@ -27,14 +28,12 @@ public partial class ManageNavMenuPage
         dataProvider = new GridItemsProvider<NavMenuSummaryResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
-
-                var sortColumn = req.GetSortByProperties().Count == 0
+                var sortBy = req.GetSortByProperties();
+                var sortColumn = sortBy.Count == 0
                                         ? nameof(NavMenuSummaryResponse.CreatedAt)
-                                        : req.GetSortByProperties().First().PropertyName;
+                                        : sortBy.First().PropertyName;
 
-                var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                 data = await client.NavMenu.ListForAdmin(new()
                 {
@@ -71,7 +70,6 @@ public partial class ManageNavMenuPage
             Title = row.Item.Title,
             //PrimaryActionEnabled = false,
             //PrimaryAction = "Yes",
-            SecondaryAction = null,
             //Width = "500px",
             //TrapFocus = _trapFocus,
             //Modal = _modal,

@@ -2,28 +2,24 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-<FluentButton @onclick="OpenMenu"
-            Appearance="Appearance.Neutral"
+<FluentButton Appearance="ButtonAppearance.Default"
             IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
             Style="min-width: 100px;"
             Id="@_buttonId">
     @(Value ?? "-Выберите элемент-")
 </FluentButton>
 
-@* без UseMenuService="false" не срабатывают клики на вложенных меню *@
-<FluentMenu Anchor="@_buttonId"
-            @bind-Open="isMenuOpen"
-            UseMenuService="false"
-            Anchored="true">
+<FluentMenu Trigger="@_buttonId">
+    <FluentMenuList>
     @foreach (var group in _groupedItems)
     {
         @if (group.Count()>1)
         {
-            <FluentMenuItem Label="@group.Key"> 
+            <FluentMenuItem Label="@group.Key">
                 <MenuItems>
                     @foreach (var item in group)
                     {
-                        <FluentMenuItem Label="@item.Title" 
+                        <FluentMenuItem Label="@item.Title"
                                         OnClick="() => SelectItem(item)">
                         </FluentMenuItem>
                     }
@@ -40,6 +36,7 @@
             }
         }
     }
+    </FluentMenuList>
 </FluentMenu>
 
 @code {
@@ -63,7 +60,6 @@
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    private bool isMenuOpen = false;
     private IEnumerable<IGrouping<string?, NodeEntityModelProviderInfo>> _groupedItems =
         Enumerable.Empty<IGrouping<string?, NodeEntityModelProviderInfo>>();
 
@@ -75,14 +71,8 @@
             .ThenBy(g => g.Key);
     }
 
-    private void OpenMenu()
-    {
-        isMenuOpen = true;
-    }
-
     private void SelectItem(NodeEntityModelProviderInfo item)
     {
         Value = item.EntityName;
-        isMenuOpen = false;
     }
 }

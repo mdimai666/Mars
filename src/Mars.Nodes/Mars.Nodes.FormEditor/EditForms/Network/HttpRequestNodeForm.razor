@@ -10,10 +10,10 @@
             <MarsValueInput Class="mvi-fill" VarType="string" Value="@UrlValue" ValueChanged="SetUrlValue" For="() => Node.Url" />
         </FormItem2>
         <FormItem2 For="() => Node.Method">
-            <FluentSelect TOption="string"
+            <FluentSelect TOption="string" TValue="string"
                           Items="HttpRequestNode.MethodVariants"
-                          Appearance="Appearance.Stealth"
-                          @bind-SelectedOption=@Node.Method />
+                          Appearance="ListAppearance.Transparent"
+                          @bind-Value=@Node.Method />
         </FormItem2>
 
         <FormItem2 For="() => Node.AuthConfig">
@@ -23,9 +23,9 @@
         <hr />
 
         <FormItem2 For="() => Node.ReturnResponse">
-            <FluentSelect TOption="HttpRequestNode.ReturnResponseType"
+            <FluentSelect TOption="HttpRequestNode.ReturnResponseType" TValue="HttpRequestNode.ReturnResponseType"
                           Items="Enum.GetValues<HttpRequestNode.ReturnResponseType>()"
-                          @bind-SelectedOption=@Node.ReturnResponse />
+                          @bind-Value=@Node.ReturnResponse />
         </FormItem2>
 
         <div class="spacer-1"></div>

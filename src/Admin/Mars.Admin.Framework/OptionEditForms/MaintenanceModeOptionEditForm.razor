@@ -25,9 +25,10 @@
 
     <FormItem2 For="()=>context.MaintenancePageSource" class="col mt-3">
         <FluentSelect TOption="EMaintenancePageSource"
+                      TValue="EMaintenancePageSource"
                       Items="Enum.GetValues<EMaintenancePageSource>()"
                       Width="200px"
-                      @bind-SelectedOption="@context.MaintenancePageSource" />
+                      @bind-Value="@context.MaintenancePageSource" />
     </FormItem2>
 
     @if (context.MaintenancePageSource == EMaintenancePageSource.StaticHtml)
@@ -53,16 +54,18 @@
                 <div class="mb-3">
                     <label>Фронт</label>
                     <FluentSelect TOption="FrontItem"
+                                  TValue="FrontItem"
                                   Items="_fronts"
                                   OptionText="@(f => f.Slug)"
-                                  SelectedOption="_selectedFront"
-                                  SelectedOptionChanged="OnFrontSelected" />
+                                  Value="_selectedFront"
+                                  ValueChanged="OnFrontSelected" />
                 </div>
             }
 
             <div class="mb-3">
                 <label>Страница фронта</label>
                 <FluentSelect TOption="string"
+                              TValue="string"
                               Items="_pageUrls"
                               @bind-Value="@context.RenderPageUrl" />
             </div>
@@ -70,7 +73,7 @@
             <FormItem2 For="()=>context.RenderPageUrl">
                 <FluentTextInput @bind-Value=@context.RenderPageUrl Placeholder="/maintenance">
                     <StartTemplate>
-                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Color="Color.Accent" />
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Color="Color.Primary" />
                     </StartTemplate>
                 </FluentTextInput>
             </FormItem2>

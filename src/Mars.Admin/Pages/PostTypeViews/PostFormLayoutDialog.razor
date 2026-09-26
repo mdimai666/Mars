@@ -2,33 +2,33 @@
 @using Mars.Cms.Contracts.PostTypes
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<PostFormLayoutDialogData>
-
 <FluentDialogBody>
-    @if (_model is null)
-    {
-        <div class="text-secondary">Загрузка формы типа…</div>
-    }
-    else
-    {
-        <div class="vstack gap-2">
-            <div class="text-secondary">
-                Тип записи @_model.PostType.Title (@_model.PostType.TypeName). Раскладка сохраняется для всего типа,
-                а не для одного поста.
+    <ChildContent>
+        @if (_model is null)
+        {
+            <div class="text-secondary">Загрузка формы типа…</div>
+        }
+        else
+        {
+            <div class="vstack gap-2">
+                <div class="text-secondary">
+                    Тип записи @_model.PostType.Title (@_model.PostType.TypeName). Раскладка сохраняется для всего типа,
+                    а не для одного поста.
+                </div>
+                <FormLayoutEditor Definition="_model.FormDefinition"
+                                  ValueChanged="@(layout => _model.FormLayout = layout)"
+                                  OnResetRequested="ResetAsync" />
             </div>
-            <FormLayoutEditor Definition="_model.FormDefinition"
-                              ValueChanged="@(layout => _model.FormLayout = layout)"
-                              OnResetRequested="ResetAsync" />
-        </div>
-    }
+        }
+    </ChildContent>
+    <ActionTemplate>
+        <FluentButton Appearance="ButtonAppearance.Primary" Disabled="@(_saving || _model is null)" OnClick="SaveAsync">Сохранить</FluentButton>
+        <FluentButton Appearance="ButtonAppearance.Default" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+    </ActionTemplate>
 </FluentDialogBody>
-<FluentDialogFooter>
-    <FluentButton Appearance="Appearance.Accent" Disabled="@(_saving || _model is null)" OnClick="SaveAsync">Сохранить</FluentButton>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
-</FluentDialogFooter>
 
 @code {
-    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter] public PostFormLayoutDialogData Content { get; set; } = default!;
 

@@ -30,14 +30,14 @@
                             Virtualize
                             EmptyContent="DataGrid_EmptyContent"
                             ShowHover
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             OnRowClick="OnRowClick"
                             Class="data-table--adaptive"
                             GridTemplateColumns="* 2fr 2fr 1fr 1fr"
                             TGridItem="FeedbackSummaryResponse">
                 <TemplateColumn SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
-                                InitialSortDirection="SortDirection.Ascending"
+                                InitialSortDirection="DataGridSortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     <div class="d-none d-lg-block">
@@ -58,13 +58,13 @@
                 <PropertyColumn Property=@(f => f.Email) Title="@AppRes.Email" Sortable="true" />
                 <TemplateColumn SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.CreatedAt))"
                                 Title="@AppRes.CreatedAt"
-                                InitialSortDirection="SortDirection.Descending"
+                                InitialSortDirection="DataGridSortDirection.Descending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true"
-                                Align="@Align.End">
+                                Align="DataGridCellAlignment.End">
                     @context.CreatedAt.LocalDateTime
                 </TemplateColumn>
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                     <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => Console.WriteLine("Edit clicked"))" />
                     @* <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DemoLogger.WriteLine("Delete clicked"))" /> *@
                     <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />

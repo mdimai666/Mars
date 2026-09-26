@@ -30,13 +30,13 @@
                 <DFluentDeleteButton OnConfirm="FormDeleteClick" />
 
                 <FluentButton OnClick="FormCloseClick"
-                              Appearance="Appearance.Neutral">
+                              Appearance="ButtonAppearance.Default">
                     @AppRes.Cancel
                 </FluentButton>
 
                 <FluentButton OnClick="FormSaveClick"
                               Loading=@saveLoading
-                              Appearance="Appearance.Accent">
+                              Appearance="ButtonAppearance.Primary">
                     @AppRes.Save
                 </FluentButton>
 
@@ -50,12 +50,12 @@
                         <div class="float-end">
                             @if (isEditJsonMode)
                             {
-                                <FluentButton Appearance="Appearance.Stealth" OnClick="CancelJsonEditMode">
+                                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CancelJsonEditMode">
                                     Отмена
                                 </FluentButton>
                             }
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleEditMode">
-                                <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Neutral" />
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ToggleEditMode">
+                                <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Default" />
                             </FluentButton>
                         </div>
                         @if (isEditJsonMode)

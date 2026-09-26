@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Pages.FeedbackViews;
 using Mars.Identity.Contracts.Roles;
 using Mars.Identity.Contracts.Users;
@@ -32,10 +33,11 @@ public partial class UsersPage
         dataProvider = new GridItemsProvider<UserDetailResponse>(
             async req =>
             {
-                var sortColumn = req.GetSortByProperties().Count == 0
+                var sortBy = req.GetSortByProperties();
+                var sortColumn = sortBy.Count == 0
                                         ? nameof(UserDetailResponse.FullName)
-                                        : req.GetSortByProperties().First().PropertyName;
-                var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                                        : sortBy.First().PropertyName;
+                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                 //_roleFilter
 
@@ -87,7 +89,6 @@ public partial class UsersPage
             Title = row.Item.FullName,
             //PrimaryActionEnabled = false,
             //PrimaryAction = "Yes",
-            SecondaryAction = null,
             //Width = "500px",
             //TrapFocus = _trapFocus,
             //Modal = _modal,
@@ -150,6 +151,19 @@ public partial class UsersPage
             NewPassword = "",
         };
         visibleChangeUserPasswordModal = true;
+    }
+
+    private void OnUserMenuClick(MenuItemEventArgs args, UserDetailResponse user)
+    {
+        switch (args.Item?.Id)
+        {
+            case "changepassword":
+                OnClickChangePassword(user);
+                break;
+            case "sendinvitation":
+                SendInvation(user.Id);
+                break;
+        }
     }
 
     private void SendInvation(Guid userId)

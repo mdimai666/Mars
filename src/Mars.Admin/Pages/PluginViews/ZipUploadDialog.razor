@@ -1,89 +1,91 @@
 @using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Admin.Framework.Dialogs
 @using Mars.Core.Exceptions
 @using Mars.Plugin.Contracts.Options
 @using Mars.Plugin.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Net.Http.Headers
 @inject IMarsWebApiClient client
-@implements IDialogContentComponent<string>
 
-<FluentDialogHeader>
-    <FluentLabel Typo="Typography.Header">Загрузка ZIP файлов</FluentLabel>
-</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <FluentLabel Typo="Typography.Header">Загрузка ZIP файлов</FluentLabel>
+    </TitleTemplate>
+    <ChildContent>
+        @if (busy)
+        {
+            <SharedLoader1 />
+        }
+        else if (!IsAllowUploadZipManually)
+        {
+            <FluentMessageBar Title="Настройки" Intent="@MessageBarIntent.Warning" AllowDismiss=false>
+                Загрузка zip плагинов отключена
+            </FluentMessageBar>
+        }
+        else
+        {
+            <div class="">
+                <MediaUploadZone AutoUpload="false"
+                                 Accept=".zip"
+                                 MaximumFileCount="10"
+                                 ZoneStyle="min-height: 100px;"
+                                 OnFilesSelected="HandleFileChange" />
+                <div class="mx-auto p-2">
+                    @if (progressActive)
+                    {
+                        <FluentProgressBar />
+                    }
+                    @if (SuccessResult)
+                    {
+                        <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
+                            Плагины загружены (@resultResponse?.Items.Count)
+                        </FluentMessageBar>
+                    }
+                    @if (errorMessage is not null)
+                    {
+                        <FluentMessageBar Title="@AppRes.Error" Intent="@MessageBarIntent.Error" AllowDismiss=false>
+                            @errorMessage
+                        </FluentMessageBar>
+                    }
+                </div>
 
-@if (busy)
-{
-    <SharedLoader1 />
-}
-else if (!IsAllowUploadZipManually)
-{
-    <FluentMessageBar Title="Настройки" Intent="@MessageIntent.Warning" AllowDismiss=false>
-        Загрузка zip плагинов отключена
-    </FluentMessageBar>
-}
-else
-{
-    <div class="">
-        <MediaUploadZone AutoUpload="false"
-                         Accept=".zip"
-                         MaximumFileCount="10"
-                         ZoneStyle="min-height: 100px;"
-                         OnFilesSelected="HandleFileChange" />
-        <div class="mx-auto p-2">
-            @if (progressActive)
+            </div>
+
+            @if (SelectedFiles?.Count > 0)
             {
-                <FluentProgress />
+                <div class="mt-3">
+                    <strong>Выбранные файлы:</strong>
+                    <ul>
+                        @foreach (var file in SelectedFiles)
+                        {
+                            <li>@file.Name @file.Size.ToHumanizedSize()</li>
+                        }
+                    </ul>
+                </div>
             }
-            @if (SuccessResult)
-            {
-                <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss=false>
-                    Плагины загружены (@resultResponse?.Items.Count)
-                </FluentMessageBar>
-            }
-            @if (errorMessage is not null)
-            {
-                <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss=false>
-                    @errorMessage
-                </FluentMessageBar>
-            }
-        </div>
 
-    </div>
-
-    @if (SelectedFiles?.Count > 0)
-    {
-        <div class="mt-3">
-            <strong>Выбранные файлы:</strong>
-            <ul>
-                @foreach (var file in SelectedFiles)
-                {
-                    <li>@file.Name @file.Size.ToHumanizedSize()</li>
-                }
-            </ul>
-        </div>
-    }
-
-}
-
-<FluentDialogFooter>
-    @if (busy || !IsAllowUploadZipManually)
-    {
-        <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
-    }
-    else if (!SuccessResult)
-    {
-        <FluentButton Appearance="Appearance.Accent" OnClick="UploadAsync">Загрузить</FluentButton>
-        <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
-    }
-    else if (SuccessResult)
-    {
-        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">@AppRes.Ok</FluentButton>
-    }
-</FluentDialogFooter>
+        }
+    </ChildContent>
+    <ActionTemplate>
+        @if (busy || !IsAllowUploadZipManually)
+        {
+            <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
+        }
+        else if (!SuccessResult)
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="UploadAsync">Загрузить</FluentButton>
+            <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
+        }
+        else if (SuccessResult)
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+        }
+    </ActionTemplate>
+</FluentDialogBody>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public string Content { get; set; } = default!;
@@ -190,7 +192,7 @@ else
 
         if (!result.Cancelled)
         {
-            var data = result.Data as PluginsUploadOperationResultResponse;
+            var data = result.Value as PluginsUploadOperationResultResponse;
             return data;
         }
 

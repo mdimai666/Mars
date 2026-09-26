@@ -46,7 +46,7 @@
                         </div>
                     </TemplateColumn>
                     <PropertyColumn Property="@(p => p.NextExecutionTime)" Sortable="true" Tooltip />
-                    <TemplateColumn Title="Actions" Align="@Align.End">
+                    <TemplateColumn Title="Actions" Align="DataGridCellAlignment.End">
                         <FluentButton aria-label="trigger item" IconEnd="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="@(e => InjectItem(context))" Class="me-2" />
                         @* <FluentDivider Orientation="@Orientation.Vertical" /> *@
                         <FluentButton aria-label="play item" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="@(e => PlayItem(context))" />

@@ -1,9 +1,8 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Mars.Cms.Contracts.MetaFields
 
-@implements IDialogContentComponent<MetaValueRelationSelectDialogData>
-
 <FluentDialogBody>
+    <ChildContent>
     <d-metavalue-relation-select-dialog>
 
         <div class="d-flex">
@@ -17,8 +16,9 @@
                                  AriaLabel="Search" />
 
                 <FluentSelect TOption=@(KeyValuePair<string, string>)
-                              @bind-Value=_sortValue
-                              SelectedOptionChanged="SelectSortOption"
+                              TValue="string"
+                              Value="_sortValue"
+                              ValueChanged="SelectSortOption"
                               Width="unset"
                               Items="SortOptions"
                               Style="height:32px"
@@ -49,7 +49,7 @@
                             AutoFit
                             Virtualize
                             ItemSize="66"
-                            GenerateHeader="GenerateHeaderOption.None"
+                            GenerateHeader="DataGridGeneratedHeaderType.None"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="@GridColumns"
                             TGridItem="MetaValueRelationModelSummaryResponse">
@@ -87,27 +87,24 @@
                     </div>
 
                 </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
+                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="DataGridCellAlignment.End" />
 
             </FluentDataGrid>
         </div>
 
 
     </d-metavalue-relation-select-dialog>
+    </ChildContent>
+    <ActionTemplate>
+        @if (Content.MultiSelect)
+        {
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="AddSelectedAsync" Disabled="@(_selectedIds.Count == 0)">
+                Добавить выбранные (@_selectedIds.Count)
+            </FluentButton>
+        }
+    </ActionTemplate>
 </FluentDialogBody>
-@if (Content.MultiSelect)
-{
-    <FluentDialogFooter>
-        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
-        <FluentButton Appearance="Appearance.Accent" OnClick="AddSelectedAsync" Disabled="@(_selectedIds.Count == 0)">
-            Добавить выбранные (@_selectedIds.Count)
-        </FluentButton>
-    </FluentDialogFooter>
-}
-else
-{
-    <FluentDialogFooter Visible=false />
-}
 
 <style>
     .d-metavalue-relation-select-dialog__list-item.active {

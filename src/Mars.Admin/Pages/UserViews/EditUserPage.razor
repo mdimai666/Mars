@@ -26,10 +26,9 @@
                        @ref=_editForm1>
 
         <div class="vstack gap-2">
-            <FluentPersona Name="@model.FullName"
-                           Style="width:50px"
-                           Image="@model.AvatarUrl"
-                           ImageSize="50px" />
+            <FluentAvatar Name="@model.FullName"
+                          Image="@model.AvatarUrl"
+                          Size="AvatarSize.Size56" />
             <div class="spacer-1"></div>
             <FormItem2 For="@(() => model.UserName)">
                 <FluentTextInput Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
@@ -57,16 +56,14 @@
                 </FluentRadioGroup>
             </FormItem2>
             <FormItem2 For="@(() => model.Roles)">
-                <FluentAutocomplete TOption="RoleSummaryResponse"
-                                    AutoComplete="off"
+                <FluentAutocomplete TOption="RoleSummaryResponse" TValue="RoleSummaryResponse"
                                     Width="300px"
                                     Items="@model.AvailRoles"
                                     Placeholder="Select"
                                     Multiple
                                     OptionText="@(f=>f.Name)"
                                     IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                    KeepOpen
-                                    @bind-SelectedOptions="@model.Roles" />
+                                    @bind-SelectedItems="@model.Roles" />
             </FormItem2>
             <FormItem2 For="@(() => model.BirthDate)">
                 <FluentDatePicker @bind-Value="@model.BirthDate" />

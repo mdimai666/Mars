@@ -26,6 +26,8 @@ public partial class EditPostTypePresentationPage
 
     StandardEditContainer<PostTypePresentationEditModel> f = default!;
 
+    readonly string _listViewMenuId = "listview-template-menu-" + Guid.NewGuid();
+
     void AfterSave()
     {
         _ = _viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
@@ -41,15 +43,16 @@ public partial class EditPostTypePresentationPage
         StateHasChanged();
     }
 
-    private async Task HandleOnMenuListViewTemplateChanged(MenuChangeEventArgs args)
+    private async Task HandleOnMenuListViewTemplateChanged(MenuItemEventArgs args)
     {
-        if (args.Id == "open_presentation_template")
+        var id = args.Item?.Id;
+        if (id == "open_presentation_template")
         {
             // шаблон списка живёт в специальном фронте админки (data/admin/front)
             _navigationManager.NavigateTo("front/editor/admin");
             return;
         }
-        else if (args.Id == "create_presentation_template")
+        else if (id == "create_presentation_template")
         {
             var commandId = "mars.content.templates.createPresentation";
             var xresult = await _actAppService.Inject(commandId, new Dictionary<string, string>
@@ -75,6 +78,6 @@ public partial class EditPostTypePresentationPage
             }
             return;
         }
-        throw new NotImplementedException($"id '{args.Id}' is not implement");
+        throw new NotImplementedException($"id '{id}' is not implement");
     }
 }

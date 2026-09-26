@@ -23,8 +23,8 @@
         </FormItem2>
 
         <FormItem2 For=@(() => Node.MessageRecipient)>
-            <FluentSelect @bind-SelectedOption="@Node.MessageRecipient"
-                          TOption="MessageRecipientType"
+            <FluentSelect @bind-Value="@Node.MessageRecipient"
+                          TOption="MessageRecipientType" TValue="MessageRecipientType"
                           Items="Enum.GetValues<MessageRecipientType>()"
                           Style="width: 250px;">
             </FluentSelect>
@@ -32,7 +32,7 @@
 
         <FormItem2 For=@(() => Node.MessageIntent)>
             <FluentSelect @bind-Value="@Node.MessageIntent"
-                          TOption="Mars.Core.Models.MessageIntent"
+                          TOption="Mars.Core.Models.MessageIntent" TValue="string"
                           OptionValue=@(s=>s.ToString())
                           OptionText=@(s=>s.ToString())
                           Items="Enum.GetValues<Mars.Core.Models.MessageIntent>()"

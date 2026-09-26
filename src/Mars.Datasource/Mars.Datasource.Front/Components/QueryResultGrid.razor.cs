@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Front.Services;
 using Mars.Datasource.Contracts.Catalog;
@@ -91,7 +92,7 @@ public partial class QueryResultGrid
         var result = await dialog.Result;
         if (result.Cancelled) return;
 
-        ApplyEdit((request.RowIndex, request.Column), result.Data as string);
+        ApplyEdit((request.RowIndex, request.Column), result.Value as string);
         StateHasChanged();
     }
 

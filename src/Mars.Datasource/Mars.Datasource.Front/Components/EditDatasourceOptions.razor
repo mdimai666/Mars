@@ -56,7 +56,9 @@
                                     <div class="col col-lg-6 mt-3">
                                         <div>
                                             <label>Driver</label>
-                                            <FluentSelect Items="DriversFor(config.Kind).ToList()"
+                                            <FluentSelect TOption="DatasourceKindProfile"
+                                                          TValue="string"
+                                                          Items="DriversFor(config.Kind).ToList()"
                                                           OptionText="@(profile => profile.Label)"
                                                           OptionValue="@(profile => profile.Driver)"
                                                           Value="@config.Driver"

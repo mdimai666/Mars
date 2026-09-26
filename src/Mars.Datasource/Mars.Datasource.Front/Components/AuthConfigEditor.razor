@@ -5,6 +5,8 @@
     <div class="col-12 col-lg-4">
         <label class="fz14px">Способ доступа</label>
         <FluentSelect Class="w-100"
+                      TOption="string"
+                      TValue="string"
                       Items="Modes"
                       OptionText="@ModeLabel"
                       OptionValue="@(mode => mode)"

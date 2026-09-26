@@ -5,6 +5,7 @@ using Mars.Identity.Contracts.Roles;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Pages.NavMenuViews;
 
@@ -38,7 +39,7 @@ public partial class EditNavMenuPage
         initExport();
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -47,6 +48,8 @@ public partial class EditNavMenuPage
                 _availRoles = (await client.Role.List(new())).Items;
             });
         }
+
+        _importDialogShown = await SyncDialogAsync(_importDialog, visibleImportModal, _importDialogShown);
     }
 
     void OnClickItem(DTreeNode<NavMenuItem> node)
@@ -304,5 +307,29 @@ public partial class EditNavMenuPage
         {
             _ = messageService.Error(result.Message);
         }
+    }
+
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаг остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает флаг при dismiss.
+    FluentDialog _importDialog = default!;
+    bool _importDialogShown;
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
     }
 }

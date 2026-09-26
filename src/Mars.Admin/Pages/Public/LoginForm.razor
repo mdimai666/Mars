@@ -3,7 +3,7 @@
 @if (IsLoginLoading)
 {
     <div class="flex-fill xcenter">
-        <FluentProgressRing />
+        <FluentSpinner />
     </div>
 }
 else if (!_isAlreadyAuth)
@@ -24,7 +24,7 @@ else if (!_isAlreadyAuth)
                 @*<a href="#">Забыли пароль?</a>*@
             </div>
             <div class="spacer-1"></div>
-            <FluentButton Appearance=@Appearance.Accent Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
+            <FluentButton Appearance=@ButtonAppearance.Primary Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
 
             @if (_passkeyAvailable)
             {
@@ -68,13 +68,13 @@ else if (!_isAlreadyAuth)
     }
 
     <FluentOverlay @bind-Visible=@_loginOverlayVisible Transparent="false">
-        <FluentProgressRing />
+        <FluentSpinner />
     </FluentOverlay>
 
     if (_successAlertMessage is not null)
     {
         <div class="mt-5">
-            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss=false>
+            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
                 @_successAlertMessage
             </FluentMessageBar>
         </div>

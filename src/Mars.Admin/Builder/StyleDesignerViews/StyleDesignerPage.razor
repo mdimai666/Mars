@@ -30,15 +30,15 @@
 
                             <FluentStack HorizontalGap="10" Wrap>
                                 <FluentButton>Button</FluentButton>
-                                <FluentButton Appearance="Appearance.Accent">Accent</FluentButton>
-                                <FluentButton Appearance="Appearance.Lightweight">Lightweight</FluentButton>
-                                <FluentButton Appearance="Appearance.Outline">Outline</FluentButton>
-                                <FluentButton Appearance="Appearance.Stealth">Stealth</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Primary">Accent</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Transparent">Lightweight</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Outline">Outline</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Subtle">Stealth</FluentButton>
                                 <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
-                                              Appearance="Appearance.Accent">
+                                              Appearance="ButtonAppearance.Primary">
                                     Refresh
                                 </FluentButton>
-                                <FluentButton Loading="@true" Appearance="Appearance.Accent">Loading</FluentButton>
+                                <FluentButton Loading="@true" Appearance="ButtonAppearance.Primary">Loading</FluentButton>
                             </FluentStack>
 
                             <StyleSampleForm />
@@ -47,7 +47,7 @@
 
                             <FluentCard Width="400px">
                                 <p>Just some content in a card (with a button that does not do anything).</p>
-                                <FluentButton Appearance="Appearance.Accent">Hello</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Primary">Hello</FluentButton>
                             </FluentCard>
 
                             <h4>Typography</h4>

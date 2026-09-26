@@ -43,7 +43,7 @@
                             <div class="d-file-item-actions-top">
                                 @if (Q.User.IsAuth && !ReadOnly)
                                 {
-                                    <FluentButton Appearance="Appearance.Stealth" Title="Убрать файл"
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" Title="Убрать файл"
                                                   OnClick=@(e => Value = Guid.Empty)>
                                         <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                                     </FluentButton>
@@ -66,13 +66,13 @@
                                 @if (Q.User.IsAuth)
                                 {
                                     <div class="d-flex gap-1">
-                                        <FluentButton Appearance="Appearance.Accent" OnClick="ShowModalForSelect">
+                                        <FluentButton Appearance="ButtonAppearance.Primary" OnClick="ShowModalForSelect">
                                             выбрать
                                         </FluentButton>
                                         @if (!file.IsImage)
                                         {
                                             <a href="@file.Url" target="_blank">
-                                                <FluentButton Appearance="Appearance.Neutral">открыть</FluentButton>
+                                                <FluentButton Appearance="ButtonAppearance.Default">открыть</FluentButton>
                                             </a>
                                         }
                                     </div>

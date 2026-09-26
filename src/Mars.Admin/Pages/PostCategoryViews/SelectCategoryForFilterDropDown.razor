@@ -2,8 +2,9 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Threading.Tasks
 
-@* Если не присваивать Items и OptionSelected он начинает тупить при изменения Value вне компонента *@
+@* Если не присваивать Items он начинает тупить при изменения Value вне компонента *@
 <FluentAutocomplete TOption="PostCategoryListItemResponse"
+                    TValue="string"
                     Id="@Id"
                     Class="@Class"
                     Style="@Style"
@@ -11,10 +12,9 @@
                     Disabled="Disabled"
                     Width=@Width
                     Multiple="false"
-                    SelectedOption="_selectedItem"
-                    OptionSelected="@(v=>v.Id == Value)"
+                    SelectedItem="_selectedItem"
                     Items="_lastRequestItems"
-                    SelectedOptionChanged="SelectedOptionChanged"
+                    SelectedItemChanged="SelectedOptionChanged"
                     OptionValue="@(v=>v?.Id.ToString())"
                     OnOptionsSearch="OnOptionsSearch"
                     OptionText="@(x => x.Title)"

@@ -53,7 +53,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         if (Visible && !_wasVisible && inputSearch is not null)
-            inputSearch.FocusAsync();
+            inputSearch.Element.FocusAsync();
         _wasVisible = Visible;
     }
 

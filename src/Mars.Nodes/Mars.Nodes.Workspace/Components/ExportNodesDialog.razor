@@ -1,53 +1,56 @@
 @using System.Text.Json
 @using Mars.Admin.Framework
 @using Mars.Admin.Framework.Components
+@using Mars.Admin.Framework.Dialogs
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Contracts.Resources
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<INodeEditorApi>
 @implements IDisposable
 
-<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
-    <div class="hstack">
-        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowExport())" Color="Color.Info" Class="me-2" />
-        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Export nodes")</FluentLabel>
-    </div>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
-        <EditForm Model="@_json" class="flex-fill vstack">
-            <div class="hstack gap-4">
-                <FluentRadioGroup @bind-Value=_scope Orientation="Orientation.Horizontal" @bind-Value:after="OnModeChanged">
-                    @foreach (var item in Enum.GetValues<ExportNodesScope>())
-                    {
-                        <FluentRadio Value="@item" Label="@item.ToString()" />
-                    }
-                </FluentRadioGroup>
-                <FluentCheckbox @bind-Value="@_formatted" @bind-Value:after="OnModeChanged">
-                    Formatted
-                </FluentCheckbox>
-            </div>
-            <hr />
-            <FormItem2 Label="JSON" For="() => _json">
-                <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
-            </FormItem2>
-        </EditForm>
-    </div>
+    <TitleTemplate>
+        <div class="hstack">
+            <FluentIcon Value="@(new Icons.Regular.Size24.ArrowExport())" Color="Color.Info" Class="me-2" />
+            <FluentLabel Typo="Typography.Header">@(Dialog.Options.Header.Title ?? "Export nodes")</FluentLabel>
+        </div>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
+            <EditForm Model="@_json" class="flex-fill vstack">
+                <div class="hstack gap-4">
+                    <FluentRadioGroup @bind-Value=_scope Orientation="Orientation.Horizontal" @bind-Value:after="OnModeChanged">
+                        @foreach (var item in Enum.GetValues<ExportNodesScope>())
+                        {
+                            <FluentRadio Value="@item" Label="@item.ToString()" />
+                        }
+                    </FluentRadioGroup>
+                    <FluentCheckbox @bind-Value="@_formatted" @bind-Value:after="OnModeChanged">
+                        Formatted
+                    </FluentCheckbox>
+                </div>
+                <hr />
+                <FormItem2 Label="JSON" For="() => _json">
+                    <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
+                </FormItem2>
+            </EditForm>
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="d-flex align-items-center gap-2 w-100">
+            <div class="flex-fill vstack gap-2 me-3">Nodes: @_nodesCount</div>
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@DownloadFile">@AppRes.Download</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@CopyToClipboard">@AppRes.CopyToClipboard</FluentButton>
+        </div>
+    </ActionTemplate>
 </FluentDialogBody>
-
-<FluentDialogFooter>
-    <div class="flex-fill vstack gap-2 me-3">Nodes: @_nodesCount</div>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
-    <FluentButton Appearance="Appearance.Accent" OnClick="@DownloadFile">@AppRes.Download</FluentButton>
-    <FluentButton Appearance="Appearance.Accent" OnClick="@CopyToClipboard">@AppRes.CopyToClipboard</FluentButton>
-</FluentDialogFooter>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public INodeEditorApi Content { get; set; } = default!;
@@ -70,7 +73,7 @@
         }
     }
 
-    private Task OkAsync() => Dialog.CloseAsync(DialogResult.Ok(_json));
+    private Task OkAsync() => Dialog.CloseAsync(_json);
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
@@ -78,13 +81,14 @@
     {
         DialogParameters parameters = new()
         {
+            ShowDismiss = true,
             Width = "900px",
             TrapFocus = false,
             Modal = true,
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<ExportNodesDialog>(editor, parameters);
+        _ = _dialogService.ShowDialogAsync<ExportNodesDialog>(editor, parameters);
     }
 
     void OnModeChanged()

@@ -1,42 +1,44 @@
 @using Mars.Admin.Framework.Components
+@using Mars.Admin.Framework.Dialogs
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Contracts.Resources
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<string>
-
-<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
-    <div class="hstack">
-        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowImport())" Color="Color.Info" Class="me-2" />
-        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Import nodes")</FluentLabel>
-    </div>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
-        <EditForm Model="@_json" class="flex-fill vstack">
-            <FormItem2 Label="JSON" For="() => _json">
-                <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
-            </FormItem2>
-        </EditForm>
-    </div>
+    <TitleTemplate>
+        <div class="hstack">
+            <FluentIcon Value="@(new Icons.Regular.Size24.ArrowImport())" Color="Color.Info" Class="me-2" />
+            <FluentLabel Typo="Typography.Header">@(Dialog.Options.Header.Title ?? "Import nodes")</FluentLabel>
+        </div>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
+            <EditForm Model="@_json" class="flex-fill vstack">
+                <FormItem2 Label="JSON" For="() => _json">
+                    <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
+                </FormItem2>
+            </EditForm>
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end">
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@OkAsync">@AppRes.Import</FluentButton>
+        </div>
+    </ActionTemplate>
 </FluentDialogBody>
-
-<FluentDialogFooter>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
-    <FluentButton Appearance="Appearance.Accent" OnClick="@OkAsync">@AppRes.Import</FluentButton>
-</FluentDialogFooter>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public string Content { get; set; } = default!;
 
     string _json = "";
 
-    private Task OkAsync() => Dialog.CloseAsync(DialogResult.Ok(_json));
+    private Task OkAsync() => Dialog.CloseAsync(_json);
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
@@ -44,6 +46,7 @@
     {
         DialogParameters parameters = new()
         {
+            ShowDismiss = true,
             Width = "900px",
             TrapFocus = false,
             Modal = true,

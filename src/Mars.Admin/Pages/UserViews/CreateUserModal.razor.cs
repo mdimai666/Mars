@@ -68,13 +68,32 @@ public partial class CreateUserModal
         }
     }
 
-    void OnDialogResult(DialogResult result)
+    // v5: FluentDialog без Hidden/OnDialogResult — показ/скрытие императивно; Visible остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает Visible (бывший OnDialogResult: Cancelled → Visible=false).
+    bool _dialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (result.Cancelled)
+        _dialogShown = await SyncDialogAsync(Dialog, Visible, _dialogShown);
+    }
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
         {
-            Visible = false;
-            return;
+            await dialog.ShowAsync();
+            return true;
         }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
     }
 
     void AfterSave(CreateUserModel model)

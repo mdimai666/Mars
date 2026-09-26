@@ -8,7 +8,7 @@
 
     @if (_busy)
     {
-        <FluentProgressRing />
+        <FluentSpinner />
     }
     else if (_unsupported)
     {
@@ -39,7 +39,7 @@
                         <div class="d-child-card-title text-truncate" title="@item.Title">@item.Title</div>
                         @* stopPropagation: удаление не должно открывать карточку *@
                         <div class="d-child-card-actions" @onclick="@(_ => {})" @onclick:stopPropagation>
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(item.Id))">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(item.Id))">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </FluentButton>
                         </div>
@@ -64,7 +64,7 @@
 
         <div class="mt-2 d-flex gap-2">
             <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
-            <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
+            <FluentButton OnClick="OpenSelectAsync" Appearance="ButtonAppearance.Default">Привязать существующий…</FluentButton>
         </div>
     }
     else
@@ -96,11 +96,11 @@
                         }
                     </TemplateColumn>
                 }
-                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Align="Align.End" />
+                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Align="DataGridCellAlignment.End" />
                 <TemplateColumn Title="">
                     @* stopPropagation: клик по удалению не должен открывать строку (OnRowClick) *@
                     <div class="d-inline-block" @onclick="@(_ => {})" @onclick:stopPropagation>
-                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(context.Id))">
+                        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(context.Id))">
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                         </FluentButton>
                     </div>
@@ -124,7 +124,7 @@
 
         <div class="mt-2 d-flex gap-2">
             <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
-            <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
+            <FluentButton OnClick="OpenSelectAsync" Appearance="ButtonAppearance.Default">Привязать существующий…</FluentButton>
         </div>
     }
 

@@ -2,21 +2,7 @@
 
 @if (Q.Site is not null)
 {
-    <FluentDesignSystemProvider @ref=_fluentDesignSystemProvider
-                                AccentBaseColor="@styler.AccentBaseColor"
-                                NeutralBaseColor="@styler.NeutralBaseColor"
-                                FillColor="@styler.FillColor"
-                                NoPaint=@styler.NoPaint
-                                BaseHeightMultiplier="@styler.BaseHeightMultiplier"
-                                BaseHorizontalSpacingMultiplier="@styler.BaseHorizontalSpacingMultiplier"
-                                ControlCornerRadius="@styler.ControlCornerRadius"
-                                LayerCornerRadius="@styler.LayerCornerRadius"
-                                StrokeWidth="@styler.StrokeWidth"
-                                FocusStrokeWidth="@styler.FocusStrokeWidth"
-                                Density="@styler.Density"
-                                DesignUnit="@styler.DesignUnit"
-                                BaseLayerLuminance="@styler.BaseLayerLuminance"
-                                style="flex: 1 0;display:flex;flex-direction:column;--bs-primary: var(--accent-base-color);">
+    <div style="flex: 1 0;display:flex;flex-direction:column;--bs-primary: var(--accent-base-color);">
         <CascadingAuthenticationState>
             <Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="AdditionalAssemblies">
                 <Found Context="routeData">
@@ -49,7 +35,7 @@
                 <Mars.AiChat.Front.Components.AiChatContainer />
             </AuthorizeView>
         </CascadingAuthenticationState>
-    </FluentDesignSystemProvider>
+    </div>
 }
 else
 {
@@ -60,8 +46,4 @@ else
     </ContentWrapper>
 }
 
-<FluentToastProvider Position="ToastPosition.TopCenter" />
-<FluentDialogProvider />
-<FluentTooltipProvider />
-<FluentMessageBarProvider />
-<FluentMenuProvider />
+<FluentProviders />

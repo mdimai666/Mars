@@ -1,60 +1,62 @@
+@using Mars.Admin.Framework.Dialogs
 @using Mars.Core.Exceptions
 @using Mars.Plugin.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IMarsWebApiClient client
-@implements IDialogContentComponent<string>
 
-<FluentDialogHeader>
-    <FluentLabel Typo="Typography.Header">Установка плагина из NuGet</FluentLabel>
-</FluentDialogHeader>
-
-@if (busy)
-{
-    <SharedLoader1 />
-}
-else
-{
-    <div class="vstack gap-3 p-3" style="width: 420px;">
-        <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
-        <FluentTextInput Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
-        <FluentLabel Typo="Typography.Body" Color="@Color.Neutral">
-            Плагин будет установлен в data/plugins и активируется после рестарта сервера.
-        </FluentLabel>
-
-        @if (successResult)
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <FluentLabel Typo="Typography.Header">Установка плагина из NuGet</FluentLabel>
+    </TitleTemplate>
+    <ChildContent>
+        @if (busy)
         {
-            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss=false>
-                @resultResponse?.Message
-            </FluentMessageBar>
+            <SharedLoader1 />
         }
-        @if (errorMessage is not null)
+        else
         {
-            <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss=false>
-                @errorMessage
-            </FluentMessageBar>
-        }
-    </div>
-}
+            <div class="vstack gap-3 p-3" style="width: 420px;">
+                <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
+                <FluentTextInput Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
+                <FluentLabel Typo="Typography.Body" Color="@Color.Default">
+                    Плагин будет установлен в data/plugins и активируется после рестарта сервера.
+                </FluentLabel>
 
-<FluentDialogFooter>
-    @if (busy)
-    {
-        <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
-    }
-    else if (!successResult)
-    {
-        <FluentButton Appearance="Appearance.Accent" OnClick="InstallAsync" Disabled="string.IsNullOrWhiteSpace(packageId)">Установить</FluentButton>
-        <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
-    }
-    else
-    {
-        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">@AppRes.Ok</FluentButton>
-    }
-</FluentDialogFooter>
+                @if (successResult)
+                {
+                    <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
+                        @resultResponse?.Message
+                    </FluentMessageBar>
+                }
+                @if (errorMessage is not null)
+                {
+                    <FluentMessageBar Title="@AppRes.Error" Intent="@MessageBarIntent.Error" AllowDismiss=false>
+                        @errorMessage
+                    </FluentMessageBar>
+                }
+            </div>
+        }
+    </ChildContent>
+    <ActionTemplate>
+        @if (busy)
+        {
+            <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
+        }
+        else if (!successResult)
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="InstallAsync" Disabled="string.IsNullOrWhiteSpace(packageId)">Установить</FluentButton>
+            <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
+        }
+        else
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+        }
+    </ActionTemplate>
+</FluentDialogBody>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public string Content { get; set; } = default!;
@@ -106,6 +108,6 @@ else
         });
 
         var result = await dialog.Result;
-        return result.Cancelled ? null : result.Data as PluginInstallResponse;
+        return result.Cancelled ? null : result.Value as PluginInstallResponse;
     }
 }

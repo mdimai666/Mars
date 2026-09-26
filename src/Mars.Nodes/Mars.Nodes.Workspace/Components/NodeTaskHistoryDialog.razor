@@ -1,3 +1,4 @@
+@using Mars.Admin.Framework.Dialogs
 @using Mars.Nodes.Contracts.NodeTaskJob
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Workspace.Components.JobViews
@@ -6,26 +7,25 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-@implements IDialogContentComponent<INodeEditorApi>
-
-<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
-    <div class="hstack">
-        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
-        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "NodeTask History")</FluentLabel>
-    </div>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="d-flex flex-row gap-4" style="min-height:80vh;">
-        <div class="settings-content flex-fill">
-            <NodeTaskJobListView OnClickItem="OnClickItem" />
+    <TitleTemplate>
+        <div class="hstack">
+            <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
+            <FluentLabel Typo="Typography.Header">@(Dialog.Options.Header.Title ?? "NodeTask History")</FluentLabel>
         </div>
-    </div>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="d-flex flex-row gap-4" style="min-height:80vh;">
+            <div class="settings-content flex-fill">
+                <NodeTaskJobListView OnClickItem="OnClickItem" />
+            </div>
+        </div>
+    </ChildContent>
 </FluentDialogBody>
-<FluentDialogFooter Visible="false" />
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Inject] IDialogService _dialogService { get; set; } = default!;
 
@@ -41,15 +41,14 @@
         DialogParameters parameters = new()
         {
             Title = "Job list history",
-            PrimaryActionEnabled = false,
-            SecondaryActionEnabled = false,
+            ShowDismiss = true,
             Width = "1200px",
             TrapFocus = false,
             Modal = true,
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(editor, parameters);
+        _ = _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(editor, parameters);
     }
 
     void OnClickItem(NodeTaskResultSummaryResponse task)

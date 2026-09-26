@@ -19,7 +19,7 @@
                       Appearance="TextInputAppearance.FilledDarker"
                       AriaLabel="Search" />
         <div class="ms-auto">
-            <FluentButton Appearance="Appearance.Accent"
+            <FluentButton Appearance="ButtonAppearance.Primary"
                           OnClick="OnClickCreateUser"
                           IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
             @* <a href="@urlEditPage">
@@ -35,22 +35,21 @@
                             ItemSize="46"
                             Virtualize
                             ShowHover="false"
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
                             Class="data-table--adaptive"
                             TGridItem="UserDetailResponse">
                 <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.LastName))"
                                 Title="FullName"
-                                InitialSortDirection="SortDirection.Ascending"
+                                InitialSortDirection="DataGridSortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     <div class="vstack">
                         <a href="@urlEditPage/@context.Id" class="text-primary">
-                            <FluentPersona Name="@context.FullName"
-                                           Style="width:32px"
-                                           Image="@context.AvatarUrl"
-                                           ImageSize="32px" />
+                            <FluentAvatar Name="@context.FullName"
+                                          Image="@context.AvatarUrl"
+                                          Size="AvatarSize.Size32" />
                         </a>
                     </div>
                 </TemplateColumn>
@@ -60,37 +59,36 @@
                                 Title="@AppRes.Roles"
                                 Filtered="_roleFilter.Any()">
                     <ChildContent>
-                        <FluentOverflow Style="width: 100%;">
+                        <FluentOverflow TItem="string" Style="width: 100%;">
                             @foreach (var role in context.Roles)
                             {
-                                <FluentOverflowItem><FluentBadge>@role</FluentBadge></FluentOverflowItem>
+                                <FluentBadge>@role</FluentBadge>
                             }
                         </FluentOverflow>
                     </ChildContent>
                     <ColumnOptions>
                         <div class="search-box">
-                            <FluentAutocomplete TOption="string"
-                                                AutoComplete="off"
+                            <FluentAutocomplete TOption="string" TValue="string"
                                                 Label="@AppRes.Roles"
                                                 Items="@_availRoles.Select(s=>s.Name)"
                                                 Placeholder="Select"
                                                 IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                                KeepOpen
                                                 ValueChanged="HandleSearchInput"
-                                                @bind-SelectedOptions="@_roleFilter" />
+                                                @bind-SelectedItems="@_roleFilter" />
                         </div>
                     </ColumnOptions>
                 </TemplateColumn>
                 <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Sortable="true" />
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                     <div class="hstack">
                         <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                         </DFluentDeleteButton>
-                        <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
-                            <FluentMenuItem OnClick="@(e => OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem>
-                            <FluentMenuItem OnClick="@(e => SendInvation(context.Id))">send invation</FluentMenuItem>
-                        </FluentMenuButton>
+                        <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle">@AppRes.Action</FluentButton>
+                        <FluentMenu Trigger="@($"useractions-{context.Id}")" OnClick="@(e => OnUserMenuClick(e, context))">
+                            <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
+                            <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                        </FluentMenu>
                     </div>
                 </TemplateColumn>
             </FluentDataGrid>

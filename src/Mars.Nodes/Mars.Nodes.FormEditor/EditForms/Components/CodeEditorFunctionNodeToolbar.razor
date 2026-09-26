@@ -4,10 +4,10 @@
 @using BlazorMonaco.Editor
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-<FluentToolbar Class="flex-fill">
+<div class="d-flex align-items-center gap-2 flex-fill">
     <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/di:services?search=" OnSnippetSelect="OnSelectSnippet" Style="max-width: 250px;" />
 
-    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e => open = !open) slot="end">
+    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e => open = !open) Class="ms-auto">
         Tools
         <FluentIcon Slot="end" Value="@(new Icons.Regular.Size16.ChevronDown())" />
     </FluentButton>
@@ -18,7 +18,7 @@
         @* <FluentDivider></FluentDivider> *@
         @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
     </FluentMenu>
-</FluentToolbar>
+</div>
 
 @code {
     FluentButton actionMenuButton1 = default!;

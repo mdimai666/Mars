@@ -8,7 +8,7 @@
     <div class="d-child-post-drawer">
         <div class="d-child-post-drawer__header d-flex align-items-center px-3 py-2">
             <div class="flex-fill fz18px">@(_postId == Guid.Empty ? "Новый объект" : "Редактирование объекта")</div>
-            <FluentButton Appearance="Appearance.Stealth" OnClick="Close">
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="Close">
                 <FluentIcon Value="@(new Icons.Regular.Size20.Dismiss())" />
             </FluentButton>
         </div>

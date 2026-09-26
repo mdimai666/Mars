@@ -105,10 +105,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     QuickNodeAddMenu? quickNodeAddMenu = default!;
     NodeEditContainer1? nodeEditContainer1 = default!;
 
-    bool _showWorkspaceContextMenu;
     FluentMenu _workspaceContextMenu = default!;
 
-    bool _showPaletteNodeContextMenu;
     FluentMenu _paletteNodeContextMenu = default!;
     ElementReference _paletteSidebarRef;
     // fallback until the first JS measurement of the palette sidebar position
@@ -195,7 +193,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         if (e.MouseEvent.Button != (long)MouseButton.Left) return;
 
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         CreateNewNodeFromPalette(e);
     }
@@ -259,8 +257,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         _selectedNode = e.Node;
 
-        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _workspaceContextMenu.CloseMenuAsync();
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         _debugSnapshotsDebouncer.Debounce(RefreshDebugSnapshots);
     }
@@ -401,8 +399,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnWorkspaceClick(MouseEventArgs e)
     {
-        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _workspaceContextMenu.CloseMenuAsync();
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         if (quickNodeAddMenu.Visible)
         {
@@ -568,9 +566,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     async Task OpenWorkspaceContextMenuAsync(FluentMenu menu, MouseEventArgs e)
     {
         await _nodeWorkspace1.RefreshContainerOffsetAsync();
-        await menu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                             (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX + _nodeWorkspace1.ScrollInfo.ScrollLeft),
-                             (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY + _nodeWorkspace1.ScrollInfo.ScrollTop));
+        await menu.OpenMenuAsync("red-ui-workspace-chart",
+                                 (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX + _nodeWorkspace1.ScrollInfo.ScrollLeft),
+                                 (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY + _nodeWorkspace1.ScrollInfo.ScrollTop));
     }
 
     private static readonly Dictionary<string, string> NodeContextMenuItems = new()
@@ -580,7 +578,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         ["CopySelectedNodesAsJsonAction"] = "Копировать JSON",
     };
 
-    void OnNodeContextMenuItemClick(MouseEventArgs e, string actionId)
+    void OnNodeContextMenuItemClick(string actionId)
     {
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else if (actionId == "DuplicateSelectedNodes") _actionManager.ExecuteAction<DuplicateSelectedNodesAction>();
@@ -597,9 +595,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     async Task OpenPaletteContextMenuAsync(MouseEventArgs e)
     {
         await UpdatePaletteOffsetAsync();
-        await _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                                                (int)(e.ClientX - _paletteOffsetX),
-                                                (int)(e.ClientY - _paletteOffsetY));
+        await _paletteNodeContextMenu.OpenMenuAsync("nodes-palette-sidebar",
+                                                    (int)(e.ClientX - _paletteOffsetX),
+                                                    (int)(e.ClientY - _paletteOffsetY));
     }
 
     async Task UpdatePaletteOffsetAsync()
@@ -635,7 +633,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         ["DeleteSelectedNodes"] = AppRes.Delete,
     };
 
-    void OnWireContextMenuItemClick(MouseEventArgs e, string actionId)
+    void OnWireContextMenuItemClick(string actionId)
     {
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else throw new NotImplementedException();

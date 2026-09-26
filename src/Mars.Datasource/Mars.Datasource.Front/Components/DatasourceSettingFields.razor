@@ -17,6 +17,8 @@
         {
             case DatasourceSettingEditor.Select:
                 <FluentSelect Class="w-100"
+                              TOption="string"
+                              TValue="string"
                               Items="Values(setting)"
                               OptionText="@(value => OptionLabel(setting, value))"
                               OptionValue="@(value => value)"

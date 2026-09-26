@@ -56,9 +56,6 @@ public partial class FluentMediaFilesList
         dataProvider = new GridItemsProvider<FileListItemResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
-
                 //var sortColumn = req.GetSortByProperties().Count == 0
                 //                        ? nameof(FileListItemResponse.CreatedAt)
                 //                        : req.GetSortByProperties().First().PropertyName;
@@ -276,8 +273,9 @@ public partial class FluentMediaFilesList
 
     }
 
-    void SelectSortOption(KeyValuePair<string, string> value)
+    void SelectSortOption(string value)
     {
+        _sortValue = value;
         HandleSearchInput();
     }
 
@@ -333,5 +331,40 @@ public partial class FluentMediaFilesList
 
         _loadingActionExecuting = false;
         StateHasChanged();
+    }
+
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаги остаются источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает флаг при dismiss.
+    FluentDialog _actionDialog = default!;
+    FluentDialog _folderNameDialog = default!;
+    FluentDialog _moveDialog = default!;
+    bool _actionDialogShown;
+    bool _folderNameDialogShown;
+    bool _moveDialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _actionDialogShown = await SyncDialogAsync(_actionDialog, _visibleActionModal, _actionDialogShown);
+        _folderNameDialogShown = await SyncDialogAsync(_folderNameDialog, _visibleFolderNameModal, _folderNameDialogShown);
+        _moveDialogShown = await SyncDialogAsync(_moveDialog, _visibleMoveModal, _moveDialogShown);
+    }
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
     }
 }

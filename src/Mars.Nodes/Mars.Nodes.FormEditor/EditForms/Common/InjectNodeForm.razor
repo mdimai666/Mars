@@ -22,7 +22,7 @@
                 <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
                     <div class="d-grid align-items-center" style="grid-template-columns: 1fr 130px 1.5fr 33px; column-gap: 10px;">
                         <MarsPathInput Class="mvi-fill" Root="msg" ShowRoot="false" @bind-Value="item.Key" For="() => item.Key" Placeholder="Key" />
-                        <FluentSelect TOption="string" Items="@VarTypeItems" @bind-SelectedOption="item.VarType" Style="min-width: unset;" />
+                        <FluentSelect TOption="string" TValue="string" Items="@VarTypeItems" @bind-Value="item.VarType" Style="min-width: unset;" />
                         <MarsValueInput Class="mvi-fill" VarType="item.VarType" Value="@FieldValue(item)" ValueChanged="v => SetFieldValue(item, v)" For="() => item.Value" />
                         <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                     </div>
@@ -59,8 +59,8 @@
             <FluentLabel>@(L["cron mask"])</FluentLabel>
             <SchedulerMaskInput @bind-Value=Node.ScheduleCronMask />
             <div class="hstack gap-1 ms-2">
-                <FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Node.ScheduleCronMask = "0/5 * * * * ?")">every 5 seconds</FluentButton>
-                <FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Node.ScheduleCronMask = "0 0/5 * * * ?")">every 5 minutes</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => Node.ScheduleCronMask = "0/5 * * * * ?")">every 5 seconds</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => Node.ScheduleCronMask = "0 0/5 * * * ?")">every 5 minutes</FluentButton>
             </div>
         }
     </div>

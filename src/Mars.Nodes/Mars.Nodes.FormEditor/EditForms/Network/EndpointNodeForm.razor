@@ -39,7 +39,7 @@
         }
 
         <FormItem2 For="() => Node.EndpointInputModel">
-            <FluentSelect Items="Enum.GetValues<EndpointInputModelType>()" @bind-SelectedOption=@Node.EndpointInputModel Class="" />
+            <FluentSelect TOption="EndpointInputModelType" TValue="EndpointInputModelType" Items="Enum.GetValues<EndpointInputModelType>()" @bind-Value=@Node.EndpointInputModel Class="" />
         </FormItem2>
 
         @if (Node.EndpointInputModel == EndpointInputModelType.JsonSchema)
@@ -52,10 +52,10 @@
                                              OnSave="OnEditorSave"
                                              Value="@Node.JsonSchema">
                     <HeaderArea>
-                        <FluentToolbar>
+                        <div class="d-flex align-items-center gap-2">
                             <FluentButton OnClick="@(() => editor1!.SetValue("{}"))">@AppRes.Clear</FluentButton>
 
-                        </FluentToolbar>
+                        </div>
                     </HeaderArea>
                 </MarsCodeEditor2.CodeEditor2>
 

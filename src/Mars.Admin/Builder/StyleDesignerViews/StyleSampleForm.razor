@@ -11,13 +11,14 @@
     <FluentStack Orientation="Orientation.Vertical">
         <div>
             <FluentTextInput Name="name" @bind-Value="model.Name" Label="Name" Required />
-            <FluentValidationMessage For="@(() => model.Name)" />
+            <ValidationMessage For="@(() => model.Name)" />
         </div>
         <div>
             <FluentTextArea Name="description" Rows=5 Cols=60 @bind-Value="model.Description" Label="Description (optional)" />
         </div>
         <div>
             <FluentAutocomplete TOption="StyleSampleOption"
+                                TValue="string"
                                 AutoComplete="off"
                                 Label="Select options"
                                 Width="250px"
@@ -25,34 +26,34 @@
                                 OnOptionsSearch="@OnSearchAsync"
                                 MaximumSelectedOptions="3"
                                 OptionText="@(item => item.Name)"
-                                @bind-SelectedOptions="@SelectedItems" />
+                                @bind-SelectedItems="@SelectedItems" />
         </div>
         <div>
-            <FluentSelect name="category" Id="category" @bind-Value="model.Category" TOption="string" Required Label="Category">
-                <FluentOption Value="">Select category ...</FluentOption>
-                <FluentOption Value="Option A">Option A</FluentOption>
-                <FluentOption Value="Option B">Option B</FluentOption>
-                <FluentOption Value="Option C">Option C</FluentOption>
+            <FluentSelect name="category" Id="category" @bind-Value="model.Category" TOption="string" TValue="string" Required Label="Category">
+                <FluentOption Value="@string.Empty">Select category ...</FluentOption>
+                <FluentOption Value="@("Option A")">Option A</FluentOption>
+                <FluentOption Value="@("Option B")">Option B</FluentOption>
+                <FluentOption Value="@("Option C")">Option C</FluentOption>
             </FluentSelect>
-            <FluentValidationMessage For="@(() => model.Category)" />
+            <ValidationMessage For="@(() => model.Category)" />
         </div>
         <div>
             <FluentNumberInput Name="amount" @bind-Value="model.Amount" Label="Amount" Required />
-            <FluentValidationMessage For="@(() => model.Amount)" />
+            <ValidationMessage For="@(() => model.Amount)" />
         </div>
         <div>
             <FluentCheckbox Name="approved" @bind-Value="model.Approved" Required Label="Approved" />
-            <FluentValidationMessage For="@(() => model.Approved)" />
+            <ValidationMessage For="@(() => model.Approved)" />
         </div>
         <div>
             <FluentDatePicker Name="date" Id="date" @bind-Value="model.Date" Label="Date" Required />
-            <FluentValidationMessage For="@(() => model.Date)" />
+            <ValidationMessage For="@(() => model.Date)" />
         </div>
         <div>
-            <FluentSwitch Name="enabled" @bind-value="model.Enabled" Label="Enabled" CheckedMessage="On" UncheckedMessage="Off" />
-            <FluentValidationMessage For="@(() => model.Enabled)" />
+            <FluentSwitch Name="enabled" @bind-value="model.Enabled" Label="Enabled" />
+            <ValidationMessage For="@(() => model.Enabled)" />
         </div>
-        <FluentButton Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+        <FluentButton Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit" Appearance="ButtonAppearance.Primary">Submit</FluentButton>
     </FluentStack>
 </EditForm>
 

@@ -30,7 +30,9 @@
                         <FluentTextInput @bind-Value="@sso.Title" Class="w-100" />
                     </FormItem2>
                     <FormItem2 For="() => sso.Driver" Class="col">
-                        <FluentSelect @bind-Value="@sso.Driver"
+                        <FluentSelect TOption="KeyValuePair<string, string>"
+                                      TValue="string"
+                                      @bind-Value="@sso.Driver"
                                       OptionValue=@(s => s.Key)
                                       OptionText=@(s => s.Value)
                                       Items="OpenIDClientOption.DriverList"
@@ -88,7 +90,7 @@
                 <div class="spacer-2"></div>
 
                 <div class="hstack gap-3">
-                    <FluentButton Appearance="Appearance.Stealth" OnClick=@(e => DeleteSSOClick(sso))>Delete</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=@(e => DeleteSSOClick(sso))>Delete</FluentButton>
                     <div class="ms-auto">
                         @if (OpenIDClientOption.Documentations.TryGetValue(sso.Driver, out var url))
                         {
@@ -102,7 +104,15 @@
     </div>
 
     <div class="py-3 d-flex justify-content-end gap-3">
-        <FluentMenuButton Text="Add provider" Items="@OpenIDClientOption.DriverList" OnMenuChanged="@(x => AddProviderExample(x.Id!))" />
+        <div>
+            <FluentButton Id="@_addProviderButtonId">Add provider</FluentButton>
+            <FluentMenu Trigger="@_addProviderButtonId" OnClick="OnAddProviderMenuClick">
+                @foreach (var (key, title) in OpenIDClientOption.DriverList)
+                {
+                    <FluentMenuItem Id="@key">@title</FluentMenuItem>
+                }
+            </FluentMenu>
+        </div>
 
         <FluentButton OnClick="AddSSOClick">Add blank</FluentButton>
     </div>
@@ -112,6 +122,14 @@
 @code {
     EditOptionForm<OpenIDClientOption> form = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
+
+    readonly string _addProviderButtonId = "addprov-" + Guid.NewGuid().ToString();
+
+    void OnAddProviderMenuClick(MenuItemEventArgs args)
+    {
+        if (args.Item?.Id is { } id)
+            AddProviderExample(id);
+    }
 
     void AddSSOClick()
     {

@@ -6,10 +6,10 @@
 <div class="form-group d-flex flex-column flex-fill">
 
     <FormItem2 For=@(()=>Node.Level)>
-        <FluentSelect TOption="ELoggerNodeLogLevel"
+        <FluentSelect TOption="ELoggerNodeLogLevel" TValue="ELoggerNodeLogLevel"
                       Items="Enum.GetValues<ELoggerNodeLogLevel>()"
                       Width="200px"
-                      @bind-SelectedOption="@Node.Level" />
+                      @bind-Value="@Node.Level" />
     </FormItem2>
 </div>
 

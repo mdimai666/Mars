@@ -37,8 +37,8 @@
     }
 
     <FormItem2 For=@(() => Node.WriteMode)>
-        <FluentSelect @bind-SelectedOption="@Node.WriteMode"
-                      TOption="FileWriteMode"
+        <FluentSelect @bind-Value="@Node.WriteMode"
+                      TOption="FileWriteMode" TValue="FileWriteMode"
                       Items="Enum.GetValues<FileWriteMode>()"
                       Style="width: 250px;">
         </FluentSelect>

@@ -51,10 +51,11 @@
                         <FormItem2 For="() => context.ListViewTemplate">
                             <div class="hstack">
                                 <FluentTextInput @bind-Value=@context.ListViewTemplate Placeholder="postTypes/<typeName>/listView.hbs" Class="w-50" />
-                                <FluentMenuButton Text="..." OnMenuChanged="HandleOnMenuListViewTemplateChanged" ButtonAppearance="Appearance.Neutral" >
+                                <FluentButton Id="@_listViewMenuId" Appearance="ButtonAppearance.Default">...</FluentButton>
+                                <FluentMenu Trigger="@_listViewMenuId" OnClick="HandleOnMenuListViewTemplateChanged">
                                     <FluentMenuItem Id="open_presentation_template" Disabled="@context.ListViewTemplate.IsNullOrEmpty()">open</FluentMenuItem>
                                     <FluentMenuItem Id="create_presentation_template">create example</FluentMenuItem>
-                                </FluentMenuButton>
+                                </FluentMenu>
                             </div>
                         </FormItem2>
                     </div>

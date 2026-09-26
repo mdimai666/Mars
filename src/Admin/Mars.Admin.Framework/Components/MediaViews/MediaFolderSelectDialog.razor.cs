@@ -14,7 +14,7 @@ public partial class MediaFolderSelectDialog
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
 
-    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
 
     /// <summary>Текущий путь (для подписи; диалог всегда открывается с корня)</summary>
     [Parameter] public string Content { get; set; } = "";

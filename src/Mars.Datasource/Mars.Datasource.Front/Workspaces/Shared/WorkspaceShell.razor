@@ -69,14 +69,14 @@ else
                     </div>
 
                     <div class="flex-shrink-0 hstack gap-2 px-2 py-2">
-                        <FluentButton Appearance="Appearance.Accent" Disabled="@(ActiveTab?.Loading == true)"
+                        <FluentButton Appearance="ButtonAppearance.Primary" Disabled="@(ActiveTab?.Loading == true)"
                                       OnClick="OnRun">
                             @RunLabel
                         </FluentButton>
                         @ToolbarActions
                         @if (ActiveTab?.CanLoadMore == true)
                         {
-                            <FluentButton Appearance="Appearance.Neutral" Disabled="@(ActiveTab?.Loading == true)"
+                            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@(ActiveTab?.Loading == true)"
                                           OnClick="OnRunMore">
                                 Показать больше
                             </FluentButton>
@@ -92,14 +92,13 @@ else
                     </div>
 
                     <div class="ds-split-host">
-                        <FluentSplitter Orientation="Orientation.Vertical" BarSize="6" Style="height:100%"
-                                        Panel1Size="50%" Panel1MinSize="60px" Panel2MinSize="60px">
-                            <Panel1>
+                        <FluentMultiSplitter Orientation="Orientation.Vertical" BarSize="6px" Style="height:100%">
+                            <FluentMultiSplitterPane Size="50%" Min="60px">
                                 <div class="ds-editor h-100 px-2">
                                     @Editor
                                 </div>
-                            </Panel1>
-                            <Panel2>
+                            </FluentMultiSplitterPane>
+                            <FluentMultiSplitterPane Min="60px">
                                 <div class="ds-result h-100 px-2 pb-2">
                                     @if (ActiveTab?.Loading == true)
                                     {
@@ -121,8 +120,8 @@ else
                                         <div class="text-secondary p-2" style="white-space: pre-line">@Hint</div>
                                     }
                                 </div>
-                            </Panel2>
-                        </FluentSplitter>
+                            </FluentMultiSplitterPane>
+                        </FluentMultiSplitter>
                     </div>
                 </div>
             </FluentMultiSplitterPane>

@@ -15,8 +15,9 @@
                                      AriaLabel="Search" />
 
                     <FluentSelect TOption=@(KeyValuePair<string, string>)
-                                  @bind-Value=_sortValue
-                                  SelectedOptionChanged="SelectSortOption"
+                                  TValue="string"
+                                  Value="_sortValue"
+                                  ValueChanged="SelectSortOption"
                                   Width="unset"
                                   Items="SortOptions"
                                   Style="height:32px"
@@ -59,7 +60,7 @@
             </div>
             @if (!ReadOnly)
             {
-                <FluentButton Size="small" IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="OpenCreateFolderDialog">Новая папка</FluentButton>
+                <FluentButton Size="ButtonSize.Small" IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="OpenCreateFolderDialog">Новая папка</FluentButton>
             }
         </div>
 
@@ -82,11 +83,11 @@
                             <div class="d-folder-item-actions" @onclick:stopPropagation="true">
                                 <FluentButton Title="Переименовать"
                                               IconStart="@(new Icons.Regular.Size16.Rename())"
-                                              Appearance="Appearance.Stealth" Size="small"
+                                              Appearance="ButtonAppearance.Subtle" Size="ButtonSize.Small"
                                               OnClick="() => OpenRenameFolderDialog(folder)" />
                                 <FluentButton Title="Удалить"
                                               IconStart="@(new Icons.Regular.Size16.Delete())"
-                                              Appearance="Appearance.Stealth" Size="small"
+                                              Appearance="ButtonAppearance.Subtle" Size="ButtonSize.Small"
                                               OnClick="() => FolderDeleteClick(folder)" />
                             </div>
                         }
@@ -113,7 +114,7 @@
                             @ref=table
                             Pagination="pagination"
                             ShowHover="false"
-                            GenerateHeader="GenerateHeaderOption.None"
+                            GenerateHeader="DataGridGeneratedHeaderType.None"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
                             Class="MarsMediaList_Grid items-container gap-2 d-file-list"
@@ -133,11 +134,11 @@
                                 {
                                     <FluentButton IconStart="@(new Icons.Regular.Size16.FolderOpen())"
                                                   Title="Переместить в папку"
-                                                  Appearance="Appearance.Accent"
+                                                  Appearance="ButtonAppearance.Primary"
                                                   Color="white" BackgroundColor="var(--bs-secondary)"
                                                   OnClick=@(e=>OpenMoveDialog(file)) />
                                     <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())"
-                                                  Appearance="Appearance.Accent"
+                                                  Appearance="ButtonAppearance.Primary"
                                                   Color="white" BackgroundColor="var(--bs-danger)"
                                                   OnClick=@(e=>ItemRemoveClick(file)) />
                                 }
@@ -161,7 +162,7 @@
                             @if (ItemActionBottom is null)
                             {
                                 <a href="@file.Url" target="_blank">
-                                    <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Size="small">открыть</FluentButton>
+                                    <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Size="ButtonSize.Small">открыть</FluentButton>
                                 </a>
                             }
                             else
@@ -189,18 +190,18 @@
 
 </div>
 
-<FluentDialog Hidden="@(!_visibleActionModal)" aria-label="Media action dialog"
+<FluentDialog @ref="_actionDialog" aria-label="Media action dialog"
               Modal=true
               Class="ActionResultDialog DeletionConfirmationDialog"
-              @ondialogdismiss=@(() => { _visibleActionModal = false; })
-              PreventScroll=true>
-    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
-        <div class="hstack">
-            @* <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Info" Class="me-2" /> *@
-            <FluentLabel Typo="Typography.Header">@AppRes.Action</FluentLabel>
-        </div>
-    </FluentDialogHeader>
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { _visibleActionModal = false; _actionDialogShown = false; } })">
     <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <div class="hstack">
+                @* <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Info" Class="me-2" /> *@
+                <FluentLabel Typo="Typography.Header">@AppRes.Action</FluentLabel>
+            </div>
+        </TitleTemplate>
+        <ChildContent>
         @if (_loadingActionExecuting)
         {
             <SharedLoader2 />
@@ -224,86 +225,86 @@
                 </div>
             }
         }
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end flex-fill">
+                <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px" OnClick="@(e => _visibleActionModal = false)">
+                    @AppRes.Ok
+                </FluentButton>
+            </div>
+        </ActionTemplate>
     </FluentDialogBody>
-    <FluentFooter>
-        <div class="hstack gap-2 justify-content-end flex-fill">
-            <FluentButton Appearance="Appearance.Accent" Style="min-width:100px" OnClick="@(e => _visibleActionModal = false)">
-                @AppRes.Ok
-            </FluentButton>
-            @* <FluentButton Appearance="Appearance.Neutral" OnClick="@(e=>_visibleActionModal=false)">
-                @AppRes.Cancel
-            </FluentButton> *@
-        </div>
-    </FluentFooter>
 </FluentDialog>
 
-<FluentDialog Hidden="@(!_visibleFolderNameModal)" aria-label="Folder name dialog"
+<FluentDialog @ref="_folderNameDialog" aria-label="Folder name dialog"
               Modal=true
               Class="DeletionConfirmationDialog"
-              @ondialogdismiss=@(() => { _visibleFolderNameModal = false; })
-              PreventScroll=true>
-    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
-        <FluentLabel Typo="Typography.Header">@(_renamingFolder is null ? "Новая папка" : "Переименовать папку")</FluentLabel>
-    </FluentDialogHeader>
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { _visibleFolderNameModal = false; _folderNameDialogShown = false; } })">
     <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <FluentLabel Typo="Typography.Header">@(_renamingFolder is null ? "Новая папка" : "Переименовать папку")</FluentLabel>
+        </TitleTemplate>
+        <ChildContent>
         @if (_folderNameError is not null)
         {
             <div class="alert alert-danger">@_folderNameError</div>
         }
         <FluentTextInput @bind-Value=_folderNameInput Placeholder="Имя папки" Autofocus="true" />
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end flex-fill">
+                <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px" OnClick="SubmitFolderName">
+                    @AppRes.Ok
+                </FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Default" OnClick="@(e => _visibleFolderNameModal = false)">
+                    @AppRes.Cancel
+                </FluentButton>
+            </div>
+        </ActionTemplate>
     </FluentDialogBody>
-    <FluentFooter>
-        <div class="hstack gap-2 justify-content-end flex-fill">
-            <FluentButton Appearance="Appearance.Accent" Style="min-width:100px" OnClick="SubmitFolderName">
-                @AppRes.Ok
-            </FluentButton>
-            <FluentButton Appearance="Appearance.Neutral" OnClick="@(e => _visibleFolderNameModal = false)">
-                @AppRes.Cancel
-            </FluentButton>
-        </div>
-    </FluentFooter>
 </FluentDialog>
 
-<FluentDialog Hidden="@(!_visibleMoveModal)" aria-label="Move file dialog"
+<FluentDialog @ref="_moveDialog" aria-label="Move file dialog"
               Modal=true
               Class="DeletionConfirmationDialog"
-              @ondialogdismiss=@(() => { _visibleMoveModal = false; })
-              PreventScroll=true>
-    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
-        <FluentLabel Typo="Typography.Header">Переместить файл</FluentLabel>
-    </FluentDialogHeader>
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { _visibleMoveModal = false; _moveDialogShown = false; } })">
     <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <FluentLabel Typo="Typography.Header">Переместить файл</FluentLabel>
+        </TitleTemplate>
+        <ChildContent>
         @if (_movingFile is not null)
         {
             <div class="mb-2"><strong>@_movingFile.Name</strong></div>
         }
         <div class="vstack gap-1">
-            <FluentButton Class="w-100" Appearance="Appearance.Neutral" OnClick="@(() => MoveTo(null))">
+            <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => MoveTo(null))">
                 Корень (Media)
             </FluentButton>
             @if (ParentFolderForMove is not null)
             {
                 var parent = ParentFolderForMove;
-                <FluentButton Class="w-100" Appearance="Appearance.Neutral" OnClick="@(() => MoveTo(parent.Id))">
+                <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => MoveTo(parent.Id))">
                     .. @parent.Name
                 </FluentButton>
             }
             @foreach (var folder in _folders)
             {
                 var target = folder;
-                <FluentButton Class="w-100" Appearance="Appearance.Neutral" OnClick="@(() => MoveTo(target.Id))">
+                <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => MoveTo(target.Id))">
                     @target.Name
                 </FluentButton>
             }
         </div>
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end flex-fill">
+                <FluentButton Appearance="ButtonAppearance.Default" OnClick="@(e => _visibleMoveModal = false)">
+                    @AppRes.Cancel
+                </FluentButton>
+            </div>
+        </ActionTemplate>
     </FluentDialogBody>
-    <FluentFooter>
-        <div class="hstack gap-2 justify-content-end flex-fill">
-            <FluentButton Appearance="Appearance.Neutral" OnClick="@(e => _visibleMoveModal = false)">
-                @AppRes.Cancel
-            </FluentButton>
-        </div>
-    </FluentFooter>
 </FluentDialog>
 
 @code {

@@ -1,4 +1,5 @@
 using Mars.Admin.Framework.Components;
+using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Contracts.Document;
@@ -201,7 +202,7 @@ public partial class SqlQueryWorkspace
 
         var result = await dialog.Result;
 
-        if (result.Cancelled || result.Data is not ViewDdlRequest request) return;
+        if (result.Cancelled || result.Value is not ViewDdlRequest request) return;
 
         if (!await ExecuteViewDdlAsync(request.Sql, "Вьюха сохранена")) return;
 
@@ -237,7 +238,7 @@ public partial class SqlQueryWorkspace
 
         var result = await dialog.Result;
 
-        if (result.Cancelled || result.Data is not string definition || string.IsNullOrWhiteSpace(definition)) return;
+        if (result.Cancelled || result.Value is not string definition || string.IsNullOrWhiteSpace(definition)) return;
 
         _viewSource = entry;
 

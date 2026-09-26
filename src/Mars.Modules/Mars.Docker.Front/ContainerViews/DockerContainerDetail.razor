@@ -1,5 +1,6 @@
 @using System.Globalization
 @using Mars.Admin.Framework.Components
+@using Mars.Admin.Framework.Dialogs
 @using Mars.Admin.Framework.Extensions
 @using Mars.Core.Extensions
 @using Mars.Docker.Contracts
@@ -74,7 +75,7 @@
         @if (IsWaiting)
         {
             <div class="hstack gap-2 mt-2 docker-waiting">
-                <FluentProgressRing Width="16" />
+                <FluentSpinner Width="16" />
                 <span>Waiting for the container to finish…</span>
             </div>
         }
@@ -121,7 +122,7 @@
     {
         <div class="mt-3">
             <p class="text-secondary">Container not found — it may have been removed or auto-removed after exit.</p>
-            <FluentButton Appearance="Appearance.Accent" IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" OnClick="Back">Back to containers</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" OnClick="Back">Back to containers</FluentButton>
         </div>
     }
 </div>

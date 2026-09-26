@@ -84,17 +84,18 @@ public partial class ManagePostView : IDisposable
             {
                 string sortColumn;
                 bool ascending;
-                if (req.GetSortByProperties().Count != 0)
+                var sortBy = req.GetSortByProperties();
+                if (sortBy.Count != 0)
                 {
-                    sortColumn = req.GetSortByProperties().First().PropertyName;
-                    ascending = req.SortByAscending;
+                    sortColumn = sortBy.First().PropertyName;
+                    ascending = req.SortColumns.FirstOrDefault()?.Ascending ?? false;
                 }
                 else
                 {
                     // сортировка по умолчанию из настройки типа; запасная — дата создания
                     var def = _columns.FirstOrDefault(c => c.IsDefaultSort);
                     sortColumn = SortProperty(def);
-                    ascending = def?.DefaultSortDirection != SortDirection.Descending;
+                    ascending = def?.DefaultSortDirection != DataGridSortDirection.Descending;
                 }
 
                 var sort = (ascending ? "" : "-") + sortColumn;
@@ -138,8 +139,8 @@ public partial class ManagePostView : IDisposable
         {
             sortColumn.IsDefaultSort = true;
             sortColumn.DefaultSortDirection = _gridSettings?.SortDescending == true
-                ? SortDirection.Descending
-                : SortDirection.Ascending;
+                ? DataGridSortDirection.Descending
+                : DataGridSortDirection.Ascending;
         }
 
         _columns = columns;
@@ -265,8 +266,39 @@ public partial class ManagePostView : IDisposable
         public bool IsSystem => info.IsSystem;
 
         public bool IsDefaultSort { get; set; }
-        public SortDirection DefaultSortDirection { get; set; } = SortDirection.Descending;
+        public DataGridSortDirection DefaultSortDirection { get; set; } = DataGridSortDirection.Descending;
     }
+
+    #region SETTINGS DIALOG
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаг остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) вызывает CancelSettingsDialog при dismiss.
+    FluentDialog _settingsDialog = default!;
+    bool _settingsDialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _settingsDialogShown = await SyncDialogAsync(_settingsDialog, _settingsDialogVisible, _settingsDialogShown);
+    }
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
+    }
+    #endregion
 
     #region FILTERS
     /// <summary>Показать/скрыть панель фильтров. При скрытии панель разбирается

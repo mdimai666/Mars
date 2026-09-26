@@ -6,14 +6,15 @@
 
 <ContentWrapper Title="Debug" FullWidth>
 
-    <FluentToolbar Class="flex-fill mb-1 w-100">
+    <div class="d-flex align-items-center gap-2 flex-fill mb-1 w-100">
 
         <FluentAutocomplete TOption="string"
+                            TValue="string"
                             AutoComplete="off"
                             Items="levelOptions"
                             Placeholder="Все уровни"
-                            @bind-SelectedOptions="selectedLevels"
-                            @bind-SelectedOptions:after="Load"
+                            @bind-SelectedItems="selectedLevels"
+                            @bind-SelectedItems:after="Load"
                             Style="width:280px;flex:0 0 auto;">
             <OptionTemplate Context="level">
                 <span class="hstack gap-2 align-items-center">
@@ -29,7 +30,7 @@
         <div class="hstack gap-1 align-items-center">
             @foreach (var p in periodOptions)
             {
-                <FluentButton Appearance=@(period == p.Key ? Appearance.Accent : Appearance.Stealth)
+                <FluentButton Appearance=@(period == p.Key ? ButtonAppearance.Primary : ButtonAppearance.Subtle)
                               OnClick=@(() => SetPeriod(p.Key))>
                     @p.Value
                 </FluentButton>
@@ -39,7 +40,7 @@
         <FluentButton OnClick="Load">
             <i class="bi bi-arrow-clockwise"></i>
         </FluentButton>
-    </FluentToolbar>
+    </div>
 
     @if (Busy)
     {

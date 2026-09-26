@@ -2,17 +2,19 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits FluentComponentBase
 
-<FluentAutocomplete TOption="KeyValuePair<string,string>"
-                    AutoComplete="off"
+<FluentAutocomplete TOption="KeyValuePair<string,string>" TValue="string"
                     Class="@($"CodeEditorSuggestSearchInput {Class}")"
                     Style="@Style"
                     Placeholder="search snippet..."
                     OnOptionsSearch="@OnSearchSnippetAsync"
                     MaximumSelectedOptions="1"
-                    @bind-SelectedOptions=selectedSnippets
+                    @bind-SelectedItems=selectedSnippets
                     OptionText="@(item => item.Value)" />
 
 @code {
+    public CodeEditorSuggestSearchInput(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IFlurlClient _client { get; set; } = default!;
 
     /// <summary>

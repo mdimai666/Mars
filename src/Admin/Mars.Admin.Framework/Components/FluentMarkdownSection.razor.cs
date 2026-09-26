@@ -14,13 +14,13 @@ namespace Mars.Admin.Framework.Components;
 
 public partial class FluentMarkdownSection : FluentComponentBase
 {
+    public FluentMarkdownSection(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     private IJSObjectReference _jsModule = default!;
     private bool _markdownChanged = false;
     private string? _content;
     private string? _fromAsset;
-
-    [Inject]
-    protected IJSRuntime JSRuntime { get; set; } = default!;
 
     //[Inject]
     //private IStaticAssetService StaticAssetService { get; set; } = default!;

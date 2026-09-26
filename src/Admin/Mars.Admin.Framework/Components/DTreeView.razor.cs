@@ -5,6 +5,9 @@ namespace Mars.Admin.Framework.Components;
 
 public partial class DTreeView<TModel, TKey> : FluentComponentBase where TKey : notnull
 {
+    public DTreeView(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Parameter, EditorRequired]
     public IEnumerable<TModel> Items { get; set; } = default!;
 
@@ -138,6 +141,9 @@ public class DTreeNode<T> : ITreeViewItem
     public required string Text { get; set; }
     public required IEnumerable<ITreeViewItem>? Items { get; set; }
     public required T Node { get; set; }
+    public Icon? IconStart { get; set; }
+    public Icon? IconEnd { get; set; }
+    public Icon? IconAside { get; set; }
     public Icon? IconCollapsed { get; set; }
     public Icon? IconExpanded { get; set; }
     public bool Disabled { get; set; }

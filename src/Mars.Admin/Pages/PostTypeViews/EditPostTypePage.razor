@@ -34,11 +34,11 @@
                                      Appearance="@TextInputAppearance.FilledDarker"
                                      Required
                                      Style="zoom:1.4" />
-                    <FluentValidationMessage For="@(() => context.Title)" />
+                    <ValidationMessage For="@(() => context.Title)" />
                 </div>
                 <div class="">
                     <FluentTextInput @bind-Value=@context.TypeName Label="TypeName" />
-                    <FluentValidationMessage For="@(() => context.TypeName)" />
+                    <ValidationMessage For="@(() => context.TypeName)" />
                 </div>
 
             </div>
@@ -70,14 +70,14 @@
                         {
                             <div class="mt-3" style="max-width:400px;">
                                 <FormItem2 For="@(() => context.ImageFieldKey)">
-                                    <FluentSelect TOption="string"
+                                    <FluentSelect TOption="string" TValue="string"
                                                   Label="Поле картинки поста"
                                                   Items="@context.ImagePointerCandidates().Select(s => s.Key).ToList()"
                                                   Value="@context.ImageFieldKey"
                                                   ValueChanged="@(v => context.ImageFieldKey = v)"
                                                   Required />
                                 </FormItem2>
-                                <FluentValidationMessage For="@(() => context.ImageFieldKey)" />
+                                <ValidationMessage For="@(() => context.ImageFieldKey)" />
                             </div>
                         }
                     </div>
@@ -167,15 +167,15 @@
                 <div class="card-body">
                     <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
                     <div class="spacer-1"></div>
-                    <FluentSelect TOption="PostTypeVisibility" Label="Видимость" Class="w-100"
+                    <FluentSelect TOption="PostTypeVisibility" TValue="PostTypeVisibility" Label="Видимость" Class="w-100"
                                   Items="@(Enum.GetValues<PostTypeVisibility>())"
                                   OptionText="@(v => v switch
                                   {
                                       PostTypeVisibility.Component => "Компонент (встроенный)",
                                       _ => "Публичный",
                                   })"
-                                  SelectedOption="context.Visibility"
-                                  SelectedOptionChanged="@(v => context.Visibility = v)" />
+                                  Value="context.Visibility"
+                                  ValueChanged="@(v => context.Visibility = v)" />
                     <div class="spacer-1"></div>
                     <FormItem2 For="@(()=>context.Tags)">
                         <InputTags2 @bind-Value=context.Tags />
@@ -185,9 +185,9 @@
             <div class="card">
                 <div class="card-body">
                     <a href=@url target="_blank">
-                        <FluentButton Appearance="Appearance.Neutral">Export</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Default">Export</FluentButton>
                     </a>
-                    <FluentButton Appearance="Appearance.Neutral" OnClick="ShowImportModal">Import</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Default" OnClick="ShowImportModal">Import</FluentButton>
                 </div>
             </div>
         </SectionExtraSidebar>
@@ -195,23 +195,27 @@
 
 </ContentWrapper>
 
-<FluentDialog Hidden="@(!visibleImportModal)"
+<FluentDialog @ref="_importDialog"
               aria-label="Import dialog"
               Modal=true
-              @ondialogdismiss=@(()=>visibleImportModal=false)
-              PreventScroll=true>
-    <FluentDialogHeader Visible="false" />
-    <h2>Import</h2>
-    <div>
-        @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
-        <div class="my-2">
-            <InputFile OnChange="LoadFiles" />
-        </div>
-        <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
-        <div class="spacer-2"></div>
-        <FluentButton Appearance="Appearance.Accent" Disabled=importButtonDisabled OnClick=OnImportClick>
-            <i class="bi bi-upload me-2"></i>
-            Импорт
-        </FluentButton>
-    </div>
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { visibleImportModal = false; _importDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <h2>Import</h2>
+        </TitleTemplate>
+        <ChildContent>
+            <div>
+                @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
+                <div class="my-2">
+                    <InputFile OnChange="LoadFiles" />
+                </div>
+                <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
+                <div class="spacer-2"></div>
+                <FluentButton Appearance="ButtonAppearance.Primary" Disabled=importButtonDisabled OnClick=OnImportClick>
+                    <i class="bi bi-upload me-2"></i>
+                    Импорт
+                </FluentButton>
+            </div>
+        </ChildContent>
+    </FluentDialogBody>
 </FluentDialog>

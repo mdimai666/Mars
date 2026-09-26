@@ -24,7 +24,7 @@
         </FluentCheckbox>
         <div class="ms-auto">
             <a href="@urlEditPage">
-                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
             </a>
         </div>
     </div>
@@ -38,12 +38,12 @@
                             EmptyContent="DataGrid_EmptyContent"
                             ResizableColumns
                             GridTemplateColumns="3fr 2fr 1fr 1fr"
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             Class="data-table--adaptive"
                             TGridItem="PostTypeListItemResponse">
                 <TemplateColumn SortBy="@(GridSort<PostTypeListItemResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
-                                InitialSortDirection="SortDirection.Ascending"
+                                InitialSortDirection="DataGridSortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     <div class="d-none d-lg-block">
@@ -77,10 +77,10 @@
                     {
                         <FluentBadge Fill="accent">Single</FluentBadge>
                     }
-                    <FluentOverflow Style="width: 100%;">
+                    <FluentOverflow TItem="string" Style="width: 100%;">
                         @foreach (var tag in context.EnabledFeatures)
                         {
-                            <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                            <FluentBadge>@tag</FluentBadge>
                         }
                     </FluentOverflow>
                     <div class="hstack gap-1 mt-1">
@@ -90,8 +90,8 @@
                         }
                     </div>
                 </TemplateColumn>
-                <PropertyColumn Property=@(f => f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                <PropertyColumn Property=@(f => f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="DataGridCellAlignment.End" />
+                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                     <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
                 </TemplateColumn>
             </FluentDataGrid>

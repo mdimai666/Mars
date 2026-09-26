@@ -24,10 +24,10 @@
     <ToolbarActions>
         @if (CanManageViews && activeTab?.Object?.ObjectType == DatasourceObjectType.View)
         {
-            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
                 определение
             </FluentButton>
-            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="DropViewAsync">
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@Busy" OnClick="DropViewAsync">
                 удалить
             </FluentButton>
         }

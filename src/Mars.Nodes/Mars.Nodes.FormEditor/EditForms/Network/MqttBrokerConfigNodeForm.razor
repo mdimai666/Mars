@@ -31,9 +31,9 @@
         </FormItem2>
 
         <FormItem2 For="()=>Node.ProtocolVersion">
-            <FluentSelect TOption="MqttBrokerConfigNode.NodeMqttProtocolVersion"
+            <FluentSelect TOption="MqttBrokerConfigNode.NodeMqttProtocolVersion" TValue="MqttBrokerConfigNode.NodeMqttProtocolVersion"
                           Items="Enum.GetValues<MqttBrokerConfigNode.NodeMqttProtocolVersion>()"
-                          @bind-SelectedOption=@Node.ProtocolVersion />
+                          @bind-Value=@Node.ProtocolVersion />
         </FormItem2>
 
         <FormItem2 For="()=>Node.KeepAlivePeriodInSeconds">

@@ -20,7 +20,7 @@
                             <span class="text-secondary small ms-2">@description</span>
                         }
                     </div>
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))">
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(row))">
                         <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                     </FluentButton>
                 </div>

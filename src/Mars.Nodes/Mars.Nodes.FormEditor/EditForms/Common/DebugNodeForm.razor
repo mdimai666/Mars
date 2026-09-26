@@ -22,7 +22,7 @@
     <FluentCheckbox @bind-Value=Node.ShowPayloadTypeInStatus Label="ShowPayloadTypeInStatus" />
 
     <FormItem2 For=@(() => Node.Level)>
-        <FluentSelect @bind-SelectedOption=SetLevel
+        <FluentSelect @bind-Value=SetLevel
                       Multiple="false"
                       OptionValue=@(s => s?.ToString())
                       OptionText=@(s => s?.ToString() ?? "-payload")
@@ -50,8 +50,8 @@
             {
                 <span>no stored object yet</span>
             }
-            <FluentButton Appearance="Appearance.Stealth" OnClick=ShowFullObject>show object</FluentButton>
-            <FluentButton Appearance="Appearance.Stealth" OnClick=RefreshFull>refresh</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=ShowFullObject>show object</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=RefreshFull>refresh</FluentButton>
         </div>
     }
 </div>

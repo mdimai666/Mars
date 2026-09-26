@@ -4,11 +4,15 @@
 
 <div id="@Id" class="@Class" style="@Style">
     <h1 style="font-size: 100px">404</h1>
-    <FluentLabel Typo="@Typography.PageTitle">@Title</FluentLabel>
-    <FluentLabel Typo="@Typography.Subject">@Message</FluentLabel>
+    <FluentLabel>@Title</FluentLabel>
+    <FluentLabel>@Message</FluentLabel>
 </div>
 
 @code {
+    public Block404(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
+
     public string Title { get; set; } = "Страница не найдена";
     public string Message { get; set; } = "Запрашиваемая страница не найдена. Возможно, она была удалена или перемещена.";
 }

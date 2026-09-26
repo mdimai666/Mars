@@ -47,6 +47,35 @@ public partial class PasskeysPage
             _passkeyAvailable = await passkeyJs.IsAvailable();
             StateHasChanged();
         }
+
+        _addDialogShown = await SyncDialogAsync(_addDialog, addVisible, _addDialogShown);
+        _renameDialogShown = await SyncDialogAsync(_renameDialog, renameVisible, _renameDialogShown);
+    }
+
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаги остаются источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) сбрасывает флаг при dismiss.
+    FluentDialog _addDialog = default!;
+    FluentDialog _renameDialog = default!;
+    bool _addDialogShown;
+    bool _renameDialogShown;
+
+    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
+    {
+        if (dialog is null) return shown;
+
+        if (visible && !shown)
+        {
+            await dialog.ShowAsync();
+            return true;
+        }
+
+        if (!visible && shown)
+        {
+            await dialog.HideAsync();
+            return false;
+        }
+
+        return shown;
     }
 
     void OnClickAdd()

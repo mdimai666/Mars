@@ -21,12 +21,12 @@
 {
     <div class="vstack">
         <label>Язык кода</label>
-        <FluentSelect TOption="string" Width="250px"
+        <FluentSelect TOption="string" TValue="string" Width="250px"
                       Value="@CodeLang" ValueChanged="SetCodeLangAsync">
-            <FluentOption TOption="string" Value="">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
+            <FluentOption TValue="string" Value="@string.Empty">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
             @foreach (var lang in CodeEditor2.Language.Array)
             {
-                <FluentOption TOption="string" Value="@lang">@lang</FluentOption>
+                <FluentOption TValue="string" Value="@lang">@lang</FluentOption>
             }
         </FluentSelect>
     </div>

@@ -131,14 +131,14 @@ FAST-токены v4 (`--type-ramp-*`, `--neutral-layer-*`, `--design-unit`) и 
 
 ## Решения пользователя (2026-09-27)
 
-- **Диалоги**: делаем **шим поверх v5** в Mars.Admin.Framework — compat-слой с v4-подобным API
-  (ShowDialogAsync<T>(content, DialogParameters-подобные опции), MarsDeleteConfirmation,
-  IXActionFormPresenter) поверх v5-примитивов (FluentDialogInstance, DialogOptions, ShowAsync/HideAsync).
-  Call-сайты (~40) почти не трогаем; компоненты-диалоги переписываем на FluentDialogInstance.
-  Позже — постепенный переход на нативный API.
-- **Навигация (Menu2/FluentNavMenu)**: решаем позже, отдельным обсуждением (варианты: своя
-  разметка на FluentLink vs FluentTreeView). До решения — предупреждения RZ10012 (тихий render
-  в HTML) допустимы, но в релизную ветку так нельзя.
+- **Навигация Menu2**: делать на новом v5-компоненте `FluentNav` (+ `FluentNavItem`,
+  `FluentNavCategory`, `FluentNavSectionHeader`) — замена удалённым FluentNavMenu/NavGroup/NavLink.
+- **Диалоги**: шим реализован — `Mars.Admin.Framework/Dialogs/` (DialogParameters, IDialogReference,
+  DialogServiceCompatExtensions: ShowDialogAsync<T>/ShowDialogAsync(Type)/ShowPanelAsync<T>→ShowDrawerAsync).
+  Компоненты-диалоги: `[CascadingParameter] IDialogInstance Dialog`, разметка — `FluentDialogBody`
+  с TitleTemplate/ChildContent/ActionTemplate; результат v5 `DialogResult` (`.Data`→`.Value` на call-сайтах).
+  Инлайн-диалоги: вместо `Hidden` — `@ref` + `ShowAsync()/HideAsync()` (синхронизация с bool-флагом
+  в OnAfterRenderAsync) + `OnStateChange` (DialogState.Closed) для dismiss.
 
 ## Прогресс
 
@@ -152,16 +152,69 @@ FAST-токены v4 (`--type-ramp-*`, `--neutral-layer-*`, `--design-unit`) и 
   FluentDialogHeader/Footer — ~15), IToastService (FluentMessageServiceBridge),
   MenuChangeEventArgs (XActionsDropDown), ITreeViewItem.IconStart/IconEnd/IconAside (DTreeView),
   FluentInputLabel (AutoInputLabel), Menu2 (отложен).
+- Вторая волна закрыта: FluentSelect TValue (все 20, вкл. enum/FrontItem/KeyValuePair-кейсы;
+  SelectedOptionChanged→ValueChanged у sort-селекторов), диалоги FW переписаны на шим
+  (DeleteConfirmation, HelpDocButton(+Dialog), MediaFolderSelect, MetaValueRelationSelect,
+  инлайны FluentMediaFilesList ×3, ModalMediaSelect), тосты → INotificationService
+  (FluentMessageServiceBridge), XActionsDropDown → FluentMenu Trigger/OnClick(MenuItemEventArgs),
+  DTreeNode +IconStart/End/Aside, AutoInputLabel → FluentLabel, MessageIntent → MessageBarIntent,
+  GenerateHeaderOption → DataGridGeneratedHeaderType, Align → DataGridCellAlignment,
+  sort-discards (SortByColumn/SortByAscending) удалены, InlineStyleBuilder.BuildMarkupString → Build,
+  конструкторы LibraryConfiguration в 13 FluentComponentBase-наследниках FW,
+  FluentBadge: текст → Content, Appearance → BadgeAppearance.Filled (+Color.Primary для accent),
+  FluentMenuButton (OpenIDClientOption) → FluentButton + FluentMenu Trigger,
+  GroupedSelectDropDown(FW) → FluentMenu Trigger (без Anchor/@bind-Open/UseMenuService).
+- ВНИМАНИЕ (этап стилей): v5 FluentLabel не имеет Color/Typo (уходят в AdditionalAttributes —
+  молчаливая потеря стиля); FluentIcon default-цвет; FluentGrid.Spacing default 3→0;
+  FluentBadge без Fill и с текстом в ChildContent (v5 — Content; Fill="black/neutral/accent"
+  в ListPostTypePage и др. молча деградирует; Enabled-бейдж в PluginsListPage потерял accent-
+  отличие — все Neutral/Accent→Filled); FluentTooltip Anchor — проверить;
+  StyleDesigner-токены (FluentDesignSystemProvider удалён) → маппинг styler на CSS-переменные
+  v5 (--colorBrand*/--colorNeutral*) — ОБСУДИТЬ с пользователем на этапе стилей.
+- Зелёные проекты: Mars.Forms.Front, Mars.Admin.Framework, Mars.Nodes.FormEditor,
+  Mars.Nodes.Workspace (FluentSplitter→FluentMultiSplitter; контекстные меню на
+  FluentMenu.OpenMenuAsync(targetId,x,y) — id контейнеров: red-ui-workspace-chart,
+  nodes-palette-sidebar; GridItemsProviderRequest.SortByColumn/SortByAscending→SortColumns),
+  Mars.AiChat.Front.
+- Этап 1 (инфраструктура) выполнен: все 4 корня (Mars.Admin/App.razor, MarsDocs App.razor,
+  TestModules App.razor, StandNodesApp Routes.razor) → <FluentProviders />;
+  AddFluentUIComponents(config => config.Toast.Position = ToastPosition.TopCenter) в
+  MainAdminFramework; FluentDesignSystemProvider → временный div (тема статична до этапа стилей).
+- В работе (агенты): Datasource.Front/Docker.Front/WebApp.Nodes.Front (диалоги+селекты+MenuButton);
+  Mars.Admin — два агента пофайлово (диалоги/инлайн-диалоги + механика: ValidationMessage→Blazor
+  ValidationMessage, FluentToolbar→div, FluentAnchor→FluentLink, ProgressRing→Spinner,
+  MenuButton→Button+Menu Trigger, SelectedOptions→SelectedItems).
+- Docs-сайт (MarsDocs): FluentNavMenu/NavLink/NavGroup/FluentAnchor — ждут FluentNav-переделки
+  (вместе с Menu2, решение пользователя: делаем на FluentNav).
 
 ## Статус
 
 - [x] Ветка `feat/fluentui-v5`
 - [x] План (этот файл)
-- [ ] Этап 0: bump + опись ошибок
-- [ ] Этап 1: инфраструктура/провайдеры
-- [ ] Этап 2: FluentComponentBase-наследники
-- [ ] Этап 3: механические переименования
-- [ ] Этап 4: списочные компоненты
-- [ ] Этап 5: удалённые/переработанные (диалоги — обсудить подход)
-- [ ] Этап 6: иконки
-- [ ] Этап 7: верификация
+- [x] Этап 0: bump 5.0.0 + опись ошибок
+- [x] Этап 1: инфраструктура/провайдеры (FluentProviders ×4 корня, Toast.Position в DI)
+- [x] Этап 2: FluentComponentBase-наследники (ctor LibraryConfiguration — FW ×13, FormEditor ×3, docs ×3)
+- [x] Этап 3: механические переименования (TextInput/NumberInput/ButtonAppearance/Size/Color enums/
+      DataGrid-ренеймы/MessageBarIntent/ProgressRing→Spinner/Progress→ProgressBar — весь src+docs+devstands)
+- [x] Этап 4: списочные компоненты (TOption/TValue везде, SelectedOption(s)→Value/SelectedItems,
+      FluentOption TValue + литералы Value="@("...")"/@string.Empty)
+- [x] Этап 5: удалённые/переработанные — диалоги (шим + ~30 компонентов/инлайнов), Menu→Trigger/
+      OpenMenuAsync + FluentMenuList для подменю, MenuButton→Button+Menu, Splitter→MultiSplitter ×2,
+      Rating→RatingDisplay, Persona→Avatar, Toolbar→div, Anchor→Link, InputLabel→Label,
+      ValidationMessage→Blazor. Остатки этапа: Menu2 + docs-навигация → FluentNav (отдельный шаг);
+      StyleDesignerPage/FluentDesignSystemProvider → этап стилей
+- [~] Этап 6: иконки — пакет 5.0.0, компиляция ок; default-цвет FluentIcon (Accent→currentColor) —
+      визуальная проверка на этапе стилей
+- [x] Этап 7 (частично): `dotnet build Mars.slnx` — 0 errors (13 warnings: Menu2/StyleDesigner —
+      отложены; MouseButton obsolete ×2; SiteEngine-nullable ×5 — существовавшие; CS4014 ×1 — существовавший).
+      Mars.Integration.Tests: 430 total / 0 failed / 4 skipped.
+      Осталось: визуальная проверка админки (диалоги, гриды, меню, редактор нод), E2E CreatePostTests/
+      EditUserPageTests (опц.), HandlebarsAppFrontTests (server-рендер не затрагивался — опц.)
+
+## Следующие шаги
+
+1. Визуальная проверка админки пользователем (запуск Mars.WebApp) — диалоги/тосты/меню/гриды/нод-редактор
+2. Menu2 + docs-навигация на FluentNav
+3. Этап стилей: инвентарь из раздела «Стили» + маппинг styler-токенов на CSS-переменные v5 +
+   FluentLabel Color/Typo→FluentText, FluentBadge Content/Fill, FluentTooltip Anchor, MouseButton
+4. E2E-регрессия админ-форм (по желанию)

@@ -14,12 +14,14 @@
 <div class="form-group d-flex flex-column flex-fill gap-2">
 
     <FormItem2 For="() => Node.ExpressionInput">
-        <FluentSelect Items="Enum.GetValues<NodeExpressionInput>()" @bind-SelectedOption=@Node.ExpressionInput Class="" />
+        <FluentSelect TOption="NodeExpressionInput" TValue="NodeExpressionInput"
+                      Items="@(Enum.GetValues<NodeExpressionInput>())"
+                      @bind-Value=@Node.ExpressionInput Class="" />
     </FormItem2>
 
     @if (_busy)
     {
-        <FluentProgressRing />
+        <FluentSpinner />
     }
     else if (BuilderModel is null)
     {
@@ -70,11 +72,13 @@
                     </ItemTemplate>
                 </FluentSortableList>
                 <div class="mt-1 hstack gap-1">
-                    <FluentMenuButton IconStart="@(new Icons.Regular.Size16.Add())"
-                                      Text="@AppRes.Add"
-                                      Items="AddButtonMenuItems"
-                                      UseMenuService="false"
-                                      OnMenuChanged="HandleOnAddItemMenuChanged" />
+                    <FluentButton Id="@_addMenuButtonId" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
+                    <FluentMenu Trigger="@_addMenuButtonId" OnClick="HandleOnAddItemMenuClick">
+                        @foreach (var item in AddButtonMenuItems)
+                        {
+                            <FluentMenuItem Id="@item.Key">@item.Value</FluentMenuItem>
+                        }
+                    </FluentMenu>
                 </div>
                 <div class="my-2">
                     <b class="text-secondary">expression:</b>
@@ -101,6 +105,8 @@
     NodeEntityQueryRequestModelEditModel? BuilderModel;
 
     Dictionary<string, string> AddButtonMenuItems = [];
+
+    readonly string _addMenuButtonId = "addbtn-" + Guid.NewGuid();
 
     protected override void OnParametersSet()
     {
@@ -162,9 +168,11 @@
         BuilderModel!.CallChains = BuilderModel!.CallChains.Where(s => s != item).ToArray();
     }
 
-    void HandleOnAddItemMenuChanged(MenuChangeEventArgs e)
+    void HandleOnAddItemMenuClick(MenuItemEventArgs args)
     {
-        var key = e.Id;
+        var key = args.Item?.Id;
+        if (key is null) return;
+
         var method = _builderDictionary!.Providers[BuilderModel!.EntityName].Methods.First(s => s.Name == key);
         AddItem(method);
     }

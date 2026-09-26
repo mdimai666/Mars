@@ -26,7 +26,8 @@
 
                 @if (newUseTemplate)
                 {
-                    <FluentSelect @bind-Value="newTemplateName" @bind-Value:after="OnTemplateChanged"
+                    <FluentSelect TOption="FFrontTemplateResponse" TValue="string"
+                                  @bind-Value="newTemplateName" @bind-Value:after="OnTemplateChanged"
                                   Label="Стартовый шаблон"
                                   Items="templates" OptionValue=@(t => t.Name) OptionText=@(t => t.Name)
                                   Style="min-width:180px;" />
@@ -38,11 +39,12 @@
                                      Style="min-width:220px;" />
                 }
 
-                <FluentSelect @bind-Value="newEngineId" Label="Движок"
+                <FluentSelect TOption="FFrontEngineResponse" TValue="string"
+                              @bind-Value="newEngineId" Label="Движок"
                               Items="engines" OptionValue=@(e => e.Id) OptionText=@(e => e.Name)
                               Disabled=@engineFromTemplate Style="min-width:160px;"
                               Title=@(engineFromTemplate ? "Движок определяется стартовым шаблоном" : null) />
-                <FluentButton Appearance="Appearance.Accent" OnClick="CreateFront" Disabled=@creating>
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="CreateFront" Disabled=@creating>
                     Создать фронт
                 </FluentButton>
             </div>
@@ -66,7 +68,7 @@
                 <FluentBadge Fill="info">специальный фронт админки</FluentBadge>
                 <span class="text-secondary small">data/admin/front · только в админ-панели</span>
                 <div class="ms-auto">
-                    <FluentButton Appearance="Appearance.Neutral" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
+                    <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
                         Редактор
                     </FluentButton>
                 </div>
@@ -108,13 +110,14 @@
                                 <FluentBadge Fill="warning">выключен</FluentBadge>
                             }
                             <div class="ms-auto hstack gap-2 align-items-center">
-                                <FluentButton Appearance="Appearance.Neutral" OnClick=@(() => OpenEditor(front))>
+                                <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => OpenEditor(front))>
                                     Редактор
                                 </FluentButton>
-                                <FluentMenuButton Text="..." ButtonAppearance="Appearance.Stealth" Title="Действия">
+                                <FluentButton Id="@FrontMenuId(front)" Appearance="ButtonAppearance.Subtle" Title="Действия">...</FluentButton>
+                                <FluentMenu Trigger="@FrontMenuId(front)">
                                     <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: false))>Удалить</FluentMenuItem>
                                     <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: true))>Удалить с папкой</FluentMenuItem>
-                                </FluentMenuButton>
+                                </FluentMenu>
                             </div>
                         </div>
 
@@ -133,7 +136,8 @@
 
                         <div class="row g-2 align-items-center">
                             <div class="col-md-4">
-                                <FluentSelect @bind-Value="front.EngineId" Label="Движок" Class="w-100"
+                                <FluentSelect TOption="FFrontEngineResponse" TValue="string"
+                                              @bind-Value="front.EngineId" Label="Движок" Class="w-100"
                                               Items="engines"
                                               OptionValue=@(e => e.Id)
                                               OptionText=@(e => e.Name) />
@@ -248,4 +252,7 @@
     {
         nav.NavigateTo($"front/editor/{front.Slug}");
     }
+
+    /// <summary>Стабильный id триггера меню действий фронта (slug уникален в пределах списка)</summary>
+    static string FrontMenuId(FrontItem front) => $"front-actions-{front.Slug}";
 }

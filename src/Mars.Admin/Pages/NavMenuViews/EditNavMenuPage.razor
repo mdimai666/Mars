@@ -33,11 +33,11 @@
                                      Appearance="@TextInputAppearance.FilledDarker"
                                      Required
                                      Style="zoom:1.4" />
-                    <FluentValidationMessage For="@(() => context.Title)" />
+                    <ValidationMessage For="@(() => context.Title)" />
                 </div>
                 <div class="">
                     <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" />
-                    <FluentValidationMessage For="@(() => context.Slug)" />
+                    <ValidationMessage For="@(() => context.Slug)" />
                 </div>
                 <div class="vstack gap-3">
                     <FormItem2 For="() => context.Class" Label="@AppRes.CssClass">
@@ -49,15 +49,13 @@
                 </div>
 
                 <div class="d-roles">
-                    <FluentAutocomplete TOption="string"
-                                        AutoComplete="off"
+                    <FluentAutocomplete TOption="string" TValue="string"
                                         Label="@AppRes.Roles"
                                         Width="300px"
                                         Items="@_availRoles.Select(s=>s.Name)"
                                         Placeholder="Select"
                                         IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                        KeepOpen
-                                        @bind-SelectedOptions="@context.SetRoles" />
+                                        @bind-SelectedItems="@context.SetRoles" />
 
                     <div>
                         <FluentSwitch @bind-Value=@context.RolesInverse Label="Инвертировать роли" />
@@ -102,7 +100,7 @@
                                                 }
                                                 @if (item.Node.IsSystem)
                                                 {
-                                                    <FluentBadge Appearance="@Appearance.Lightweight">system</FluentBadge>
+                                                    <FluentBadge Appearance="BadgeAppearance.Outline">system</FluentBadge>
                                                 }
                                             </div>
                                         </div>
@@ -150,7 +148,7 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <h6 class="flex-fill">Свойства</h6>
-                                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(e => _selNode = null)">@AppRes.Cancel</FluentButton>
+                                        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(e => _selNode = null)">@AppRes.Cancel</FluentButton>
                                     </div>
                                     @if (_selMenu is null)
                                     {
@@ -190,15 +188,13 @@
                                             @*==*@
                                             <div class="spacer-1"></div>
 
-                                            <FluentAutocomplete TOption="string"
-                                                                AutoComplete="off"
+                                            <FluentAutocomplete TOption="string" TValue="string"
                                                                 Label="@AppRes.Roles"
                                                                 Width="300px"
                                                                 Items="@_availRoles.Select(s=>s.Name)"
                                                                 Placeholder="Select"
                                                                 IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                                                KeepOpen
-                                                                @bind-SelectedOptions="@_selMenu.SetRoles" />
+                                                                @bind-SelectedItems="@_selMenu.SetRoles" />
 
                                             <div class="d-block">
                                                 <FluentCheckbox @bind-Value=@_selMenu.RolesInverse Label="RolesInverse" />
@@ -211,7 +207,7 @@
                                             <div class="actions">
                                                 @if (_selMenu.IsSystem)
                                                 {
-                                                    <FluentButton Appearance="@(_selMenu.Disabled ? Appearance.Accent : Appearance.Neutral)"
+                                                    <FluentButton Appearance="@(_selMenu.Disabled ? ButtonAppearance.Primary : ButtonAppearance.Default)"
                                                                   OnClick="e => OnToggleMenuItem(_selMenu)">
                                                         @(_selMenu.Disabled ? "Включить" : "Отключить")
                                                     </FluentButton>
@@ -264,7 +260,7 @@
             {
                 <div class="card mb-3">
                     <div class="card-body">
-                        <FluentButton Appearance="Appearance.Neutral" OnClick="OnResetDevMenu">Сбросить к дефолту</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Default" OnClick="OnResetDevMenu">Сбросить к дефолту</FluentButton>
                         <div class="text-secondary small mt-2">
                             Сохранённая копия будет удалена, меню вернётся к генерируемому кодом состоянию.
                         </div>
@@ -274,9 +270,9 @@
             <div class="card">
                 <div class="card-body">
                     <a href=@url target="_blank">
-                        <FluentButton Appearance="Appearance.Neutral">Export</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Default">Export</FluentButton>
                     </a>
-                    <FluentButton Appearance="Appearance.Neutral" OnClick="ShowImportModal">Import</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Default" OnClick="ShowImportModal">Import</FluentButton>
                 </div>
             </div>
         </SectionExtraSidebar>
@@ -284,25 +280,29 @@
     <div class="spacer-5"></div>
 </ContentWrapper>
 
-<FluentDialog Hidden="@(!visibleImportModal)"
+<FluentDialog @ref="_importDialog"
               aria-label="Import dialog"
               Modal=true
-              @ondialogdismiss=@(() => visibleImportModal = false)
-              PreventScroll=true>
-    <FluentDialogHeader Visible="false" />
-    <h2>Import</h2>
-    <div>
-        @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
-        <div class="my-2">
-            <InputFile OnChange="LoadFiles" />
-        </div>
-        <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
-        <div class="spacer-2"></div>
-        <FluentButton Appearance="Appearance.Accent" Disabled=importButtonDisabled OnClick=OnImportClick>
-            <i class="bi bi-upload me-2"></i>
-            Импорт
-        </FluentButton>
-    </div>
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { visibleImportModal = false; _importDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <h2>Import</h2>
+        </TitleTemplate>
+        <ChildContent>
+            <div>
+                @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
+                <div class="my-2">
+                    <InputFile OnChange="LoadFiles" />
+                </div>
+                <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
+                <div class="spacer-2"></div>
+                <FluentButton Appearance="ButtonAppearance.Primary" Disabled=importButtonDisabled OnClick=OnImportClick>
+                    <i class="bi bi-upload me-2"></i>
+                    Импорт
+                </FluentButton>
+            </div>
+        </ChildContent>
+    </FluentDialogBody>
 </FluentDialog>
 
 <style>

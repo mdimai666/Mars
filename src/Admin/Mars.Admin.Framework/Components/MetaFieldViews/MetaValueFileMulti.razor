@@ -51,7 +51,7 @@
                             <div class="text-secondary small">@file.Size.ToHumanizedSize()</div>
                         }
                         <div class="d-file-card-actions">
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </FluentButton>
                         </div>
@@ -71,9 +71,9 @@
                                 <div class="text-secondary small">@file.Size.ToHumanizedSize()</div>
                                 <div class="d-flex gap-1">
                                     <a href="@file.Url" target="_blank">
-                                        <FluentButton Size="small" Appearance="Appearance.Neutral">открыть</FluentButton>
+                                        <FluentButton Size="ButtonSize.Small" Appearance="ButtonAppearance.Default">открыть</FluentButton>
                                     </a>
-                                    <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
+                                    <FluentButton Size="ButtonSize.Small" Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
                                         <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                                     </FluentButton>
                                 </div>

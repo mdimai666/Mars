@@ -33,7 +33,6 @@ public partial class App
     public static bool IsDevelopment => Q.IsDevelopment;
 
     HotKeysContext appHotKeysContext = default!;
-    FluentDesignSystemProvider? _fluentDesignSystemProvider;
 
     protected override async Task OnInitializedAsync()
     {

@@ -2,6 +2,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <FluentAutocomplete TOption="PostCategoryListItemResponse"
+                    TValue="string"
                     Id="@Id"
                     Class="@Class"
                     Style="@Style"
@@ -9,8 +10,8 @@
                     Disabled="Disabled"
                     Width=@Width
                     Multiple="true"
-                    SelectedOptions="_selectedItems"
-                    SelectedOptionsChanged="SelectedOptionChanged"
+                    SelectedItems="_selectedItems"
+                    SelectedItemsChanged="SelectedOptionChanged"
                     OptionValue="@(v=>v.Id.ToString())"
                     OnOptionsSearch="OnOptionsSearch"
                     OptionText="@(x => x.Title)"

@@ -17,7 +17,7 @@
             <FluentSwitch Label="Running only" @bind-Value="_runningOnly" @bind-Value:after="HandleSearchInput" />
             <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
             <div class="ms-auto">
-                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())" OnClick="ShowCreateDialog">@AppRes.Create</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())" OnClick="ShowCreateDialog">@AppRes.Create</FluentButton>
             </div>
         </div>
 
@@ -69,7 +69,7 @@
                             <span title="@date.ToString("g")">@date.ToString("d")</span>
                         }
                     </TemplateColumn>
-                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End" Width="auto">
+                    <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End" Width="auto">
                         <div class="docker-cell-actions">
                             @if (context.Item.GroupName is not null)
                             {

@@ -16,6 +16,9 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// </summary>
 public partial class MetaValueFileMulti
 {
+    public MetaValueFileMulti(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IAppMediaService _mediaService { get; set; } = default!;
 
     [Parameter, EditorRequired] public FormFieldBinding Binding { get; set; } = default!;

@@ -14,7 +14,7 @@
 
     @if (_busy)
     {
-        <FluentProgressRing />
+        <FluentSpinner />
     }
     else if (EditModel is null)
     {
@@ -25,7 +25,9 @@
         <div class="d-flex flex-column gap-2">
 
             <FormItem2 For="() => EditModel.EntityUri">
-                <FluentSelect @bind-SelectedOption="@EditModel.EntityUri" Items="EditModel.FormsSchemaDict.Keys" TOption="SourceUri" />
+                <FluentSelect TOption="SourceUri" TValue="SourceUri"
+                              @bind-Value="@EditModel.EntityUri"
+                              Items="EditModel.FormsSchemaDict.Keys" />
             </FormItem2>
 
             <FluentSortableList Class="AppEntityCreateNode__SortableList"
@@ -42,7 +44,7 @@
                         <div class="d-grid align-items-center" style="grid-template-columns: 200px 33px 60px max-content;">
                             <div class="@(true ? $"AppEntityCreateNode__SortableList__item--disabled" : "")">
                                 <div>
-                                    <FluentInputLabel Label="@item.Title" Required=item.IsRequired />
+                                    <FluentLabel Required="item.IsRequired">@item.Title</FluentLabel>
                                 </div>
                                 <div class="text-secondary">
                                     @item.PropertyName

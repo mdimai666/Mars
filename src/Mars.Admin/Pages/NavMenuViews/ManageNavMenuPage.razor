@@ -18,7 +18,7 @@
                       AriaLabel="Search" />
         <div class="ms-auto">
             <a href="@urlEditPage">
-                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
             </a>
         </div>
     </div>
@@ -31,14 +31,14 @@
                             Virtualize
                             EmptyContent="DataGrid_EmptyContent"
                             ShowHover
-                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="3fr 1fr 1fr"
                             Class="data-table--adaptive"
                             TGridItem="NavMenuSummaryResponse">
                 <TemplateColumn SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
-                                InitialSortDirection="SortDirection.Ascending"
+                                InitialSortDirection="DataGridSortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     <div class="col">
@@ -60,8 +60,8 @@
                 <PropertyColumn Property=@(f => f.CreatedAt)
                                 Title="@AppRes.CreatedAt"
                                 Format="d"
-                                Sortable="true" Align="Align.End" />
-                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                                Sortable="true" Align="DataGridCellAlignment.End" />
+                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
                     <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
                 </TemplateColumn>
             </FluentDataGrid>

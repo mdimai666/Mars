@@ -103,7 +103,7 @@ public partial class ManagePostView : IDisposable
                 data = await client.Post.List(PostType.TypeName, new()
                 {
                     Skip = req.StartIndex,
-                    Take = req.Count ?? BasicListQuery.DefaultPageSize,
+                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
                     IncludeCategory = true,

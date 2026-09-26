@@ -34,7 +34,7 @@ public partial class ListPostCategoryTypePage
                     //Page = pagination.CurrentPageIndex + 1,
                     //PageSize = pagination.ItemsPerPage,
                     Skip = req.StartIndex,
-                    Take = req.Count ?? BasicListQuery.DefaultPageSize,
+                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
                 });

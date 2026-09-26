@@ -65,6 +65,8 @@ public class AppAdminSpaHtmlScripts
             new(new Uri(@"_content/Blazored.TextEditor/Blazored-BlazorQuill.js", UriKind.Relative), order: defaultOrder),
 
             //new(@"<script src=""https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"" integrity=""sha512-TelkP3PCMJv+viMWynjKcvLsQzx6dJHvIGhfqzFtZKgAjKM1YPqcwzzDEoTc/BHjf43PcPzTQOjuTr4YdE8lNQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer""></script>", order: defaultOrder),
+            // IMask глобалом до monaco loader.js: UMD после появления define.amd глобал не создаёт, а FluentUI v5 ждёт window.IMask
+            new(new Uri(@"js/imask.min.js", UriKind.Relative), version: appVersion, order: defaultOrder),
             new(new Uri(@"/mars/vendor/Sortable-1.15.6.min.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/jsInterop.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js", UriKind.Relative), order: defaultOrder),

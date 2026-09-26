@@ -52,6 +52,11 @@
     <script src="_content/Blazored.TextEditor/quill-blot-formatter.min.js"></script>
     <script src="_content/Blazored.TextEditor/Blazored-BlazorQuill.js"></script>
 
+    <!-- UMD-глобалы для FluentUI v5 (IMask/Sortable): его CDN-лоадер ждёт window.IMask/window.Sortable,
+         а после monaco loader.js UMD уходит в define.amd и глобал не создаёт; плюс offline-self-hosted -->
+    <script src="js/imask.min.js" asp-append-version="true"></script>
+    <script src="js/Sortable.min.js" asp-append-version="true"></script>
+
     <script src="_content/BlazorMonaco/jsInterop.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>

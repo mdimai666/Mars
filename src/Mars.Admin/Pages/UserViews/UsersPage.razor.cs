@@ -44,7 +44,7 @@ public partial class UsersPage
                 data = await _client.User.ListDetail(new()
                 {
                     Skip = req.StartIndex,
-                    Take = req.Count ?? BasicListQuery.DefaultPageSize,
+                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
 

@@ -187,6 +187,44 @@ FAST-токены v4 (`--type-ramp-*`, `--neutral-layer-*`, `--design-unit`) и 
 - Docs-сайт (MarsDocs): FluentNavMenu/NavLink/NavGroup/FluentAnchor — ждут FluentNav-переделки
   (вместе с Menu2, решение пользователя: делаем на FluentNav).
 
+## Playwright-обход админки (2026-09-27)
+
+Скрипт-обход: `.qwen/tmp/fv5-crawl.js` (playwright-core + msedge, логин mdimai666, 36 корневых
+страниц `/dev/...`, скриншоты `.qwen/tmp/fv5-shots`, отчёт `fv5-report.json`). Сервер:
+`set ASPNETCORE_ENVIRONMENT=Development&& dotnet run --project src\Mars.WebApp --no-launch-profile`
+(launchSettings.json с комментариями строгий парсер `dotnet run` не читает; порт 5003).
+
+Результат: 34/36 ок. Найдено и починено (после правок финальный прогон: **36/36 ok**,
+единственная консольная ошибка — `/dev/marketplace` 466 внешнего каталога, существующая):
+- **FluentIcon null-Value краш** (`NotSupportedException: Please use the constructor including
+  parameters` из `FluentIcon`1.OnParametersSet → Activator): в v5 любой null-Icon долетает до
+  `Activator.CreateInstance<Icon>()`. Триггер — `FluentAutocomplete IconSearch="null"` в
+  `SelectCategoryForFilterDropDown.razor` (атрибут убран; v5 не умеет прятать search-иконку —
+  визуальная мелочь на этап стилей). Правило: в v5 NEVER передавать null в Icon-параметры.
+- **Take=0 → 400 от API постов**: v5 FluentDataGrid+Virtualize первый запрос даёт `Count=0`
+  (не null), `req.Count ?? Default` не срабатывал. Clamp `req.Count is > 0 ? ... : Default`
+  в 11 провайдерах (ManagePostView, UsersPage, ListUserTypePage, ListPostTypePage,
+  ManagePostCategoryView, ListPostCategoryTypePage, PluginsListPage, ManageNavMenuPage,
+  FeedbackListPage, NodeTaskJobListView, MetaValueRelationSelectDialog).
+- **Селекторы E2E-логина мертвы в v5**: у `fluent-button` нет внутреннего `<button>`
+  (shadow = slot+span), `[type='submit'] button` и getByRole('button') не находят; клик —
+  по самому `fluent-button[type='submit']`. AuthTests (`[type='submit'] button`,
+  `.navbar .user-name`) переписать при разморозке E2E.
+
+Не FluentUI (не чиним здесь):
+- `/dev/marketplace` 466 — внешний каталог (прокси), существующее поведение.
+
+### IMask/Sortable vs AMD-loader Monaco (починено)
+v5 грузит IMask и Sortablejs с CDN unpkg лениво и после `onload` проверяет **глобал**
+(`window.IMask`/`window.Sortable`). В админке `index.html` синхронно грузит monaco
+`loader.js` → живёт `define.amd` → UMD-билд imask/sortable уходит в AMD-ветку и глобал
+НЕ создаёт → «IMask library failed to load» на любой странице с masked-инпутом
+(styledesigner) и риск для FluentSortableList (нодовые формы). Лечение: вендоринг —
+`src/Mars.Admin/wwwroot/js/imask.min.js` (7.6.1, MIT) и `Sortable.min.js` (1.15.6, MIT),
+теги в `index.html` ДО monaco loader.js (UMD ставит глобалы раньше, чем появится AMD;
+лоадер v5 видит глобал и не идёт на CDN — работает и offline). Грабли: новые файлы
+wwwroot попадают в отдачу только после пересборки (staticwebassets-манифест).
+
 ## Статус
 
 - [x] Ветка `feat/fluentui-v5`

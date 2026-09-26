@@ -17,8 +17,7 @@
                     SelectedItemChanged="SelectedOptionChanged"
                     OptionValue="@(v=>v?.Id.ToString())"
                     OnOptionsSearch="OnOptionsSearch"
-                    OptionText="@(x => x.Title)"
-                    IconSearch="null">
+                    OptionText="@(x => x.Title)">
     <OptionTemplate>
         <div style=@GetOptionCssStyle(context)>
             @context.Title

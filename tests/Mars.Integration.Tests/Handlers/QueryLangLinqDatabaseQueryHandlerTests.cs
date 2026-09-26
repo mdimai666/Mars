@@ -154,6 +154,58 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_DistinctBy_TranslatesViaRowNumber()
+    {
+        // Arrange — "db-555" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(4).ToList();
+        createdPosts.ForEach(s => s.Title = "db-555");
+        (createdPosts[0].Slug, createdPosts[1].Slug) = ("db-a", "db-a");
+        (createdPosts[2].Slug, createdPosts[3].Slug) = ("db-b", "db-b");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(
+            "Posts.Where(post.Title==\"db-555\").DistinctBy(Slug).ToList()", new(), default);
+
+        // Assert
+        var rows = (result as IEnumerable<PostEntity>)!.ToList();
+        rows.Should().HaveCount(2);
+        rows.Select(s => s.Slug).Should().BeEquivalentTo(["db-a", "db-b"]);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_MaxByMinBy_TranslateOnPostgres()
+    {
+        // Arrange — "maxby-666" уникальный маркер (БД общая на класс-фикстуру)
+        var now = DateTimeOffset.UtcNow;
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        for (int i = 0; i < createdPosts.Count; i++)
+        {
+            createdPosts[i].Title = "maxby-666";
+            createdPosts[i].CreatedAt = now.AddHours(i);
+        }
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"maxby-666\")";
+        var expectedMax = await ef.Posts.Where(s => s.Title == "maxby-666").OrderByDescending(s => s.CreatedAt).FirstAsync();
+        var expectedMin = await ef.Posts.Where(s => s.Title == "maxby-666").OrderBy(s => s.CreatedAt).FirstAsync();
+
+        // Act
+        var maxBy = await _handler.Handle($"{filter}.MaxBy(CreatedAt)", new(), default) as PostEntity;
+        var minBy = await _handler.Handle($"{filter}.MinBy(CreatedAt)", new(), default) as PostEntity;
+
+        // Assert
+        maxBy!.Id.Should().Be(expectedMax.Id);
+        minBy!.Id.Should().Be(expectedMin.Id);
+    }
+
+    [IntegrationFact]
     public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange

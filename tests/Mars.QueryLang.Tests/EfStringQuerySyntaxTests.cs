@@ -120,6 +120,27 @@ public class EfStringQuerySyntaxTests
     }
 
     [Fact]
+    public void DistinctBy_KeepsOneElementPerKey()
+    {
+        var result = Q().DistinctBy("Title").ToList().Cast<PostEntity>().ToList();
+
+        result.Should().HaveCount(2);
+        result.Select(s => s.Title).Should().BeEquivalentTo(["111", "000"]);
+    }
+
+    [Fact]
+    public void MaxBy_MinBy_ReturnElement_AreTerminal()
+    {
+        Items().MaxBy("Price").Should().BeOfType<Item>().Which.Price.Should().Be(30);
+        Items().MinBy("Price").Should().BeOfType<Item>().Which.Price.Should().Be(10);
+
+        var q = Q();
+        ((PostEntity)q.MaxBy("PostType.TypeName")!).Slug.Should().Be("a");
+        ((PostEntity)q.MinBy("PostType.TypeName")!).Slug.Should().Be("b");
+        q.ToList().Cast<PostEntity>().Should().HaveCount(3);
+    }
+
+    [Fact]
     public void Max_Min_OnFieldAndDottedPath()
     {
         Q().Max("PostType.TypeName").Should().Be("z");
@@ -175,8 +196,9 @@ public class EfStringQuerySyntaxTests
             nameof(EfStringQuery.Where), nameof(EfStringQuery.OrderBy), nameof(EfStringQuery.OrderByDescending),
             nameof(EfStringQuery.ThenBy), nameof(EfStringQuery.ThenByDescending),
             nameof(EfStringQuery.Skip), nameof(EfStringQuery.Take), nameof(EfStringQuery.ToList),
-            nameof(EfStringQuery.Distinct),
+            nameof(EfStringQuery.Distinct), nameof(EfStringQuery.DistinctBy),
             nameof(EfStringQuery.Max), nameof(EfStringQuery.Min),
+            nameof(EfStringQuery.MaxBy), nameof(EfStringQuery.MinBy),
             nameof(EfStringQuery.Sum), nameof(EfStringQuery.Average),
             nameof(EfStringQuery.Select), nameof(EfStringQuery.Include), nameof(EfStringQuery.Table),
             nameof(EfStringQuery.Search), nameof(EfStringQuery.Union),

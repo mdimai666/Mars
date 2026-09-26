@@ -336,6 +336,30 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("DistinctBy", """DistinctBy(@fieldName)""", "Оставляет один элемент на каждое значение поля. @fieldName — имя поля или путь через точку (User.Name). Какой именно дубликат выживет — определяет EF (серверный ROW_NUMBER).")]
+    public EfStringQuery DistinctBy(string expr)
+    {
+        var selector = ParseKeySelector(expr);
+
+        var groupByMethod = FindQueryableMethod(nameof(Queryable.GroupBy), 2, "keySelector")
+            .MakeGenericMethod(query.ElementType, selector.ReturnType);
+        var grouped = (IQueryable)groupByMethod.Invoke(null, [query, selector])!;
+
+        // форма дерева `g => g.First()` — именно её EF Core 10 транслирует
+        // в ROW_NUMBER() OVER (PARTITION BY key ...) целиком на сервере
+        var groupingType = typeof(IGrouping<,>).MakeGenericType(selector.ReturnType, query.ElementType);
+        var gParam = Expression.Parameter(groupingType, "g");
+        var resultSelector = Expression.Lambda(
+            Expression.Call(typeof(Enumerable), nameof(Enumerable.First), [query.ElementType], gParam),
+            gParam);
+
+        var selectMethod = FindQueryableMethod(nameof(Queryable.Select), 2, "selector")
+            .MakeGenericMethod(groupingType, query.ElementType);
+        query = (IQueryable)selectMethod.Invoke(null, [grouped, resultSelector])!;
+
+        return this;
+    }
+
     [TemplatorHelperInfo("Max", """Max(@fieldName)""", "Возвращает максимальное значение поля; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
     public object? Max(string expr)
     {
@@ -346,6 +370,20 @@ public partial class EfStringQuery : IDynamicQueryableObject
     public object? Min(string expr)
     {
         return CallKeySelector(nameof(Queryable.Min), expr, "selector");
+    }
+
+    [TemplatorHelperInfo("MaxBy", """MaxBy(@fieldName)""", "Возвращает элемент с максимальным значением поля; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
+    public object? MaxBy(string expr)
+    {
+        var ordered = (IQueryable)CallKeySelector(nameof(Queryable.OrderBy), expr, "keySelector")!;
+        return QCall(ordered, nameof(Queryable.LastOrDefault), 1, null);
+    }
+
+    [TemplatorHelperInfo("MinBy", """MinBy(@fieldName)""", "Возвращает элемент с минимальным значением поля; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
+    public object? MinBy(string expr)
+    {
+        var ordered = (IQueryable)CallKeySelector(nameof(Queryable.OrderBy), expr, "keySelector")!;
+        return QCall(ordered, nameof(Queryable.FirstOrDefault), 1, null);
     }
 
     [TemplatorHelperInfo("Sum", """Sum(@fieldName)""", "Сумма значений числового поля; запрос не изменяет. @fieldName — имя поля или путь через точку.")]

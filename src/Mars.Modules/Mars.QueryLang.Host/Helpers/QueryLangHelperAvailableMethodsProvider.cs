@@ -48,8 +48,11 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
             ff(nameof(b.ThenByDescending),[ new() ]),
             ff(nameof(b.ToList),[ new() ]),
             ff(nameof(b.Distinct),[ new() ]),
+            ff(nameof(b.DistinctBy),[ new() ]),
             ff(nameof(b.Max),[ new() ]),
             ff(nameof(b.Min),[ new() ]),
+            ff(nameof(b.MaxBy),[ new() ]),
+            ff(nameof(b.MinBy),[ new() ]),
             ff(nameof(b.Sum),[ new() ]),
             ff(nameof(b.Average),[ new() ]),
 

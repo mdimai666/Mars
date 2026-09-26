@@ -6,4 +6,5 @@ public static class FeatureFlags
     public const string AITool = "AITool";
     public const string AiChat = "AiChat";
     public const string SingleSignOn = "SingleSignOn";
+    public const string CodeCompletion = "CodeCompletion";
 }

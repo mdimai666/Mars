@@ -2,6 +2,7 @@ using System.Text;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes.Storage;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Storage;
 
@@ -20,7 +21,8 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         var ct = parameters.CancellationToken;
-        var filepath = Node.FilePath;
+
+        var filepath = ResolveFilePath();
 
         // 1. Валидация пути
         if (string.IsNullOrWhiteSpace(filepath))
@@ -51,6 +53,12 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>
 
             default:
                 throw new NodeExecuteException(Node, $"Unsupported output mode: {Node.OutputMode}");
+        }
+
+        string ResolveFilePath()
+        {
+            using var expr = RNS.Expressions(Node);
+            return (string)expr.Resolve(Node.FilePathKind, Node.FilePath, "string", input, Node, "FilePath")!;
         }
     }
 

@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mars UI — нанокостюм (HUD, черновик стиля)</title>
+<script>
+    // Тема: по умолчанию следуем системной, переключатель ставит атрибут явно.
+    (function () {
+        var t = new URLSearchParams(location.search).get('theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+        else document.documentElement.setAttribute('data-theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+</script>
+<style>
+    /* ==================== ТОКЕНЫ ====================
+       Состав имён тот же, что в cyberpunk/ui-style-preview.html.
+       Светлый набор — «арктический день» (холодный серо-белый + циан),
+       тёмный — палитра нанокостюма Crysis. Новые токены HUD помечены NEW. */
+    :root {
+        --ui-bw: 1px;
+        --ui-radius: 0;                         /* прямых радиусов в HUD нет — только срезы */
+        --ui-cut: 10px;                     /* NEW: размер среза угла панели */
+        --ui-shear: -6deg;                  /* NEW: наклон кромок (переключатель shear=1) */
+        --ui-slant: 6px;                    /* NEW: та же геометрия в px для clip-path фигур */
+        --ui-cps: 1.8px;                    /* NEW: трекинг капса (базовый) */
+
+        --ui-page: #e9eef1;
+        --ui-fill: #f3f7f9;
+        --ui-fill-raised: #ffffff;
+        --ui-fill-sunken: #dfe7ea;
+        --ui-glass: rgba(255, 255, 255, .72);      /* NEW: стеклянная заливка панели */
+        --ui-glass-edge: rgba(13, 127, 147, .55);  /* NEW: кромка стекла */
+        --ui-bar: rgba(233, 238, 241, .86);        /* NEW: заливка липкой шапки */
+        --ui-line: #0d7f93;
+        --ui-on-line: #f3f7f9;              /* NEW: текст на заливке --ui-line (в тёмной теме наоборот — тёмный) */
+        --ui-line-soft: rgba(13, 127, 147, .34);
+        --ui-line-faint: rgba(13, 127, 147, .16);
+        --ui-ink: #0b1418;
+        --ui-ink-dim: #5b6f78;
+        --ui-accent: #0d7f93;
+        --ui-accent-ink: #eafcff;
+        --ui-accent-soft: rgba(13, 127, 147, .12);
+        --ui-ok: #16855a;
+        --ui-warn: #b45f10;
+        --ui-err: #b53326;
+        --ui-info: #0d7f93;
+        --ui-path: #0d7f93;
+        --ui-num: #96470a;
+        --ui-str: #6f35a8;
+        --ui-energy: #0d7f93;               /* NEW: шкала энергии */
+        --ui-armor: #35505a;                /* NEW: шкала брони */
+        --ui-threat: #b45f10;               /* NEW: противник / тревога */
+        --ui-crit: #b53326;                 /* NEW: критическое показание */
+        --ui-halo-c: rgba(13, 127, 147, .40);      /* NEW: цвет внешнего свечения кромки */
+        --ui-rail-c: rgba(13, 127, 147, .70);      /* NEW: цвет внутренней подсветки */
+        --ui-shadow: 0 10px 22px -16px rgba(11, 20, 24, .6);
+        --ui-halo: 0 0 14px -6px var(--ui-halo-c);
+        --ui-inset: inset 0 0 22px -14px var(--ui-rail-c);
+        --ui-mono: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+    }
+
+    /* Тёмная тема — HUD нанокостюма: почти чёрно-синяя основа, холодный циан. */
+    html[data-theme="dark"] {
+        --ui-page: #04090b;
+        --ui-fill: #0b141a;
+        --ui-fill-raised: #0d1a21;
+        --ui-fill-sunken: #060e12;
+        --ui-glass: rgba(9, 20, 24, .55);
+        --ui-glass-edge: rgba(127, 242, 255, .45);
+        --ui-bar: rgba(6, 14, 18, .82);
+        --ui-line: #7ff2ff;
+        --ui-on-line: #04181c;
+        --ui-line-soft: rgba(127, 242, 255, .32);
+        --ui-line-faint: rgba(127, 242, 255, .14);
+        --ui-ink: #e6f7fb;
+        --ui-ink-dim: #86a8b5;
+        --ui-accent: #7ff2ff;
+        --ui-accent-ink: #04181c;
+        --ui-accent-soft: rgba(127, 242, 255, .14);
+        --ui-ok: #5ce6a8;
+        --ui-warn: #ff8a3d;
+        --ui-err: #ff4d4d;
+        --ui-info: #4fd2ff;
+        --ui-path: #4fd2ff;
+        --ui-num: #ffb066;
+        --ui-str: #c9a2ff;
+        --ui-energy: #4fd2ff;
+        --ui-armor: #dff4f8;
+        --ui-threat: #ff8a3d;
+        --ui-crit: #ff4d4d;
+        --ui-halo-c: rgba(127, 242, 255, .35);
+        --ui-rail-c: rgba(127, 242, 255, .55);
+        --ui-shadow: 0 0 14px -6px var(--ui-halo-c);
+    }
+
+    /* Кромка: 0 — прямые кромки, 1 (по умолчанию) — наклон 6°. */
+    html[data-shear="0"] {
+        --ui-shear: 0deg;
+        --ui-slant: 0px;
+    }
+
+    /* Орнамент: 0 — сухо (без свечения и засечек), 1 — свечение и уголки, 2 — плюс гекс-сетка. */
+    html[data-orn="0"] {
+        --ui-halo-c: transparent;
+        --ui-rail-c: transparent;
+        --ui-glass-edge: var(--ui-line-faint);
+    }
+
+    html[data-orn="0"] .tick::after,
+    html[data-orn="0"] .hud::before,
+    html[data-orn="0"] .sec__head::after { display: none; }
+
+    /* Гекс-сетка имитируется тремя семействами линий (60°, -60°, 0°) — без картинок. */
+    html[data-orn="2"] .page {
+        background-image:
+            repeating-linear-gradient(60deg, var(--ui-line-faint) 0 1px, transparent 1px 24px),
+            repeating-linear-gradient(-60deg, var(--ui-line-faint) 0 1px, transparent 1px 24px),
+            repeating-linear-gradient(0deg, var(--ui-line-faint) 0 1px, transparent 1px 42px);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background-color: var(--ui-page);
+        color: var(--ui-ink);
+        font: 14px/1.55 system-ui, 'Segoe UI', Roboto, sans-serif;
+        letter-spacing: .2px;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--ui-accent); text-decoration: none; }
+
+    /* ==================== КАРКАС ==================== */
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding: 9px 22px;
+        background-color: var(--ui-bar);
+        backdrop-filter: blur(6px);
+        border-bottom: var(--ui-bw) solid var(--ui-line-soft);
+        box-shadow: 0 0 26px -14px var(--ui-halo-c);
+    }
+
+    .topbar__brand { display: flex; align-items: center; gap: 12px; }
+    .topbar__mark {
+        width: 12px;
+        height: 12px;
+        background-color: var(--ui-accent);
+        clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+        box-shadow: 0 0 10px var(--ui-halo-c);
+    }
+
+    .topbar__title {
+        font-size: 12.5px;
+        font-weight: 400;
+        letter-spacing: 2.4px;
+        text-transform: uppercase;
+    }
+
+    .topbar__sub {
+        font-size: 10.5px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--ui-ink-dim);
+    }
+
+    .topbar__spacer { flex: 1 1 auto; }
+    .sw-row { display: flex; align-items: center; gap: 8px; }
+
+    .page {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 26px 22px 90px;
+    }
+
+    .nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 26px; }
+
+    .nk {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 24px;
+        padding: 0 12px;
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        color: var(--ui-ink-dim);
+        font-size: 10.5px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        clip-path: polygon(0 0, 100% 0, calc(100% - var(--ui-slant)) 100%, 0 100%);
+    }
+
+    .nk:hover {
+        color: var(--ui-accent);
+        border-color: var(--ui-line-soft);
+        box-shadow: var(--ui-inset);
+    }
+
+    .sec { margin: 0 0 46px; }
+
+    .sec__head {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 8px;
+        margin-bottom: 18px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-faint);
+    }
+
+    /* Линия-подчёркивание выходит за пределы сетки контента — фирменная деталь HUD. */
+    .sec__head::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: -20px;
+        bottom: -1px;
+        height: var(--ui-bw);
+        background: linear-gradient(90deg, var(--ui-accent), transparent 72%);
+    }
+
+    .sec__mark {
+        width: 8px;
+        height: 8px;
+        background-color: var(--ui-accent);
+        clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    }
+
+    .sec__num { font-family: var(--ui-mono); font-size: 11px; letter-spacing: 2px; color: var(--ui-accent); }
+    .sec__title { font-size: 15px; font-weight: 300; letter-spacing: 2.2px; }
+    .sec__note {
+        margin-left: auto;
+        font-size: 10.5px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: var(--ui-ink-dim);
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        align-items: start;
+    }
+
+    .grid--wide { grid-template-columns: repeat(auto-fill, minmax(370px, 1fr)); }
+    .grid--lab { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .row--tight { gap: 6px; }
+    .row--between { justify-content: space-between; }
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+    .stack--tight { gap: 6px; }
+
+    /* ==================== ГЕОМЕТРИЯ ====================
+       .cut — срез двух углов + диагональные линии на месте среза.
+       clip-path отрезает рамку на диагонали, поэтому линия среза рисуется
+       фоном (градиент 45°/135° в квадрате --ui-cut у нужных углов). */
+    .cut {
+        --cut-c: var(--ui-line-soft);
+        background-image:
+            linear-gradient(45deg, transparent calc(50% - .5px), var(--cut-c) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px)),
+            linear-gradient(135deg, transparent calc(50% - .5px), var(--cut-c) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px));
+        background-repeat: no-repeat;
+        background-size: var(--ui-cut) var(--ui-cut);
+        background-position: top right, bottom left;
+        clip-path: polygon(0 0, calc(100% - var(--ui-cut)) 0, 100% var(--ui-cut), 100% 100%, var(--ui-cut) 100%, 0 calc(100% - var(--ui-cut)));
+    }
+
+    /* .tick — короткие засечки-скобки по углам, чуть наружу от кромки. */
+    .tick { position: relative; }
+
+    .tick::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        pointer-events: none;
+        --tk: 6px;
+        --tk-c: var(--ui-line);
+        background:
+            linear-gradient(var(--tk-c) 0 0) 0 0 / var(--tk) var(--ui-bw) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 0 0 / var(--ui-bw) var(--tk) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 100% 0 / var(--tk) var(--ui-bw) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 100% 0 / var(--ui-bw) var(--tk) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 0 100% / var(--tk) var(--ui-bw) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 0 100% / var(--ui-bw) var(--tk) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 100% 100% / var(--tk) var(--ui-bw) no-repeat,
+            linear-gradient(var(--tk-c) 0 0) 100% 100% / var(--ui-bw) var(--tk) no-repeat;
+    }
+
+    .tick--accent { --tk-c: var(--ui-accent); }
+    .tick--long::after { --tk: 12px; }
+
+    /* .para — параллелограмм/трапеция геометрией clip-path (текст остаётся прямым). */
+    .para { clip-path: polygon(var(--ui-slant) 0, 100% 0, calc(100% - var(--ui-slant)) 100%, 0 100%); }
+
+    /* .sk — настоящий наклон с обратным скосом содержимого (для декоративных полос). */
+    .sk { transform: skewX(var(--ui-shear)); }
+    .sk > * { transform: skewX(calc(-1 * var(--ui-shear))); }
+
+    /* ==================== СЛУЖЕБНОЕ ==================== */
+    .caps {
+        font-size: 10.5px;
+        letter-spacing: var(--ui-cps);
+        text-transform: uppercase;
+        color: var(--ui-ink-dim);
+    }
+
+    .caps--accent { color: var(--ui-accent); }
+    .mono { font-family: var(--ui-mono); }
+    .dim { color: var(--ui-ink-dim); }
+    .ok { color: var(--ui-ok); }
+    .warn { color: var(--ui-warn); }
+    .err { color: var(--ui-err); }
+    .accent { color: var(--ui-accent); }
+
+    .demo {
+        position: relative;
+        padding: 14px 16px;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+    }
+
+    .demo__label { margin-bottom: 12px; }
+    .demo__label .caps { color: var(--ui-ink); }
+    .demo__hint { font-size: 11.5px; color: var(--ui-ink-dim); margin-top: 12px; }
+    .demo code { font-family: var(--ui-mono); font-size: 11.5px; color: var(--ui-ink-dim); }
+
+    /* ==================== ПАНЕЛЬ HUD ====================
+       Внешнее свечение вешается на обёртку (.hud): filter применяется до clip-path,
+       поэтому на самой плите свечение было бы отрезано. Плита — .hud__b. */
+    .hud { position: relative; filter: drop-shadow(0 0 12px var(--ui-halo-c)); }
+
+    /* Треугольный маркер у левой кромки панели. */
+    .hud::before {
+        content: "";
+        position: absolute;
+        z-index: 2;
+        pointer-events: none;
+        left: -1px;
+        top: 16px;
+        width: 6px;
+        height: 14px;
+        background-color: var(--ui-accent);
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    .hud__b {
+        position: relative;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-glass-edge);
+        box-shadow: var(--ui-inset);
+    }
+
+    .hud__b--pad { padding: 14px 16px; }
+
+    .hud__head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-faint);
+    }
+
+    .hud__body { padding: 12px; }
+
+    .hud__foot {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 12px;
+        border-top: var(--ui-bw) solid var(--ui-line-faint);
+    }
+
+    /* ==================== КНОПКИ ==================== */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 30px;
+        padding: 0 14px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background-color: transparent;
+        color: var(--ui-ink);
+        font: inherit;
+        font-size: 11.5px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        cursor: pointer;
+        border-radius: var(--ui-radius);
+        box-shadow: var(--ui-inset);
+    }
+
+    .btn:hover {
+        color: var(--ui-accent);
+        border-color: var(--ui-line);
+        box-shadow: var(--ui-halo), var(--ui-inset);
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn--primary {
+        background-color: var(--ui-accent);
+        border-color: var(--ui-accent);
+        color: var(--ui-accent-ink);
+        box-shadow: var(--ui-halo), inset 0 0 18px -8px rgba(255, 255, 255, .55);
+    }
+
+    .btn--primary:hover { color: var(--ui-accent-ink); filter: brightness(1.08); }
+
+    .btn--ghost { border-color: transparent; color: var(--ui-ink-dim); box-shadow: none; }
+    .btn--ghost:hover { border-color: var(--ui-line-faint); color: var(--ui-accent); }
+
+    .btn--danger { border-color: var(--ui-err); color: var(--ui-err); box-shadow: 0 0 14px -8px var(--ui-err); }
+    .btn--danger:hover { border-color: var(--ui-err); color: var(--ui-err); background-color: rgba(255, 77, 77, .10); }
+
+    .btn--sm { height: 24px; padding: 0 10px; font-size: 10.5px; letter-spacing: 1.2px; }
+    .btn--lg { height: 38px; padding: 0 20px; font-size: 12.5px; letter-spacing: 1.8px; }
+    .btn--icon { width: 30px; padding: 0; }
+    .btn--icon.btn--sm { width: 24px; }
+
+    .btn[disabled], .btn.is-disabled { opacity: .40; cursor: not-allowed; box-shadow: none; transform: none; }
+    .btn[disabled]:hover, .btn.is-disabled:hover { color: var(--ui-ink); border-color: var(--ui-line-soft); box-shadow: none; }
+
+    /* Кромки кнопок: срез углов, «стрелка-наконечник», чистая трапеция. */
+    .btn--hud { --ui-cut: 8px; --cut-c: var(--ui-glass-edge); }
+    .btn--hud:hover { --cut-c: var(--ui-accent); }
+    .btn--notch { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%); }
+    .btn--para { clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
+
+    .btngroup { display: inline-flex; }
+    .btngroup .btn { margin-left: calc(-1 * var(--ui-bw)); }
+    .btngroup .btn:first-child { margin-left: 0; }
+    .btngroup .btn.is-active { background-color: var(--ui-accent-soft); color: var(--ui-accent); border-color: var(--ui-line); }
+
+    /* ==================== ПОЛЯ ==================== */
+    .fld {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 32px;
+        --ui-cut: 7px;
+        background-color: var(--ui-fill-sunken);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+    }
+
+    .fld input,
+    .fld textarea,
+    .fld select {
+        width: 100%;
+        min-height: 30px;
+        padding: 0 10px;
+        border: 0;
+        background-color: transparent;
+        color: inherit;
+        font: inherit;
+        outline: none;
+        border-radius: 0;
+    }
+
+    .fld textarea { padding: 7px 10px; min-height: 76px; resize: vertical; }
+    .fld--mono input, .fld--mono textarea { font-family: var(--ui-mono); font-size: 12.5px; }
+
+    .fld__prefix,
+    .fld__suffix {
+        display: inline-flex;
+        align-items: center;
+        align-self: stretch;
+        padding: 0 10px;
+        background-color: var(--ui-fill);
+        color: var(--ui-ink-dim);
+        font-family: var(--ui-mono);
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .fld__suffix { border-left: var(--ui-bw) solid var(--ui-line-faint); }
+
+    .fld__btn {
+        align-self: stretch;
+        width: 28px;
+        border: 0;
+        border-left: var(--ui-bw) solid var(--ui-line-faint);
+        background-color: transparent;
+        color: var(--ui-ink-dim);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .fld__btn:hover { background-color: var(--ui-accent-soft); color: var(--ui-accent); }
+
+    .fld:focus-within, .fld.is-focus {
+        border-color: var(--ui-accent);
+        --cut-c: var(--ui-accent);
+        box-shadow: var(--ui-halo), var(--ui-inset);
+    }
+
+    .fld.is-error {
+        border-color: var(--ui-err);
+        --cut-c: var(--ui-err);
+        box-shadow: 0 0 14px -6px var(--ui-err), var(--ui-inset);
+    }
+
+    .fld.is-disabled { opacity: .45; }
+
+    .lbl { display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px; }
+    .lbl .req { color: var(--ui-accent); font-family: var(--ui-mono); }
+    .hint { font-size: 11.5px; color: var(--ui-ink-dim); margin-top: 6px; }
+    .hint--err { color: var(--ui-err); }
+
+    /* Поле значения с тегом режима (MarsValueInput) */
+    .vv {
+        position: relative;
+        display: inline-flex;
+        align-items: stretch;
+        width: 100%;
+        min-height: 32px;
+        --ui-cut: 7px;
+        background-color: var(--ui-fill-sunken);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+    }
+
+    .vv__tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        padding: 0 12px 0 9px;
+        background-color: var(--ui-line);
+        color: var(--ui-on-line);
+        font-family: var(--ui-mono);
+        font-size: 10.5px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+    }
+
+    .vv--expr .vv__tag {
+        background-color: var(--ui-accent);
+        color: var(--ui-accent-ink);
+        box-shadow: 0 0 14px -6px var(--ui-accent);
+    }
+
+    .vv__body {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0 10px;
+        font-family: var(--ui-mono);
+        font-size: 13px;
+        white-space: pre;
+        overflow: hidden;
+    }
+
+    .vv__placeholder { color: var(--ui-ink-dim); }
+    .vv__caret { display: inline-block; width: 2px; height: 15px; background-color: var(--ui-accent); margin: 0 -1px; box-shadow: 0 0 8px var(--ui-accent); }
+    .vv__btns { display: inline-flex; align-items: stretch; }
+
+    .vv__btn {
+        width: 30px;
+        border: 0;
+        border-left: var(--ui-bw) solid var(--ui-line-faint);
+        background-color: transparent;
+        color: var(--ui-ink-dim);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .vv__btn:hover { background-color: var(--ui-accent-soft); color: var(--ui-accent); }
+    .vv__btn.is-on { background-color: var(--ui-accent-soft); color: var(--ui-accent); box-shadow: inset 0 0 14px -6px var(--ui-accent); }
+
+    .vv.is-focus, .vv:focus-within {
+        border-color: var(--ui-accent);
+        --cut-c: var(--ui-accent);
+        box-shadow: var(--ui-halo), var(--ui-inset);
+    }
+
+    .vv.is-error {
+        border-color: var(--ui-err);
+        --cut-c: var(--ui-err);
+        box-shadow: 0 0 14px -6px var(--ui-err), var(--ui-inset);
+    }
+
+    .vv.is-disabled { opacity: .45; }
+
+    .tk-at { color: var(--ui-accent); }
+    .tk-path { color: var(--ui-path); }
+    .tk-num { color: var(--ui-num); }
+    .tk-str { color: var(--ui-str); }
+    .tk-op { color: var(--ui-ink-dim); }
+
+    /* Попап под полем */
+    .pop {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        z-index: 10;
+        min-width: 240px;
+        max-height: 260px;
+        overflow: auto;
+        background-color: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        box-shadow: var(--ui-halo), var(--ui-shadow);
+    }
+
+    .pop--right { left: auto; right: 0; }
+    .pop__row { display: flex; align-items: center; gap: 8px; padding: 4px 10px; white-space: nowrap; cursor: pointer; }
+    .pop__row:hover { background-color: var(--ui-accent-soft); color: var(--ui-accent); }
+    .pop__row.is-active { background-color: var(--ui-accent); color: var(--ui-accent-ink); }
+    .pop__row.is-active .pop__type { color: inherit; }
+    .pop__bullet { width: 10px; color: var(--ui-ink-dim); }
+    .pop__type { margin-left: auto; padding-left: 16px; font-size: 11px; color: var(--ui-ink-dim); }
+    .pop__group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        background-color: var(--ui-accent-soft);
+        color: var(--ui-accent);
+        font-size: 10px;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+    }
+
+    .pop__group::after { content: ""; flex: 1 1 auto; height: var(--ui-bw); background-color: var(--ui-line-soft); }
+
+    .float-host { position: relative; padding-bottom: 176px; }
+    .fld-anchor { position: relative; }
+
+    /* Чекбоксы, радио, переключатель */
+    .chk, .rad { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
+    .chk__box, .rad__box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background-color: var(--ui-fill-sunken);
+        font-size: 10px;
+        line-height: 1;
+        box-shadow: var(--ui-inset);
+    }
+
+    .chk__box { clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px)); }
+    .rad__box { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+
+    .chk input, .rad input { position: absolute; opacity: 0; pointer-events: none; }
+    .chk input:checked + .chk__box, .rad input:checked + .rad__box {
+        background-color: var(--ui-accent);
+        border-color: var(--ui-accent);
+        color: var(--ui-accent-ink);
+        box-shadow: 0 0 12px -4px var(--ui-accent);
+    }
+
+    .chk input:checked + .chk__box::before { content: "✓"; }
+    .rad input:checked + .rad__box::before { content: ""; }
+    .rad input:checked + .rad__box::after { content: ""; width: 4px; height: 4px; background-color: var(--ui-accent-ink); }
+
+    .sw { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
+    .sw input { position: absolute; opacity: 0; pointer-events: none; }
+    .sw__track {
+        position: relative;
+        width: 38px;
+        height: 18px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background-color: var(--ui-fill-sunken);
+        box-shadow: var(--ui-inset);
+        clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    }
+
+    .sw__track::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        background-color: var(--ui-ink-dim);
+    }
+
+    .sw input:checked + .sw__track { border-color: var(--ui-accent); background-color: var(--ui-accent-soft); }
+    .sw input:checked + .sw__track::after { background-color: var(--ui-accent); box-shadow: 0 0 10px var(--ui-accent); transform: translateX(18px); }
+
+    /* Ползунок */
+    .rng { width: 100%; }
+
+    .rng input[type="range"] {
+        width: 100%;
+        height: 18px;
+        margin: 0;
+        background-color: transparent;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .rng input[type="range"]::-webkit-slider-runnable-track {
+        height: 6px;
+        background-color: var(--ui-fill-sunken);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+    }
+
+    .rng input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 10px;
+        height: 16px;
+        margin-top: -6px;
+        background-color: var(--ui-accent);
+        box-shadow: 0 0 10px var(--ui-halo-c);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .rng input[type="range"]::-moz-range-track { height: 6px; background-color: var(--ui-fill-sunken); }
+    .rng input[type="range"]::-moz-range-thumb { width: 10px; height: 16px; border: 0; background-color: var(--ui-accent); }
+
+    /* ==================== ТЕГИ / СТАТУСЫ ==================== */
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 20px;
+        padding: 0 11px 0 9px;
+        background-color: var(--ui-line);
+        color: var(--ui-on-line);
+        font-family: var(--ui-mono);
+        font-size: 10px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .tag--accent { background-color: var(--ui-accent); color: var(--ui-accent-ink); box-shadow: 0 0 14px -6px var(--ui-accent); }
+    .tag--outline, .tag--ok, .tag--warn, .tag--err { clip-path: none; background-color: transparent; }
+
+    .tag--outline { color: var(--ui-ink); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-line-soft); }
+    .tag--ok { color: var(--ui-ok); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-ok), 0 0 14px -8px var(--ui-ok); }
+    .tag--warn { color: var(--ui-warn); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-warn), 0 0 14px -8px var(--ui-warn); }
+    .tag--err { color: var(--ui-err); box-shadow: inset 0 0 0 var(--ui-bw) var(--ui-err), 0 0 14px -8px var(--ui-err); }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 20px;
+        padding: 0 6px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        background-color: var(--ui-fill-sunken);
+        font-family: var(--ui-mono);
+        font-size: 11px;
+        clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+    }
+
+    .badge--accent { background-color: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 22px;
+        padding: 0 10px;
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        background-color: var(--ui-fill-sunken);
+        font-size: 12px;
+        clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+    }
+
+    .chip__x { color: var(--ui-ink-dim); cursor: pointer; font-family: var(--ui-mono); }
+    .chip__x:hover { color: var(--ui-err); }
+
+    .dot { width: 7px; height: 7px; display: inline-block; transform: rotate(45deg); background-color: var(--ui-ink-dim); }
+    .dot--ok { background-color: var(--ui-ok); box-shadow: 0 0 8px var(--ui-ok); }
+    .dot--warn { background-color: var(--ui-warn); box-shadow: 0 0 8px var(--ui-warn); }
+    .dot--err { background-color: var(--ui-err); box-shadow: 0 0 8px var(--ui-err); }
+    .dot--idle { background-color: var(--ui-line-soft); }
+
+    /* ==================== АЛЕРТЫ / KPI ==================== */
+    .alert {
+        position: relative;
+        display: flex;
+        gap: 12px;
+        padding: 12px 14px 12px 16px;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+        --al-c: var(--ui-info);
+    }
+
+    .alert::before {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--al-c);
+        box-shadow: 0 0 12px var(--al-c);
+    }
+
+    .alert--ok { --al-c: var(--ui-ok); }
+    .alert--warn { --al-c: var(--ui-warn); }
+    .alert--err { --al-c: var(--ui-err); }
+    .alert__icon { font-family: var(--ui-mono); color: var(--al-c); }
+    .alert__title { font-weight: 400; letter-spacing: .4px; }
+    .alert__text { color: var(--ui-ink-dim); font-size: 12.5px; }
+
+    .kpi { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; }
+    .kpi__val { font-size: 30px; font-weight: 200; letter-spacing: 1px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+    .kpi__val small { font-size: 12px; font-weight: 300; letter-spacing: 1.4px; color: var(--ui-ink-dim); }
+    .kpi__delta { font-family: var(--ui-mono); font-size: 11px; letter-spacing: 1px; }
+
+    /* ==================== ШКАЛЫ ==================== */
+    .bar { position: relative; height: 8px; background-color: var(--ui-fill-sunken); border: var(--ui-bw) solid var(--ui-line-faint); }
+    .bar__fill { height: 100%; background-color: var(--ui-accent); box-shadow: 0 0 14px -2px var(--ui-accent); }
+    .bar__fill--warn { background-color: var(--ui-warn); box-shadow: 0 0 14px -2px var(--ui-warn); }
+    .bar__fill--err { background-color: var(--ui-err); box-shadow: 0 0 14px -2px var(--ui-err); }
+
+    /* Сегментная шкала: отдельные трапеции с зазором, а не одна заливка. */
+    .sbar { display: flex; gap: 3px; height: 12px; }
+    .sbar i {
+        flex: 1 1 auto;
+        background-color: var(--ui-line-faint);
+        clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 4px 100%);
+    }
+
+    .sbar i.on { background-color: var(--sc, var(--ui-accent)); box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, .35); }
+    .sbar i.on--warn { background-color: var(--ui-warn); }
+    .sbar--tall { height: 20px; }
+
+    /* ==================== ТАБЛИЦА ==================== */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th {
+        text-align: left;
+        font-weight: 400;
+        padding: 8px 12px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-soft);
+    }
+
+    .tbl td { padding: 7px 12px; border-bottom: var(--ui-bw) solid var(--ui-line-faint); }
+    .tbl tbody tr:hover { background-color: var(--ui-accent-soft); }
+    .tbl tr.is-selected { background-color: var(--ui-accent-soft); }
+    .tbl tr.is-selected td:first-child { box-shadow: inset 2px 0 0 0 var(--ui-accent); }
+    .tbl .num { font-family: var(--ui-mono); text-align: right; font-variant-numeric: tabular-nums; }
+    .tbl__actions { text-align: right; white-space: nowrap; }
+    .tbl__actions .btn + .btn { margin-left: 4px; }
+
+    /* ==================== НАВИГАЦИЯ ВНУТРИ КОНТЕНТА ==================== */
+    .tabs { display: flex; gap: 4px; border-bottom: var(--ui-bw) solid var(--ui-line-faint); }
+    .tab {
+        padding: 7px 14px;
+        color: var(--ui-ink-dim);
+        cursor: pointer;
+        font-size: 11px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .tab:hover { color: var(--ui-ink); }
+    .tab.is-active { color: var(--ui-accent-ink); background-color: var(--ui-accent); box-shadow: 0 0 16px -6px var(--ui-accent); }
+
+    .seg { display: inline-flex; border: var(--ui-bw) solid var(--ui-line-faint); background-color: var(--ui-fill-sunken); }
+    .seg > * {
+        padding: 5px 13px;
+        cursor: pointer;
+        color: var(--ui-ink-dim);
+        font-size: 11px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        clip-path: polygon(0 0, 100% 0, calc(100% - var(--ui-slant)) 100%, 0 100%);
+    }
+
+    .seg > * + * { border-left: var(--ui-bw) solid var(--ui-line-faint); }
+    .seg > *.is-active { background-color: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .crumbs { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+    .crumbs .sep { color: var(--ui-accent); font-family: var(--ui-mono); }
+    .crumbs .cur { color: var(--ui-ink-dim); }
+
+    .pager { display: inline-flex; gap: 4px; }
+    .pager > * {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 26px;
+        padding: 0 6px;
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        background-color: var(--ui-fill-sunken);
+        font-family: var(--ui-mono);
+        font-size: 12px;
+        cursor: pointer;
+        clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+    }
+
+    .pager > *.is-active { background-color: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+
+    .steps { display: flex; align-items: center; gap: 10px; }
+    .step { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ui-ink-dim); }
+    .step__num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        font-family: var(--ui-mono);
+        font-size: 11px;
+        clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    }
+
+    .step.is-done { color: var(--ui-ok); }
+    .step.is-done .step__num { border-color: var(--ui-ok); color: var(--ui-ok); }
+    .step.is-active { color: var(--ui-accent); }
+    .step.is-active .step__num { background-color: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-accent-ink); }
+    .step__line { width: 26px; height: var(--ui-bw); background-color: var(--ui-line-soft); }
+
+    /* ==================== СПИСКИ / ДЕРЕВО ==================== */
+    .list { display: flex; flex-direction: column; }
+    .li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-bottom: var(--ui-bw) solid var(--ui-line-faint);
+        cursor: pointer;
+    }
+
+    .li:hover { background-color: var(--ui-accent-soft); }
+    .li.is-selected { background-color: var(--ui-accent-soft); box-shadow: inset 2px 0 0 0 var(--ui-accent); }
+    .li__meta { margin-left: auto; font-family: var(--ui-mono); font-size: 11.5px; color: var(--ui-ink-dim); }
+
+    .tree { font-family: var(--ui-mono); font-size: 12.5px; }
+    .tree__row { display: flex; align-items: center; gap: 8px; padding: 3px 10px; }
+    .tree__row:hover { background-color: var(--ui-accent-soft); }
+    .tree__row--leaf { cursor: pointer; }
+    .tree__bullet { width: 11px; color: var(--ui-accent); }
+    .tree__type { margin-left: auto; font-size: 11px; color: var(--ui-ink-dim); }
+
+    /* ==================== ОВЕРЛЕИ ==================== */
+    .modal-host { position: relative; min-height: 250px; background-color: var(--ui-fill-sunken); border: var(--ui-bw) solid var(--ui-line-faint); overflow: hidden; }
+    .modal-host__backdrop {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(4, 9, 11, .55);
+        background-image: repeating-linear-gradient(0deg, rgba(127, 242, 255, .05) 0 1px, transparent 1px 3px);
+    }
+
+    .modal {
+        position: absolute;
+        top: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(350px, 92%);
+        filter: drop-shadow(0 0 16px var(--ui-halo-c));
+        --ui-cut: 12px;
+    }
+
+    .toast {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 14px 10px 16px;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+        --al-c: var(--ui-info);
+        position: relative;
+    }
+
+    .toast::before { content: ""; position: absolute; pointer-events: none; left: 0; top: 0; bottom: 0; width: 2px; background-color: var(--al-c); box-shadow: 0 0 12px var(--al-c); }
+    .toast--ok { --al-c: var(--ui-ok); }
+    .toast--err { --al-c: var(--ui-err); }
+
+    .tip-host { position: relative; padding-top: 46px; }
+    .tip {
+        position: absolute;
+        top: 0;
+        left: 12px;
+        padding: 5px 10px;
+        background-color: var(--ui-fill-raised);
+        border: var(--ui-bw) solid var(--ui-accent);
+        color: var(--ui-accent);
+        font-size: 10.5px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        box-shadow: 0 0 16px -6px var(--ui-accent);
+    }
+
+    .tip::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 14px;
+        width: 8px;
+        height: 8px;
+        background-color: var(--ui-accent);
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+
+    /* ==================== ЗАГРУЗКА ==================== */
+    .spin-ring {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, transparent 0 55%, var(--ui-accent) 55% 92%, transparent 92%);
+        -webkit-mask: radial-gradient(closest-side, transparent 0 66%, #000 67% 100%);
+        mask: radial-gradient(closest-side, transparent 0 66%, #000 67% 100%);
+        animation: rot 1.1s linear infinite;
+    }
+
+    .spin-ring::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        border-radius: 50%;
+    }
+
+    @keyframes rot { to { transform: rotate(360deg); } }
+
+    .skel {
+        height: 10px;
+        background-color: var(--ui-line-faint);
+        background-image: linear-gradient(90deg, transparent, var(--ui-accent-soft), transparent);
+        background-size: 140% 100%;
+        background-repeat: no-repeat;
+        animation: scan 1.8s linear infinite;
+    }
+
+    @keyframes scan { from { background-position: -140% 0; } to { background-position: 240% 0; } }
+
+    .skel--w85 { width: 85%; }
+    .skel--w60 { width: 60%; }
+    .skel--w40 { width: 40%; }
+
+    /* ==================== ЛАБОРАТОРИЯ ==================== */
+    .lab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 58px;
+        padding: 0 10px;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+        font-family: var(--ui-mono);
+        font-size: 11.5px;
+        color: var(--ui-ink-dim);
+        text-align: center;
+    }
+
+    .lab-halo-8 { filter: drop-shadow(0 0 8px var(--ui-halo-c)); }
+    .lab-halo-14 { filter: drop-shadow(0 0 14px var(--ui-halo-c)); }
+    .lab-halo-22 { filter: drop-shadow(0 0 22px var(--ui-halo-c)); }
+    .lab-halo-none { filter: none; }
+    .lab-rail { box-shadow: inset 0 0 22px -14px var(--ui-rail-c); }
+    .lab-rail-strong { box-shadow: inset 0 0 26px -6px var(--ui-rail-c); }
+    .lab-rail-both { box-shadow: var(--ui-halo), inset 0 0 22px -14px var(--ui-rail-c); }
+    .lab-shadow-hard { box-shadow: 6px 6px 0 0 var(--ui-line-faint); }
+
+    .spec { width: 100%; border-collapse: collapse; font-family: var(--ui-mono); font-size: 11.5px; }
+    .spec th, .spec td { text-align: left; padding: 6px 8px; border-bottom: var(--ui-bw) solid var(--ui-line-faint); }
+    .spec td:first-child { color: var(--ui-ink-dim); }
+
+    /* ==================== 14. ИНСТРУМЕНТЫ HUD ==================== */
+    /* Радиальная сегментная шкала: дуга (conic-gradient + маска) и кольцо рисок. */
+    .gauge { position: relative; width: 128px; height: 128px; filter: drop-shadow(0 0 6px var(--ui-halo-c)); }
+
+    .gauge__arc {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(from 150deg,
+            var(--gc, var(--ui-accent)) 0 calc(var(--p, 0) * .666%),
+            var(--ui-line-faint) 0 66.6%,
+            transparent 0);
+        -webkit-mask: radial-gradient(closest-side, transparent 0 68%, #000 69% 100%);
+        mask: radial-gradient(closest-side, transparent 0 68%, #000 69% 100%);
+    }
+
+    .gauge__ticks {
+        position: absolute;
+        inset: -7px;
+        border-radius: 50%;
+        background: repeating-conic-gradient(from 150deg,
+            var(--gc, var(--ui-accent)) 0 .9deg,
+            transparent .9deg 6deg);
+        -webkit-mask: radial-gradient(closest-side, transparent 0 88%, #000 89% 100%);
+        mask: radial-gradient(closest-side, transparent 0 88%, #000 89% 100%);
+        opacity: .75;
+    }
+
+    .gauge__val {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding-top: 2px;
+        font-size: 32px;
+        font-weight: 200;
+        letter-spacing: 1px;
+        font-variant-numeric: tabular-nums;
+        color: var(--ui-ink);
+    }
+
+    .gauge__val i { font-size: 11px; font-style: normal; letter-spacing: 1.4px; color: var(--ui-ink-dim); }
+    .gauge__cap { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; }
+
+    /* Маркеры поверх «вида» */
+    .stage {
+        position: relative;
+        height: 330px;
+        overflow: hidden;
+        background-color: #04121a;
+        background-image:
+            linear-gradient(45deg, transparent calc(50% - .5px), rgba(127, 242, 255, .55) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px)),
+            linear-gradient(135deg, transparent calc(50% - .5px), rgba(127, 242, 255, .55) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px)),
+            radial-gradient(120% 74% at 50% 118%, rgba(127, 242, 255, .18), transparent 62%),
+            repeating-linear-gradient(90deg, transparent 0 46px, rgba(127, 242, 255, .07) 46px 47px),
+            repeating-linear-gradient(0deg, transparent 0 46px, rgba(127, 242, 255, .07) 46px 47px),
+            linear-gradient(180deg, #05121a 0%, #08202b 58%, #0c313c 100%);
+        background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
+        background-size: 14px 14px, 14px 14px, auto, auto, auto, auto;
+        background-position: top right, bottom left, center, center, center, center;
+        border: var(--ui-bw) solid var(--ui-line-soft);
+        clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    }
+
+    /* «Вид» всегда тёмный: это экран/картинка, а не поверхность темы. */
+    .stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: repeating-linear-gradient(0deg, rgba(127, 242, 255, .05) 0 1px, transparent 1px 3px);
+    }
+
+    .stage__hz {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 58%;
+        height: var(--ui-bw);
+        background: linear-gradient(90deg, transparent, rgba(127, 242, 255, .5), transparent);
+    }
+
+    .stage__cross {
+        position: absolute;
+        left: 50%;
+        top: 46%;
+        transform: translate(-50%, -50%);
+        color: rgba(127, 242, 255, .75);
+        font-size: 22px;
+        text-shadow: 0 0 12px rgba(127, 242, 255, .8);
+    }
+
+    .stage__kpis {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        display: flex;
+        background-color: rgba(4, 9, 11, .55);
+        border: var(--ui-bw) solid rgba(127, 242, 255, .35);
+        backdrop-filter: blur(3px);
+    }
+
+    .ov-kpi { flex: 1 1 0; display: flex; flex-direction: column; gap: 1px; padding: 8px 12px; border-left: var(--ui-bw) solid rgba(127, 242, 255, .18); }
+    .ov-kpi:first-child { border-left: 0; }
+    .ov-kpi b { font-size: 18px; font-weight: 200; letter-spacing: 1px; color: #e6f7fb; font-variant-numeric: tabular-nums; }
+    .ov-kpi i { font-style: normal; font-size: 9.5px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(230, 247, 251, .62); }
+
+    .wpt {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        border: var(--ui-bw) solid #7ff2ff;
+        background-color: rgba(4, 9, 11, .5);
+        color: #7ff2ff;
+        font-family: var(--ui-mono);
+        font-size: 10px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        box-shadow: 0 0 16px -4px rgba(127, 242, 255, .7);
+    }
+
+    .wpt::before { content: "◇"; }
+    .wpt::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        left: -42px;
+        top: 50%;
+        width: 42px;
+        height: var(--ui-bw);
+        background: linear-gradient(90deg, transparent, #7ff2ff);
+    }
+
+    .tgt {
+        position: absolute;
+        transform: translateX(-50%);
+        text-align: center;
+        color: var(--ui-threat);
+        text-shadow: 0 0 12px currentColor;
+    }
+
+    .tgt i { display: block; font-size: 13px; font-style: normal; }
+    .tgt b { display: block; font-family: var(--ui-mono); font-size: 9.5px; font-weight: 400; letter-spacing: 1.2px; }
+
+    /* Полоса оружия и боезапаса */
+    .wpn {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 10px 16px;
+        background-color: var(--ui-glass);
+        border: var(--ui-bw) solid var(--ui-glass-edge);
+        box-shadow: var(--ui-inset);
+    }
+
+    .wpn__name { font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; }
+    .wpn__ammo { margin-left: auto; font-size: 30px; font-weight: 200; letter-spacing: 1px; font-variant-numeric: tabular-nums; line-height: 1; }
+    .wpn__ammo i { font-size: 12px; font-style: normal; font-weight: 300; color: var(--ui-ink-dim); }
+    .wpn__mode {
+        padding: 3px 10px;
+        border: var(--ui-bw) solid var(--ui-warn);
+        color: var(--ui-warn);
+        font-family: var(--ui-mono);
+        font-size: 10px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        box-shadow: 0 0 14px -8px var(--ui-warn);
+    }
+
+    /* Чипы режимов костюма */
+    .suit { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .mode {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 28px;
+        padding: 0 14px;
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        background-color: var(--ui-fill-sunken);
+        color: var(--ui-ink-dim);
+        font-size: 10.5px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .mode b { font-family: var(--ui-mono); font-size: 10px; font-weight: 400; letter-spacing: 1px; color: var(--ui-ink-dim); }
+    .mode.is-active { border-color: var(--ui-accent); background-color: var(--ui-accent); color: var(--ui-accent-ink); box-shadow: 0 0 18px -6px var(--ui-accent); }
+    .mode.is-active b { color: var(--ui-accent-ink); }
+    .mode.is-cloak { border-color: var(--ui-line); color: var(--ui-line); }
+
+    /* Компас угроз */
+    .cmp {
+        position: relative;
+        height: 96px;
+        overflow: hidden;
+        background-color: var(--ui-fill-sunken);
+        border: var(--ui-bw) solid var(--ui-line-faint);
+        box-shadow: var(--ui-inset);
+    }
+
+    .cmp__sector { position: absolute; left: 0; right: 0; top: 30px; bottom: 22px; background-color: var(--ui-accent-soft); opacity: .55; }
+    .cmp__ruler {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 44px;
+        height: 18px;
+        background-image: repeating-linear-gradient(90deg, var(--ui-line-soft) 0 1px, transparent 1px 13px);
+    }
+
+    .cmp__ruler--major {
+        top: 34px;
+        height: 34px;
+        background-image: repeating-linear-gradient(90deg, var(--ui-line) 0 1px, transparent 1px 65px);
+    }
+
+    .cmp__lbl { position: absolute; top: 16px; transform: translateX(-50%); font-family: var(--ui-mono); font-size: 10px; letter-spacing: 2px; color: var(--ui-ink-dim); }
+    .cmp__lbl--major { color: var(--ui-ink); }
+    .cmp__head { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); color: var(--ui-accent); font-size: 11px; text-shadow: 0 0 10px var(--ui-accent); }
+    .cmp__read { position: absolute; left: 12px; bottom: 4px; font-family: var(--ui-mono); font-size: 11px; letter-spacing: 1.6px; color: var(--ui-ink-dim); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar__brand">
+        <span class="topbar__mark"></span>
+        <div>
+            <div class="topbar__title">Mars UI · нанокостюм</div>
+            <div class="topbar__sub">черновик стиля HUD · /ai/concepts/design/crysis</div>
+        </div>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="sw-row">
+        <span class="caps">тема</span>
+        <div class="seg" id="theme-switch">
+            <span data-theme-set="auto">авто</span>
+            <span data-theme-set="light">день</span>
+            <span data-theme-set="dark">нано</span>
+        </div>
+    </div>
+    <div class="sw-row">
+        <span class="caps">орнамент</span>
+        <div class="seg" id="orn-switch">
+            <span data-orn-set="0">сухо</span>
+            <span data-orn-set="1">+свечение</span>
+            <span data-orn-set="2">+сетка</span>
+        </div>
+    </div>
+    <div class="sw-row">
+        <span class="caps">кромка</span>
+        <div class="seg" id="shear-switch">
+            <span data-shear-set="0">прямая</span>
+            <span data-shear-set="1">6°</span>
+        </div>
+    </div>
+</div>
+
+<div class="page">
+
+    <nav class="nav">
+        <a class="nk" href="#tokens">Токены</a>
+        <a class="nk" href="#type">Типографика</a>
+        <a class="nk" href="#buttons">Кнопки</a>
+        <a class="nk" href="#fields">Поля</a>
+        <a class="nk" href="#value">Поле значения</a>
+        <a class="nk" href="#tags">Теги и статусы</a>
+        <a class="nk" href="#panels">Панели, KPI, алерты</a>
+        <a class="nk" href="#table">Таблица</a>
+        <a class="nk" href="#nav">Навигация контента</a>
+        <a class="nk" href="#lists">Списки и дерево</a>
+        <a class="nk" href="#overlays">Оверлеи</a>
+        <a class="nk" href="#progress">Прогресс</a>
+        <a class="nk" href="#lab">Лаборатория</a>
+        <a class="nk" href="#crysis">Инструменты HUD</a>
+    </nav>
+
+    <!-- ============ 1. ТОКЕНЫ ============ -->
+    <section class="sec" id="tokens">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">01</span>
+            <span class="sec__title">Токены</span>
+            <span class="sec__note">тёмный «нано» и светлый «арктический день» — один состав имён</span>
+        </div>
+        <div class="grid">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Поверхности и линии</div>
+                <div class="row row--tight">
+                    <span class="lab" style="width:64px;background-color:var(--ui-page)">page</span>
+                    <span class="lab" style="width:64px;background-color:var(--ui-fill)">fill</span>
+                    <span class="lab" style="width:64px;background-color:var(--ui-fill-raised)">raised</span>
+                    <span class="lab" style="width:64px;background-color:var(--ui-fill-sunken)">sunken</span>
+                </div>
+                <div class="demo__hint">Контуры: line, line-soft, line-faint. Стекло панели: glass, glass-edge, bar.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Акцент и семантика</div>
+                <div class="row row--tight">
+                    <span class="lab" style="width:64px;background-color:var(--ui-accent);border-color:var(--ui-accent);color:var(--ui-accent-ink)">accent</span>
+                    <span class="lab" style="width:64px;color:var(--ui-ok)">ok</span>
+                    <span class="lab" style="width:64px;color:var(--ui-warn)">warn</span>
+                    <span class="lab" style="width:64px;color:var(--ui-err)">err</span>
+                </div>
+                <div class="demo__hint">Semantics меняют только свечение и текст — заливка остаётся стеклянной.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Показания HUD</div>
+                <div class="row row--tight">
+                    <span class="lab" style="width:64px;color:var(--ui-energy);box-shadow:0 0 14px -6px var(--ui-energy)">энергия</span>
+                    <span class="lab" style="width:64px;color:var(--ui-armor)">броня</span>
+                    <span class="lab" style="width:64px;color:var(--ui-threat)">угроза</span>
+                    <span class="lab" style="width:64px;color:var(--ui-crit)">критично</span>
+                </div>
+                <div class="demo__hint">Новые токены: energy, armor, threat, crit — только для показаний, не для интерфейсных действий.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Цвета типов данных</div>
+                <div class="row row--tight mono">
+                    <span class="tk-at">@</span>
+                    <span class="tk-path">msg.payload.items[0].price</span>
+                    <span class="tk-num">19.90</span>
+                    <span class="tk-str">"text"</span>
+                    <span class="tk-op">+ ( ) .</span>
+                </div>
+                <div class="demo__hint">Тот же принцип в поле значения: путь, число, строка, оператор.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Свечение и срез</div>
+                <div class="row row--tight">
+                    <span class="lab cut" style="width:96px;--ui-cut:6px">cut 6</span>
+                    <span class="lab cut" style="width:96px;--ui-cut:12px;--cut-c:var(--ui-line)">cut 12</span>
+                    <span class="lab" style="width:96px;box-shadow:var(--ui-halo)">halo</span>
+                    <span class="lab" style="width:96px;box-shadow:var(--ui-inset)">inset</span>
+                </div>
+                <div class="demo__hint">Кромка вместо жёсткой тени: halo (наружу), inset (внутрь), cut (геометрия угла).</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Наклон и радиус</div>
+                <div class="stack stack--tight">
+                    <div class="sk" style="display:flex;gap:6px">
+                        <span class="lab" style="width:70px">--ui-slant</span>
+                        <span class="lab" style="width:70px">--ui-shear</span>
+                        <span class="lab" style="width:70px">--ui-cps</span>
+                    </div>
+                    <div class="lab para" style="height:34px">геометрия кромки</div>
+                    <div class="demo__hint" style="margin:0">Радиус везде 0: скруглять нечего — углы либо режутся, либо наклоняются.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 2. ТИПОГРАФИКА ============ -->
+    <section class="sec" id="type">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">02</span>
+            <span class="sec__title">Типографика</span>
+            <span class="sec__note">широкий трекинг у капса, тонкие крупные цифры, моно для телеметрии</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo cut tick">
+                <div class="caps" style="margin-bottom:10px">Заголовки и микро-капс</div>
+                <div style="font-size:24px;font-weight:300;letter-spacing:1.4px">Панель управления нодами</div>
+                <div style="font-size:17px;font-weight:300;letter-spacing:1.6px;margin-top:8px">Раздел: источники значений</div>
+                <div style="font-size:14px;font-weight:400;letter-spacing:1.8px;margin-top:8px">Группа полей</div>
+                <div class="caps" style="margin-top:12px">micro-caps · tracking 1.8px · 10.5px</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="caps" style="margin-bottom:10px">Показания</div>
+                <div class="row" style="align-items:flex-end;gap:24px">
+                    <span style="font-size:34px;font-weight:200;letter-spacing:1px;font-variant-numeric:tabular-nums">18 402</span>
+                    <span style="font-size:28px;font-weight:200;letter-spacing:1px;color:var(--ui-energy);font-variant-numeric:tabular-nums">72<i style="font-size:12px;font-style:normal;letter-spacing:1.4px">%</i></span>
+                    <span style="font-size:22px;font-weight:300;color:var(--ui-ink-dim);font-variant-numeric:tabular-nums">23 ms</span>
+                </div>
+                <div class="demo__hint">Цифры — тонкие (200–300) и крупные, с табличными разрядами.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="caps" style="margin-bottom:10px">Текст и телеметрия</div>
+                <p style="margin:0 0 10px">Обычный текст интерфейса: 14px, межстрочный 1.55. Ссылка — <a href="#type">линия акцента</a>, без подложки.</p>
+                <div class="mono" style="font-size:12.5px">msg.payload.items[0].price = <span class="tk-num">19.90</span></div>
+                <div class="mono dim" style="font-size:11px;margin-top:8px">2026-09-16 21:40:12 · 1 284 ms · pid 7712 · mqtt/topic</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 3. КНОПКИ ============ -->
+    <section class="sec" id="buttons">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">03</span>
+            <span class="sec__title">Кнопки</span>
+            <span class="sec__note">стеклянная заливка, тонкая обводка, свечение на наведении</span>
+        </div>
+        <div class="grid">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Ранги</div>
+                <div class="row row--tight">
+                    <button class="btn btn--primary">Сохранить</button>
+                    <button class="btn">Отмена</button>
+                    <button class="btn btn--ghost">Сбросить</button>
+                    <button class="btn btn--danger">Удалить</button>
+                </div>
+                <div class="demo__hint">primary — акцентная заливка и ореол; остальные — стекло и текст.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Кромки</div>
+                <div class="row row--tight">
+                    <button class="btn cut btn--hud">Со срезом</button>
+                    <button class="btn btn--notch">Наконечник</button>
+                    <button class="btn btn--para">Трапеция</button>
+                </div>
+                <div class="row row--tight" style="margin-top:10px">
+                    <button class="btn btn--icon" title="Свойства">◈</button>
+                    <button class="btn btn--icon" title="Операции">ƒ</button>
+                    <button class="btn btn--icon" title="Цель">⌖</button>
+                    <button class="btn btn--icon" title="Удалить">✕</button>
+                </div>
+                <div class="demo__hint">Наконечник — для главного действия шага, не для всего подряд.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Размеры и выключенное</div>
+                <div class="row row--tight">
+                    <button class="btn btn--sm">sm</button>
+                    <button class="btn">md</button>
+                    <button class="btn btn--lg">lg</button>
+                    <button class="btn is-disabled">disabled</button>
+                </div>
+                <div class="btngroup" style="margin-top:12px">
+                    <button class="btn btn--sm is-active">День</button>
+                    <button class="btn btn--sm">Неделя</button>
+                    <button class="btn btn--sm">Месяц</button>
+                </div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Наклон кромки</div>
+                <div class="sk" style="display:flex;gap:6px">
+                    <button class="btn btn--sm btn--primary"><span>Запустить</span></button>
+                    <button class="btn btn--sm"><span>Остановить</span></button>
+                </div>
+                <div class="demo__hint">Переключатель «кромка» наклоняет обёртку, содержимое скошено обратно — текст остаётся прямым.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 4. ПОЛЯ ============ -->
+    <section class="sec" id="fields">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">04</span>
+            <span class="sec__title">Поля ввода</span>
+            <span class="sec__note">утопленное стекло; фокус — свечение кромки, ошибка — красная кромка</span>
+        </div>
+        <div class="grid">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Текст, состояния</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">обычное</span></div>
+                        <div class="fld cut"><input placeholder="Введите значение" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">в фокусе</span></div>
+                        <div class="fld cut is-focus"><input value="active value" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">ошибка</span></div>
+                        <div class="fld cut is-error"><input value="не число" /></div>
+                        <div class="hint hint--err">Ожидалось целое число</div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">выключено</span></div>
+                        <div class="fld cut is-disabled"><input value="read only" disabled /></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Моно, префикс, кнопка</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">идентификатор</span></div>
+                        <div class="fld fld--mono cut"><input value="inject_main" /></div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">путь с префиксом</span></div>
+                        <div class="fld fld--mono cut">
+                            <span class="fld__prefix">msg.</span>
+                            <input value="payload.items[0].price" />
+                            <button class="fld__btn">▾</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">поиск</span></div>
+                        <div class="fld cut">
+                            <span class="fld__prefix">⌕</span>
+                            <input placeholder="Поиск по нодам" />
+                            <button class="fld__btn">✕</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Выбор и многострочное</div>
+                <div class="stack">
+                    <div>
+                        <div class="lbl"><span class="caps">тип значения</span></div>
+                        <div class="fld cut">
+                            <select>
+                                <option>string</option>
+                                <option>int</option>
+                                <option>timestamp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">число со шагом</span></div>
+                        <div class="fld fld--mono cut">
+                            <input value="2048" />
+                            <button class="fld__btn">▴</button>
+                            <button class="fld__btn">▾</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="lbl"><span class="caps">заметка</span></div>
+                        <div class="fld cut"><textarea rows="3">Текст подсказки в многострочном поле.</textarea></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Чекбоксы, радио, переключатель</div>
+                <div class="stack stack--tight">
+                    <label class="chk"><input type="checkbox" checked /><span class="chk__box"></span><span>Запускать при старте</span></label>
+                    <label class="chk"><input type="checkbox" /><span class="chk__box"></span><span>Писать в лог</span></label>
+                    <label class="rad"><input type="radio" name="r" checked /><span class="rad__box"></span><span>Только выбранная нода</span></label>
+                    <label class="rad"><input type="radio" name="r" /><span class="rad__box"></span><span>Все ноды во flow</span></label>
+                    <label class="sw" style="margin-top:8px"><input type="checkbox" checked /><span class="sw__track"></span><span>Расписание включено</span></label>
+                </div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Ползунок и дата-время</div>
+                <div class="stack">
+                    <div class="rng"><input type="range" min="0" max="100" value="40" /></div>
+                    <div class="row row--tight">
+                        <div class="fld fld--mono cut" style="width:172px"><input value="2026-09-16" /></div>
+                        <div class="fld fld--mono cut" style="width:112px"><input value="21:40" /></div>
+                    </div>
+                    <div class="row row--tight">
+                        <span class="tag tag--ok">quartz</span>
+                        <div class="fld fld--mono cut" style="flex:1 1 auto"><input value="0 0/5 * * * ?" /></div>
+                    </div>
+                    <div class="sbar">
+                        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 5. ПОЛЕ ЗНАЧЕНИЯ ============ -->
+    <section class="sec" id="value">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">05</span>
+            <span class="sec__title">Поле значения (MarsValueInput)</span>
+            <span class="sec__note">режим выводится из строки: ведущий @ = выражение</span>
+        </div>
+        <div class="grid grid--lab">
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Обычное · string</div>
+                <div class="vv cut">
+                    <span class="vv__tag">str</span>
+                    <span class="vv__body"><span class="vv__placeholder">string</span><span class="vv__caret"></span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="demo__hint">Тег показывает объявленный тип; кнопка операций скрыта.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Обычное · int</div>
+                <div class="vv cut">
+                    <span class="vv__tag">int</span>
+                    <span class="vv__body">42<span class="vv__caret"></span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="demo__hint">Тип задаётся объявлением поля в ноде, не вводом.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Обычное · DateTime</div>
+                <div class="vv cut">
+                    <span class="vv__tag">date</span>
+                    <span class="vv__body">2026-09-16T21:40:12<span class="vv__caret"></span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="demo__hint">Под типизированную константу позже встанет date picker.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Фокус</div>
+                <div class="vv cut is-focus">
+                    <span class="vv__tag">str</span>
+                    <span class="vv__body">Марс: узел 4<span class="vv__caret"></span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="demo__hint">Фокус — свечение кромки, без смены геометрии.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Ошибка</div>
+                <div class="vv cut is-error">
+                    <span class="vv__tag">int</span>
+                    <span class="vv__body">12abc<span class="vv__caret"></span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="hint hint--err">Ожидалось целое число</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Выключено</div>
+                <div class="vv cut is-disabled">
+                    <span class="vv__tag">str</span>
+                    <span class="vv__body">flow.counter</span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button></span>
+                </div>
+                <div class="demo__hint">Выключенное поле гасится целиком, включая тег.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Выражение</div>
+                <div class="vv vv--expr cut is-focus">
+                    <span class="vv__tag">@</span>
+                    <span class="vv__body"><span class="tk-at">@</span><span class="tk-path">msg.payload.items[0].price</span><span class="tk-op"> * </span><span class="tk-num">1.2</span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button><button class="vv__btn" title="Операции">ƒ</button></span>
+                </div>
+                <div class="demo__hint">Тег акцентный и показывает <span class="mono">@</span>; доступны две кнопки.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Строка и литерал</div>
+                <div class="vv vv--expr cut">
+                    <span class="vv__tag">@</span>
+                    <span class="vv__body"><span class="tk-path">msg.user.firstname</span><span class="tk-op">.ToUpper() + </span><span class="tk-str">"!"</span></span>
+                    <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button><button class="vv__btn" title="Операции">ƒ</button></span>
+                </div>
+                <div class="demo__hint">Строковый литерал своим цветом — видно, где текст, а где данные.</div>
+            </div>
+
+            <div class="demo float-host cut tick">
+                <div class="demo__label caps">Подсказка после точки</div>
+                <div class="fld-anchor">
+                    <div class="vv vv--expr cut is-focus">
+                        <span class="vv__tag">@</span>
+                        <span class="vv__body"><span class="tk-at">@</span><span class="tk-path">msg.</span><span class="vv__caret"></span></span>
+                        <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button><button class="vv__btn" title="Операции">ƒ</button></span>
+                    </div>
+                    <div class="pop cut" style="min-width:262px">
+                        <div class="pop__row is-active"><span class="pop__bullet">◆</span><span class="mono">msg.payload.items[0].price</span><span class="pop__type">number</span></div>
+                        <div class="pop__row"><span class="pop__bullet">◆</span><span class="mono">msg.payload.name</span><span class="pop__type">string</span></div>
+                        <div class="pop__row"><span class="pop__bullet">◆</span><span class="mono">msg.user.email</span><span class="pop__type">string</span></div>
+                        <div class="pop__row"><span class="pop__bullet">◆</span><span class="mono">msg.user.registered</span><span class="pop__type">DateTime</span></div>
+                        <div class="pop__row"><span class="pop__bullet">◆</span><span class="mono">msg.timestamp</span><span class="pop__type">DateTime</span></div>
+                        <div class="pop__row"><span class="pop__bullet">◆</span><span class="mono">msg.topic</span><span class="pop__type">string</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo float-host cut tick">
+                <div class="demo__label caps">Дерево по кнопке ◈</div>
+                <div class="fld-anchor">
+                    <div class="vv cut">
+                        <span class="vv__tag">str</span>
+                        <span class="vv__body"><span class="vv__placeholder">value</span></span>
+                        <span class="vv__btns"><button class="vv__btn is-on" title="Дерево полей">◈</button></span>
+                    </div>
+                    <div class="pop cut" style="min-width:262px">
+                        <div class="tree">
+                            <div class="tree__row"><span class="tree__bullet">▾</span><span>msg</span><span class="tree__type">object</span></div>
+                            <div class="tree__row" style="padding-left:22px"><span class="tree__bullet">▾</span><span>payload</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:36px"><span class="tree__bullet">·</span><span>price</span><span class="tree__type">number</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:36px"><span class="tree__bullet">·</span><span>name</span><span class="tree__type">string</span></div>
+                            <div class="tree__row" style="padding-left:22px"><span class="tree__bullet">▸</span><span>user</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:22px"><span class="tree__bullet">·</span><span>topic</span><span class="tree__type">string</span></div>
+                            <div class="tree__row"><span class="tree__bullet">▾</span><span>flow</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:36px"><span class="tree__bullet">·</span><span>counter</span><span class="tree__type">number</span></div>
+                            <div class="tree__row tree__row--leaf" style="padding-left:36px"><span class="tree__bullet">·</span><span>started</span><span class="tree__type">DateTime</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo float-host cut tick">
+                <div class="demo__label caps">Операции ƒ</div>
+                <div class="fld-anchor">
+                    <div class="vv vv--expr cut">
+                        <span class="vv__tag">@</span>
+                        <span class="vv__body"><span class="tk-path">msg.payload.name</span><span class="vv__caret"></span></span>
+                        <span class="vv__btns"><button class="vv__btn" title="Дерево полей">◈</button><button class="vv__btn is-on" title="Операции">ƒ</button></span>
+                    </div>
+                    <div class="pop pop--right cut">
+                        <div class="pop__group">String</div>
+                        <div class="pop__row mono">.ToUpper()</div>
+                        <div class="pop__row mono">.Trim()</div>
+                        <div class="pop__row mono">.Length</div>
+                        <div class="pop__group">Math</div>
+                        <div class="pop__row mono"> + 1</div>
+                        <div class="pop__row mono">Math.Round(</div>
+                        <div class="pop__group">Date</div>
+                        <div class="pop__row mono">.AddDays(1)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 6. ТЕГИ И СТАТУСЫ ============ -->
+    <section class="sec" id="tags">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">06</span>
+            <span class="sec__title">Теги, статусы, счётчики</span>
+            <span class="sec__note">служебные ярлыки — трапеция, семантика — свечение кромки</span>
+        </div>
+        <div class="grid">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Теги</div>
+                <div class="row row--tight">
+                    <span class="tag">default</span>
+                    <span class="tag tag--accent">accent</span>
+                    <span class="tag tag--outline">outline</span>
+                    <span class="tag tag--ok">online</span>
+                    <span class="tag tag--warn">degraded</span>
+                    <span class="tag tag--err">failed</span>
+                </div>
+                <div class="demo__hint">Форма — трапеция со срезанной левой кромкой.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Статусы и счётчики</div>
+                <div class="stack stack--tight">
+                    <div class="row row--tight"><span class="dot dot--ok"></span><span>Готово</span><span class="li__meta">12 ms</span></div>
+                    <div class="row row--tight"><span class="dot dot--warn"></span><span>Ожидает подключения</span><span class="li__meta">—</span></div>
+                    <div class="row row--tight"><span class="dot dot--err"></span><span>Ошибка исполнения</span><span class="li__meta">1</span></div>
+                    <div class="row row--tight"><span class="dot dot--idle"></span><span>Не запускалась</span><span class="li__meta">0</span></div>
+                </div>
+                <div class="row row--tight" style="margin-top:12px">
+                    <span class="badge">0</span>
+                    <span class="badge">12</span>
+                    <span class="badge badge--accent">128</span>
+                </div>
+                <div class="demo__hint">Статус — ромб, счётчик — гексагон.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Чипы</div>
+                <div class="row row--tight">
+                    <span class="chip mono">msg.payload.items[0].price<span class="chip__x">✕</span></span>
+                    <span class="chip mono">flow.counter<span class="chip__x">✕</span></span>
+                    <span class="chip">тег<span class="chip__x">✕</span></span>
+                </div>
+                <div class="demo__hint">Чип — для вставленного значения, тег — для статуса.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Свечение семантики</div>
+                <div class="row row--tight">
+                    <span class="lab" style="color:var(--ui-ok);box-shadow:0 0 16px -6px var(--ui-ok)">ok</span>
+                    <span class="lab" style="color:var(--ui-warn);box-shadow:0 0 16px -6px var(--ui-warn)">warn</span>
+                    <span class="lab" style="color:var(--ui-crit);box-shadow:0 0 16px -6px var(--ui-crit)">crit</span>
+                    <span class="lab" style="color:var(--ui-energy);box-shadow:0 0 16px -6px var(--ui-energy)">energy</span>
+                </div>
+                <div class="demo__hint">Цвет всегда работает парой «текст + ореол» этой же краской.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 7. ПАНЕЛИ ============ -->
+    <section class="sec" id="panels">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">07</span>
+            <span class="sec__title">Панели, KPI, алерты</span>
+            <span class="sec__note">стекло, срез углов, ореол снаружи и подсветка изнутри</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="hud">
+                <div class="hud__b cut">
+                    <div class="hud__head">
+                        <span class="caps" style="color:var(--ui-ink)">Параметры ноды</span>
+                        <span class="tag tag--outline" style="margin-left:auto">inject</span>
+                    </div>
+                    <div class="hud__body stack">
+                        <div class="row row--between"><span class="dim">Ключ</span><span class="mono">payload</span></div>
+                        <div class="row row--between"><span class="dim">Тип</span><span class="mono">timestamp</span></div>
+                        <div class="row row--between"><span class="dim">Значение</span><span class="mono">empty = now</span></div>
+                    </div>
+                    <div class="hud__foot">
+                        <button class="btn btn--sm">Сброс</button>
+                        <button class="btn btn--sm btn--primary">Применить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud">
+                <div class="hud__b cut">
+                    <div class="hud__head">
+                        <span class="caps" style="color:var(--ui-ink)">Обзор обработки</span>
+                        <span class="caps" style="margin-left:auto">за сутки</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr)">
+                        <div class="kpi" style="border-right:var(--ui-bw) solid var(--ui-line-faint)">
+                            <span class="caps">сообщений</span>
+                            <span class="kpi__val">18 402</span>
+                            <span class="kpi__delta ok">+4.2%</span>
+                        </div>
+                        <div class="kpi" style="border-right:var(--ui-bw) solid var(--ui-line-faint)">
+                            <span class="caps">среднее</span>
+                            <span class="kpi__val">23<small> ms</small></span>
+                            <span class="kpi__delta warn">+6 ms</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="caps">ошибок</span>
+                            <span class="kpi__val">3</span>
+                            <span class="kpi__delta err">1 критичная</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:3px;padding:0 16px 14px">
+                        <i style="flex:1 1 auto;height:6px;background-color:var(--ui-ok)"></i>
+                        <i style="flex:3 1 auto;height:6px;background-color:var(--ui-energy)"></i>
+                        <i style="flex:1 1 auto;height:6px;background-color:var(--ui-crit)"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo cut tick stack">
+                <div class="alert"><span class="alert__icon">i</span><div><div class="alert__title">Соединение с брокером установлено</div><div class="alert__text">Последняя синхронизация 21:39:04, задержка 12 ms.</div></div></div>
+                <div class="alert alert--ok"><span class="alert__icon">✓</span><div><div class="alert__title">Нода сохранена</div><div class="alert__text">Изменения применены к активному flow.</div></div></div>
+                <div class="alert alert--warn"><span class="alert__icon">!</span><div><div class="alert__title">Не задан cron</div><div class="alert__text">Расписание включено, но маска пустая.</div></div></div>
+                <div class="alert alert--err"><span class="alert__icon">✕</span><div><div class="alert__title">Ошибка выражения</div><div class="alert__text mono" style="font-size:12px">msg.payload.price + <span class="err">«незакрытая скобка»</span></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 8. ТАБЛИЦА ============ -->
+    <section class="sec" id="table">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">08</span>
+            <span class="sec__title">Таблица данных</span>
+            <span class="sec__note">плотные строки, числа — моно справа</span>
+        </div>
+        <div class="hud">
+            <div class="hud__b cut">
+                <div class="hud__head">
+                    <span class="caps" style="color:var(--ui-ink)">Журнал исполнения</span>
+                    <div class="row row--tight" style="margin-left:auto">
+                        <div class="fld fld--mono cut" style="min-height:26px;width:150px"><input placeholder="фильтр" style="min-height:24px;font-size:12px" /></div>
+                        <button class="btn btn--sm">Экспорт</button>
+                    </div>
+                </div>
+                <table class="tbl">
+                    <thead>
+                        <tr>
+                            <th class="caps">время</th>
+                            <th class="caps">нода</th>
+                            <th class="caps">тип</th>
+                            <th class="caps">значение</th>
+                            <th class="caps num">мс</th>
+                            <th class="caps tbl__actions">действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="is-selected">
+                            <td class="mono">21:40:12.004</td>
+                            <td>inject_main</td>
+                            <td><span class="tag tag--accent">inject</span></td>
+                            <td class="mono">18:40:12.004</td>
+                            <td class="num">2</td>
+                            <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                        </tr>
+                        <tr>
+                            <td class="mono">21:40:12.006</td>
+                            <td>http_request</td>
+                            <td><span class="tag tag--outline">http</span></td>
+                            <td class="mono">200 OK · 1 284 B</td>
+                            <td class="num">147</td>
+                            <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                        </tr>
+                        <tr>
+                            <td class="mono">21:40:12.153</td>
+                            <td>mqtt_in</td>
+                            <td><span class="tag tag--outline">mqtt</span></td>
+                            <td class="mono">sensors/line4: 12</td>
+                            <td class="num">4</td>
+                            <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                        </tr>
+                        <tr>
+                            <td class="mono">21:40:12.157</td>
+                            <td>foreach_items</td>
+                            <td><span class="tag tag--err">failed</span></td>
+                            <td class="mono err">index 7: timeout</td>
+                            <td class="num">9 000</td>
+                            <td class="tbl__actions"><button class="btn btn--icon btn--sm">◈</button><button class="btn btn--icon btn--sm">✕</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="hud__foot" style="justify-content:space-between">
+                    <span class="caps">строк 4 из 1 284</span>
+                    <div class="pager">
+                        <span>‹</span><span class="is-active">1</span><span>2</span><span>3</span><span>…</span><span>312</span><span>›</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 9. НАВИГАЦИЯ КОНТЕНТА ============ -->
+    <section class="sec" id="nav">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">09</span>
+            <span class="sec__title">Навигация внутри контента</span>
+            <span class="sec__note">вкладки, сегменты, крошки, шаги, пагинация</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Вкладки</div>
+                <div class="tabs">
+                    <div class="tab is-active">Свойства</div>
+                    <div class="tab">Вход</div>
+                    <div class="tab">Выход</div>
+                    <div class="tab">Журнал</div>
+                </div>
+                <div class="demo__hint">Активная вкладка — заливка и ореол, форма трапеции.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Сегмент и крошки</div>
+                <div class="row row--between">
+                    <div class="seg"><span class="is-active">Визуально</span><span>JSON</span></div>
+                    <div class="crumbs">
+                        <a href="#nav">Ноды</a><span class="sep">›</span>
+                        <a href="#nav">inject_main</a><span class="sep">›</span>
+                        <span class="cur">Свойства</span>
+                    </div>
+                </div>
+                <div class="demo__hint">Сегмент — режим просмотра, крошки — место в дереве.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Шаги</div>
+                <div class="steps">
+                    <span class="step is-done"><span class="step__num">✓</span><span>Схема</span></span>
+                    <span class="step__line"></span>
+                    <span class="step is-active"><span class="step__num">2</span><span>Поля</span></span>
+                    <span class="step__line"></span>
+                    <span class="step"><span class="step__num">3</span><span>Проверка</span></span>
+                    <span class="step__line"></span>
+                    <span class="step"><span class="step__num">4</span><span>Запуск</span></span>
+                </div>
+                <div class="demo__hint">Номер шага — ромб, активный залит акцентом.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Пагинация</div>
+                <div class="row">
+                    <div class="pager">
+                        <span>‹</span><span class="is-active">1</span><span>2</span><span>3</span><span>›</span>
+                    </div>
+                    <span class="caps">стр. 1 / 312</span>
+                </div>
+                <div class="demo__hint">Страницы — те же трапеции, что и кнопки.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 10. СПИСКИ И ДЕРЕВО ============ -->
+    <section class="sec" id="lists">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">10</span>
+            <span class="sec__title">Списки и дерево</span>
+            <span class="sec__note">выбор — рейл слева, метаданные — моно справа</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Список нод</div>
+                <div class="list">
+                    <div class="li is-selected"><span class="dot dot--ok"></span><span>inject_main</span><span class="li__meta">inject · 2 ms</span></div>
+                    <div class="li"><span class="dot dot--ok"></span><span>http_request</span><span class="li__meta">http · 147 ms</span></div>
+                    <div class="li"><span class="dot dot--warn"></span><span>mqtt_in</span><span class="li__meta">mqtt · ожидает</span></div>
+                    <div class="li"><span class="dot dot--err"></span><span>foreach_items</span><span class="li__meta">loop · ошибка</span></div>
+                </div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Дерево доступных полей</div>
+                <div class="tree">
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>msg</span><span class="tree__type">object</span></div>
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>payload</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:22px"><span class="tree__bullet">·</span><span>items[0].price</span><span class="tree__type">number</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:22px"><span class="tree__bullet">·</span><span>name</span><span class="tree__type">string</span></div>
+                    <div class="tree__row"><span class="tree__bullet">▾</span><span>flow</span></div>
+                    <div class="tree__row tree__row--leaf" style="padding-left:22px"><span class="tree__bullet">·</span><span>counter</span><span class="tree__type">number</span></div>
+                </div>
+                <div class="demo__hint">Тип справа — по нему фильтруется ожидаемый тип поля.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 11. ОВЕРЛЕИ ============ -->
+    <section class="sec" id="overlays">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">11</span>
+            <span class="sec__title">Оверлеи</span>
+            <span class="sec__note">подложка со сканлайнами, панель со свечением кромки</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Модальное окно</div>
+                <div class="modal-host">
+                    <div class="modal-host__backdrop"></div>
+                    <div class="modal">
+                        <div class="hud__b cut">
+                            <div class="hud__head">
+                                <span class="caps" style="color:var(--ui-ink)">Удалить ноду</span>
+                                <span class="caps" style="margin-left:auto">✕</span>
+                            </div>
+                            <div class="hud__body">
+                                <div>Нода <span class="mono">foreach_items</span> будет удалена вместе с настройками.</div>
+                                <div class="hint">Действие необратимо.</div>
+                            </div>
+                            <div class="hud__foot">
+                                <button class="btn btn--sm">Отмена</button>
+                                <button class="btn btn--sm btn--danger">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="demo cut tick stack">
+                <div class="demo__label caps">Тосты</div>
+                <div class="toast toast--ok"><span class="ok">✓</span><span>Flow сохранён</span><span class="li__meta">21:40</span></div>
+                <div class="toast toast--err"><span class="err">✕</span><span>Не удалось подключиться к MQTT</span><span class="li__meta">21:41</span></div>
+                <div class="toast"><span class="dim">i</span><span>Обновление доступно: 0.8.3-alpha.15</span><span class="li__meta">21:42</span></div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Подсказка и меню</div>
+                <div class="tip-host">
+                    <div class="tip">Скопировать путь</div>
+                    <div class="row row--tight">
+                        <button class="btn btn--sm">◈ Свойства поля</button>
+                        <button class="btn btn--sm">ƒ Операции</button>
+                    </div>
+                </div>
+                <div class="demo__hint">Подсказка — стекло с акцентной кромкой, а не инверсия заливки.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 12. ПРОГРЕСС ============ -->
+    <section class="sec" id="progress">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">12</span>
+            <span class="sec__title">Прогресс и состояния загрузки</span>
+            <span class="sec__note">сегментные шкалы — для дискретных шагов, сплошные — для непрерывных</span>
+        </div>
+        <div class="grid grid--wide">
+            <div class="demo cut tick stack">
+                <div class="bar"><div class="bar__fill" style="width:32%"></div></div>
+                <div class="bar"><div class="bar__fill bar__fill--warn" style="width:68%"></div></div>
+                <div class="bar"><div class="bar__fill bar__fill--err" style="width:91%"></div></div>
+                <div class="sbar">
+                    <i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="sbar sbar--tall">
+                    <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on--warn"></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="demo__hint" style="margin:0">Шкала из отдельных трапеций: видно, сколько сегментов осталось.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Загрузка</div>
+                <div class="row">
+                    <div class="spin-ring"></div>
+                    <span class="dim">Читаем схему полей…</span>
+                </div>
+                <div class="stack stack--tight" style="margin-top:16px">
+                    <div class="skel skel--w85"></div>
+                    <div class="skel skel--w60"></div>
+                    <div class="skel skel--w40"></div>
+                </div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Показания вместо спиннера</div>
+                <div class="row" style="gap:22px">
+                    <div class="gauge" style="--p:72;--gc:var(--ui-energy)">
+                        <span class="gauge__ticks"></span>
+                        <span class="gauge__arc"></span>
+                        <span class="gauge__val">72<i>%</i></span>
+                    </div>
+                    <div class="stack stack--tight" style="flex:1 1 140px">
+                        <div class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                        <span class="caps">буфер 5 / 8</span>
+                        <span class="mono dim" style="font-size:11px">quartz-cron: следующий запуск 21:45</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 13. ЛАБОРАТОРИЯ ============ -->
+    <section class="sec" id="lab">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">13</span>
+            <span class="sec__title">Лаборатория: кромки, свечение, срез</span>
+            <span class="sec__note">ручки стиля — что сравнивать при выборе</span>
+        </div>
+
+        <div class="grid grid--lab">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Срез: 0 / 6 / 10 / 14 px</div>
+                <div class="lab" style="width:120px;margin:0 auto">прямой</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab cut" style="width:120px;margin:0 auto;--ui-cut:6px">cut 6</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab cut" style="width:120px;margin:0 auto;--ui-cut:10px;--cut-c:var(--ui-line)">cut 10</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab cut" style="width:120px;margin:0 auto;--ui-cut:14px;--cut-c:var(--ui-line)">cut 14</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Наклон кромки</div>
+                <div class="sk" style="display:flex;gap:6px;justify-content:center">
+                    <span class="lab para" style="width:74px">6°</span>
+                    <span class="lab" style="width:74px">0°</span>
+                </div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Скругление</div>
+                <div class="lab" style="width:120px;margin:0 auto;border-radius:10px">radius 10</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Засечки углов</div>
+                <div class="lab tick" style="width:110px;margin:0 auto">6px</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab tick tick--long tick--accent" style="width:110px;margin:0 auto">12px accent</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Внешний ореол</div>
+                <div class="lab lab-halo-8" style="width:110px;margin:0 auto">8px</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-halo-14" style="width:110px;margin:0 auto">14px</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-halo-22" style="width:110px;margin:0 auto">22px</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-halo-none" style="width:110px;margin:0 auto">нет ореола</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Внутренняя подсветка</div>
+                <div class="lab lab-rail" style="width:110px;margin:0 auto">inset 14</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">&nbsp;</div>
+                <div class="lab lab-rail-strong" style="width:110px;margin:0 auto">inset 6</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Ореол + подсветка</div>
+                <div class="lab lab-rail-both" style="width:110px;margin:0 auto">оба</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Жёсткая тень (отклонено)</div>
+                <div class="lab lab-shadow-hard" style="width:110px;margin:0 auto">6 6 0</div>
+            </div>
+        </div>
+
+        <div class="grid" style="margin-top:16px">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Сегментные шкалы</div>
+                <div class="stack stack--tight">
+                    <div class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="sbar sbar--tall"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                    <div class="sbar" style="--sc:var(--ui-warn)"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                    <div class="sbar" style="--sc:var(--ui-crit)"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+                </div>
+                <div class="demo__hint">Трапеции с зазором 3px; залитый сегмент получает верхний стеклянный блик.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Ромб, гексагон, трапеция</div>
+                <div class="stack stack--tight">
+                    <div class="row row--tight">
+                        <span class="dot dot--ok"></span><span class="dim">status</span>
+                        <span class="badge badge--accent">128</span><span class="dim">counter</span>
+                        <span class="tag">tag</span><span class="dim">label</span>
+                    </div>
+                    <div class="row row--tight">
+                        <span class="step"><span class="step__num">1</span></span>
+                        <span class="mode is-active">armor</span>
+                        <span class="mode">cloak</span>
+                    </div>
+                    <div class="wpn" style="padding:6px 10px">
+                        <span class="wpn__name">scar</span>
+                        <span class="wpn__ammo" style="font-size:20px">24<i>/120</i></span>
+                    </div>
+                </div>
+                <div class="demo__hint">Каждая форма закреплена за ролью: ромб — состояние, гексагон — счётчик, трапеция — ярлык и режим.</div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Спецификация</div>
+                <table class="spec" style="margin-top:4px">
+                    <tr><td>линия</td><td>var(--ui-bw) solid var(--ui-line-soft)</td></tr>
+                    <tr><td>срез</td><td>--ui-cut: 10px</td></tr>
+                    <tr><td>наклон</td><td>--ui-shear: -6deg / --ui-slant: 6px</td></tr>
+                    <tr><td>ореол</td><td>0 0 14px -6px var(--ui-halo-c)</td></tr>
+                    <tr><td>подсветка</td><td>inset 0 0 22px -14px var(--ui-rail-c)</td></tr>
+                    <tr><td>стекло</td><td>--ui-glass + --ui-glass-edge</td></tr>
+                    <tr><td>радиус</td><td>0</td></tr>
+                    <tr><td>трекинг капса</td><td>--ui-cps: 1.8px</td></tr>
+                    <tr><td>моно</td><td>ui-monospace</td></tr>
+                </table>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Панель в четырёх режимах</div>
+                <div class="stack stack--tight">
+                    <div class="hud"><div class="hud__b cut hud__b--pad"><div class="row row--between"><span class="caps" style="color:var(--ui-ink)">ореол + срез</span><span class="mono dim">по умолчанию</span></div></div></div>
+                    <div class="hud"><div class="hud__b" style="padding:14px 16px"><div class="row row--between"><span class="caps" style="color:var(--ui-ink)">ореол, прямые углы</span><span class="mono dim">--ui-cut: 0</span></div></div></div>
+                    <div class="hud__b cut hud__b--pad"><div class="row row--between"><span class="caps" style="color:var(--ui-ink)">срез, без ореола</span><span class="mono dim">orn=0</span></div></div>
+                    <div class="hud__b" style="padding:14px 16px;box-shadow:none"><div class="row row--between"><span class="caps" style="color:var(--ui-ink)">только линии</span><span class="mono dim">сухо</span></div></div>
+                </div>
+                <div class="demo__hint">Свечение необязательно: без него панель читается как чертёж.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 14. ИНСТРУМЕНТЫ HUD ============ -->
+    <section class="sec" id="crysis">
+        <div class="sec__head">
+            <span class="sec__mark"></span>
+            <span class="sec__num">14</span>
+            <span class="sec__title">Инструменты HUD</span>
+            <span class="sec__note">показания нанокостюма: шкалы, оружие, компас, режимы, маркер цели</span>
+        </div>
+
+        <div class="grid grid--wide" style="margin-bottom:16px">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Радиальные сегментные шкалы</div>
+                <div class="row" style="gap:26px;justify-content:center">
+                    <div class="gauge" style="--p:72;--gc:var(--ui-energy)">
+                        <span class="gauge__ticks"></span>
+                        <span class="gauge__arc"></span>
+                        <span class="gauge__val">72<i>%</i></span>
+                        <span class="gauge__cap caps">энергия</span>
+                    </div>
+                    <div class="gauge" style="--p:100;--gc:var(--ui-armor)">
+                        <span class="gauge__ticks"></span>
+                        <span class="gauge__arc"></span>
+                        <span class="gauge__val">100<i>%</i></span>
+                        <span class="gauge__cap caps">броня</span>
+                    </div>
+                </div>
+                <div class="demo__hint">Дуга — conic-gradient с маской, риски — repeating-conic-gradient. Число в центре тонкое и крупное.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Полоса оружия и боезапаса</div>
+                <div class="wpn" style="margin-bottom:10px">
+                    <span class="wpn__name">scar · 5.56</span>
+                    <span class="wpn__ammo">24<i>/120</i></span>
+                    <span class="wpn__mode">одиночный</span>
+                </div>
+                <div class="sbar sbar--tall">
+                    <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on--warn"></i><i class="on--warn"></i><i></i><i></i><i></i>
+                </div>
+                <div class="row row--between" style="margin-top:8px">
+                    <span class="caps">магазин 8 / 12</span>
+                    <span class="mono dim" style="font-size:11px">перезарядка 2.4 s</span>
+                </div>
+                <div class="demo__hint">Полоса боезапаса — та же сегментная шкала, что и в прогрессе.</div>
+            </div>
+        </div>
+
+        <div class="grid grid--wide" style="margin-bottom:16px">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Компас угроз</div>
+                <div class="cmp">
+                    <span class="cmp__sector"></span>
+                    <span class="cmp__ruler cmp__ruler--major"></span>
+                    <span class="cmp__ruler"></span>
+                    <span class="cmp__lbl cmp__lbl--major" style="left:8%">000 С</span>
+                    <span class="cmp__lbl" style="left:25%">045</span>
+                    <span class="cmp__lbl cmp__lbl--major" style="left:42%">090 В</span>
+                    <span class="cmp__lbl" style="left:59%">135</span>
+                    <span class="cmp__lbl cmp__lbl--major" style="left:76%">180 Ю</span>
+                    <span class="cmp__lbl" style="left:93%">225</span>
+                    <span class="cmp__head">▼</span>
+                    <span class="tgt" style="left:31%;top:52px"><i>◆</i><b>042 · 38 м</b></span>
+                    <span class="tgt" style="left:66%;top:66px"><i>◆</i><b>128 · 112 м</b></span>
+                    <span class="tgt" style="left:88%;top:52px"><i>◆</i><b>214 · 260 м</b></span>
+                    <span class="cmp__read">азимут 062 · цель захвачена · 3 сигнала</span>
+                </div>
+                <div class="demo__hint">Риски каждые 13px, крупные каждые 65px, отметки противника — ромбы с азимутом и дистанцией.</div>
+            </div>
+
+            <div class="demo cut tick">
+                <div class="demo__label caps">Режимы костюма</div>
+                <div class="suit" style="margin-bottom:14px">
+                    <span class="mode is-active">armor <b>100</b></span>
+                    <span class="mode is-cloak">cloak <b>40</b></span>
+                    <span class="mode">speed <b>65</b></span>
+                    <span class="mode">strength <b>80</b></span>
+                </div>
+                <div class="stack stack--tight">
+                    <div class="row row--between"><span class="caps">энергия</span><span class="mono" style="font-size:11px">72 %</span></div>
+                    <div class="sbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                    <div class="row row--between"><span class="caps">броня</span><span class="mono" style="font-size:11px">100 %</span></div>
+                    <div class="sbar" style="--sc:var(--ui-armor)"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <div class="row row--between"><span class="caps">целостность</span><span class="mono" style="font-size:11px">18 %</span></div>
+                    <div class="sbar" style="--sc:var(--ui-crit)"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+                <div class="demo__hint">Режим — трапеция; активный залит акцентом, cloaking показан контуром.</div>
+            </div>
+        </div>
+
+        <div class="demo cut tick" style="margin-bottom:16px">
+            <div class="demo__label caps">HUD поверх «вида»: KPI-полоса и маркер цели</div>
+            <div class="stage tick tick--accent">
+                <span class="stage__hz"></span>
+                <span class="stage__cross">⌖</span>
+                <span class="wpt" style="left:56%;top:26%">noda · mqtt_in · 38 м</span>
+                <span class="tgt" style="left:22%;top:40%"><i>◆</i><b>042 · 38 м</b></span>
+                <span class="tgt" style="left:78%;top:24%"><i>◆</i><b>214 · 260 м</b></span>
+                <div class="stage__kpis">
+                    <span class="ov-kpi"><b>BLACKOUT</b><i>операция</i></span>
+                    <span class="ov-kpi"><b>03:12</b><i>до эвакуации</i></span>
+                    <span class="ov-kpi"><b>88</b><i>ms задержка</i></span>
+                    <span class="ov-kpi"><b>7</b><i>нод активно</i></span>
+                    <span class="ov-kpi"><b>1</b><i>ошибка flow</i></span>
+                </div>
+            </div>
+            <div class="demo__hint">Вид всегда тёмный (как и в игре), панели поверх — стекло, сканлайны и засечки по углам.</div>
+        </div>
+
+        <div class="grid grid--wide">
+            <div class="demo cut tick">
+                <div class="demo__label caps">Тревога</div>
+                <div class="wpn" style="border-color:var(--ui-threat);margin-bottom:10px">
+                    <span class="wpn__name" style="color:var(--ui-threat)">обнаружение · 3 сигнала</span>
+                    <span class="wpn__ammo" style="color:var(--ui-threat);font-size:22px">042<i>°</i></span>
+                    <span class="wpn__mode">cloak ready</span>
+                </div>
+                <div class="alert alert--warn"><span class="alert__icon">!</span><div><div class="alert__title">Противник в секторе 042</div><div class="alert__text">Дистанция 38 м, линия видимости открыта.</div></div></div>
+            </div>
+            <div class="demo cut tick">
+                <div class="demo__label caps">Полоса состояния (sk)</div>
+                <div class="sk" style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+                    <span class="caps">mars · нанокостюм</span>
+                    <span class="caps">21:40:12</span>
+                    <span class="caps">flow: sensors/line4</span>
+                </div>
+                <div class="row row--tight">
+                    <span class="tag tag--accent">armor</span>
+                    <span class="tag tag--outline">inject</span>
+                    <span class="tag tag--ok">online</span>
+                    <span class="tag tag--warn">degraded</span>
+                </div>
+                <div class="demo__hint">Наклонная полоса — единственное место, где текст действительно скошен: он скован обратно родителем.</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    function bindSwitch(id, attr, apply) {
+        var box = document.getElementById(id);
+        if (!box) return;
+
+        function paint(value) {
+            box.querySelectorAll('[data-' + attr + '-set]').forEach(function (el) {
+                el.classList.toggle('is-active', el.getAttribute('data-' + attr + '-set') === value);
+            });
+        }
+
+        box.addEventListener('click', function (e) {
+            var target = e.target.closest('[data-' + attr + '-set]');
+            if (!target) return;
+
+            var value = target.getAttribute('data-' + attr + '-set');
+            apply(value);
+            paint(value);
+        });
+
+        paint(document.documentElement.getAttribute('data-' + attr) || (attr === 'theme' ? 'auto' : '1'));
+    }
+
+    bindSwitch('theme-switch', 'theme', function (value) {
+        if (value === 'auto') {
+            document.documentElement.setAttribute('data-theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', value);
+        }
+    });
+
+    bindSwitch('orn-switch', 'orn', function (value) {
+        document.documentElement.setAttribute('data-orn', value);
+    });
+
+    bindSwitch('shear-switch', 'shear', function (value) {
+        document.documentElement.setAttribute('data-shear', value);
+    });
+</script>
+</body>
+</html>

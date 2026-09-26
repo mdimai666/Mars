@@ -20,7 +20,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly INodeEditorApi _nodeEditor;
     private readonly IServiceProvider _serviceProvider;
     private readonly HotKeysContext _hotkeysContext;
-    private readonly EditorActionLocator _edittorActionLocator;
+    private readonly EditorActionLocator _editorActionLocator;
     private readonly AdminJs _adminJs;
     private ILogger _logger;
     private IReadOnlyDictionary<Type, EditorActionType> _actions;
@@ -34,16 +34,16 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     public EditorActionManager(INodeEditorApi nodeEditorApi,
                                 IServiceProvider serviceProvider,
                                 HotKeysContext hotkeysContext,
-                                EditorActionLocator edittorActionLocator,
+                                EditorActionLocator editorActionLocator,
                                 AdminJs adminJs)
     {
         _nodeEditor = nodeEditorApi;
         _serviceProvider = serviceProvider;
         _hotkeysContext = hotkeysContext;
-        _edittorActionLocator = edittorActionLocator;
+        _editorActionLocator = editorActionLocator;
         _adminJs = adminJs;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
-        _actions = _edittorActionLocator.Actions.ToDictionary(s => s.ActionType);
+        _actions = _editorActionLocator.Actions.ToDictionary(s => s.ActionType);
         BuildActions();
     }
 
@@ -62,7 +62,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
             var k = action.ActiveHotkey.Value;
             _hotkeysContext.Add(k.Modifiers, k.Code, () => ExecuteAction(action.ActionType), action.ActionType.Name);
         }
-        _logger.LogTrace($"RegisterAction '{_actions}', hotkey='{action.ActiveHotkey}'");
+        _logger.LogTrace("RegisterAction '{ActionType}', hotkey='{Hotkey}'", action.ActionType, action.ActiveHotkey);
     }
 
     /// <summary>
@@ -118,18 +118,21 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                 if (_undoStack.Count > MaxHistory)
                     _undoStack.TrimExcessHistory(MaxHistory);
 
-                _redoStack.Clear();
+                ClearRedoStack();
 
                 Notify(nameof(CanUndo));
                 Notify(nameof(CanRedo));
-                //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
             }
         }
     }
 
+    readonly Dictionary<Type, bool> _nodeEditorApiCtorCache = [];
+
     bool HasNodeEditorApiConstructor(Type type)
     {
-        return type
+        if (_nodeEditorApiCtorCache.TryGetValue(type, out var cached)) return cached;
+
+        return _nodeEditorApiCtorCache[type] = type
             .GetConstructors()
             .Any(ctor => ctor
                 .GetParameters()
@@ -150,21 +153,25 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                 if (_undoStack.Count > MaxHistory)
                     _undoStack.TrimExcessHistory(MaxHistory);
 
-                foreach (var a in _redoStack)
-                    if (a is IDisposable disposable) disposable.Dispose();
-                _redoStack.Clear();
+                ClearRedoStack();
 
                 Notify(nameof(CanUndo));
                 Notify(nameof(CanRedo));
-                //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
             }
         }
     }
 
+    void ClearRedoStack()
+    {
+        foreach (var a in _redoStack)
+            if (a is IDisposable disposable) disposable.Dispose();
+        _redoStack.Clear();
+    }
+
     public void ReplaceLastAction(IEditorHistoryAction actionInstance)
     {
-        var last = _undoStack.Pop();
-        if (last is IDisposable disposable) disposable.Dispose();
+        if (_undoStack.TryPop(out var last) && last is IDisposable disposable)
+            disposable.Dispose();
         _undoStack.Push(actionInstance);
     }
 
@@ -179,7 +186,6 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 
         Notify(nameof(CanUndo));
         Notify(nameof(CanRedo));
-        //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
     }
 
     public void Redo()
@@ -193,7 +199,6 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 
         Notify(nameof(CanUndo));
         Notify(nameof(CanRedo));
-        //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
     }
 
     public bool CanUndo => _undoStack.Count > 0;
@@ -223,7 +228,15 @@ static class StackExtensions
 {
     public static void TrimExcessHistory<T>(this Stack<T> stack, int maxCount)
     {
-        while (stack.Count > maxCount)
-            stack.Reverse().Skip(1); // или переложить в новый стек
+        if (stack.Count <= maxCount) return;
+
+        // Stack перечисляется сверху: Take — свежие (оставить), Skip — старые (выбросить)
+        foreach (var dropped in stack.Skip(maxCount))
+            if (dropped is IDisposable disposable) disposable.Dispose();
+
+        var kept = stack.Take(maxCount).ToArray();
+        stack.Clear();
+        for (var i = kept.Length - 1; i >= 0; i--)
+            stack.Push(kept[i]);
     }
 }

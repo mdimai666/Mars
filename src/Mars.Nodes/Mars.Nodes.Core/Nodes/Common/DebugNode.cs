@@ -3,15 +3,21 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Common;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DebugNode/DebugNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/DebugNode/DebugNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class DebugNode : Node
 {
     public override string TypeId => "core.DebugNode";
 
+    public const string PropertyPathPayloadDefault = "msg.Payload";
+
     public bool CompleteInputMessage { get; set; }
+    public string PropertyPath { get; set; } = PropertyPathPayloadDefault;
     public bool WriteToConsole { get; set; }
     public bool ShowPayloadTypeInStatus { get; set; }
+
+    /// <summary>Хранить полный объект на сервере (последний, жёсткий лимит 2 МБ), независимо от глобального DebugMode.</summary>
+    public bool StoreFullObject { get; set; }
     public override string Label => CompleteInputMessage ? "Msg" : base.Label;
     public Mars.Core.Models.MessageIntent? Level { get; set; }
 
@@ -19,8 +25,8 @@ public class DebugNode : Node
     {
         Inputs = [new()];
         Color = "#7AB073";
-        hasTailButton = true;
-        Icon = "_content/Mars.Nodes.Workspace/nodes/chat-left.svg";
+        HasTailButton = true;
+        Icon = "_content/Mars.Nodes.Workspace/nodes/debug.svg";
     }
 
 }

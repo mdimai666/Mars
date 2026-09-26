@@ -180,7 +180,7 @@ internal class MarsSystemService : IMarsSystemService
         }
         else
         {
-            memoryDebouncer.Debouce(WriteMemoryUsage);
+            memoryDebouncer.Debounce(WriteMemoryUsage);
         }
 
         return _memoryUsageString;

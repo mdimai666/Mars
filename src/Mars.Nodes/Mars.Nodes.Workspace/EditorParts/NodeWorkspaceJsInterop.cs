@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Mars.Admin.Framework.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -15,12 +16,19 @@ namespace Mars.Nodes.Workspace.EditorParts;
 
 public class NodeWorkspaceJsInterop : IAsyncDisposable
 {
+    // URL модуля с версией в query (?v=…) — cache-busting по конвенции
+    // AiChatAssets/MarsCodeEditor2JsInterop: статика отдаётся без Cache-Control,
+    // без версии в урле браузер может держать старый js из эвристического кеша.
+    static readonly string ModuleVersion = Uri.EscapeDataString(
+        typeof(NodeWorkspaceJsInterop).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? "0.0.0");
+
     private readonly Lazy<Task<IJSObjectReference>> _moduleTask;
 
     public NodeWorkspaceJsInterop(IJSRuntime jsRuntime)
     {
         _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-           "import", "./_content/Mars.Nodes.Workspace/nodeWorkspace.js").AsTask());
+           "import", $"./_content/Mars.Nodes.Workspace/nodeWorkspace.js?v={ModuleVersion}").AsTask());
     }
 
     public async ValueTask<string> InitModule()
@@ -94,43 +102,43 @@ public class NodeWorkspaceJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("unobserveScroll", element);
     }
 
-    public async void TouchFlashAnimation(ElementReference element)
+    public async ValueTask TouchFlashAnimation(ElementReference element)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("touchFlashAnimation", element);
     }
 
-    public async void TouchFlashAnimationBySelector(string elementSelector)
+    public async ValueTask TouchFlashAnimationBySelector(string elementSelector)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("touchFlashAnimationBySelector", elementSelector);
     }
 
-    public async void TouchHighlightBySelector(string elementSelector, string classString, int durationMilliss)
+    public async ValueTask TouchHighlightBySelector(string elementSelector, string classString, int durationMilliss)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("touchHighlightBySelector", elementSelector, classString, durationMilliss);
     }
 
-    public async void ScrollToCoordinates(ElementReference element, float x, float y)
+    public async ValueTask ScrollToCoordinates(ElementReference element, float x, float y)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("scrollToCoordinates", element, x, y);
     }
 
-    public async void ScrollToCoordinatesBySelector(string elementSelector, float x, float y)
+    public async ValueTask ScrollToCoordinatesBySelector(string elementSelector, float x, float y)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("scrollToCoordinatesBySelector", elementSelector, x, y);
     }
 
-    public async void ScrollToElement(ElementReference element)
+    public async ValueTask ScrollToElement(ElementReference element)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("scrollToElement", element);
     }
 
-    public async void ScrollToElementBySelector(string elementSelector)
+    public async ValueTask ScrollToElementBySelector(string elementSelector)
     {
         var module = await _moduleTask.Value;
         await module.InvokeVoidAsync("scrollToElementBySelector", elementSelector);

@@ -1,0 +1,51 @@
+@using Mars.Admin.Framework.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileReadNode))]
+
+<div class="vstack gap-3">
+    <FormItem2 For="() => Node.FilePath" Class="">
+        <MarsValueInput Class="mvi-fill" VarType="string" Value="@FilePathValue" ValueChanged="SetFilePathValue" For="() => Node.FilePath" />
+    </FormItem2>
+
+    <FormItem2 For=@(() => Node.OutputMode)>
+        <FluentSelect @bind-SelectedOption="@Node.OutputMode"
+                      TOption="FileReadNode.FileOutputMode"
+                      Items="Enum.GetValues<FileReadNode.FileOutputMode>()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    <div class="mt-3">
+        <div class="alert alert-warning">
+            Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the process.
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileReadNode Node { get => (FileReadNode)Value; set => Value = value; }
+
+    string FilePathValue => Node.FilePathKind switch
+    {
+        InputValueKind.Expression => "@" + Node.FilePath,
+        InputValueKind.Msg => "@msg." + Node.FilePath,
+        _ => Node.FilePath,
+    };
+
+    void SetFilePathValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.FilePathKind = InputValueKind.Expression;
+            Node.FilePath = value[1..].Trim();
+        }
+        else
+        {
+            Node.FilePathKind = InputValueKind.Const;
+            Node.FilePath = value;
+        }
+    }
+}

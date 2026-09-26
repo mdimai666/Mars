@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Sequences;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SplitNode/SplitNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/SplitNode/SplitNode{.lang}.md")]
 [Display(GroupName = "sequence")]
 public class SplitNode : Node
 {
@@ -18,7 +18,7 @@ public class SplitNode : Node
     public SplitNode()
     {
         Color = "#E0D870";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/split.svg";
         Inputs = [new()];
         Outputs = [new()];
     }

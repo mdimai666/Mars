@@ -36,4 +36,102 @@ public class DebugNodeTests : NodeServiceUnitTestBase
                     && !string.IsNullOrEmpty(msg.Json)
             ));
     }
+
+    [Fact]
+    public async Task Execute_LegacyAtPath_ReadsPayload()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { PropertyPath = "@msg.Payload" };
+        var input = new NodeMsg { Payload = new { Mark = "legacy" } };
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        await Task.Delay(100);
+        Runtime.Received(1).DebugMsg(node.Id, Arg.Is<DebugMessage>(msg => msg.Json != null && msg.Json.Contains("legacy")));
+    }
+
+    [Fact]
+    public async Task Execute_MsgContextKeyPath_SerializesValue()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { PropertyPath = "msg.User" };
+        var input = new NodeMsg { Payload = "plain" };
+        input.Set("User", new { Mark = "ctxmark" });
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        await Task.Delay(100);
+        Runtime.Received(1).DebugMsg(node.Id, Arg.Is<DebugMessage>(msg => msg.Json != null && msg.Json.Contains("ctxmark")));
+    }
+
+    [Fact]
+    public async Task Execute_GlobalContextPath_SerializesValue()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        Runtime.GlobalContext.SetValue("g1", new { Mark = "gmark" });
+        var node = new DebugNode { PropertyPath = "GlobalContext.g1" };
+
+        //Act
+        await ExecuteNode(node, new NodeMsg { Payload = "plain" });
+
+        //Assert
+        await Task.Delay(100);
+        Runtime.Received(1).DebugMsg(node.Id, Arg.Is<DebugMessage>(msg => msg.Json != null && msg.Json.Contains("gmark")));
+    }
+
+    [Fact]
+    public async Task StoreFullObject_Complete_StoresWholeMessage()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { CompleteInputMessage = true, StoreFullObject = true };
+        var input = new NodeMsg { Payload = new { Mark = "payloadmark" } };
+        input.Set("ctxKey", "ctxmark");
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        var full = DebugStore.GetFull(node.Id);
+        full.Should().NotBeNull();
+        full!.Json.Should().Contain("payloadmark").And.Contain("ctxmark");
+    }
+
+    [Fact]
+    public async Task StoreFullObject_WithPath_StoresOnlyPathValue()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode { PropertyPath = "msg.Payload.user", StoreFullObject = true };
+        var input = new NodeMsg { Payload = new { user = new { Mark = "usermark" }, other = "noise" } };
+
+        //Act
+        await ExecuteNode(node, input);
+
+        //Assert
+        var full = DebugStore.GetFull(node.Id);
+        full.Should().NotBeNull();
+        full!.Json.Should().Contain("usermark").And.NotContain("noise");
+    }
+
+    [Fact]
+    public async Task StoreFullObject_Off_StoresNothing()
+    {
+        //Arrange
+        _ = nameof(DebugNodeImpl.Execute);
+        var node = new DebugNode();
+
+        //Act
+        await ExecuteNode(node, new NodeMsg { Payload = "plain" });
+
+        //Assert
+        DebugStore.GetFull(node.Id).Should().BeNull();
+    }
 }

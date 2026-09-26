@@ -36,7 +36,7 @@ public class NodeEntityQueryRequestModelEditModel
 public class NEQRM_MethodCallEditModel
 {
     public required List<string> Parameters { get; set; }
-    public required LinqMethodSignarute? Method { get; init; }
+    public required LinqMethodSignature? Method { get; init; }
     public required bool Disabled { get; set; }
 
     public NEQRM_MethodCall ToRequest()

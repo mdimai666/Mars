@@ -1,0 +1,123 @@
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Common;
+using Mars.Nodes.Front.Abstractions.Services;
+
+namespace Mars.Nodes.Workspace.Services.ValueFields;
+
+/// <summary>
+/// Walks wires up from the edited node and collects what nodes declare they put into the message.
+/// Nearest declaration wins per path; <see cref="NodeOutputValueSpecReader.Fallback"/> only when
+/// nobody declared the Payload slot. If a debug snapshot exists for a node and port, its values are
+/// attached to the matching paths and the paths that only exist in the live data are added too.
+/// </summary>
+internal class MsgValueRootProvider(IHostValueHints hostHints) : IValueRootProvider
+{
+    public const string RootName = "msg";
+
+    /// <summary>Значение в строке подсказки — сервер отдаёт до 150, в пикере показываем короче.</summary>
+    internal const int MaxDisplayValueLength = 80;
+
+    public int Order => 0;
+
+    public IEnumerable<ValueFieldInfo> GetFields(ValueFieldContext context)
+    {
+        var (fields, payloadDeclared) = Walk(context);
+
+        foreach (var (spec, source, value) in fields)
+            yield return new ValueFieldInfo($"{RootName}.{spec.Path}", spec.VarType, source, value);
+
+        if (payloadDeclared) yield break;
+
+        foreach (var spec in NodeOutputValueSpecReader.Fallback)
+            yield return new ValueFieldInfo($"{RootName}.{spec.Path}", spec.VarType);
+    }
+
+    (List<(OutputValueSpec Spec, string? Source, string? Value)> Fields, bool PayloadDeclared) Walk(
+        ValueFieldContext context)
+    {
+        var fields = new List<(OutputValueSpec, string?, string?)>();
+        var paths = new HashSet<string>();
+        var visited = new HashSet<string> { context.EditedNode.Id };
+        var queue = new Queue<(Node Node, int Port)>();
+
+        foreach (var source in Sources(context.Nodes, context.EditedNode.Id))
+            queue.Enqueue(source);
+
+        var payloadDeclared = false;
+
+        while (queue.Count > 0)
+        {
+            var (node, port) = queue.Dequeue();
+            if (!visited.Add(node.Id)) continue;
+
+            var values = Values(node, port);
+
+            foreach (var spec in SpecsOf(node))
+            {
+                if (spec.OutputPort != OutputValueSpec.AllOutputPorts && spec.OutputPort != port) continue;
+                if (!paths.Add(spec.Path)) continue;
+
+                if (spec.Path == nameof(NodeMsg.Payload)) payloadDeclared = true;
+                fields.Add((spec, node.DisplayName, values?.GetValueOrDefault(spec.Path)));
+            }
+
+            if (values is not null)
+            {
+                foreach (var (path, value) in values)
+                {
+                    if (!paths.Add(path)) continue;
+
+                    if (path == nameof(NodeMsg.Payload)) payloadDeclared = true;
+                    fields.Add((new OutputValueSpec(path, VarNode.ObjectTypeName), node.DisplayName, value));
+                }
+            }
+
+            foreach (var source in Sources(context.Nodes, node.Id))
+                queue.Enqueue(source);
+        }
+
+        return (fields, payloadDeclared);
+    }
+
+    Dictionary<string, string>? Values(Node node, int port)
+    {
+        var snapshot = hostHints.GetDebugSnapshot(node.Id, port);
+
+        if (snapshot?.Values is not { Count: > 0 } values) return null;
+
+        return values.ToDictionary(pair => pair.Key, pair => Short(pair.Value));
+    }
+
+    static string Short(string value)
+        => value.Length <= MaxDisplayValueLength ? value : value[..MaxDisplayValueLength] + "...";
+
+    /// <summary>
+    /// Инстансные спеки (интерфейс/атрибуты модели, знает конфиг) мержатся со статическими хостовыми
+    /// (атрибуты impl'ов, которые в браузер не грузятся): у ноды могут быть оба источника одновременно,
+    /// как у HttpRequestNode. Дедуп по Path, инстанс точнее — побеждает.
+    /// </summary>
+    IEnumerable<OutputValueSpec> SpecsOf(Node node)
+    {
+        var own = NodeOutputValueSpecReader.Read(node);
+        var host = hostHints.GetOutputSpecs(node.TypeId);
+
+        if (own.Count == 0) return host;
+        if (host.Count == 0) return own;
+
+        return own.Concat(host).DistinctBy(s => (s.Path, s.OutputPort)).ToArray();
+    }
+
+    static IEnumerable<(Node Node, int Port)> Sources(IDictionary<string, Node> nodes, string nodeId)
+    {
+        foreach (var node in nodes.Values)
+        {
+            for (var port = 0; port < node.Wires.Count; port++)
+            {
+                foreach (var wire in node.Wires[port])
+                {
+                    if (wire.NodeId == nodeId) yield return (node, port);
+                }
+            }
+        }
+    }
+}

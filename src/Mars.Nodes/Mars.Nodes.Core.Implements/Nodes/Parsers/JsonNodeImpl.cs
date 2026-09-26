@@ -2,6 +2,7 @@ using Mars.Core.Features;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes.Parsers;
+using Mars.Nodes.Expressions;
 using Newtonsoft.Json;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Parsers;
@@ -28,29 +29,36 @@ public class JsonNodeImpl : INodeImplement<JsonNode>
 
         object payload = input.Payload;
 
+        object result;
+
         if (Node.Action == JsonNode.JsonNodeAction.ToJsonString)
         {
-            string json = JsonNodeImpl.ToJsonString(payload, true);
-            input.Payload = json;
+            result = ToJsonString(payload, Node.FormatJsonString);
         }
         else if (Node.Action == JsonNode.JsonNodeAction.ToObject)
         {
             var v = ParseString(payload.ToString()!);
-            input.Payload = new DynamicJson(v);
+            result = new DynamicJson(v);
         }
         else
         {
             if (payload is string jsonPayload)
             {
                 var v = ParseString(jsonPayload);
-                input.Payload = new DynamicJson(v);
+                result = new DynamicJson(v);
             }
             else
             {
-                string json = JsonNodeImpl.ToJsonString(payload, true);
-                input.Payload = json;
+                result = ToJsonString(payload, Node.FormatJsonString);
             }
         }
+
+        if (string.IsNullOrWhiteSpace(Node.Property) || Node.Property == "Payload")
+            input.Payload = result;
+        else if (Node.Property.Contains('.'))
+            new DynamicNodeMsgWrapper(input).SetValueByPath(Node.Property, result);
+        else
+            input.Set(Node.Property, result);
 
         callback(input);
 

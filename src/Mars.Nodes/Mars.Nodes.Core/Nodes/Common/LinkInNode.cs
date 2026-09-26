@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Common;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/LinkInNode/LinkInNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/LinkInNode/LinkInNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class LinkInNode : Node
 {
@@ -15,11 +15,11 @@ public class LinkInNode : Node
     {
         Color = "#dddddd";
         Inputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/link-in.svg";
     }
 }
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/LinkOutNode/LinkOutNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/LinkOutNode/LinkOutNode{.lang}.md")]
 [Display(GroupName = "common")]
 public class LinkOutNode : Node
 {
@@ -29,6 +29,6 @@ public class LinkOutNode : Node
     {
         Color = "#dddddd";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/link-out.svg";
     }
 }

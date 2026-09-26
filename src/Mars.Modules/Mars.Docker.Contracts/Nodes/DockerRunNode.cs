@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Docker.Contracts.Nodes;
 
@@ -17,15 +18,19 @@ public class DockerRunNode : Node
     [Display(Name = "image")]
     [Required]
     public string Image { get; set; } = "";
+    public string ImageKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "command (space separated)")]
     public string Command { get; set; } = "";
+    public string CommandKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "env (KEY=VALUE per line)")]
     public string Env { get; set; } = "";
+    public string EnvKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "stdin (empty = msg payload)")]
     public string Stdin { get; set; } = "";
+    public string StdinKind { get; set; } = InputValueKind.Const;
 
     [Display(Name = "timeout, sec (0 = default)")]
     public int TimeoutSeconds { get; set; }

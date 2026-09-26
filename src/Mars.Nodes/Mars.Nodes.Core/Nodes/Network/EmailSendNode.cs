@@ -4,7 +4,7 @@ using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/EmailSendNode/EmailSendNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/EmailSendNode/EmailSendNode{.lang}.md")]
 [Display(GroupName = "network")]
 public class EmailSendNode : Node
 {
@@ -14,17 +14,21 @@ public class EmailSendNode : Node
 
     [Required]
     public string ToEmail { get; set; } = "";
+    public string ToEmailKind { get; set; } = InputValueKind.Const;
 
     [Required]
     public string Subject { get; set; } = "";
+    public string SubjectKind { get; set; } = InputValueKind.Const;
+
     public string Message { get; set; } = "";
+    public string MessageKind { get; set; } = InputValueKind.Const;
 
     public EmailSendNode()
     {
         Inputs = [new()];
         Color = "#cce8c0";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/envelope-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/email-send.svg";
     }
 
 }

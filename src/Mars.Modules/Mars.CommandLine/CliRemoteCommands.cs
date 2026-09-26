@@ -79,12 +79,15 @@ public class CliRemoteCommands
 
         // заголовок тонкого клиента вместо логотипа и стартовых логов:
         // команда исполняется в живом инстансе, второй процесс не поднимается
-        var serverVersion = runningServer.Version.Split('+')[0];
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.WriteLine($"mars cli → remote exec: server is running (pid {runningServer.Pid}, v{serverVersion})");
-        Console.WriteLine($"executing in the live instance: {string.Join(' ', forwardArgs)}");
-        Console.ResetColor();
-        Console.WriteLine();
+        if (!_api.CheckGlobalOption<bool>("--quiet", forwardArgs))
+        {
+            var serverVersion = runningServer.Version.Split('+')[0];
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"mars cli → remote exec: server is running (pid {runningServer.Pid}, v{serverVersion})");
+            Console.WriteLine($"executing in the live instance: {string.Join(' ', forwardArgs)}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
 
         return await CliRemoteClient.ExecAsync(cliSocketPath, forwardArgs);
     }

@@ -1,0 +1,35 @@
+@using Mars.Nodes.FormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(EvalNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>Input</label>
+    <MarsValueInput Value="@InputValue" ValueChanged="SetInputValue" For="() => Node.Input" />
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    EvalNode Node { get => (EvalNode)Value!; set => Value = value; }
+
+    string InputValue => Node.ValueKind switch
+    {
+        InputValueKind.Const => Node.Input,
+        InputValueKind.Msg => "@msg." + Node.Input,
+        _ => "@" + Node.Input,
+    };
+
+    void SetInputValue(string value)
+    {
+        if (value.StartsWith('@'))
+        {
+            Node.ValueKind = InputValueKind.Expression;
+            Node.Input = value[1..].Trim();
+        }
+        else
+        {
+            Node.ValueKind = InputValueKind.Const;
+            Node.Input = value;
+        }
+    }
+}

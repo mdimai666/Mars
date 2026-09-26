@@ -3,10 +3,11 @@
 @using Mars.Admin.Framework.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Contracts.Resources
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@implements IDialogContentComponent<string>
+@implements IDialogContentComponent<INodeEditorApi>
 @implements IDisposable
 
 <FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
@@ -49,9 +50,9 @@
     public FluentDialog Dialog { get; set; } = default!;
 
     [Parameter]
-    public string Content { get; set; } = default!;
+    public INodeEditorApi Content { get; set; } = default!;
 
-    INodeEditorApi _editor => NodeEditor1.Instance!;
+    INodeEditorApi _editor => Content;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] AdminJs _appjs { get; set; } = default!;
 
@@ -73,7 +74,7 @@
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
-    public static void ShowDialog(IDialogService _dialogService)
+    public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor)
     {
         DialogParameters parameters = new()
         {
@@ -83,7 +84,7 @@
             PreventScroll = true
         };
 
-        _dialogService.ShowDialogAsync<ExportNodesDialog>("", parameters);
+        _dialogService.ShowDialogAsync<ExportNodesDialog>(editor, parameters);
     }
 
     void OnModeChanged()

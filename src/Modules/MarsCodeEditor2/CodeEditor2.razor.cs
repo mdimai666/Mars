@@ -25,6 +25,7 @@ public partial class CodeEditor2 : IDisposable
 
     public static class Language
     {
+        public static readonly string plaintext = "plaintext";
         public static readonly string handlebars = "handlebars";
         public static readonly string html = "html";
         public static readonly string js = "js";
@@ -34,7 +35,6 @@ public partial class CodeEditor2 : IDisposable
         public static readonly string csharp = "csharp";
         public static readonly string sql = "sql";
         public static readonly string log = "log";
-        public static readonly string plaintext = "plaintext";
 
         /// <summary>Язык документа запросов .http — монарх и CodeLens «выполнить» регистрирует JS-модуль.</summary>
         public static readonly string http = "http";
@@ -43,7 +43,7 @@ public partial class CodeEditor2 : IDisposable
     }
 
     [Parameter] public string Value { get; set; } = "";
-    [Parameter] public string Lang { get; set; } = CodeEditor2.Language.handlebars;
+    [Parameter] public string Lang { get; set; } = Language.plaintext;
     [Parameter] public string MonacoCssClass { get; set; } = "flex-fill";
     [Parameter] public string ContainerCssStyle { get; set; } = "height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;";
     [Parameter] public bool HideToolbarComponents { get; set; } = false;
@@ -158,6 +158,9 @@ public partial class CodeEditor2 : IDisposable
             Language = Lang,
             //Language = "html",
             Value = Value,
+            // semantic tokens провайдер в standalone monaco выключен по умолчанию;
+            // опция работает ТОЛЬКО как construction-опция (не через updateOptions)
+            SemanticHighlightingEnabled = true,
         };
     }
 

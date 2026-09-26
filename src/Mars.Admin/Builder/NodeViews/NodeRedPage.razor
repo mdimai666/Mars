@@ -25,6 +25,8 @@ else
                      OnCmdClick="OnCmdClick"
                      @ref=_editor1
                      @bind-AllNodes=@_nodes
+                     DebugMode="_debugMode"
+                     DebugModeChanged="@(enabled => _debugMode = enabled)"
                      InlineFunctionNodeSchemas="_inlineFunctionNodeSchemas">
             <SectionActions>
                 <XActionsDropDown>

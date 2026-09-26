@@ -9,6 +9,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Events;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Helpers;
@@ -255,8 +256,37 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return new()
         {
             Nodes = Nodes.Values.Select(s => s.Node).ToArray(),
-            InlineFunctionNodeSchemas = _runtime.NodeImplementFactory.InlineFunctionNodeList.ToSchema()
+            InlineFunctionNodeSchemas = _runtime.NodeImplementFactory.InlineFunctionNodeList.ToSchema(),
+            OutputValueSpecs = CollectOutputValueSpecs(),
+            GlobalVariableNames = [.. _runtime.GlobalContext.Keys]
         };
+    }
+
+    Dictionary<string, OutputValueSpec[]> CollectOutputValueSpecs()
+    {
+        var result = new Dictionary<string, OutputValueSpec[]>();
+        var typeIds = _nodesLocator.Dict.Values.ToDictionary(item => item.NodeType, item => item.DefaultInstance.TypeId);
+
+        foreach (var item in _nodesLocator.Dict.Values)
+            AddOutputValueSpecs(result, item.DefaultInstance.TypeId, NodeOutputValueSpecReader.ReadStatics(item.NodeType));
+
+        foreach (var item in _runtime.NodeImplementFactory.Dict.Values)
+        {
+            if (!typeIds.TryGetValue(item.NodeBaseType, out var typeId)) continue;
+
+            AddOutputValueSpecs(result, typeId, NodeOutputValueSpecReader.ReadStatics(item.NodeImplementType));
+        }
+
+        return result;
+    }
+
+    static void AddOutputValueSpecs(Dictionary<string, OutputValueSpec[]> result, string typeId,
+                                    IReadOnlyList<OutputValueSpec> specs)
+    {
+        if (specs.Count == 0) return;
+
+        var merged = result.TryGetValue(typeId, out var existing) ? existing.Concat(specs) : specs;
+        result[typeId] = [.. merged.DistinctBy(spec => (spec.Path, spec.OutputPort))];
     }
 
     public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null, bool throwOnError = false)
@@ -414,7 +444,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     internal void VarNodesSetDefaultValues()
     {
         var varNodesImpl = Nodes.Values.OfType<VarNodeImpl>().ToList();
-        var ppt = VariableSetNodeImpl.CreateInterpreter(_runtime.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
+        var ppt = InputValueResolver.CreateInterpreter(_runtime.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
 
         foreach (var flowGroup in varNodesImpl.GroupBy(s => s.RNS.Flow))
         {
@@ -422,7 +452,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             {
                 var valueExpression = nodeImpl.Node.DefaultValue;
                 if (string.IsNullOrEmpty(valueExpression)) continue;
-                var calcedValue = ppt.Get.Eval(valueExpression);
+                var calcedValue = ppt.Eval(valueExpression);
                 nodeImpl.Node.TrySetValue(calcedValue);
             }
         }
@@ -451,7 +481,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     private void NodeTaskManager_OnCurrentTaskCountChanged(int currentTaskCount)
     {
-        _sendTaskCountDebouncer.Debouce(() =>
+        _sendTaskCountDebouncer.Debounce(() =>
         {
             _runtime.BroadcastHub.NodeRunningTaskCountChanged(currentTaskCount);
         });

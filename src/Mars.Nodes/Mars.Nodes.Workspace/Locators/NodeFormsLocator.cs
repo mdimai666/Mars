@@ -8,7 +8,7 @@ namespace Mars.Nodes.Workspace.Locators;
 internal class NodeFormsLocator : INodeFormsLocator
 {
     Dictionary<Type, NodeFormItem> _dict = [];
-    IDictionary<Type, NodeFormItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
+    Dictionary<Type, NodeFormItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
     bool invalid = true;
     HashSet<Assembly> assemblies = [];
 

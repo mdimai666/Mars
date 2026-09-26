@@ -1,8 +1,8 @@
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
 using Mars.Nodes.Core.Nodes.Storage;
+using Mars.Nodes.Expressions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Storage;
 
@@ -20,7 +20,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var filePath = VariableSetNodeImpl.ReadFieldAsExpression(Node.FilePath, RNS, input);
+        var filePath = ResolveFilePath();
 
         switch (Node.WriteMode)
         {
@@ -43,6 +43,12 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>
 
         callback(input);
         return Task.CompletedTask;
+
+        string ResolveFilePath()
+        {
+            using var expr = RNS.Expressions(Node);
+            return (string)expr.Resolve(Node.FilePathKind, Node.FilePath, "string", input, Node, "FilePath")!;
+        }
     }
 
     private void AppendToFile(string filePath, object? payload)

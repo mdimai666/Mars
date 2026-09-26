@@ -5,14 +5,15 @@ using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HttpRequestNode/HttpRequestNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/HttpRequestNode/HttpRequestNode{.lang}.md")]
 [Display(GroupName = "network")]
-public class HttpRequestNode : Node
+public class HttpRequestNode : Node, INodeOutputValueSpec
 {
     public override string TypeId => "core.HttpRequestNode";
 
     public override string DisplayName => Name.AsNullIfEmpty() ?? Url.AsNullIfEmpty() ?? base.Label;
     public string Method { get; set; } = "GET";
+    public string UrlKind { get; set; } = InputValueKind.Const;
     public string Url { get; set; } = "http://localhost";
 
     public static readonly string[] MethodVariants = ["GET", "POST", "PUT", "DELETE", "HEAD", "PATCH", "PATCH"];
@@ -28,7 +29,22 @@ public class HttpRequestNode : Node
         Inputs = [new()];
         Color = "#e7e6af";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/http-request.svg";
+    }
+
+    /// <summary>Слот HttpRequestInfo объявлен атрибутом на impl (тип живёт в Implements).</summary>
+    public IEnumerable<OutputValueSpec> GetOutputValueSpec()
+    {
+        var (payloadType, description) = ReturnResponse switch
+        {
+            ReturnResponseType.String => ("string", (string?)null),
+            ReturnResponseType.Object => (VarNode.ObjectTypeName, (string?)"parsed JSON"),
+            ReturnResponseType.Bytes => (VarNode.ObjectTypeName, (string?)"byte[]"),
+            ReturnResponseType.Stream => (VarNode.ObjectTypeName, (string?)"response stream"),
+            _ => (VarNode.ObjectTypeName, (string?)"by Content-Type: JSON, string or bytes"),
+        };
+
+        yield return new OutputValueSpec(nameof(NodeMsg.Payload), payloadType, Description: description);
     }
 
     public enum ReturnResponseType

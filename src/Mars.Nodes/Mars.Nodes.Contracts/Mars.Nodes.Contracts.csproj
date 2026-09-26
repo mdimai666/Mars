@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Nodes.Contracts</PackageId>
+        <Product>Mars.Nodes.Contracts</Product>
+        <Description>
+            Mars Nodes wire contracts: DTOs shared between server host and front.
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+    </ItemGroup>
+
+</Project>

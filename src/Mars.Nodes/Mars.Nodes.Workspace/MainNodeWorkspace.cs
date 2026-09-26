@@ -2,13 +2,14 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Locators;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.FormEditor;
-using Mars.Nodes.FormEditor.EditForms;
+using Mars.Nodes.FormEditor.EditForms.Common;
 using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Locators;
 using Mars.Nodes.Workspace.Services;
+using Mars.Nodes.Workspace.Services.ValueFields;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.HotKeys2;
@@ -31,6 +32,14 @@ public static class MainNodeWorkspace
         if (!services.Any(d => d.ServiceType == typeof(HotKeys))) services.AddHotKeys2();
 
         services.AddScoped<NodeWorkspaceJsInterop>();
+        services.AddScoped<NodeFormEditorJsInterop>();
+
+        services.AddScoped<IHostValueHints, HostValueHints>();
+        services.AddScoped<IValueRootProvider, MsgValueRootProvider>();
+        services.AddScoped<IValueRootProvider, FlowContextValueRootProvider>();
+        services.AddScoped<IValueRootProvider, GlobalContextValueRootProvider>();
+        services.AddScoped<IValueRootProvider, VarNodeValueRootProvider>();
+        services.AddScoped<IValueFieldProvider, ValueFieldProvider>();
 
         return services;
     }

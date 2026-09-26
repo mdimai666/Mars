@@ -2,9 +2,11 @@ using EditorJsBlazored.Host;
 using Mars.Admin.Host;
 using Mars.AiChat.Host;
 using Mars.Cms.Host;
+using Mars.CodeCompletion.Host;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
+using Mars.CommandLine.Scripting;
 using Mars.Datasource;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
@@ -41,6 +43,8 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
 using Mars.XActions.Host;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -87,6 +91,14 @@ public static class MarsWebAppStartup
             builder.MarsAddLogging();
         }
 
+        if (commandsApi.CheckGlobalOption<bool>("--quiet", args))
+        {
+            builder.Logging.AddFilter<ConsoleLoggerProvider>(null, LogLevel.None);
+            // PluginManager логирует автономной LoggerFactory (создан в AddPlugins до Build) —
+            // фильтр выше на него не действует, тихий режим передаём через конфигурацию
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Cli:Quiet"] = bool.TrueString });
+        }
+
         //------------------------------------------
         // Mars
         builder.Services.AddMarsSwagger()
@@ -119,6 +131,7 @@ public static class MarsWebAppStartup
             builder.AddMarsAiCms();
         });
         builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
+        builder.AddIfFeatureEnabled(FeatureFlags.CodeCompletion, b => b.Services.AddMarsCodeCompletion(b.Configuration));
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuth());
 
         //------------------------------------------
@@ -189,6 +202,10 @@ public static class MarsWebAppStartup
         app.UseMarsSwagger();
         app.MapControllers();
         app.MapRazorPages();
+
+        // регистрация fn ДО старта CLI-сокета: удалённые исполнения лениво загружают
+        // типы команд один раз, к первому запросу дерево должно быть полным
+        app.UseMarsCommandLineScripting();
 
         app.UseMarsCliSocket(Instance);
 

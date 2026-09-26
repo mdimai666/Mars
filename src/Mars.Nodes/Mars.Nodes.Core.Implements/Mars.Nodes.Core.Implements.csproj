@@ -27,10 +27,10 @@
         <ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Expressions\Mars.Nodes.Expressions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     <ProjectReference Include="..\..\Mars.Modules\Mars.TemplateEngine.Abstractions\Mars.TemplateEngine.Abstractions.csproj" />
     </ItemGroup>

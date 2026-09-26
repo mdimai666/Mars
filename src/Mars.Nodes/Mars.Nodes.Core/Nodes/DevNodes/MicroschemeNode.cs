@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.DevNodes;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MicroschemeNode/MicroschemeNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/MicroschemeNode/MicroschemeNode{.lang}.md")]
 public class MicroschemeNode : Node
 {
     public override string TypeId => "core.MicroschemeNode";
@@ -11,7 +11,7 @@ public class MicroschemeNode : Node
 
     public MicroschemeNode()
     {
-        isInjectable = true;
+        IsInjectable = true;
         Color = "#A9BBCF";
         Outputs = [new()];
     }

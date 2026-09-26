@@ -1,0 +1,19 @@
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes.Functions;
+
+namespace Mars.Nodes.Contracts.Nodes;
+
+public record InlineFunctionNodeSchemaResponse
+{
+    public required string TypeId { get; init; }
+    public required string Name { get; init; }
+    public required string? Color { get; init; }
+    public required string? Icon { get; init; }
+
+    public required string GroupName { get; init; }
+
+    public required NodeInput[] Inputs { get; init; }
+    public required NodeOutput[] Outputs { get; init; }
+
+    public required IFNS_Parameter[] Parameters { get; init; }
+}

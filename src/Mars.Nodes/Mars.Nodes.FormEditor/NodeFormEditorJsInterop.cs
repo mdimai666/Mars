@@ -1,4 +1,5 @@
 using System.Drawing;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Mars.Nodes.FormEditor;
@@ -51,4 +52,37 @@ public class NodeFormEditorJsInterop : IAsyncDisposable
         var module = await moduleTask.Value;
         await module.InvokeVoidAsync("f_editor_doaction", actionId);
     }
+
+    public async ValueTask<CaretRange> ValueInput_GetSelection(ElementReference element)
+    {
+        var module = await moduleTask.Value;
+        return await module.InvokeAsync<CaretRange>("mvi_getSelection", element);
+    }
+
+    public async ValueTask ValueInput_SetCaret(ElementReference element, int position)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_setCaret", element, position);
+    }
+
+    public async ValueTask ValueInput_Bind(ElementReference root, ElementReference input, object dotNetRef,
+                                          string outsideClickMethod, string pasteMethod)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_bind", root, input, dotNetRef, outsideClickMethod, pasteMethod);
+    }
+
+    public async ValueTask ValueInput_PopupOpen(ElementReference popup, ElementReference anchor, string align)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_popupOpen", popup, anchor, align);
+    }
+
+    public async ValueTask ValueInput_Dispose(ElementReference root, ElementReference input, ElementReference anchor)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("mvi_dispose", root, input, anchor);
+    }
 }
+
+public record struct CaretRange(int Start, int End);

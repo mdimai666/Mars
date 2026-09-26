@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Nodes.Core;
 using Mars.Nodes.Front.Abstractions.Editor.Interfaces;
+using Mars.Nodes.Front.Abstractions.Services;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ public partial class NodeEditContainer1
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILogger<NodeEditContainer1> _logger { get; set; } = default!;
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
+    [Inject] IServiceProvider Services { get; set; } = default!;
 
     [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
@@ -22,6 +24,26 @@ public partial class NodeEditContainer1
     bool _visible;
 
     Node? _node = default!;
+
+    public Node? Node => _node;
+
+    /// <summary>Растёт, когда приходят новые данные хоста — по нему компоненты сбрасывают кэш подсказок.</summary>
+    public int ValueFieldsVersion => HintService?.Version ?? 0;
+
+    IHostValueHints? HintService => Services.GetService(typeof(IHostValueHints)) as IHostValueHints;
+
+    /// <summary>
+    /// Подсказки для поля значения редактируемой ноды; пусто, если провайдер не зарегистрирован
+    /// (хост без NodeWorkspace, напр. пререндер на сервере).
+    /// </summary>
+    public IReadOnlyCollection<ValueFieldInfo> GetValueFields(string? fieldName)
+    {
+        if (_node is null || _nodeEditorApi?.AllNodes is not { } nodes) return [];
+        if (Services.GetService(typeof(IValueFieldProvider)) is not IValueFieldProvider provider) return [];
+
+        return provider.GetFields(new ValueFieldContext(nodes, _node, fieldName));
+    }
+
     [Parameter] public EventCallback<Node> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback OnBackdropCancel { get; set; }

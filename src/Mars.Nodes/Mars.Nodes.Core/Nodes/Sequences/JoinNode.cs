@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Sequences;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/JoinNode/JoinNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/JoinNode/JoinNode{.lang}.md")]
 [Display(GroupName = "sequence")]
 public class JoinNode : Node
 {
@@ -17,7 +17,7 @@ public class JoinNode : Node
     public JoinNode()
     {
         Color = "#E0D870";
-        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/join.svg";
         Inputs = [new(), new()];
         Outputs = [new() { Label = "on join" }, new() { Label = "on InputAggregation timeout" }];
     }

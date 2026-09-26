@@ -1,10 +1,12 @@
 using Flurl.Http;
+using Mars.CodeCompletion.Host;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Nodes.Host;
 using Mars.Nodes.Workspace;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.FeatureManagement;
 using Microsoft.FluentUI.AspNetCore.Components;
 using StandNodesApp;
 using StandNodesApp.Components;
@@ -37,6 +39,8 @@ builder.Services.AddFluentUIComponents();
 
 builder.Services.AddNodeWorkspace();
 builder.Services.AddMarsNodes();
+builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
+builder.Services.AddMarsCodeCompletion(builder.Configuration);
 
 var app = builder.Build();
 

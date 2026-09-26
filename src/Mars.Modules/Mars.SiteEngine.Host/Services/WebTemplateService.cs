@@ -162,7 +162,7 @@ public class WebTemplateService : IWebTemplateService
 
     void UpdateFile(string path, WatcherChangeTypes changeType)
     {
-        _debouncer.Debouce(() => { _updateFile(path, changeType); });
+        _debouncer.Debounce(() => { _updateFile(path, changeType); });
     }
 
     public void NotifyFileChanged(string fullPath)

@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Network;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SmtpConfigNode/SmtpConfigNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/SmtpConfigNode/SmtpConfigNode{.lang}.md")]
 public class SmtpConfigNode : ConfigNode
 {
     public override string TypeId => "core.SmtpConfigNode";
@@ -25,4 +25,9 @@ public class SmtpConfigNode : ConfigNode
 
     [Display(Name = "Password")]
     public string Password { get; set; } = "";
+
+    public SmtpConfigNode()
+    {
+        Icon = "_content/Mars.Nodes.Workspace/nodes/smtp-config.svg";
+    }
 }

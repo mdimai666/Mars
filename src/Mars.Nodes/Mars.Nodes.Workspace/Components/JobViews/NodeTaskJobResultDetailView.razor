@@ -1,7 +1,9 @@
+@using System.Text.Json
 @using Mars.Core.Extensions
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Nodes.Common
-@using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob
+@using Mars.Nodes.Contracts.NodeTaskJob
+@using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <node-task-job-result-detail>
@@ -74,6 +76,7 @@
 @code {
 
     [Parameter] public NodeTaskResultDetailResponse Model { get; set; } = default!;
+    [Parameter] public INodeEditorApi Editor { get; set; } = default!;
 
     TimeSpan TaskDuration;
     string TheDuration => TaskDuration.TotalMilliseconds.ToString("0.0") + "ms";
@@ -95,7 +98,7 @@
             })).OrderBy(s=>s.Start)
                 .ToList();
 
-        _ganttItems = items.Select(x=>new GanttBarData(x, Model, NodeEditor1.Instance!.AllNodes)).ToArray();
+        _ganttItems = items.Select(x => new GanttBarData(x, Model, Editor.AllNodes, Editor.NodesJsonSerializerOptions)).ToArray();
     }
 
     public static double CalculateOffsetPercent(GanttItem execution, NodeTaskResultDetailResponse task)
@@ -134,19 +137,19 @@
 
         public Node Node { get; init; }
 
-        public GanttBarData(GanttItem job, NodeTaskResultDetailResponse task, IDictionary<string,Node> nodes)
+        public GanttBarData(GanttItem job, NodeTaskResultDetailResponse task, IDictionary<string, Node> nodes, JsonSerializerOptions nodesJsonSerializerOptions)
         {
             OffsetPercent = CalculateOffsetPercent(job, task);
             WidthPercent = CalculateWidthPercent(job, task);
             Result = job.Result;
             Job = job;
-            Node = nodes.GetValueOrDefault(job.NodeId)?.Copy(NodeEditor1.Instance!.NodesJsonSerializerOptions) ?? new UnknownNode() { };
+            Node = nodes.TryGetValue(job.NodeId, out var jobNode) ? jobNode.Copy(nodesJsonSerializerOptions) : new UnknownNode() { };
             Node.X = 0;
             Node.Y = 0;
             Node.Inputs = [];
             Node.Outputs = [];
-            Node.isInjectable = false;
-            Node.hasTailButton = false;
+            Node.IsInjectable = false;
+            Node.HasTailButton = false;
 
             OffsetPercentCssVal = OffsetPercent.ToString("0.00", CultureInfo.InvariantCulture) + "%";
             WidthPercentCssVal = WidthPercent.ToString("0.00", CultureInfo.InvariantCulture) + "%";
@@ -162,14 +165,5 @@
 <style>
     .task-summary-card {
         padding: 16px;
-    }
-
-    .execution-bar {
-        height: 28px;
-        display: flex;
-        align-items: center;
-        padding: 0 6px;
-        border-radius: 4px;
-        background: var(--neutral-layer-3);
     }
 </style>

@@ -40,23 +40,39 @@ var app = builder.Build();
 
 var commandsApi = app.Services.GetRequiredService<ICommandLineApi>() as CommandLineApi;
 commandsApi.Setup(app);
+var quiet = commandsApi.CheckGlobalOption<bool>("--quiet", IsTesting ? [] : args);
 var (baseCmdInvoked, isHelpCmd) = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
 if (baseCmdInvoked) return 0;
 
 var (remoteCmdInvoked, remoteExitCode) = await commandsApi.Remote.InvokeAsync(IsTesting ? [] : args);
 if (remoteCmdInvoked) return remoteExitCode;
 
-Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
+if (!quiet) Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
 
-if (!isHelpCmd) commandsApi.GetCommand<InfoCommand>().ShowInfoCommand(showHello: false);
+if (!isHelpCmd && !quiet) commandsApi.GetCommand<InfoCommand>().ShowInfoCommand(showHello: false);
 
-await MarsWebAppStartup.ConfigureApp(app, builder, args);
+// в тихом режиме глушим ВЕСЬ вывод стартапа: компоненты конфигурации (PluginManager,
+// MarsDbStartup, конструкторы DbContext...) пишут напрямую в Console мимо ILogger —
+// фильтр логгера их не берёт, поэтому временный перехват консоли на окно ConfigureApp
+var startupOut = Console.Out;
+if (quiet) Console.SetOut(TextWriter.Null);
+try
+{
+    await MarsWebAppStartup.ConfigureApp(app, builder, args);
+}
+finally
+{
+    if (quiet) Console.SetOut(startupOut);
+}
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;
 
 startWatch.Stop();
-Console.WriteLine($"start in : {startWatch.ElapsedMilliseconds.ToString("0")}ms");
-Console.WriteLine(">RUN");
+if (!quiet)
+{
+    Console.WriteLine($"start in : {startWatch.ElapsedMilliseconds.ToString("0")}ms");
+    Console.WriteLine(">RUN");
+}
 
 return app.RunSafelyMessageWrapper();

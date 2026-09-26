@@ -1,3 +1,4 @@
+using DynamicExpresso;
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Models;
@@ -5,8 +6,8 @@ using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.Parsers;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Expressions;
 using Mars.Nodes.Tests.Services;
-using Mars.SiteEngine.Abstractions.Templators;
 
 namespace Mars.Nodes.Tests.Nodes;
 
@@ -34,7 +35,7 @@ public class JsonNodeTests : NodeServiceUnitTestBase
         var redContext = Runtime.CreateContextForNode(Runtime.Nodes.Values.First(node => node.Node is JsonNode).Node, (FlowNodeImpl)Runtime.Nodes.Values.First(node => node is FlowNodeImpl));
         var setter = new VariableSetExpression { ValuePath = "msg.Payload", Expression = "msg.Payload.age", Operation = VariableSetOperation.Set };
 
-        var ppt = VariableSetNodeImpl.CreateInterpreter(redContext, msg!);
+        var ppt = InputValueResolver.CreateInterpreter(redContext, msg!);
 
         //Act
         var expressionResult = VariableSetNodeImpl.SetExpression(setter, ppt, redContext, msg!);
@@ -57,8 +58,9 @@ public class JsonNodeTests : NodeServiceUnitTestBase
         msg.Payload.GetType().Should().Be<DynamicJson>();
 
         //Act
-        var ppt = new XInterpreter(pageContext: null, new() { { "payload", msg.Payload! } });
-        var evalResult = ppt.Get.Eval("payload.age");
+        var ppt = new Interpreter();
+        ppt.SetVariable("payload", msg.Payload!);
+        var evalResult = ppt.Eval("payload.age");
 
         //Assert
         evalResult.Should().Be(35);

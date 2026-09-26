@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Functions;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/TemplateNode/TemplateNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/TemplateNode/TemplateNode{.lang}.md")]
 [Display(GroupName = "functions")]
 public class TemplateNode : Node
 {
@@ -24,7 +24,7 @@ public class TemplateNode : Node
         Inputs = [new()];
         Color = "#ecb56a";
         Outputs = [new()];
-        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/template.svg";
     }
 
     public static TemplateNode PlainTextVariant(string template)

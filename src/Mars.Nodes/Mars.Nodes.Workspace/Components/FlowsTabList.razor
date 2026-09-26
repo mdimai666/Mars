@@ -1,0 +1,23 @@
+@using Mars.Nodes.Core.Nodes.Common
+
+<ul class="list-group fz12px">
+    @foreach (var flow in Flows)
+    {
+        bool isActive = ActiveFlow == flow;
+        <li class=@($"p-2 list-group-item rounded-0 {(isActive ? "active" : "")}")
+            @key=@flow.Id
+            @onclick=@(e => OnSelectFlow.InvokeAsync(flow))
+            @ondblclick=@(e => OnEditFlow.InvokeAsync(flow))>@flow.DisplayName</li>
+    }
+    <li class="px-2 py-0 list-group-item text-center fw-bold rounded-0" @onclick=@(e => OnAddFlow.InvokeAsync())>
+        <i class="bi bi-plus fz22px"></i>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public IReadOnlyList<FlowNode> Flows { get; set; } = [];
+    [Parameter] public FlowNode? ActiveFlow { get; set; }
+    [Parameter] public EventCallback<FlowNode> OnSelectFlow { get; set; }
+    [Parameter] public EventCallback<FlowNode> OnEditFlow { get; set; }
+    [Parameter] public EventCallback OnAddFlow { get; set; }
+}

@@ -10,7 +10,7 @@ public class TemplateNodeSimpleRenderTextExample : INodeExample<TemplateNode>
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "123", Name = "123" })
+            .AddNext(new InjectNode().SetPayload("123"))
             .AddNext(new TemplateNode() { Template = "<div>Template: {{Payload}}</div>" })
             .AddNext(new DebugNode())
             .Build();

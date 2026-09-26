@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes.Events;
 
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/EventListenerNode/EventListenerNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/docs/EventListenerNode/EventListenerNode{.lang}.md")]
 [Display(GroupName = "events")]
 public class EventListenerNode : Node
 {

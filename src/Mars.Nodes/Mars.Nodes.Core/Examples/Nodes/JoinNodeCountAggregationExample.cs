@@ -14,7 +14,7 @@ public class JoinNodeCountAggregationExample : INodeExample<JoinNode>
         TemplateNode templateNode;
 
         var builder = NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "123456789", Name = "123456789" })
+            .AddNext(new InjectNode().SetPayload("123456789"))
             .AddNext(foreachNode = new ForeachNode())
             .AddNext(templateNode = new TemplateNode() { Name = "item", Template = "item: {{Payload}}" })
             .AddNext(new JoinNode()

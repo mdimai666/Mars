@@ -6,7 +6,7 @@
 
     <ItemGroup>
         <PackageReference Include="CronExpressionDescriptor" />
-        <PackageReference Include="Quartz.AspNetCore" />
+        <PackageReference Include="Quartz" />
     </ItemGroup>
 
     <ItemGroup>

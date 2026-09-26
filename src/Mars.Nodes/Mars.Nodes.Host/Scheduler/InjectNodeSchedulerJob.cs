@@ -20,7 +20,7 @@ internal class InjectNodeSchedulerJob : IJob
         _logger = logger;
     }
 
-    public async Task Execute(IJobExecutionContext context)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         var nodeId = context.JobDetail.JobDataMap.GetString(DataKeyNodeId)
                             ?? throw new ArgumentNullException($"key 'DataKeyNodeId' not found");

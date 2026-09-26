@@ -1,11 +1,9 @@
-using System.Collections;
 using CronExpressionDescriptor;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Scheduler.Abstractions;
 using Mars.Scheduler.Abstractions.Dto.Schedulers;
 using Quartz;
-using Quartz.Impl.Matchers;
 
 namespace Mars.Scheduler.Host;
 
@@ -18,7 +16,7 @@ internal class SchedulerManager : ISchedulerManager
         _schedulerFactory = schedulerFactory;
     }
 
-    public Task AddDailyJob<T>(string jobName, string jobGroup, TimeOnly dailyTime, IDictionary? data = null, bool startNow = false) where T : IJob
+    public Task AddDailyJob<T>(string jobName, string jobGroup, TimeOnly dailyTime, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob
     {
         //var d = new CronExpression();
         //var x = new CronTriggerImpl()
@@ -28,7 +26,7 @@ internal class SchedulerManager : ISchedulerManager
         return AddJob<T>(jobName, jobGroup, cron, data, startNow);
     }
 
-    public Task AddIntervalJob<T>(string jobName, string jobGroup, TimeSpan jobInterval, IDictionary? data = null, bool startNow = false) where T : IJob
+    public Task AddIntervalJob<T>(string jobName, string jobGroup, TimeSpan jobInterval, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob
     {
         SimpleScheduleBuilder sb = SimpleScheduleBuilder.Create()
             .WithInterval(jobInterval)
@@ -53,9 +51,9 @@ internal class SchedulerManager : ISchedulerManager
         });
     }
 
-    public Task AddJob<T>(string jobName, string jobGroup, string cronString, IDictionary? data = null, bool startNow = false) where T : IJob
+    public Task AddJob<T>(string jobName, string jobGroup, string cronString, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob
     {
-        if (!CronExpression.IsValidExpression(cronString))//is parse human string like
+        if (!CronExpression.TryParse(cronString, out _))//is parse human string like
             throw new ArgumentException("cronString is not valid");
 
         ITrigger trigger = TriggerBuilder.Create()
@@ -68,7 +66,7 @@ internal class SchedulerManager : ISchedulerManager
 
         return AddJob<T>(jobName, jobGroup, trigger, data);
     }
-    public async Task AddJob<T>(string jobName, string jobGroup, ITrigger trigger, IDictionary? data = null) where T : IJob
+    public async Task AddJob<T>(string jobName, string jobGroup, ITrigger trigger, IDictionary<string, object>? data = null) where T : IJob
     {
 
         IScheduler scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
@@ -81,7 +79,7 @@ internal class SchedulerManager : ISchedulerManager
 
         if (data is not null)
         {
-            builder.SetJobData(new JobDataMap(data));
+            builder.UsingJobData(new JobDataMap(data));
         }
 
         IJobDetail job = builder.Build();
@@ -122,7 +120,7 @@ internal class SchedulerManager : ISchedulerManager
         await scheduler.ResumeAll();
     }
 
-    public bool IsStarted => _schedulerFactory.GetScheduler().ConfigureAwait(false).GetAwaiter().GetResult().IsStarted;
+    public bool IsStarted => _schedulerFactory.GetScheduler().ConfigureAwait(false).GetAwaiter().GetResult().Status is not SchedulerStatus.Created;
 
     public async Task InjectJob(string jobName, string jobGroup)
     {
@@ -234,7 +232,7 @@ internal class SchedulerManager : ISchedulerManager
                 Name = s.Job.Key.Name,
                 Group = s.Job.Key.Group,
                 Triggers = TrgiggersAsDto(s.Triggers, stateDict),
-                NextExecutionTime = s.Triggers.Min(trigger => trigger.GetNextFireTimeUtc()),
+                NextExecutionTime = s.Triggers.Min(trigger => trigger.NextFireTimeUtc),
             }
         ).ToArray();
     }
@@ -257,7 +255,7 @@ internal class SchedulerManager : ISchedulerManager
             Name = job.Key.Name,
             Group = job.Key.Group,
             Triggers = TrgiggersAsDto(triggers, stateDict),
-            NextExecutionTime = triggers.Min(trigger => trigger.GetNextFireTimeUtc())
+            NextExecutionTime = triggers.Min(trigger => trigger.NextFireTimeUtc)
         };
     }
 
@@ -285,5 +283,5 @@ internal class SchedulerManager : ISchedulerManager
 
 internal static class TriggerBuilderExtensions
 {
-    internal static TriggerBuilder StartNow(this TriggerBuilder builder, bool startNow) => startNow ? builder.StartNow() : builder;
+    internal static TriggerBuilder<T> StartNow<T>(this TriggerBuilder<T> builder, bool startNow) where T : IJob => startNow ? builder.StartNow() : builder;
 }

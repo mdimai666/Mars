@@ -12,7 +12,6 @@ namespace Mars.QueryLang.Host.Services;
 
 public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
 {
-    //public EfDynQueryDict.DQC_Context ctx;
     public IQueryable<T> query;
 
     public IQueryable<T> baseQuery;
@@ -79,7 +78,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     LambdaExpression ParseExpA(string exp, string varName = "post")
     {
         MethodInfo method = GetType().GetMethod(nameof(this.ParseExp), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(string), typeof(string) })!;
-        //method = method.MakeGenericMethod(typeof(T));
         return (method.Invoke(this, new[] { exp, varName }) as LambdaExpression)!;
     }
 
@@ -147,9 +145,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
             return query.FirstOrDefault();
         }
 
-        //var exp = ParseExp<IBasicEntity>(expr);
-        //return query.First(exp);
-
         var result = CallQueryableMethod(nameof(Queryable.FirstOrDefault), expr);
         Where(expr);
         Take(1);
@@ -163,18 +158,13 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         CurrentQueriGetSingle = true;
         if (string.IsNullOrEmpty(expr))
         {
-            query = query.Reverse().Take(1);
-            //Take(1);
+            query = query.TakeLast(1);
             return query.LastOrDefault();
         }
 
-        //var exp = ParseExp<IBasicEntity>(expr);
-        //return query.Last(exp);
-
         var result = CallQueryableMethod(nameof(Queryable.LastOrDefault), expr);
         Where(expr);
-        query = query.Reverse().Take(1);
-        //query = Take(1);
+        query = query.TakeLast(1);
 
         return (T?)result!;
     }
@@ -270,9 +260,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     [TemplatorHelperInfo("Where", """.Where(@expr)""", "Фильтрует элементы по указанному выражению. @expr - выражение для фильтрации")]
     public IDefaultEfQueries<T> Where(string expr)
     {
-        //var exp = ParseExp<IBasicEntity>(expr);
-        //return query.Where(exp);
-
         string _expr = expr;
 
         if (_expr.StartsWith('='))
@@ -297,13 +284,9 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     [TemplatorHelperInfo("Select", """.Select(@expr)""", "Выбирает элементы из запроса по указанному выражению. @expr - выражение для выбора элементов")]
     public object Select(string expr)
     {
-        //var exp = ParseExpA(expr);
-
         var fieldName = expr;
 
         var result = CallQueryableKeySelMethod(nameof(Queryable.Select), fieldName, "selector");
-
-        //query = result as IQueryable<IBasicEntity>;
 
         return result!;
     }
@@ -311,8 +294,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     [TemplatorHelperInfo("Include", """.Include(@expr)""", "Включает связанные данные в запрос. @expr - имя навигационного свойства или список свойств через запятую")]
     public IDefaultEfQueries<T> Include(string expr)
     {
-        //var exp = ParseExpA(expr);
-
         var navigationPropertyArg = ppt.Get.Eval<string>(expr);
 
         var methodName = nameof(EntityFrameworkQueryableExtensions.Include);
@@ -361,11 +342,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     [TemplatorHelperInfo("Search", """.Search(@searchText)""", "Поиск по тексту. @searchText - текст для поиска")]
     public IDefaultEfQueries<T> Search(string searchText)
     {
-        //var exp = ParseExp<IBasicEntity>(expr);
-        //return query.Where(exp);
-
-        //var result = CallQueryableMethod(nameof(Queryable.Where), );
-
         IQueryable<T> result;
         var _searchText = ppt.Get.Eval<string>(searchText).ToLower();
 
@@ -379,7 +355,6 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         else
         {
             throw new NotImplementedException();
-            //result = query.Where(s => s.Id.ToString().Contains(_searchText));
         }
 
         query = result;

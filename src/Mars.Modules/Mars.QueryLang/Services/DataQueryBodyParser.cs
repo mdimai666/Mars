@@ -29,11 +29,11 @@ public static class DataQueryBodyParser
         return dataQuery;
     }
 
-    public static TimeSpan? ParseTimespan(string simespanString)
+    public static TimeSpan? ParseTimespan(string timespanString)
     {
         string[] formats = { @"m\m", @"h\h\m\m", @"s\s" };
         TimeSpan ts;
-        if (TimeSpan.TryParseExact(simespanString, formats, null, out ts))
+        if (TimeSpan.TryParseExact(timespanString, formats, null, out ts))
         {
             return ts;
         }

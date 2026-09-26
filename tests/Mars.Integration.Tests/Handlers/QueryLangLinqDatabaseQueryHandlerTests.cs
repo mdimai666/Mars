@@ -81,6 +81,79 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_Predicates_AnyAll_TranslateOnPostgres()
+    {
+        // Arrange — "agg-333" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "agg-333");
+        createdPosts[0].Title = "agg-000";
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title.StartsWith(\"agg-\"))";
+
+        // Act
+        var any = await _handler.Handle($"{filter}.Any(post.Title==\"agg-333\")", new(), default);
+        var all = await _handler.Handle($"{filter}.All(post.Title.Length==7)", new(), default);
+        var anyEmpty = await _handler.Handle($"{filter}.Any()", new(), default);
+
+        // Assert
+        any.Should().Be(true);
+        all.Should().Be(true);
+        anyEmpty.Should().Be(true);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_MaxMinDistinct_TranslateOnPostgres()
+    {
+        // Arrange — "minmax-444" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "minmax-444");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"minmax-444\")";
+        var expectedMax = await ef.Posts.Where(s => s.Title == "minmax-444").MaxAsync(s => s.CreatedAt);
+        var expectedMin = await ef.Posts.Where(s => s.Title == "minmax-444").MinAsync(s => s.CreatedAt);
+
+        // Act
+        var max = await _handler.Handle($"{filter}.Max(CreatedAt)", new(), default);
+        var min = await _handler.Handle($"{filter}.Min(CreatedAt)", new(), default);
+        var distinct = await _handler.Handle($"{filter}.Select(Title).Distinct().ToList()", new(), default);
+
+        // Assert
+        max.Should().Be(expectedMax);
+        min.Should().Be(expectedMin);
+        (distinct as IEnumerable<string>)!.Should().ContainSingle().Which.Should().Be("minmax-444");
+    }
+
+    [IntegrationFact]
+    public async Task Handle_SumAverageOnMetaIntField_TranslateOnPostgres()
+    {
+        // Arrange
+        await _setupDataHelper.SetupPostTypeAndPosts(
+            "sumavgType",
+            [new() { Id = Guid.NewGuid(), Type = EMetaFieldType.Int, Key = "price", Title = "Price" }],
+            3,
+            (post, i) => post.Slug = $"sumavg-{i}",
+            (post, i) => [new() { Type = EMetaFieldType.Int, Int = (i + 1) * 10 }]);
+
+        // Act
+        var sum = await _handler.Handle("sumavgType.Sum(price)", new(), default);
+        var average = await _handler.Handle("sumavgType.Average(price)", new(), default);
+        var max = await _handler.Handle("sumavgType.Max(price)", new(), default);
+
+        // Assert
+        sum.Should().Be(60);
+        average.Should().Be(20d);
+        max.Should().Be(30);
+    }
+
+    [IntegrationFact]
     public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange

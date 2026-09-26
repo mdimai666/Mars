@@ -34,6 +34,8 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
 
         List<LinqMethodSignature> signatures = [
             ff(nameof(b.Count),[ new() ]),
+            ff(nameof(b.Any),[ new() ]),
+            ff(nameof(b.All),[ new() ]),
             ff(nameof(b.First),[ new() ]),
             ff(nameof(b.Last),[ new() ]),
             ff(nameof(b.Skip),[ new() ]),
@@ -45,6 +47,11 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
             ff(nameof(b.ThenBy),[ new() ]),
             ff(nameof(b.ThenByDescending),[ new() ]),
             ff(nameof(b.ToList),[ new() ]),
+            ff(nameof(b.Distinct),[ new() ]),
+            ff(nameof(b.Max),[ new() ]),
+            ff(nameof(b.Min),[ new() ]),
+            ff(nameof(b.Sum),[ new() ]),
+            ff(nameof(b.Average),[ new() ]),
 
             ff(nameof(b.Include),[ new() ]),
             ff(nameof(b.Union),[ new() ]),

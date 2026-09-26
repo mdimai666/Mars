@@ -16,6 +16,18 @@ public class EfStringQuerySyntaxTests
 
     static EfStringQuery Q() => new(CreatePosts(), new XInterpreter());
 
+    class Item
+    {
+        public int Price { get; set; }
+    }
+
+    static EfStringQuery Items() => new(new List<Item>
+    {
+        new() { Price = 10 },
+        new() { Price = 30 },
+        new() { Price = 20 },
+    }.AsQueryable(), new XInterpreter());
+
     [Fact]
     public void Where_LegacyBareLambdaSyntax_ReturnSameResult()
     {
@@ -85,6 +97,52 @@ public class EfStringQuerySyntaxTests
     }
 
     [Fact]
+    public void Any_WithAndWithoutPredicate()
+    {
+        Q().Any().Should().BeTrue();
+        Q().Any("Title==\"111\"").Should().BeTrue();
+        Q().Any("Title==\"xxx\"").Should().BeFalse();
+    }
+
+    [Fact]
+    public void All_ChecksEveryElement()
+    {
+        Q().All("Title.Length==3").Should().BeTrue();
+        Q().All("Title==\"111\"").Should().BeFalse();
+    }
+
+    [Fact]
+    public void Distinct_DeduplicatesProjection()
+    {
+        var q = Q();
+        q.Select("Title");
+        q.Distinct().ToList().Cast<string>().Should().BeEquivalentTo(["111", "000"]);
+    }
+
+    [Fact]
+    public void Max_Min_OnFieldAndDottedPath()
+    {
+        Q().Max("PostType.TypeName").Should().Be("z");
+        Q().Min("PostType.TypeName").Should().Be("a");
+        Items().Max("Price").Should().Be(30);
+        Items().Min("Price").Should().Be(10);
+    }
+
+    [Fact]
+    public void Sum_Average_OnNumericField()
+    {
+        Items().Sum("Price").Should().Be(60);
+        Items().Average("Price").Should().Be(20d);
+    }
+
+    [Fact]
+    public void Sum_OnNonNumericField_Throws()
+    {
+        var act = () => Q().Sum("Title");
+        act.Should().Throw<NotSupportedException>();
+    }
+
+    [Fact]
     public void Table_Paginates()
     {
         var table = Q().OrderBy("Slug").Table("1, 2") as TotalResponse2<PostEntity>;
@@ -112,10 +170,14 @@ public class EfStringQuerySyntaxTests
         var map = Q().MethodsMapping();
 
         map.Keys.Should().Contain([
-            nameof(EfStringQuery.Count), nameof(EfStringQuery.First), nameof(EfStringQuery.Last),
+            nameof(EfStringQuery.Count), nameof(EfStringQuery.Any), nameof(EfStringQuery.All),
+            nameof(EfStringQuery.First), nameof(EfStringQuery.Last),
             nameof(EfStringQuery.Where), nameof(EfStringQuery.OrderBy), nameof(EfStringQuery.OrderByDescending),
             nameof(EfStringQuery.ThenBy), nameof(EfStringQuery.ThenByDescending),
             nameof(EfStringQuery.Skip), nameof(EfStringQuery.Take), nameof(EfStringQuery.ToList),
+            nameof(EfStringQuery.Distinct),
+            nameof(EfStringQuery.Max), nameof(EfStringQuery.Min),
+            nameof(EfStringQuery.Sum), nameof(EfStringQuery.Average),
             nameof(EfStringQuery.Select), nameof(EfStringQuery.Include), nameof(EfStringQuery.Table),
             nameof(EfStringQuery.Search), nameof(EfStringQuery.Union),
         ]);

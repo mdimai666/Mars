@@ -136,6 +136,26 @@ public partial class EfStringQuery : IDynamicQueryableObject
     static IList ToListMaterialized(IQueryable source) =>
         (IList)ToListDefinition.MakeGenericMethod(source.ElementType).Invoke(null, [source])!;
 
+    static readonly ConcurrentDictionary<(string name, Type elementType, Type resultType), MethodInfo> AggregateMethods = new();
+
+    // У Queryable.Sum/Average единственный generic-параметр TSource и десяток оверлоадов
+    // под каждый числовой тип селектора — оверлоад подбирается по selector.ReturnType.
+    static MethodInfo FindAggregateMethod(string name, Type elementType, Type resultType) =>
+        AggregateMethods.GetOrAdd((name, elementType, resultType), key =>
+        {
+            var selectorParamType = typeof(Expression<>).MakeGenericType(
+                typeof(Func<,>).MakeGenericType(key.elementType, key.resultType));
+
+            return typeof(Queryable)
+                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                .Where(mi => mi.Name == key.name
+                             && mi.IsGenericMethodDefinition
+                             && mi.GetParameters().Length == 2)
+                .Select(mi => (mi, substituted: mi.MakeGenericMethod(key.elementType)))
+                .FirstOrDefault(x => x.substituted.GetParameters()[1].ParameterType == selectorParamType).mi
+                ?? throw new NotSupportedException($"Queryable.{key.name} has no overload for selector result type '{key.resultType.Name}'");
+        });
+
     static readonly ConcurrentDictionary<(string name, int paramsCount, string? secondParamName), MethodInfo> QueryableMethods = new();
 
     static MethodInfo FindQueryableMethod(string name, int paramsCount, string? secondParamName = null) =>
@@ -169,6 +189,14 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return method.Invoke(null, [query, selector]);
     }
 
+    object? CallNumericAggregate(string methodName, string exp)
+    {
+        var selector = ParseKeySelector(exp);
+        var method = FindAggregateMethod(methodName, query.ElementType, selector.ReturnType)
+            .MakeGenericMethod(query.ElementType);
+        return method.Invoke(null, [query, selector]);
+    }
+
     #endregion
 
     public Dictionary<string, MethodInfo> MethodsMapping()
@@ -191,6 +219,21 @@ public partial class EfStringQuery : IDynamicQueryableObject
             return (int)Call(nameof(Queryable.Count), 1, null)!;
 
         return (int)CallPredicate(nameof(Queryable.Count), expr)!;
+    }
+
+    [TemplatorHelperInfo("Any", """.Any(@expr?)""", "Проверяет наличие элементов. @expr необязательно — условие фильтрации (формы как у Where).")]
+    public bool Any(string expr = "")
+    {
+        if (string.IsNullOrEmpty(expr))
+            return (bool)Call(nameof(Queryable.Any), 1, null)!;
+
+        return (bool)CallPredicate(nameof(Queryable.Any), expr)!;
+    }
+
+    [TemplatorHelperInfo("All", """.All(@expr)""", "Проверяет, что все элементы удовлетворяют условию. Формы @expr как у Where.")]
+    public bool All(string expr)
+    {
+        return (bool)CallPredicate(nameof(Queryable.All), expr)!;
     }
 
     [TemplatorHelperInfo("First", """.First(@expr?)""", "Возвращает первый элемент; запрос не изменяет. @expr необязательно — условие фильтрации (формы как у Where).")]
@@ -284,6 +327,37 @@ public partial class EfStringQuery : IDynamicQueryableObject
     public IEnumerable ToList(string expr = "")
     {
         return ToListMaterialized(query);
+    }
+
+    [TemplatorHelperInfo("Distinct", """Distinct()""", "Убирает дубликаты элементов из запроса.")]
+    public EfStringQuery Distinct(string expr = "")
+    {
+        query = (IQueryable)Call(nameof(Queryable.Distinct), 1, null)!;
+        return this;
+    }
+
+    [TemplatorHelperInfo("Max", """Max(@fieldName)""", "Возвращает максимальное значение поля; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
+    public object? Max(string expr)
+    {
+        return CallKeySelector(nameof(Queryable.Max), expr, "selector");
+    }
+
+    [TemplatorHelperInfo("Min", """Min(@fieldName)""", "Возвращает минимальное значение поля; запрос не изменяет. @fieldName — имя поля или путь через точку (User.Name).")]
+    public object? Min(string expr)
+    {
+        return CallKeySelector(nameof(Queryable.Min), expr, "selector");
+    }
+
+    [TemplatorHelperInfo("Sum", """Sum(@fieldName)""", "Сумма значений числового поля; запрос не изменяет. @fieldName — имя поля или путь через точку.")]
+    public object? Sum(string expr)
+    {
+        return CallNumericAggregate(nameof(Queryable.Sum), expr);
+    }
+
+    [TemplatorHelperInfo("Average", """Average(@fieldName)""", "Среднее значение числового поля; запрос не изменяет. @fieldName — имя поля или путь через точку.")]
+    public object? Average(string expr)
+    {
+        return CallNumericAggregate(nameof(Queryable.Average), expr);
     }
 
     [TemplatorHelperInfo("Select", """Select(@expr)""", "Проецирует элементы в поле. @expr — имя поля или путь через точку (User.Name); последующие методы применяются уже к проекции.")]

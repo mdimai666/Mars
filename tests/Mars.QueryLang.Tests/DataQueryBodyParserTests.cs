@@ -34,6 +34,7 @@ public class DataQueryBodyParserTests
 
     [Theory]
     [InlineData("10m", 10 * 60)]
+    [InlineData("2h", 2 * 3600)]
     [InlineData("1h30m", 90 * 60)]
     [InlineData("45s", 45)]
     public void ParseTimespan_ValidFormats(string input, int expectedSeconds)

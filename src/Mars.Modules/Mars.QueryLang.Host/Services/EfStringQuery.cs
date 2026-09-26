@@ -184,7 +184,7 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return methods.ToDictionary(s => s.Name)!;
     }
 
-    [TemplatorHelperInfo("Count", """.Count(@expr?)""", "Возвращает количество элементов в запросе. Если @expr не указано, то возвращает общее количество элементов в запросе")]
+    [TemplatorHelperInfo("Count", """.Count(@expr?)""", "Возвращает количество элементов в запросе. @expr необязательно — условие фильтрации (формы как у Where).")]
     public int Count(string expr = "")
     {
         if (string.IsNullOrEmpty(expr))
@@ -193,7 +193,7 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return (int)CallPredicate(nameof(Queryable.Count), expr)!;
     }
 
-    [TemplatorHelperInfo("First", """.First(@expr?)""", "Возвращает первый элемент. Если @expr указано, то возвращает применяет выборку.")]
+    [TemplatorHelperInfo("First", """.First(@expr?)""", "Возвращает первый элемент; запрос не изменяет. @expr необязательно — условие фильтрации (формы как у Where).")]
     public object? First(string expr = "")
     {
         if (string.IsNullOrEmpty(expr))
@@ -202,7 +202,7 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return CallPredicate(nameof(Queryable.FirstOrDefault), expr);
     }
 
-    [TemplatorHelperInfo("Last", """.Last(@expr?)""", "Возвращает последний элемент. Если @expr указано, то возвращает применяет выборку.")]
+    [TemplatorHelperInfo("Last", """.Last(@expr?)""", "Возвращает последний элемент; запрос не изменяет. Требует предварительной сортировки OrderBy. @expr необязательно — условие фильтрации.")]
     public object? Last(string expr = "")
     {
         if (string.IsNullOrEmpty(expr))
@@ -211,28 +211,28 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return CallPredicate(nameof(Queryable.LastOrDefault), expr);
     }
 
-    [TemplatorHelperInfo("OrderBy", """OrderBy(@fieldName)""", "Сортирует элементы по указанному полю. @fieldName - имя поля для сортировки")]
+    [TemplatorHelperInfo("OrderBy", """OrderBy(@fieldName)""", "Сортирует элементы по указанному полю. @fieldName — имя поля или путь через точку (User.Name).")]
     public EfStringQuery OrderBy(string fieldName)
     {
         query = (IQueryable)CallKeySelector(nameof(Queryable.OrderBy), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("OrderByDescending", """OrderByDescending(@fieldName)""", "Сортирует элементы по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
+    [TemplatorHelperInfo("OrderByDescending", """OrderByDescending(@fieldName)""", "Сортирует элементы по указанному полю в порядке убывания. @fieldName — имя поля или путь через точку (User.Name).")]
     public EfStringQuery OrderByDescending(string fieldName)
     {
         query = (IQueryable)CallKeySelector(nameof(Queryable.OrderByDescending), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("ThenBy", """ThenBy(@fieldName)""", "Продолжает сортировку элементов по указанному полю. @fieldName - имя поля для сортировки")]
+    [TemplatorHelperInfo("ThenBy", """ThenBy(@fieldName)""", "Продолжает сортировку элементов по указанному полю. @fieldName — имя поля или путь через точку (User.Name).")]
     public EfStringQuery ThenBy(string fieldName)
     {
         query = (IQueryable)CallKeySelector(nameof(Queryable.ThenBy), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("ThenByDescending", """ThenByDescending(@fieldName)""", "Продолжает сортировку элементов по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
+    [TemplatorHelperInfo("ThenByDescending", """ThenByDescending(@fieldName)""", "Продолжает сортировку элементов по указанному полю в порядке убывания. @fieldName — имя поля или путь через точку (User.Name).")]
     public EfStringQuery ThenByDescending(string fieldName)
     {
         query = (IQueryable)CallKeySelector(nameof(Queryable.ThenByDescending), fieldName, "keySelector")!;
@@ -265,7 +265,7 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return Take(ppt.Get.Eval<int>(expr));
     }
 
-    [TemplatorHelperInfo("Where", """Where(@expr)""", "Фильтрует элементы по указанному выражению. @expr - выражение для фильтрации")]
+    [TemplatorHelperInfo("Where", """Where(@expr)""", "Фильтрует элементы по указанному выражению. Формы @expr: Title == \"x\" (поле), p => p.Title == \"x\" (лямбда), post.Title == \"x\" (старая форма).")]
     public EfStringQuery Where(string expr)
     {
         string _expr = expr;
@@ -286,7 +286,7 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return ToListMaterialized(query);
     }
 
-    [TemplatorHelperInfo("Select", """Select(@expr)""", "Выбирает элементы из запроса по указанному выражению. @expr - выражение для выбора элементов")]
+    [TemplatorHelperInfo("Select", """Select(@expr)""", "Проецирует элементы в поле. @expr — имя поля или путь через точку (User.Name); последующие методы применяются уже к проекции.")]
     public object Select(string expr)
     {
         // проекция становится текущим запросом: элементный тип меняется,

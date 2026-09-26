@@ -30,7 +30,6 @@ public class QueryLangProcessing(
         int index = 0;
         string processKey = null!;
 
-        //Action<string> addErr = err => renderContext.PageContext.Errors.Add(err);
         Action<string> addErr = err => { pageContext.Errors.Add(new(err)); };
 
         Dictionary<string, object?> resultDict = [];
@@ -84,8 +83,6 @@ public class QueryLangProcessing(
                 {
                     string ex = val.Substring(1);
 
-                    //var result = ppt.Get.Eval("8 / 2 + 2");
-                    var vaa = ppt.GetParameters();
                     var result = ppt.Get.Eval(ex, ppt.GetParameters());
 
                     addToContext(key, result);
@@ -94,10 +91,6 @@ public class QueryLangProcessing(
                 }
                 else if (isFunction && funcName is not null && functions.TryGetValue(funcName, out var ff))
                 {
-                    var pairs = TextHelper.ParseArguments(val);
-                    string[] arguments = pairs;
-                    //XTFunctionContext ctx = new() { pctx = pctx, key = key, val = val, ppt = ppt, arguments = arguments };
-
                     XTFunctionContext ctx = new(key, val, pageContext, ppt, serviceProvider, cancellationToken);
                     var result = await ff(ctx);
 
@@ -108,7 +101,6 @@ public class QueryLangProcessing(
                 }
                 else if (isObjectFunc)
                 {
-                    //var result = EfDynamicQueryHelper2.Query(key, val, index, renderContext, ppt);
                     var providerObject = val.Split('.', 2)[0];
                     if (providerObject == "ef")
                     {
@@ -119,7 +111,6 @@ public class QueryLangProcessing(
                     {
                         throw new NotImplementedException($"context object '{providerObject}' not implement");
                     }
-                    //await EfDynamicQueryHelper.Query(key, val, index, pctx, ppt);
                 }
                 else
                 {
@@ -145,7 +136,6 @@ public class QueryLangProcessing(
             }
 #else
             pageContext.Errors.Add(new($"error on add #context. {ex.Message}"));
-            //addErr($"on add $context error <b>\"{processKey}\"</b>: {ex.Message}");
 #endif
         }
 

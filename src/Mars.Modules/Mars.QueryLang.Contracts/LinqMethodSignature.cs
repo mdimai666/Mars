@@ -1,6 +1,6 @@
 using Mars.Core.Extensions;
 
-namespace Mars.Nodes.Core.Models.EntityQuery;
+namespace Mars.QueryLang.Contracts;
 
 public record LinqMethodSignature
 {

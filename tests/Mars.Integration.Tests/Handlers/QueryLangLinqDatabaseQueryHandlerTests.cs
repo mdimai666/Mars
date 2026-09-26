@@ -57,6 +57,229 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_SelectChain_MaterializesProjection()
+    {
+        // Arrange
+        // "222" — уникальный маркер: БД общая на класс-фикстуру, сид других тестов использует "111"
+        var expression = "Posts.Where(post.Title==\"222\").Select(Title).ToList()";
+
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "222");
+        createdPosts[0].Title = "000";
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(expression, new(), default);
+
+        // Assert
+        var titles = (result as IEnumerable<string>)!.ToList();
+        titles.Should().HaveCount(2);
+        titles.Should().OnlyContain(t => t == "222");
+    }
+
+    [IntegrationFact]
+    public async Task Handle_Predicates_AnyAll_TranslateOnPostgres()
+    {
+        // Arrange — "agg-333" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "agg-333");
+        createdPosts[0].Title = "agg-000";
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title.StartsWith(\"agg-\"))";
+
+        // Act
+        var any = await _handler.Handle($"{filter}.Any(post.Title==\"agg-333\")", new(), default);
+        var all = await _handler.Handle($"{filter}.All(post.Title.Length==7)", new(), default);
+        var anyEmpty = await _handler.Handle($"{filter}.Any()", new(), default);
+
+        // Assert
+        any.Should().Be(true);
+        all.Should().Be(true);
+        anyEmpty.Should().Be(true);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_MaxMinDistinct_TranslateOnPostgres()
+    {
+        // Arrange — "minmax-444" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "minmax-444");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"minmax-444\")";
+        var expectedMax = await ef.Posts.Where(s => s.Title == "minmax-444").MaxAsync(s => s.CreatedAt);
+        var expectedMin = await ef.Posts.Where(s => s.Title == "minmax-444").MinAsync(s => s.CreatedAt);
+
+        // Act
+        var max = await _handler.Handle($"{filter}.Max(CreatedAt)", new(), default);
+        var min = await _handler.Handle($"{filter}.Min(CreatedAt)", new(), default);
+        var distinct = await _handler.Handle($"{filter}.Select(Title).Distinct().ToList()", new(), default);
+
+        // Assert
+        max.Should().Be(expectedMax);
+        min.Should().Be(expectedMin);
+        (distinct as IEnumerable<string>)!.Should().ContainSingle().Which.Should().Be("minmax-444");
+    }
+
+    [IntegrationFact]
+    public async Task Handle_SumAverageOnMetaIntField_TranslateOnPostgres()
+    {
+        // Arrange
+        await _setupDataHelper.SetupPostTypeAndPosts(
+            "sumavgType",
+            [new() { Id = Guid.NewGuid(), Type = EMetaFieldType.Int, Key = "price", Title = "Price" }],
+            3,
+            (post, i) => post.Slug = $"sumavg-{i}",
+            (post, i) => [new() { Type = EMetaFieldType.Int, Int = (i + 1) * 10 }]);
+
+        // Act
+        var sum = await _handler.Handle("sumavgType.Sum(price)", new(), default);
+        var average = await _handler.Handle("sumavgType.Average(price)", new(), default);
+        var max = await _handler.Handle("sumavgType.Max(price)", new(), default);
+
+        // Assert
+        sum.Should().Be(60);
+        average.Should().Be(20d);
+        max.Should().Be(30);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_GroupBy_TranslateOnPostgres()
+    {
+        // Arrange — "gb-777" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "gb-777");
+        (createdPosts[0].Slug, createdPosts[1].Slug, createdPosts[2].Slug) = ("gb-x", "gb-x", "gb-y");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(
+            "Posts.Where(post.Title==\"gb-777\").GroupBy(Slug)", new(), default);
+
+        // Assert
+        var groups = ((IEnumerable<EfGrouping<string, PostEntity>>)result!)
+            .OrderBy(g => g.Key).ToList();
+        groups.Should().HaveCount(2);
+        groups[0].Key.Should().Be("gb-x");
+        groups[0].Items.Should().HaveCount(2);
+        groups[1].Key.Should().Be("gb-y");
+        groups[1].Count.Should().Be(1);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_GroupByOnMetaType_Works()
+    {
+        // Arrange
+        await _setupDataHelper.SetupPostTypeAndPosts(
+            "gbType",
+            [new() { Id = Guid.NewGuid(), Type = EMetaFieldType.Int, Key = "price", Title = "Price" }],
+            3,
+            (post, i) => post.Slug = $"gb-m-{i}",
+            (post, i) => [new() { Type = EMetaFieldType.Int, Int = i == 2 ? 10 : 30 }]);
+
+        // Act
+        var result = await _handler.Handle("gbType.GroupBy(price)", new(), default);
+
+        // Assert
+        var groups = ((IEnumerable<object>)result!)
+            .Select(g => (Key: (int?)((dynamic)g).Key, Count: (int)((dynamic)g).Count))
+            .OrderBy(g => g.Key).ToList();
+        groups.Select(g => g.Key).Should().ContainInOrder(10, 30);
+        groups.Select(g => g.Count).Should().ContainInOrder(1, 2);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_DistinctBy_TranslatesViaRowNumber()
+    {
+        // Arrange — "db-555" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(4).ToList();
+        createdPosts.ForEach(s => s.Title = "db-555");
+        (createdPosts[0].Slug, createdPosts[1].Slug) = ("db-a", "db-a");
+        (createdPosts[2].Slug, createdPosts[3].Slug) = ("db-b", "db-b");
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(
+            "Posts.Where(post.Title==\"db-555\").DistinctBy(Slug).ToList()", new(), default);
+
+        // Assert
+        var rows = (result as IEnumerable<PostEntity>)!.ToList();
+        rows.Should().HaveCount(2);
+        rows.Select(s => s.Slug).Should().BeEquivalentTo(["db-a", "db-b"]);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_MaxByMinBy_TranslateOnPostgres()
+    {
+        // Arrange — "maxby-666" уникальный маркер (БД общая на класс-фикстуру)
+        var now = DateTimeOffset.UtcNow;
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        for (int i = 0; i < createdPosts.Count; i++)
+        {
+            createdPosts[i].Title = "maxby-666";
+            createdPosts[i].CreatedAt = now.AddHours(i);
+        }
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"maxby-666\")";
+        var expectedMax = await ef.Posts.Where(s => s.Title == "maxby-666").OrderByDescending(s => s.CreatedAt).FirstAsync();
+        var expectedMin = await ef.Posts.Where(s => s.Title == "maxby-666").OrderBy(s => s.CreatedAt).FirstAsync();
+
+        // Act
+        var maxBy = await _handler.Handle($"{filter}.MaxBy(CreatedAt)", new(), default) as PostEntity;
+        var minBy = await _handler.Handle($"{filter}.MinBy(CreatedAt)", new(), default) as PostEntity;
+
+        // Assert
+        maxBy!.Id.Should().Be(expectedMax.Id);
+        minBy!.Id.Should().Be(expectedMin.Id);
+    }
+
+    [IntegrationFact]
+    public async Task Handle_ElementAt_TranslateOnPostgres()
+    {
+        // Arrange — "el-888" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        for (int i = 0; i < createdPosts.Count; i++)
+        {
+            createdPosts[i].Title = "el-888";
+            createdPosts[i].Slug = $"el-{i}";
+        }
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"el-888\").OrderBy(Slug)";
+
+        // Act
+        var at1 = await _handler.Handle($"{filter}.ElementAt(1)", new(), default) as PostEntity;
+        var outOfRange = await _handler.Handle($"{filter}.ElementAt(99)", new(), default);
+
+        // Assert
+        at1!.Slug.Should().Be("el-1");
+        outOfRange.Should().BeNull();
+    }
+
+    [IntegrationFact]
     public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange

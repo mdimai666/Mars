@@ -28,9 +28,9 @@ public class AppEntityReadNodeTests : NodeServiceUnitTestBase
 
         //That like that
 
-        var qef = new EfStringQuery<PostEntity>(default!, default!);
+        var qef = new EfStringQuery(default!, default!);
 
-        var posts = () => qef.Where(s => s.Title != "111").ToList();//subset of PostEntity with PostTypeNae == "post"
+        var posts = () => qef.Where("Title != \"111\"").ToList();//subset of PostEntity with PostTypeNae == "post"
     }
 
     // For experiments

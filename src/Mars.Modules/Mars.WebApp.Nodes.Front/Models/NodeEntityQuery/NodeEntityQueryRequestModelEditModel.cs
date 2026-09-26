@@ -1,5 +1,6 @@
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Models.EntityQuery;
+using Mars.QueryLang.Contracts;
 using Mars.WebApp.Nodes.Models.NodeEntityQuery;
 
 namespace Mars.WebApp.Nodes.Front.Models.NodeEntityQuery;

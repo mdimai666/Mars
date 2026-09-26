@@ -109,6 +109,7 @@
     <Project Path="src/Mars.Modules/Mars.Options.Host/Mars.Options.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/QueryLang/">
+    <Project Path="src/Mars.Modules/Mars.QueryLang.Contracts/Mars.QueryLang.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang.Host/Mars.QueryLang.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
   </Folder>
@@ -242,6 +243,7 @@
     <Project Path="tests/Mars.Nodes.Tests/Mars.Nodes.Tests.csproj" />
     <Project Path="tests/Mars.Plugin.Integration.Tests/Mars.Plugin.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Plugin.Tests/Mars.Plugin.Tests.csproj" />
+    <Project Path="tests/Mars.QueryLang.Tests/Mars.QueryLang.Tests.csproj" />
     <Project Path="tests/Mars.Server.Tests/Mars.Server.Tests.csproj" />
     <Project Path="tests/Mars.SiteEngine.Integration.Tests/Mars.SiteEngine.Integration.Tests.csproj" />
     <Project Path="tests/Mars.SiteEngine.Tests/Mars.SiteEngine.Tests.csproj" />

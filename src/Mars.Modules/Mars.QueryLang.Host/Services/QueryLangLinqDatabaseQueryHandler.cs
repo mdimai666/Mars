@@ -61,10 +61,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
             throw new InvalidOperationException($"ef direct property '{efPropertyName}' of MetaType not found");
         }
 
-        var xefType = typeof(EfStringQuery<>);
-        Type[] typeArgs = { xEntityType! };
-        var xefGenericType = xefType.MakeGenericType(typeArgs);
-        var instance = Activator.CreateInstance(xefGenericType, [query, ppt])! as IDynamicQueryableObject;
+        IDynamicQueryableObject instance = new EfStringQuery(query, ppt);
 
         object? result = null;
 
@@ -91,7 +88,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
 
         if (autoCompleteWithList && result is IQueryable)
         {
-            result = instance.InvokeMethod(nameof(EfStringQuery<>.ToList), "");
+            result = instance.InvokeMethod(nameof(EfStringQuery.ToList), "");
         }
 
         // батч-материализация Relation-навигаций Mto-моделей

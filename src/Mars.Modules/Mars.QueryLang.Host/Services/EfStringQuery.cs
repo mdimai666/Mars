@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using DynamicExpresso;
 using Mars.Contracts.Common;
-using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Data.Entities;
 using Mars.SiteEngine.Abstractions.Templators;
@@ -10,34 +12,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.QueryLang.Host.Services;
 
-public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
+public partial class EfStringQuery : IDynamicQueryableObject
 {
-    public IQueryable<T> query;
+    public const string DefaultVarName = "post";
 
-    public IQueryable<T> baseQuery;
-
-    public Type ElementType => query.ElementType;
-    public Expression Expression => query.Expression;
-    public IQueryProvider Provider => query.Provider;
+    public IQueryable query { get; private set; }
 
     private readonly XInterpreter ppt;
     private readonly Dictionary<string, MethodInfo> map;
 
-    Type? _currentQueryEntityType = null;
-    Type CurrentQueryEntityType
-    {
-        get => _currentQueryEntityType ?? baseQuery.ElementType;
-    }
-
-    protected bool CurrentQueriGetSingle = false;
-    protected bool CurrentQueriGetTable = false;
-
-    protected TotalResponse2<T>? _tableResponse;
-
-    public EfStringQuery(IQueryable<T> query, XInterpreter ppt)
+    public EfStringQuery(IQueryable query, XInterpreter ppt)
     {
         this.query = query;
-        baseQuery = query;
         this.ppt = ppt;
 
         map = MethodsMapping();
@@ -56,7 +42,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     {
         if (methodName == nameof(Union))
         {
-            return Union((args[0] as IQueryable<T>)!);
+            return Union((IQueryable)args![0]!);
         }
         else if (map.TryGetValue(methodName, out var method))
         {
@@ -65,50 +51,125 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         throw new NotImplementedException($"'{methodName}' Not Implemented. For '{args}'");
     }
 
-    public Expression<Func<T, bool>> ParseExp(string exp, string varName = "post")
+    #region Expression normalization
+
+    // Поддерживаются три формы: bare `Title == "x"`, легаси `post.Title == "x"`, lambda `p => p.Title == "x"`.
+    // Bare распознаётся по первому идентификатору: если это член элементного типа — подставляется DefaultVarName;
+    // иначе выражение парсится как есть (переменные интерпретатора, статические вызовы и т.п.).
+    (string varName, string body) NormalizeExpression(string exp)
     {
-        return ppt.Get.ParseAsExpression<Func<T, bool>>(exp, varName);
+        var arrowIndex = exp.IndexOf("=>", StringComparison.Ordinal);
+        if (arrowIndex > 0)
+        {
+            var left = exp[..arrowIndex].Trim();
+            if (FullIdentifierRegex().IsMatch(left))
+            {
+                return (left, exp[(arrowIndex + 2)..].Trim());
+            }
+        }
+
+        var body = exp.Trim();
+        var leading = LeadingIdentifierRegex().Match(body);
+        if (leading.Success)
+        {
+            var name = leading.Groups[1].Value;
+            if (name != DefaultVarName
+                && query.ElementType.GetMember(name, BindingFlags.Public | BindingFlags.Instance).Length > 0)
+            {
+                body = DefaultVarName + "." + body;
+            }
+        }
+
+        return (DefaultVarName, body);
     }
 
-    public Expression<Func<TSource, TKey>> ParseKeySelector<TSource, TKey>(string exp, string varName = "post")
+    LambdaExpression ParsePredicate(string exp)
     {
-        return ppt.Get.ParseAsExpression<Func<TSource, TKey>>(exp, varName);
+        var (varName, body) = NormalizeExpression(exp);
+
+        var delegateType = typeof(Func<,>).MakeGenericType(query.ElementType, typeof(bool));
+        return (LambdaExpression)ParseAsExpressionDefinition
+            .MakeGenericMethod(delegateType)
+            .Invoke(ppt.Get, [body, new[] { varName }])!;
     }
 
-    LambdaExpression ParseExpA(string exp, string varName = "post")
+    LambdaExpression ParseKeySelector(string exp)
     {
-        MethodInfo method = GetType().GetMethod(nameof(this.ParseExp), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(string), typeof(string) })!;
-        return (method.Invoke(this, new[] { exp, varName }) as LambdaExpression)!;
+        var (varName, body) = NormalizeExpression(exp);
+
+        var prefix = varName + ".";
+        if (body.StartsWith(prefix, StringComparison.Ordinal))
+        {
+            body = body[prefix.Length..];
+        }
+
+        var parameter = Expression.Parameter(query.ElementType, varName);
+        Expression accessor = parameter;
+        foreach (var segment in body.Split('.'))
+        {
+            accessor = Expression.PropertyOrField(accessor, segment.Trim());
+        }
+
+        return Expression.Lambda(accessor, parameter);
     }
 
-    LambdaExpression ParseKeySelectorA(string propertyOrFieldName, string varName = "post")
+    #endregion
+
+    #region Queryable reflection
+
+    static readonly MethodInfo ParseAsExpressionDefinition = typeof(Interpreter)
+        .GetMethod(nameof(Interpreter.ParseAsExpression), BindingFlags.Public | BindingFlags.Instance)!;
+
+    static readonly MethodInfo IncludeStringDefinition = typeof(EntityFrameworkQueryableExtensions)
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(mi => mi.Name == nameof(EntityFrameworkQueryableExtensions.Include)
+                   && mi.IsGenericMethodDefinition
+                   && mi.GetParameters().Length == 2
+                   && mi.GetParameters()[1].ParameterType == typeof(string));
+
+    static readonly MethodInfo ToListDefinition = typeof(Enumerable)
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(mi => mi.Name == nameof(Enumerable.ToList)
+                   && mi.IsGenericMethodDefinition
+                   && mi.GetParameters().Length == 1);
+
+    static IList ToListMaterialized(IQueryable source) =>
+        (IList)ToListDefinition.MakeGenericMethod(source.ElementType).Invoke(null, [source])!;
+
+    static readonly ConcurrentDictionary<(string name, int paramsCount, string? secondParamName), MethodInfo> QueryableMethods = new();
+
+    static MethodInfo FindQueryableMethod(string name, int paramsCount, string? secondParamName = null) =>
+        QueryableMethods.GetOrAdd((name, paramsCount, secondParamName), key =>
+            typeof(Queryable)
+                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                .First(mi => mi.Name == key.name
+                             // this check technically not required, but more future proof
+                             && mi.IsGenericMethodDefinition
+                             && mi.GetParameters().Length == key.paramsCount
+                             && (key.secondParamName is null || mi.GetParameters()[1].Name == key.secondParamName)));
+
+    static object? QCall(IQueryable source, string methodName, int paramsCount, string? secondParamName, params object?[] args)
     {
-        var elementType = CurrentQueryEntityType;
-        var parameterExpression = Expression.Parameter(elementType);
-        var propertyOrFieldExpression = Expression.PropertyOrField(parameterExpression, propertyOrFieldName);
-
-        var selector = Expression.Lambda(propertyOrFieldExpression, parameterExpression);
-
-        return selector;
+        var method = FindQueryableMethod(methodName, paramsCount, secondParamName)
+            .MakeGenericMethod(source.ElementType);
+        return method.Invoke(null, [source, .. args]);
     }
 
-    object? CallQueryableMethod(string methodName, string expr)
+    object? Call(string methodName, int paramsCount, string? secondParamName, params object?[] args) =>
+        QCall(query, methodName, paramsCount, secondParamName, args);
+
+    object? CallPredicate(string methodName, string expr) =>
+        Call(methodName, 2, "predicate", ParsePredicate(expr));
+
+    object? CallKeySelector(string methodName, string exp, string paramName)
     {
-        var exp = ParseExpA(expr);
-
-        MethodInfo method = typeof(Queryable)
-              .GetMethods(BindingFlags.Static | BindingFlags.Public)
-              .First(mi => mi.Name == methodName
-                         // this check technically not required, but more future proof
-                         && mi.IsGenericMethodDefinition
-                         && mi.GetParameters().Length == 2
-                         && mi.GetParameters()[1].Name == "predicate")
-              .MakeGenericMethod(CurrentQueryEntityType);
-
-        object? result = method.Invoke(query, new object[] { query, exp });
-
-        return result;
+        var selector = ParseKeySelector(exp);
+        var method = FindQueryableMethod(methodName, 2, paramName)
+            .MakeGenericMethod(query.ElementType, selector.ReturnType);
+        return method.Invoke(null, [query, selector]);
     }
+
+    #endregion
 
     public Dictionary<string, MethodInfo> MethodsMapping()
     {
@@ -117,7 +178,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
               .Where(mi => mi.GetParameters().Length == 1
                          && mi.GetParameters()[0].ParameterType == typeof(string))
               .Concat([
-                  GetType().GetMethod(nameof(Union))
+                  GetType().GetMethod(nameof(Union))!
                 ]);
 
         return methods.ToDictionary(s => s.Name)!;
@@ -127,202 +188,134 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
     public int Count(string expr = "")
     {
         if (string.IsNullOrEmpty(expr))
-            return query.Count();
+            return (int)Call(nameof(Queryable.Count), 1, null)!;
 
-        var result = CallQueryableMethod(nameof(Queryable.Count), expr) as int?;
-
-        return result!.Value;
-
+        return (int)CallPredicate(nameof(Queryable.Count), expr)!;
     }
 
     [TemplatorHelperInfo("First", """.First(@expr?)""", "Возвращает первый элемент. Если @expr указано, то возвращает применяет выборку.")]
-    public T? First(string expr = "")
+    public object? First(string expr = "")
     {
-        CurrentQueriGetSingle = true;
         if (string.IsNullOrEmpty(expr))
-        {
-            Take(1);
-            return query.FirstOrDefault();
-        }
+            return Call(nameof(Queryable.FirstOrDefault), 1, null);
 
-        var result = CallQueryableMethod(nameof(Queryable.FirstOrDefault), expr);
-        Where(expr);
-        Take(1);
-
-        return (T?)result;
+        return CallPredicate(nameof(Queryable.FirstOrDefault), expr);
     }
 
     [TemplatorHelperInfo("Last", """.Last(@expr?)""", "Возвращает последний элемент. Если @expr указано, то возвращает применяет выборку.")]
-    public T? Last(string expr = "")
+    public object? Last(string expr = "")
     {
-        CurrentQueriGetSingle = true;
         if (string.IsNullOrEmpty(expr))
-        {
-            query = query.TakeLast(1);
-            return query.LastOrDefault();
-        }
+            return Call(nameof(Queryable.LastOrDefault), 1, null);
 
-        var result = CallQueryableMethod(nameof(Queryable.LastOrDefault), expr);
-        Where(expr);
-        query = query.TakeLast(1);
-
-        return (T?)result!;
+        return CallPredicate(nameof(Queryable.LastOrDefault), expr);
     }
 
-    object? CallQueryableKeySelMethod(string methodName, string fieldName, string paramName)
+    [TemplatorHelperInfo("OrderBy", """OrderBy(@fieldName)""", "Сортирует элементы по указанному полю. @fieldName - имя поля для сортировки")]
+    public EfStringQuery OrderBy(string fieldName)
     {
-        var exp = ParseKeySelectorA(fieldName);
-
-        MethodInfo method = typeof(Queryable)
-              .GetMethods(BindingFlags.Static | BindingFlags.Public)
-              .First(mi => mi.Name == methodName
-                         // this check technically not required, but more future proof
-                         && mi.IsGenericMethodDefinition
-                         && mi.GetParameters().Length == 2
-                         && mi.GetParameters()[1].Name == paramName)
-              .MakeGenericMethod(CurrentQueryEntityType, exp.ReturnType);
-
-        object? result = method.Invoke(query, new object[] { query, exp });
-
-        return result;
-    }
-
-    [TemplatorHelperInfo("OrderBy", """.OrderBy(@fieldName)""", "Сортирует элементы по указанному полю. @fieldName - имя поля для сортировки")]
-    public IDefaultEfQueries<T> OrderBy(string fieldName)
-    {
-        var result = CallQueryableKeySelMethod(nameof(Queryable.OrderBy), fieldName, "keySelector");
-
-        query = (result as IQueryable<T>)!;
-
+        query = (IQueryable)CallKeySelector(nameof(Queryable.OrderBy), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("OrderByDescending", """.OrderByDescending(@fieldName)""", "Сортирует элементы по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
-    public IDefaultEfQueries<T> OrderByDescending(string fieldName)
+    [TemplatorHelperInfo("OrderByDescending", """OrderByDescending(@fieldName)""", "Сортирует элементы по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
+    public EfStringQuery OrderByDescending(string fieldName)
     {
-        var result = CallQueryableKeySelMethod(nameof(Queryable.OrderByDescending), fieldName, "keySelector");
-
-        query = (result as IQueryable<T>)!;
-
+        query = (IQueryable)CallKeySelector(nameof(Queryable.OrderByDescending), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("ThenBy", """.ThenBy(@fieldName)""", "Продолжает сортировку элементов по указанному полю. @fieldName - имя поля для сортировки")]
-    public IDefaultEfQueries<T> ThenBy(string fieldName)
+    [TemplatorHelperInfo("ThenBy", """ThenBy(@fieldName)""", "Продолжает сортировку элементов по указанному полю. @fieldName - имя поля для сортировки")]
+    public EfStringQuery ThenBy(string fieldName)
     {
-        var result = CallQueryableKeySelMethod(nameof(Queryable.ThenBy), fieldName, "keySelector");
-
-        query = (result as IQueryable<T>)!;
-
+        query = (IQueryable)CallKeySelector(nameof(Queryable.ThenBy), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("ThenByDescending", """.ThenByDescending(@fieldName)""", "Продолжает сортировку элементов по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
-    public IDefaultEfQueries<T> ThenByDescending(string fieldName)
+    [TemplatorHelperInfo("ThenByDescending", """ThenByDescending(@fieldName)""", "Продолжает сортировку элементов по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
+    public EfStringQuery ThenByDescending(string fieldName)
     {
-        var result = CallQueryableKeySelMethod(nameof(Queryable.ThenByDescending), fieldName, "keySelector");
-
-        query = (result as IQueryable<T>)!;
-
+        query = (IQueryable)CallKeySelector(nameof(Queryable.ThenByDescending), fieldName, "keySelector")!;
         return this;
     }
 
-    [TemplatorHelperInfo("Skip", """.Skip(@count)""", "Пропускает указанное количество элементов. @count - количество элементов для пропуска")]
-    public IDefaultEfQueries<T> Skip(int count)
+    [TemplatorHelperInfo("Skip", """Skip(@count)""", "Пропускает указанное количество элементов. @count - количество элементов для пропуска")]
+    public EfStringQuery Skip(int count)
     {
-        query = query.Skip(count);
+        query = (IQueryable)Call(nameof(Queryable.Skip), 2, null, count)!;
         return this;
     }
 
-    [TemplatorHelperInfo("Skip", """.Skip(@expr)""", "Пропускает указанное количество элементов. @expr - выражение для вычисления количества элементов для пропуска")]
-    public IDefaultEfQueries<T> Skip(string expr)
+    [TemplatorHelperInfo("Skip", """Skip(@expr)""", "Пропускает указанное количество элементов. @expr - выражение для вычисления количества элементов для пропуска")]
+    public EfStringQuery Skip(string expr)
     {
-        int count = ppt.Get.Eval<int>(expr);
-        query = query.Skip(count);
+        return Skip(ppt.Get.Eval<int>(expr));
+    }
+
+    [TemplatorHelperInfo("Take", """Take(@count)""", "Ограничивает количество элементов в запросе. @count - количество элементов для ограничения")]
+    public EfStringQuery Take(int count)
+    {
+        query = (IQueryable)Call(nameof(Queryable.Take), 2, null, count)!;
         return this;
     }
 
-    [TemplatorHelperInfo("Take", """.Take(@count)""", "Ограничивает количество элементов в запросе. @count - количество элементов для ограничения")]
-    public IDefaultEfQueries<T> Take(int count)
+    [TemplatorHelperInfo("Take", """Take(@expr)""", "Ограничивает количество элементов в запросе. @expr - выражение для вычисления количества элементов для ограничения")]
+    public EfStringQuery Take(string expr)
     {
-        query = query.Take(count);
-        return this;
+        return Take(ppt.Get.Eval<int>(expr));
     }
 
-    [TemplatorHelperInfo("Take", """.Take(@expr)""", "Ограничивает количество элементов в запросе. @expr - выражение для вычисления количества элементов для ограничения")]
-    public IDefaultEfQueries<T> Take(string expr)
-    {
-        int count = ppt.Get.Eval<int>(expr);
-        query = query.Take(count);
-        return this;
-    }
-
-    [TemplatorHelperInfo("Where", """.Where(@expr)""", "Фильтрует элементы по указанному выражению. @expr - выражение для фильтрации")]
-    public IDefaultEfQueries<T> Where(string expr)
+    [TemplatorHelperInfo("Where", """Where(@expr)""", "Фильтрует элементы по указанному выражению. @expr - выражение для фильтрации")]
+    public EfStringQuery Where(string expr)
     {
         string _expr = expr;
 
         if (_expr.StartsWith('='))
         {
-            var a = expr.Substring(1, expr.Length - 1);
-            _expr = ppt.Get.Eval<string>(a);
+            _expr = ppt.Get.Eval<string>(expr[1..]);
         }
 
-        var result = CallQueryableMethod(nameof(Queryable.Where), _expr);
-
-        query = (result as IQueryable<T>)!;
+        query = (IQueryable)CallPredicate(nameof(Queryable.Where), _expr)!;
 
         return this;
     }
 
-    [TemplatorHelperInfo("ToList", """.ToList()""", "Преобразует запрос в список.")]
-    public IEnumerable ToList(string expr)
+    [TemplatorHelperInfo("ToList", """ToList()""", "Преобразует запрос в список.")]
+    public IEnumerable ToList(string expr = "")
     {
-        return query.ToList();
+        return ToListMaterialized(query);
     }
 
-    [TemplatorHelperInfo("Select", """.Select(@expr)""", "Выбирает элементы из запроса по указанному выражению. @expr - выражение для выбора элементов")]
+    [TemplatorHelperInfo("Select", """Select(@expr)""", "Выбирает элементы из запроса по указанному выражению. @expr - выражение для выбора элементов")]
     public object Select(string expr)
     {
-        var fieldName = expr;
+        // проекция становится текущим запросом: элементный тип меняется,
+        // поэтому авто-ToList в handler'е материализует именно её
+        query = (IQueryable)CallKeySelector(nameof(Queryable.Select), expr, "selector")!;
 
-        var result = CallQueryableKeySelMethod(nameof(Queryable.Select), fieldName, "selector");
-
-        return result!;
+        return query;
     }
 
-    [TemplatorHelperInfo("Include", """.Include(@expr)""", "Включает связанные данные в запрос. @expr - имя навигационного свойства или список свойств через запятую")]
-    public IDefaultEfQueries<T> Include(string expr)
+    [TemplatorHelperInfo("Include", """Include(@expr)""", "Включает связанные данные в запрос. @expr - имя навигационного свойства или список свойств через запятую")]
+    public EfStringQuery Include(string expr)
     {
         var navigationPropertyArg = ppt.Get.Eval<string>(expr);
 
-        var methodName = nameof(EntityFrameworkQueryableExtensions.Include);
-
-        MethodInfo method = typeof(EntityFrameworkQueryableExtensions)
-              .GetMethods(BindingFlags.Static | BindingFlags.Public)
-              .First(mi => mi.Name == methodName
-                         // this check technically not required, but more future proof
-                         && mi.IsGenericMethodDefinition
-                         && mi.GetParameters().Length == 2
-                         && mi.GetParameters()[1].ParameterType == typeof(string))
-              .MakeGenericMethod(baseQuery.ElementType);
+        var method = IncludeStringDefinition.MakeGenericMethod(query.ElementType);
 
         foreach (var navigationProperty in navigationPropertyArg.Split(','))
         {
-            object? result = method.Invoke(query, new object[] { query, navigationProperty.Trim() });
-            query = (result as IQueryable<T>)!;
+            query = (IQueryable)method.Invoke(null, [query, navigationProperty.Trim()])!;
         }
 
         return this;
     }
 
-    [TemplatorHelperInfo("Table", """.Table(@page, @size)""", "Пагинация. Возвращает элементы в виде таблицы с пагинацией. @page - номер страницы, @size - количество элементов на странице")]
-    public TotalResponse2<T> Table(string expr)
+    [TemplatorHelperInfo("Table", """Table(@page, @size)""", "Пагинация. Возвращает элементы в виде таблицы с пагинацией. @page - номер страницы, @size - количество элементов на странице")]
+    public object Table(string expr)
     {
         var args = TextHelper.SplitArguments(expr);
         MyThrowHelper.IfArgumentCount(args, 2, "arguments require 2");
-
-        var z = ppt.GetParameters();
 
         int page = ppt.Get.Eval<int>(args[0], ppt.GetParameters());
         int size = ppt.Get.Eval<int>(args[1], ppt.GetParameters());
@@ -330,58 +323,54 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         var source = query;
         var filter = BasicListQuery.FromPage(page, size);
 
-        var items = source.Skip(filter.Skip).Take(filter.Take).ToList();
-        int totalCount = source.Count();
+        var paged = (IQueryable)QCall(source, nameof(Queryable.Skip), 2, null, filter.Skip)!;
+        paged = (IQueryable)QCall(paged, nameof(Queryable.Take), 2, null, filter.Take)!;
 
-        CurrentQueriGetTable = true;
-        query = items.AsQueryable();
+        var items = ToListMaterialized(paged);
+        int totalCount = (int)QCall(source, nameof(Queryable.Count), 1, null)!;
 
-        return _tableResponse = new TotalResponse2<T>(items, page, size, totalCount > items.Count, totalCount);
+        var elementType = source.ElementType;
+        var array = Array.CreateInstance(elementType, items.Count);
+        items.CopyTo(array, 0);
+
+        query = array.AsQueryable();
+
+        return Activator.CreateInstance(
+            typeof(TotalResponse2<>).MakeGenericType(elementType),
+            array, page, size, totalCount > items.Count, (int?)totalCount)!;
     }
 
-    [TemplatorHelperInfo("Search", """.Search(@searchText)""", "Поиск по тексту. @searchText - текст для поиска")]
-    public IDefaultEfQueries<T> Search(string searchText)
+    [TemplatorHelperInfo("Search", """Search(@searchText)""", "Поиск по тексту. @searchText - текст для поиска")]
+    public EfStringQuery Search(string searchText)
     {
-        IQueryable<T> result;
         var _searchText = ppt.Get.Eval<string>(searchText).ToLower();
 
-        if (typeof(PostEntity).IsAssignableFrom(CurrentQueryEntityType))
-        {
-            var pattern = $"%{_searchText}%";
-            result = ((query as IQueryable<PostEntity>)!
-                .Where(s => EF.Functions.ILike(s.Title, pattern) || EF.Functions.ILike(s.Content!, _searchText))
-                as IQueryable<T>)!;
-        }
-        else
+        // IQueryable<out T> ковариантен: пропускает и производные от PostEntity (Mto-модели)
+        if (query is not IQueryable<PostEntity> posts)
         {
             throw new NotImplementedException();
         }
 
-        query = result;
+        var pattern = $"%{_searchText}%";
+        query = posts.Where(s => EF.Functions.ILike(s.Title, pattern) || EF.Functions.ILike(s.Content!, pattern));
 
         return this;
     }
 
-    [TemplatorHelperInfo("Union", """.Union(@secondQueryable)""", "Объединяет текущий запрос с другим запросом. @secondQueryable - второй запрос для объединения")]
-    public IDefaultEfQueries<T> Union(IQueryable<T> secondQueryable)
+    [TemplatorHelperInfo("Union", """Union(@secondQueryable)""", "Объединяет текущий запрос с другим запросом. @secondQueryable - второй запрос для объединения")]
+    public EfStringQuery Union(IQueryable secondQueryable)
     {
-        query = query.Union(secondQueryable);
+        query = (IQueryable)Call(nameof(Queryable.Union), 2, null, secondQueryable)!;
         return this;
     }
 
     public IQueryable GetQuery() => query;
 
-    public IEnumerator<T> GetEnumerator()
-    {
-        return query?.GetEnumerator()!;
-    }
+    [GeneratedRegex("^[A-Za-z_]\\w*$")]
+    private static partial Regex FullIdentifierRegex();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return (query as IEnumerable).GetEnumerator();
-    }
-
-    object? IDynamicEfQuery.Last(string expr) => Last(expr);
+    [GeneratedRegex("^([A-Za-z_]\\w*)")]
+    private static partial Regex LeadingIdentifierRegex();
 }
 
 public class TotalResponse2<T> : PagingResult<T>

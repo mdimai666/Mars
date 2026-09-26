@@ -57,6 +57,30 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_SelectChain_MaterializesProjection()
+    {
+        // Arrange
+        // "222" — уникальный маркер: БД общая на класс-фикстуру, сид других тестов использует "111"
+        var expression = "Posts.Where(post.Title==\"222\").Select(Title).ToList()";
+
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        createdPosts.ForEach(s => s.Title = "222");
+        createdPosts[0].Title = "000";
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        // Act
+        var result = await _handler.Handle(expression, new(), default);
+
+        // Assert
+        var titles = (result as IEnumerable<string>)!.ToList();
+        titles.Should().HaveCount(2);
+        titles.Should().OnlyContain(t => t == "222");
+    }
+
+    [IntegrationFact]
     public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange

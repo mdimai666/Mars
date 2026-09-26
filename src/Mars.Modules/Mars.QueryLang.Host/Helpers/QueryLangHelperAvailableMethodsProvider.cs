@@ -1,5 +1,4 @@
 using System.Reflection;
-using Mars.Data.Common;
 using Mars.Nodes.Core.Models.EntityQuery;
 using Mars.QueryLang.Host.Services;
 using Mars.SiteEngine.Abstractions.Templators;
@@ -15,7 +14,7 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
     {
         if (_items != null) return _items;
 
-        var mock = new EfStringQuery<IBasicEntity>(null!, null!);
+        var mock = new EfStringQuery(null!, null!);
         var methods = mock.MethodsMapping();
 
         return _items = methods.Select(x => x.Value.GetCustomAttribute<TemplatorHelperInfoAttribute>()).Where(x => x != null).ToList()!;
@@ -25,7 +24,7 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
     {
         if (_signatures != null) return _signatures;
 
-        var b = new EfStringQuery<IBasicEntity>(null!, null!);
+        var b = new EfStringQuery(null!, null!);
         var methods = b.MethodsMapping();
 
         var items = AvailableMethods();

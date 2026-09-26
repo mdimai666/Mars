@@ -1,30 +1,30 @@
 @using MarsDocs.WebApp.Models
+@using Microsoft.AspNetCore.Components.Routing
 @inherits FluentComponentBase
 
-<FluentNavMenu Class="@Class" Style="@Style" Id="@Id"
-               AdditionalAttributes="@AdditionalAttributes">
+<FluentNav Class="@Class" Style="@Style" Id="@Id"
+           AdditionalAttributes="@AdditionalAttributes">
     @foreach (var item in Items.OrderBy(s => s.Order))
     {
         @if (item.IsDivider)
         {
-            <FluentDivider Orientation="@Orientation.Horizontal" />
+            <FluentDivider />
         }
         else if (item.SubItemFlag)
         {
-            @* <FluentNavGroup Title=@item.Title>
-                @foreach (var subitem in item.SubItems)
+            <FluentNavCategory Title="@item.Title">
+                @foreach (var leaf in Flatten(item))
                 {
-                    <FluentNavLink Href=@subitem.Url>@subitem.Title</FluentNavLink>
+                    <FluentNavItem Href="@leaf.Url" Match="@MatchOf(leaf)">@leaf.Title</FluentNavItem>
                 }
-            </FluentNavGroup> *@
-            <DocsTreeMenuGroup MenuItem="item" />
+            </FluentNavCategory>
         }
         else
         {
-            <FluentNavLink Href=@item.Url>@item.Title</FluentNavLink>
+            <FluentNavItem Href="@item.Url" Match="@MatchOf(item)">@item.Title</FluentNavItem>
         }
     }
-</FluentNavMenu>
+</FluentNav>
 
 @code {
     public DocsTreeMenu(LibraryConfiguration configuration) : base(configuration)
@@ -32,4 +32,12 @@
     }
 
     [Parameter] public MenuItem[] Items { get; set; } = default!;
+
+    // FluentNav v5 поддерживает только один уровень вложенности: вложенные группы схлопываются до листьев
+    static IEnumerable<MenuItem> Flatten(MenuItem item) =>
+        item.SubItems.OrderBy(s => s.Order)
+                     .SelectMany(s => s.SubItemFlag ? Flatten(s) : [s]);
+
+    static NavLinkMatch MatchOf(MenuItem item) =>
+        item.Url is "/" or "" ? NavLinkMatch.All : NavLinkMatch.Prefix;
 }

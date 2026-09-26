@@ -2,29 +2,40 @@
 @inherits FluentComponentBase
 @using MenuItem = Mars.Admin.Framework.Models.MenuItem;
 
-<FluentNavMenu Class="@Class" Style="@Style" Id="@Id"
-               AdditionalAttributes="@AdditionalAttributes">
+<FluentNav Class="@Class" Style="@Style" Id="@Id"
+           AdditionalAttributes="@AdditionalAttributes">
     @foreach (var item in Items)
     {
         @if (item.IsDivider)
         {
-            <FluentDivider Orientation="@Orientation.Horizontal" />
+            <FluentDivider />
+        }
+        else if (item.menuType == MenuItem.MenuType.Header)
+        {
+            <FluentNavSectionHeader Title="@item.Title" />
         }
         else if (item.SubItemFlag)
         {
-            <FluentNavGroup Title=@item.Title>
+            <FluentNavCategory Title="@item.Title">
                 @foreach (var subitem in item.SubItems)
                 {
-                    <FluentNavLink Href=@subitem.Url Match="@subitem.navLinkMatch">@subitem.Title</FluentNavLink>
+                    @if (subitem.IsDivider)
+                    {
+                        <FluentDivider />
+                    }
+                    else
+                    {
+                        <FluentNavItem Href="@subitem.Url" Match="@subitem.navLinkMatch">@subitem.Title</FluentNavItem>
+                    }
                 }
-            </FluentNavGroup>
+            </FluentNavCategory>
         }
         else
         {
-            <FluentNavLink Href=@item.Url Match="@item.navLinkMatch">@item.Title</FluentNavLink>
+            <FluentNavItem Href="@item.Url" Match="@item.navLinkMatch">@item.Title</FluentNavItem>
         }
     }
-</FluentNavMenu>
+</FluentNav>
 
 @code {
     public Menu2(LibraryConfiguration configuration) : base(configuration)

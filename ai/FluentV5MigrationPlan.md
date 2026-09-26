@@ -225,6 +225,23 @@ v5 грузит IMask и Sortablejs с CDN unpkg лениво и после `onl
 лоадер v5 видит глобал и не идёт на CDN — работает и offline). Грабли: новые файлы
 wwwroot попадают в отдачу только после пересборки (staticwebassets-манифест).
 
+## Menu2 + docs-навигация на FluentNav (2026-09-27, закрыто)
+
+- `Menu2.razor` (FW): FluentNavMenu/NavGroup/NavLink → `FluentNav`/`FluentNavCategory`/
+  `FluentNavItem` (+`Match` из MenuItem.navLinkMatch). `menuType==Header` →
+  `FluentNavSectionHeader` (v4 рендерил их ссылками — теперь семантически верно).
+  Делители — `FluentDivider` (в т.ч. внутри категорий).
+- docs (`MarsDocs.WebApp`, вне Mars.slnx — собирать/гонять отдельно): `DocsTreeMenu` →
+  `FluentNav`; v5 держит один уровень вложенности, поэтому вложенные группы схлопываются
+  до листьев (`Flatten`). `NavMenu.razor` (Home) и `DocsTreeMenuGroup.razor` удалены:
+  MainLayout отдаёт в DocsTreeMenu один массив `_menuItems` = Home + divider + App.Menu.
+- Попутно в docs MainLayout: `FluentBodyContent` (удалён в v5) → обычный div с теми же
+  классами (layout там кастомный на FluentStack, не на LayoutArea).
+- Проверка: админка — сайдбар рендерит ссылки/категории, клик навигирует, 36/36 страниц ok;
+  docs — Home active, группы-аккордеоны, клик по QuickStart рендерит контент, консоль чистая.
+- Стилевые мелочи сайдбара (токен `--neutral-fill-stealth-rest` в Style-атрибутах мёртв,
+  ширина/отступы под v5-нав) — в этап стилей.
+
 ## Статус
 
 - [x] Ветка `feat/fluentui-v5`
@@ -252,7 +269,7 @@ wwwroot попадают в отдачу только после пересбо�
 ## Следующие шаги
 
 1. Визуальная проверка админки пользователем (запуск Mars.WebApp) — диалоги/тосты/меню/гриды/нод-редактор
-2. Menu2 + docs-навигация на FluentNav
+2. [x] Menu2 + docs-навигация на FluentNav (2026-09-27)
 3. Этап стилей: инвентарь из раздела «Стили» + маппинг styler-токенов на CSS-переменные v5 +
    FluentLabel Color/Typo→FluentText, FluentBadge Content/Fill, FluentTooltip Anchor, MouseButton
 4. E2E-регрессия админ-форм (по желанию)

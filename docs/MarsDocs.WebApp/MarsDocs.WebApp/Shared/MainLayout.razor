@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@using MarsDocs.WebApp.Models
 
 <PageTitle>MarsDocs.WebApp</PageTitle>
 
@@ -32,10 +33,7 @@
                         <FluentTextInput Class="mb-3 w-100" Placeholder="Search.." />
 
                         @* <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Начало</FluentLabel> *@
-                        <NavMenu />
-                        <FluentDivider Orientation="Orientation.Horizontal" />
-                        @* <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Как сделать</FluentLabel> *@
-                        <DocsTreeMenu Items="App.Menu" Style="--neutral-fill-stealth-rest: transparent;" />
+                        <DocsTreeMenu Items="_menuItems" Style="--neutral-fill-stealth-rest: transparent;" />
 
                     </div>
                 </div>
@@ -45,7 +43,7 @@
             </div>
         </FluentStack>
 
-        <FluentBodyContent Class="flex-fill">
+        <div class="flex-fill">
             <ErrorBoundary>
                 <ChildContent>
                     <main class="flex-fill">
@@ -56,9 +54,18 @@
                     <p class="error">@ex.Message</p>
                 </ErrorContent>
             </ErrorBoundary>
-        </FluentBodyContent>
+        </div>
     </FluentStack>
 </FluentLayout>
+
+@code {
+    MenuItem[] _menuItems =>
+    [
+        new("", "/", "", "Home", Order: 0f),
+        new("", "", "", "", IsDivider: true, Order: 0.5f),
+        ..App.Menu,
+    ];
+}
 
 <style>
     .fluent-nav-icon {

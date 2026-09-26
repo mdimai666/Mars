@@ -429,6 +429,13 @@ public partial class EfStringQuery : IDynamicQueryableObject
         return ToListMaterialized(projected);
     }
 
+    [TemplatorHelperInfo("ElementAt", """ElementAt(@index)""", "Возвращает элемент по индексу (0-based); запрос не изменяет. Вернёт null, если индекс вне диапазона. Для определённого порядка требует предварительной сортировки OrderBy.")]
+    public object? ElementAt(string expr)
+    {
+        var index = ppt.Get.Eval<int>(expr);
+        return QCall(query, nameof(Queryable.ElementAtOrDefault), 2, null, index);
+    }
+
     [TemplatorHelperInfo("Select", """Select(@expr)""", "Проецирует элементы в поле. @expr — имя поля или путь через точку (User.Name); последующие методы применяются уже к проекции.")]
     public object Select(string expr)
     {

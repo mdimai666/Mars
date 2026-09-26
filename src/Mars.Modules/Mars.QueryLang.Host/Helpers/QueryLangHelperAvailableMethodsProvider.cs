@@ -40,6 +40,7 @@ internal class QueryLangHelperAvailableMethodsProvider : IQueryLangHelperAvailab
             ff(nameof(b.Last),[ new() ]),
             ff(nameof(b.Skip),[ new() ]),
             ff(nameof(b.Take),[ new() ]),
+            ff(nameof(b.ElementAt),[ new() ]),
             ff(nameof(b.Where),[ new() ]),
             ff(nameof(b.Select),[ new() ]),
             ff(nameof(b.OrderBy),[ new() ]),

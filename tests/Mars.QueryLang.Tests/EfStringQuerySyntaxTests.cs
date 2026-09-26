@@ -221,6 +221,7 @@ public class EfStringQuerySyntaxTests
             nameof(EfStringQuery.Where), nameof(EfStringQuery.OrderBy), nameof(EfStringQuery.OrderByDescending),
             nameof(EfStringQuery.ThenBy), nameof(EfStringQuery.ThenByDescending),
             nameof(EfStringQuery.Skip), nameof(EfStringQuery.Take), nameof(EfStringQuery.ToList),
+            nameof(EfStringQuery.ElementAt),
             nameof(EfStringQuery.Distinct), nameof(EfStringQuery.DistinctBy),
             nameof(EfStringQuery.Max), nameof(EfStringQuery.Min),
             nameof(EfStringQuery.MaxBy), nameof(EfStringQuery.MinBy),
@@ -236,5 +237,14 @@ public class EfStringQuerySyntaxTests
     {
         Q().OrderBy("Slug").Skip("1").Take("1").ToList().Cast<PostEntity>()
             .Should().ContainSingle().Which.Slug.Should().Be("b");
+    }
+
+    [Fact]
+    public void ElementAt_ReturnsByIndex_IsTerminal()
+    {
+        var q = Q().OrderBy("Slug");
+        ((PostEntity)q.ElementAt("1")!).Slug.Should().Be("b");
+        q.ElementAt("99").Should().BeNull();
+        q.ToList().Cast<PostEntity>().Should().HaveCount(3);
     }
 }

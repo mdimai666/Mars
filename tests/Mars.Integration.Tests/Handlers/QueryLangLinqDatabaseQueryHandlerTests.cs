@@ -254,6 +254,32 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task Handle_ElementAt_TranslateOnPostgres()
+    {
+        // Arrange — "el-888" уникальный маркер (БД общая на класс-фикстуру)
+        var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
+        for (int i = 0; i < createdPosts.Count; i++)
+        {
+            createdPosts[i].Title = "el-888";
+            createdPosts[i].Slug = $"el-{i}";
+        }
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(createdPosts);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
+
+        var filter = "Posts.Where(post.Title==\"el-888\").OrderBy(Slug)";
+
+        // Act
+        var at1 = await _handler.Handle($"{filter}.ElementAt(1)", new(), default) as PostEntity;
+        var outOfRange = await _handler.Handle($"{filter}.ElementAt(99)", new(), default);
+
+        // Assert
+        at1!.Slug.Should().Be("el-1");
+        outOfRange.Should().BeNull();
+    }
+
+    [IntegrationFact]
     public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange

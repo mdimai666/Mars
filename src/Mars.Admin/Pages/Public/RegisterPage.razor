@@ -51,23 +51,23 @@
                                     }
 
                                     <FormItem2 For="()=>_userForRegistration.Email" Label="@AppRes.Email">
-                                        <FluentTextField @bind-Value=_userForRegistration.Email Class="w-100" />
+                                        <FluentTextInput @bind-Value=_userForRegistration.Email Class="w-100" />
                                     </FormItem2>
 
                                     <FormItem2 For="()=>_userForRegistration.FirstName" Label="@AppRes.FirstName">
-                                        <FluentTextField @bind-Value=_userForRegistration.FirstName Class="w-100" />
+                                        <FluentTextInput @bind-Value=_userForRegistration.FirstName Class="w-100" />
                                     </FormItem2>
 
                                     <FormItem2 For="()=>_userForRegistration.LastName" Label="@AppRes.LastName">
-                                        <FluentTextField @bind-Value=_userForRegistration.LastName Class="w-100" />
+                                        <FluentTextInput @bind-Value=_userForRegistration.LastName Class="w-100" />
                                     </FormItem2>
 
                                     <FormItem2 For="()=>_userForRegistration.Password" Label="@AppRes.Password">
-                                        <FluentTextField @bind-Value=_userForRegistration.Password TextFieldType="@TextFieldType.Password" Class="w-100" />
+                                        <FluentTextInput @bind-Value=_userForRegistration.Password TextInputType="@TextInputType.Password" Class="w-100" />
                                     </FormItem2>
 
                                     <FormItem2 For="()=>_userForRegistration.ConfirmPassword" Label="Подтверждение пароля">
-                                        <FluentTextField @bind-Value=_userForRegistration.ConfirmPassword TextFieldType="@TextFieldType.Password" Class="w-100" />
+                                        <FluentTextInput @bind-Value=_userForRegistration.ConfirmPassword TextInputType="@TextInputType.Password" Class="w-100" />
                                     </FormItem2>
 
                                 </div>

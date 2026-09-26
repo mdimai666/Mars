@@ -28,23 +28,23 @@
             <div class="vstack gap-3">
 
                 <div class="vstack">
-                    <FluentTextField @bind-Value=@context.Title Label="@AppRes.Title"
+                    <FluentTextInput @bind-Value=@context.Title Label="@AppRes.Title"
                                      @bind-Value:after=OnChangeTitle
-                                     Appearance="@FluentInputAppearance.Filled"
+                                     Appearance="@TextInputAppearance.FilledDarker"
                                      Required
                                      Style="zoom:1.4" />
                     <FluentValidationMessage For="@(() => context.Title)" />
                 </div>
                 <div class="">
-                    <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+                    <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" />
                     <FluentValidationMessage For="@(() => context.Slug)" />
                 </div>
                 <div class="vstack gap-3">
                     <FormItem2 For="() => context.Class" Label="@AppRes.CssClass">
-                        <FluentTextField @bind-Value=@context.Class />
+                        <FluentTextInput @bind-Value=@context.Class />
                     </FormItem2>
                     <FormItem2 For="() => context.Style" Label="@AppRes.CssStyle">
-                        <FluentTextField @bind-Value=@context.Style />
+                        <FluentTextInput @bind-Value=@context.Style />
                     </FormItem2>
                 </div>
 
@@ -162,24 +162,24 @@
                                     {
                                         <div class="navmenu-edit-form">
 
-                                            <FluentTextField @bind-Value=@_selMenu.Title Label="@AppRes.Title" Class="w-100" />
+                                            <FluentTextInput @bind-Value=@_selMenu.Title Label="@AppRes.Title" Class="w-100" />
 
                                             @if (!_selMenu.IsHeader && !_selMenu.IsDivider)
                                             {
-                                                <FluentTextField @bind-Value=@_selMenu.Url Label="Url" Class="w-100" />
+                                                <FluentTextInput @bind-Value=@_selMenu.Url Label="Url" Class="w-100" />
 
                                                 <FluentCheckbox @bind-Value=@_selMenu.OpenInNewTab Label="Открывать в новой вкладке" />
                                             }
 
                                             <FluentStack>
-                                                <FluentTextField @bind-Value=@_selMenu.Icon Label="Icon" />
+                                                <FluentTextInput @bind-Value=@_selMenu.Icon Label="Icon" />
                                                 <FluentButton OnClick=OnClickIconSelectMedia>
                                                     <FluentIcon Value="@(new Icons.Regular.Size16.Folder())" />
                                                 </FluentButton>
                                             </FluentStack>
 
-                                            <FluentTextField @bind-Value=@_selMenu.Class Label="@AppRes.CssClass" />
-                                            <FluentTextField @bind-Value=@_selMenu.Style Label="@AppRes.CssStyle" />
+                                            <FluentTextInput @bind-Value=@_selMenu.Class Label="@AppRes.CssClass" />
+                                            <FluentTextInput @bind-Value=@_selMenu.Style Label="@AppRes.CssStyle" />
 
                                             <FluentStack Orientation="@Orientation.Vertical">
                                                 <FluentCheckbox @bind-Value=@_selMenu.IsHeader Label="IsHeader" />

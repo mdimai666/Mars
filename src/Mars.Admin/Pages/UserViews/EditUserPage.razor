@@ -32,22 +32,22 @@
                            ImageSize="50px" />
             <div class="spacer-1"></div>
             <FormItem2 For="@(() => model.UserName)">
-                <FluentTextField Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
+                <FluentTextInput Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
             </FormItem2>
             <FormItem2 For="@(() => model.LastName)">
-                <FluentTextField Name="@nameof(model.LastName)" @bind-Value=@model.LastName />
+                <FluentTextInput Name="@nameof(model.LastName)" @bind-Value=@model.LastName />
             </FormItem2>
             <FormItem2 For="@(() => model.FirstName)">
-                <FluentTextField Name="@nameof(model.FirstName)" @bind-Value=@model.FirstName />
+                <FluentTextInput Name="@nameof(model.FirstName)" @bind-Value=@model.FirstName />
             </FormItem2>
             <FormItem2 For="@(() => model.MiddleName)">
-                <FluentTextField Name="@nameof(model.MiddleName)" @bind-Value=@model.MiddleName />
+                <FluentTextInput Name="@nameof(model.MiddleName)" @bind-Value=@model.MiddleName />
             </FormItem2>
             <FormItem2 For="@(() => model.Email)">
-                <FluentTextField Name="@nameof(model.Email)" TextFieldType="TextFieldType.Email" @bind-Value=@model.Email />
+                <FluentTextInput Name="@nameof(model.Email)" TextInputType="TextInputType.Email" @bind-Value=@model.Email />
             </FormItem2>
             <FormItem2 For="@(() => model.PhoneNumber)">
-                <FluentTextField Name="@nameof(model.PhoneNumber)" @bind-Value=@model.PhoneNumber />
+                <FluentTextInput Name="@nameof(model.PhoneNumber)" @bind-Value=@model.PhoneNumber />
             </FormItem2>
             <FormItem2 For="@(() => model.Gender)">
                 <FluentRadioGroup @bind-Value=model.Gender>

@@ -2,7 +2,7 @@
 
 @* Встроенный редактор короткой строки *@
 
-<FluentTextField Value="@(Binding.ValueAt(Index) as string)"
+<FluentTextInput Value="@(Binding.ValueAt(Index) as string)"
                  ValueChanged="@(v => Binding.SetValueAt(Index, v))"
                  Name="@Binding.Field.Key"
                  Disabled="@Binding.ReadOnly"

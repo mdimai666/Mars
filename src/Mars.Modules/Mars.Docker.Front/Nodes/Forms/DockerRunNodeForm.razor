@@ -35,7 +35,7 @@
                             For="() => Node.Stdin" />
         </FormItem2>
         <FormItem2 For="() => Node.TimeoutSeconds">
-            <FluentNumberField TValue="int" @bind-Value="Node.TimeoutSeconds" Min="0" Class="w-100" />
+            <FluentNumberInput TValue="int" @bind-Value="Node.TimeoutSeconds" Min="0" Class="w-100" />
         </FormItem2>
         <FormItem2 For="() => Node.KeepContainer">
             <FluentSwitch @bind-Value="Node.KeepContainer" />

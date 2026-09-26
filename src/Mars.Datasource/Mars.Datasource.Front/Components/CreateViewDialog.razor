@@ -18,7 +18,7 @@
                 <FluentOption TOption="string" Value="@schema">@schema</FluentOption>
             }
         </FluentSelect>
-        <FluentTextField Label="Имя" Style="flex:1 1 auto"
+        <FluentTextInput Label="Имя" Style="flex:1 1 auto"
                          @bind-Value="_name" @bind-Value:after="Refresh" />
         <FluentCheckbox Label="заменить, если есть" @bind-Value="_replace" @bind-Value:after="Refresh" />
     </div>

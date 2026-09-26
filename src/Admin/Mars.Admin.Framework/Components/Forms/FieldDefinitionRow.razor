@@ -72,8 +72,8 @@
                 @if (Capabilities.CanEditTitle)
                 {
                     <div class="col">
-                        <FluentTextField Label="Заголовок" Style="min-width:200px" Required
-                                         Appearance="FluentInputAppearance.Filled"
+                        <FluentTextInput Label="Заголовок" Style="min-width:200px" Required
+                                         Appearance="TextInputAppearance.FilledDarker"
                                          Value="@Definition.Title" ValueChanged="SetTitleAsync" />
                         @if (ValidationMessage(nameof(Definition.Title)) is { } titleError)
                         {
@@ -84,7 +84,7 @@
                 @if (Capabilities.CanEditKey)
                 {
                     <div class="col">
-                        <FluentTextField Label="Ключ" Required
+                        <FluentTextInput Label="Ключ" Required
                                          Value="@Definition.Key" ValueChanged="SetKeyAsync" />
                         @if (ValidationMessage(nameof(Definition.Key)) is { } keyError)
                         {
@@ -152,10 +152,10 @@
                         <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentLabel>
                         <div class="mt-2 hstack gap-3">
                             <label>min</label>
-                            <FluentNumberField @bind-Value="MinValue" Style="width:100px;" />
+                            <FluentNumberInput @bind-Value="MinValue" Style="width:100px;" />
                             <span style="text-align:center;">-</span>
                             <label>max</label>
-                            <FluentNumberField @bind-Value="MaxValue" Style="width:100px;" />
+                            <FluentNumberInput @bind-Value="MaxValue" Style="width:100px;" />
                         </div>
                     </div>
                 }
@@ -189,7 +189,7 @@
                             @foreach (var name in ParamsOf(rule.Type))
                             {
                                 var parameter = name;
-                                <FluentTextField Label="@parameter" Placeholder="@parameter" Style="min-width:170px"
+                                <FluentTextInput Label="@parameter" Placeholder="@parameter" Style="min-width:170px"
                                                  Value="@FormRuleParams.Read(rule, parameter)"
                                                  ValueChanged="@(value => SetRuleParamAsync(index, parameter, value))" />
                             }
@@ -216,7 +216,7 @@
                 }
                 @if (Capabilities.CanEditOrder)
                 {
-                    <FluentNumberField @bind-Value="OrderValue" Label="@AppRes.SortingOrder" Style="width:100px" />
+                    <FluentNumberInput @bind-Value="OrderValue" Label="@AppRes.SortingOrder" Style="width:100px" />
                 }
             </div>
 

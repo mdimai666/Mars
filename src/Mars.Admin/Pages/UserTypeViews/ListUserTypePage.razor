@@ -9,11 +9,11 @@
 <ContentWrapper Title="@AppRes.UserTypes">
 
     <div class="hstack">
-        <FluentSearch @bind-Value=_searchText
+        <FluentTextInput @bind-Value=_searchText
                       @bind-Value:after=HandleSearchInput
                       Immediate
                       ImmediateDelay="300"
-                      Appearance="FluentInputAppearance.Filled"
+                      Appearance="TextInputAppearance.FilledDarker"
                       AriaLabel="Search" />
         <div class="ms-auto">
             <a href="@urlEditPage">

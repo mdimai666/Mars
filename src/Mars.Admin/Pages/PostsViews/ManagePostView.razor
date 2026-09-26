@@ -16,11 +16,11 @@
     else
     {
         <div class="hstack gap-1">
-            <FluentSearch @bind-Value=_searchText
+            <FluentTextInput @bind-Value=_searchText
                           @bind-Value:after=HandleSearchInput
                           Immediate
                           ImmediateDelay="300"
-                          Appearance="FluentInputAppearance.Filled"
+                          Appearance="TextInputAppearance.FilledDarker"
                           AriaLabel="Search" />
             <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
             <FluentButton aria-label="filters" Title="Фильтры"

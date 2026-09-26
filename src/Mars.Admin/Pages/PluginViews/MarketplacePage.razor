@@ -29,11 +29,11 @@
         else
         {
             <div class="hstack gap-3">
-                <FluentSearch @bind-Value=_searchText
+                <FluentTextInput @bind-Value=_searchText
                               @bind-Value:after=ReloadAsync
                               Immediate
                               ImmediateDelay="300"
-                              Appearance="FluentInputAppearance.Filled"
+                              Appearance="TextInputAppearance.FilledDarker"
                               AriaLabel="Поиск"
                               Placeholder="Поиск по каталогу" />
                 <FluentSwitch @bind-Value=_recommendedOnly @bind-Value:after=ReloadAsync>

@@ -11,11 +11,11 @@
 <ContentWrapper Title="@AppRes.PostTypes" WrapperClass="vstack">
 
     <div class="hstack">
-        <FluentSearch @bind-Value=_searchText
+        <FluentTextInput @bind-Value=_searchText
                       @bind-Value:after=HandleSearchInput
                       Immediate
                       ImmediateDelay="300"
-                      Appearance="FluentInputAppearance.Filled"
+                      Appearance="TextInputAppearance.FilledDarker"
                       AriaLabel="Search" />
         <FluentCheckbox Value=_includeComponent
                         ValueChanged=HandleIncludeComponentChanged

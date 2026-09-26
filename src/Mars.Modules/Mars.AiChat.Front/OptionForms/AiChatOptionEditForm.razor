@@ -45,7 +45,7 @@
                         <div class="row g-2">
                             <div class="col-md-4">
                                 <label class="fz12px text-fade">Название</label>
-                                <FluentTextField @bind-Value=conn.Name Class="w-100" Placeholder="например, Qwen-Max" />
+                                <FluentTextInput @bind-Value=conn.Name Class="w-100" Placeholder="например, Qwen-Max" />
                             </div>
                             <div class="col-md-4">
                                 <label class="fz12px text-fade">Провайдер</label>
@@ -57,18 +57,18 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="fz12px text-fade">Модель</label>
-                                <FluentTextField @bind-Value=conn.ModelId Class="w-100" Placeholder="например, qwen-max / gpt-4o / llama3.1" />
+                                <FluentTextInput @bind-Value=conn.ModelId Class="w-100" Placeholder="например, qwen-max / gpt-4o / llama3.1" />
                             </div>
                         </div>
 
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <label class="fz12px text-fade">Endpoint (пусто = по умолчанию: @conn.ProviderType.GetDefaultEndpoint())</label>
-                                <FluentTextField @bind-Value=conn.Endpoint Class="w-100" Placeholder="@conn.ProviderType.GetDefaultEndpoint()" />
+                                <FluentTextInput @bind-Value=conn.Endpoint Class="w-100" Placeholder="@conn.ProviderType.GetDefaultEndpoint()" />
                             </div>
                             <div class="col-md-6">
                                 <label class="fz12px text-fade">API ключ</label>
-                                <FluentTextField @bind-Value=conn.ApiKey TextFieldType="TextFieldType.Password" Class="w-100" AutoComplete="off" />
+                                <FluentTextInput @bind-Value=conn.ApiKey TextInputType="TextInputType.Password" Class="w-100" AutoComplete="off" />
                             </div>
                         </div>
                     </div>

@@ -6,7 +6,7 @@
 
 <div class="vstack gap-3">
     <FormItem2 For="() => Node.Command" Class="">
-        <FluentTextField @bind-Value="@Node.Command" />
+        <FluentTextInput @bind-Value="@Node.Command" />
     </FormItem2>
     <FluentCheckbox @bind-Value="@Node.Append">
         <AutoInputLabel For="() => Node.Append" />

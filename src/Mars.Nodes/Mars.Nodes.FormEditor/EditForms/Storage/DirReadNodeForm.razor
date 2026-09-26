@@ -6,13 +6,13 @@
 <div class="form-group compact vstack gap-3" style="--fluent-input-label-basis:200px">
 
     <FormItem2 For="() => Node.DirPath" Class="">
-        <FluentTextField @bind-Value="@Node.DirPath" Class="w-100" />
+        <FluentTextInput @bind-Value="@Node.DirPath" Class="w-100" />
     </FormItem2>
     <FormItem2 For="() => Node.Pattern" Class="">
-        <FluentTextField @bind-Value="@Node.Pattern" Class="w-100" />
+        <FluentTextInput @bind-Value="@Node.Pattern" Class="w-100" />
     </FormItem2>
     <FormItem2 For="() => Node.MaxDepth" Class="">
-        <FluentNumberField @bind-Value="@Node.MaxDepth" Class="" Min="0" />
+        <FluentNumberInput @bind-Value="@Node.MaxDepth" Class="" Min="0" />
     </FormItem2>
     <FormItem2 For="() => Node.ReturnRelativePath">
         <FluentCheckbox @bind-Value=@Node.ReturnRelativePath Class="" />

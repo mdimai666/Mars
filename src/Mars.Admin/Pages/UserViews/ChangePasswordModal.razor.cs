@@ -31,10 +31,10 @@ public partial class ChangePasswordModal
     FluentDialog Dialog { get; set; } = default!;
     ChangePasswordModel model => Content;
 
-    TextFieldType passwordFieldType = TextFieldType.Password;
+    TextInputType passwordFieldType = TextInputType.Password;
     static Icon eyeShow = new Icons.Regular.Size16.Eye();
     static Icon eyeOff = new Icons.Regular.Size16.EyeOff();
-    Icon passwordShowButtonIcon => passwordFieldType == TextFieldType.Password ? eyeShow : eyeOff;
+    Icon passwordShowButtonIcon => passwordFieldType == TextInputType.Password ? eyeShow : eyeOff;
 
     protected override void OnParametersSet()
     {
@@ -63,11 +63,11 @@ public partial class ChangePasswordModal
     void GeneratePassword()
     {
         model.NewPassword = Password.Generate(8, 2);
-        passwordFieldType = TextFieldType.Text;
+        passwordFieldType = TextInputType.Text;
     }
 
     void TogglePassword()
     {
-        passwordFieldType = passwordFieldType == TextFieldType.Password ? TextFieldType.Text : TextFieldType.Password;
+        passwordFieldType = passwordFieldType == TextInputType.Password ? TextInputType.Text : TextInputType.Password;
     }
 }

@@ -23,12 +23,12 @@
                                 <div class="col-12">
 
                                     <FormItem2 For="()=>config.Title">
-                                        <FluentTextField @bind-Value=@config.Title />
+                                        <FluentTextInput @bind-Value=@config.Title />
                                     </FormItem2>
                                 </div>
                                 <div class="col-12 col-lg-6">
                                     <FormItem2 For="()=>config.Slug">
-                                        <FluentTextField @bind-Value=@config.Slug />
+                                        <FluentTextInput @bind-Value=@config.Slug />
                                     </FormItem2>
                                     @if (SlugError(config) is string slugError)
                                     {

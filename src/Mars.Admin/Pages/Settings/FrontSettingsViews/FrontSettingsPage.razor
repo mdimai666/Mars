@@ -17,9 +17,9 @@
     <div class="card mb-3">
         <div class="card-body vstack gap-2">
             <div class="hstack gap-2 flex-wrap align-items-end">
-                <FluentTextField @bind-Value="newSlug" Label="Slug" Placeholder="my-front"
+                <FluentTextInput @bind-Value="newSlug" Label="Slug" Placeholder="my-front"
                                  autocomplete="off" Style="min-width:180px;" />
-                <FluentTextField @bind-Value="newUrl" Label="Url" Placeholder="/my-front"
+                <FluentTextInput @bind-Value="newUrl" Label="Url" Placeholder="/my-front"
                                  autocomplete="off" Style="min-width:180px;" />
                 <FluentSwitch @bind-Value="newUseTemplate" Style="min-width:210px; margin-bottom:6px;"
                               Label=@(newUseTemplate ? "Из стартового шаблона" : "Существующая папка") />
@@ -33,7 +33,7 @@
                 }
                 else
                 {
-                    <FluentTextField @bind-Value="newPath" Label="Path" autocomplete="off"
+                    <FluentTextInput @bind-Value="newPath" Label="Path" autocomplete="off"
                                      Placeholder=@($"пусто = data/fronts/{(string.IsNullOrWhiteSpace(newSlug) ? "<slug>" : newSlug.Trim())}")
                                      Style="min-width:220px;" />
                 }
@@ -120,13 +120,13 @@
 
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <FluentTextField @bind-Value="front.Title" Label="Title" Class="w-100" autocomplete="off" />
+                                <FluentTextInput @bind-Value="front.Title" Label="Title" Class="w-100" autocomplete="off" />
                             </div>
                             <div class="col-md-4">
-                                <FluentTextField @bind-Value="front.Url" Label="Url" Placeholder="/" Class="w-100" autocomplete="off" />
+                                <FluentTextInput @bind-Value="front.Url" Label="Url" Placeholder="/" Class="w-100" autocomplete="off" />
                             </div>
                             <div class="col-md-4">
-                                <FluentTextField @bind-Value="front.Path" Label="Path" Class="w-100"
+                                <FluentTextInput @bind-Value="front.Path" Label="Path" Class="w-100"
                                                  Placeholder=@($"пусто = data/fronts/{front.Slug}") autocomplete="off" />
                             </div>
                         </div>

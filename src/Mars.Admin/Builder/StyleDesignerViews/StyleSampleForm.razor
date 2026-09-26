@@ -10,7 +10,7 @@
 
     <FluentStack Orientation="Orientation.Vertical">
         <div>
-            <FluentTextField Name="name" @bind-Value="model.Name" Label="Name" Required />
+            <FluentTextInput Name="name" @bind-Value="model.Name" Label="Name" Required />
             <FluentValidationMessage For="@(() => model.Name)" />
         </div>
         <div>
@@ -37,7 +37,7 @@
             <FluentValidationMessage For="@(() => model.Category)" />
         </div>
         <div>
-            <FluentNumberField Name="amount" @bind-Value="model.Amount" Label="Amount" Required />
+            <FluentNumberInput Name="amount" @bind-Value="model.Amount" Label="Amount" Required />
             <FluentValidationMessage For="@(() => model.Amount)" />
         </div>
         <div>

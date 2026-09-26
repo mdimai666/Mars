@@ -103,7 +103,7 @@
                         }
                     </FluentSelect>
                 </div>
-                <FluentTextField Value="@Field.QueryBackReferenceKey" ValueChanged="SetQueryBackReferenceAsync"
+                <FluentTextInput Value="@Field.QueryBackReferenceKey" ValueChanged="SetQueryBackReferenceAsync"
                                  Label="Relation-поле цели (обратная ссылка)" Style="min-width:250px" />
             </div>
         </div>
@@ -162,9 +162,9 @@
 
                 @if (Field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
                 {
-                    <FluentTextField Value="@Field.GeneratorPrefix" ValueChanged="SetGeneratorPrefixAsync"
+                    <FluentTextInput Value="@Field.GeneratorPrefix" ValueChanged="SetGeneratorPrefixAsync"
                                      Label="Префикс" Style="width:120px;" />
-                    <FluentNumberField @bind-Value="GeneratorPadding" Label="Разрядов числа" Style="width:110px;" />
+                    <FluentNumberInput @bind-Value="GeneratorPadding" Label="Разрядов числа" Style="width:110px;" />
                     <div class="vstack">
                         <label>Счётчик</label>
                         <FluentSelect TOption="string" Width="180px"
@@ -184,9 +184,9 @@
                     {
                         var category = row;
                         <div class="hstack gap-2 align-items-center">
-                            <FluentTextField Value="@category.CategorySlug" ValueChanged="@(v => SetCategorySlugAsync(category, v))"
+                            <FluentTextInput Value="@category.CategorySlug" ValueChanged="@(v => SetCategorySlugAsync(category, v))"
                                              Label="Slug категории" Style="min-width:180px;" />
-                            <FluentTextField Value="@category.Prefix" ValueChanged="@(v => SetCategoryPrefixAsync(category, v))"
+                            <FluentTextInput Value="@category.Prefix" ValueChanged="@(v => SetCategoryPrefixAsync(category, v))"
                                              Label="Префикс" Style="width:120px;" />
                             <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveGeneratorCategoryAsync(category))">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />

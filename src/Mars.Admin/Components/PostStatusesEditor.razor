@@ -23,16 +23,16 @@
         var status = item;
         <div class="st-item row mb-3">
             <div class="col-lg-3">
-                <FluentTextField @bind-Value="status.Title" />
+                <FluentTextInput @bind-Value="status.Title" />
             </div>
             <div class="col-lg-3">
-                <FluentTextField @bind-Value="status.Slug" />
+                <FluentTextInput @bind-Value="status.Slug" />
             </div>
             <div class="col-lg-2">
-                <FluentTextField @bind-Value="status.Color" />
+                <FluentTextInput @bind-Value="status.Color" />
             </div>
             <div class="col-lg-2">
-                <FluentNumberField @bind-Value="status.Order" />
+                <FluentNumberInput @bind-Value="status.Order" />
             </div>
             <div class="col-lg-2">
                 <DFluentDeleteButton OnConfirm="@(e => RemoveAsync(status))" />

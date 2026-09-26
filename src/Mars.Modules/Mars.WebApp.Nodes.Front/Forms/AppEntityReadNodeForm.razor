@@ -59,7 +59,7 @@
                                     @for (int i = 0; i < item.Parameters.Count; i++)
                                     {
                                         var p = i;
-                                        <FluentTextField Placeholder="@item.Method?.Parameters.ElementAtOrDefault(p)?.Name"
+                                        <FluentTextInput Placeholder="@item.Method?.Parameters.ElementAtOrDefault(p)?.Name"
                                                          @bind-Value="item.Parameters[p]" />
                                     }
                                 </div>

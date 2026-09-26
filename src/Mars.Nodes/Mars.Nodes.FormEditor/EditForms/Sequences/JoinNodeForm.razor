@@ -19,19 +19,19 @@
         @if (Node.Mode == JoinNode.JoinMode.CountAggregation)
         {
             <FormItem2 For="() => Node.MessageCount">
-                <FluentNumberField @bind-Value=Node.MessageCount Class="" Min="1" />
+                <FluentNumberInput @bind-Value=Node.MessageCount Class="" Min="1" />
             </FormItem2>
         }
         else if (Node.Mode == JoinNode.JoinMode.TimeAggregation)
         {
             <FormItem2 For="() => Node.AggregationTimeSeconds">
-                <FluentTextField @bind-Value="@AggregationTimeSecondsSetter" Class="" />
+                <FluentTextInput @bind-Value="@AggregationTimeSecondsSetter" Class="" />
             </FormItem2>
         }
         else if (Node.Mode == JoinNode.JoinMode.InputAggregation)
         {
             <FormItem2 For="() => Node.InputAggregationTimeoutSeconds">
-                <FluentTextField @bind-Value="@InputAggregationTimeoutSecondsSetter" Class="" />
+                <FluentTextInput @bind-Value="@InputAggregationTimeoutSecondsSetter" Class="" />
             </FormItem2>
 
             <FormItem2 For="() => Node.Inputs">

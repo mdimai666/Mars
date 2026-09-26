@@ -9,9 +9,9 @@
 </FluentDialogHeader>
 <FluentDialogBody Class="text-start">
     <div class="d-flex flex-column gap-3">
-        <FluentTextField Label="Image *" Placeholder="alpine:3.20" Hint="Pull from source if not local" @bind-Value="_image" />
-        <FluentTextField Label="Name" Placeholder="my-container" @bind-Value="_name" />
-        <FluentTextField Label="Command" Placeholder="echo hello" Hint="Split by spaces" @bind-Value="_cmd" />
+        <FluentTextInput Label="Image *" Placeholder="alpine:3.20" Hint="Pull from source if not local" @bind-Value="_image" />
+        <FluentTextInput Label="Name" Placeholder="my-container" @bind-Value="_name" />
+        <FluentTextInput Label="Command" Placeholder="echo hello" Hint="Split by spaces" @bind-Value="_cmd" />
         <FluentTextArea Label="Environment" Placeholder="KEY=VALUE, one per line" Rows="3" @bind-Value="_env" />
         <FluentTextArea Label="Ports" Placeholder="8080:80 or 5353:53/udp, one per line" Hint="host:container[/protocol]" Rows="2" @bind-Value="_ports" />
         <FluentSelect TOption="string" Label="Restart policy" @bind-Value="_restartPolicy">

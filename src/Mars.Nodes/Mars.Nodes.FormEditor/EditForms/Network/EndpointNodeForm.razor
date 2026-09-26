@@ -16,7 +16,7 @@
 
         <FormItem2 For="() => Node.UrlPattern">
             <div class="vstack gap-2">
-                <FluentTextField @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
+                <FluentTextInput @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
                 <div class="vstack gap-2 align-items-start">
                     <a href="@Q.ServerUrlJoin(Node.UrlPattern)" role="button" class="" target="_blank">
                         @Q.ServerUrlJoin(Node.UrlPattern)

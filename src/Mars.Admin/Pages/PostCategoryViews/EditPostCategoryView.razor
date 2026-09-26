@@ -17,16 +17,16 @@
         </FormItem2>
 
         <div class="vstack">
-            <FluentTextField @bind-Value=@context.Title
+            <FluentTextInput @bind-Value=@context.Title
                              @bind-Value:after="OnChangeTitle"
                              Label="@AppRes.Title"
-                             Appearance="@FluentInputAppearance.Filled"
+                             Appearance="@TextInputAppearance.FilledDarker"
                              Required
                              Style="zoom:1.1" />
             <FluentValidationMessage For="@(() => context.Title)" />
         </div>
         <div class="">
-            <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+            <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" />
             <FluentValidationMessage For="@(() => context.Slug)" />
         </div>
 

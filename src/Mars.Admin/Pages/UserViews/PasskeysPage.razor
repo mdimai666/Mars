@@ -70,7 +70,7 @@
             </div>
         </FluentDialogHeader>
         <div class="vstack gap-2">
-            <FluentTextField @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
+            <FluentTextInput @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
             <FluentLabel>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentLabel>
         </div>
         <FluentDialogFooter>
@@ -89,7 +89,7 @@
             </div>
         </FluentDialogHeader>
         <div class="vstack gap-2">
-            <FluentTextField @bind-Value="renameValue" Label="Название" AutoComplete="off" MaxLength="64" />
+            <FluentTextInput @bind-Value="renameValue" Label="Название" AutoComplete="off" MaxLength="64" />
         </div>
         <FluentDialogFooter>
             <FluentButton Appearance="Appearance.Accent" OnClick="RenamePasskey">Сохранить</FluentButton>

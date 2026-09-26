@@ -46,7 +46,7 @@
             </div>
         </FluentDialogHeader>
         <div class="vstack gap-2">
-            <FluentTextField @bind-Value="newKeyName" Label="Название" AutoComplete="off" />
+            <FluentTextInput @bind-Value="newKeyName" Label="Название" AutoComplete="off" />
             <div class="hstack gap-2">
                 <FluentButton Appearance="@(IsChipActive(Week) ? Appearance.Accent : Appearance.Lightweight)"
                               OnClick="@(() => SetExpires(Week))">Неделя</FluentButton>
@@ -77,7 +77,7 @@
         <div class="vstack gap-2">
             <FluentLabel>Сохраните ключ — он показан в последний раз:</FluentLabel>
             <div class="hstack gap-2">
-                <FluentTextField Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
+                <FluentTextInput Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
                 <FluentButton IconStart="@(new Icons.Regular.Size16.Copy())" OnClick="CopyCreatedKey" Title="Скопировать" />
             </div>
         </div>

@@ -15,7 +15,7 @@
 
     <div class="vstack gap-3">
         <FormItem2 For="()=>testSmsMessage.Phone">
-            <FluentTextField @bind-Value="@testSmsMessage.Phone" Placeholder="+79140000000" Class="w-100" />
+            <FluentTextInput @bind-Value="@testSmsMessage.Phone" Placeholder="+79140000000" Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>testSmsMessage.Message">
             <FluentTextArea @bind-Value="@testSmsMessage.Message" autocomplete="off" Class="w-100" />

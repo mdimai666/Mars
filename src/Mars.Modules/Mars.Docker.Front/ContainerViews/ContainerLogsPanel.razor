@@ -6,7 +6,7 @@
 
 <div class="mt-2">
     <div class="hstack gap-2 mb-2">
-        <FluentTextField Label="Tail" Style="width: 120px;" @bind-Value="_tailText" />
+        <FluentTextInput Label="Tail" Style="width: 120px;" @bind-Value="_tailText" />
         <FluentSwitch Label="Auto refresh" Disabled="@(!_canAutoRefresh)" @bind-Value="_autoRefresh" @bind-Value:after="OnAutoRefreshChanged" />
         <FluentButton aria-label="refresh logs" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="() => LoadLogs()" />
     </div>

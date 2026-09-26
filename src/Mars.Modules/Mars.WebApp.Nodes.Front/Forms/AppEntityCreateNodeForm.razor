@@ -53,7 +53,7 @@
                             </div>
                             <FluentCheckbox @bind-Value="@item.IsEvalExpression" Label="X" title="IsExpression" />
                             <div class="w-100">
-                                <FluentTextField Placeholder="@item.Placeholder"
+                                <FluentTextInput Placeholder="@item.Placeholder"
                                                  @bind-Value="item.ValueOrExpression"
                                                  Class="w-100"
                                                  Required="@item.IsRequired" />

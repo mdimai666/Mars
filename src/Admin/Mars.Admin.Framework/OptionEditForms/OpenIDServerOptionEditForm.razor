@@ -31,25 +31,26 @@
                 <div class="vstack gap-1">
                     <label>
                         <div>Authorization</div>
-                        <FluentTextField Value="@Q.ServerUrlJoin("api/oauth/authorize")" ReadOnly Appearance="FluentInputAppearance.Filled" Class="w-100" />
+                        <FluentTextInput Value="@Q.ServerUrlJoin("api/oauth/authorize")" ReadOnly Appearance="TextInputAppearance.FilledDarker" Class="w-100" />
                     </label>
                     <label>
                         <div>Token</div>
-                        <FluentTextField Value="@Q.ServerUrlJoin("api/oauth/token")" ReadOnly Appearance="FluentInputAppearance.Filled" Class="w-100" />
+                        <FluentTextInput Value="@Q.ServerUrlJoin("api/oauth/token")" ReadOnly Appearance="TextInputAppearance.FilledDarker" Class="w-100" />
                     </label>
                 </div>
 
                 <div class="row row-cols-3 g-2">
                     <FormItem2 For="() => sso.ClientId" Class="col">
-                        <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
+                        <FluentTextInput @bind-Value="@sso.ClientId" Class="w-100" />
                     </FormItem2>
 
                     <FormItem2 For="() => sso.ClientSecretHash" Class="col">
-                        <FluentTextField @bind-Value="@sso.ClientSecretHash" Class="w-100" ReadOnly Appearance="FluentInputAppearance.Filled">
-                            <FluentButton Appearance="@Appearance.Stealth"
-                                          OnClick=@(e => GenerateSecret(sso))
-                                          slot="end">generate</FluentButton>
-                        </FluentTextField>
+                        <FluentTextInput @bind-Value="@sso.ClientSecretHash" Class="w-100" ReadOnly Appearance="TextInputAppearance.FilledDarker">
+                            <EndTemplate>
+                                <FluentButton Appearance="ButtonAppearance.Subtle"
+                                              OnClick=@(e => GenerateSecret(sso))>generate</FluentButton>
+                            </EndTemplate>
+                        </FluentTextInput>
                         @if (_shownSecrets.TryGetValue(sso, out var shownSecret))
                         {
                             <div class="alert alert-warning my-1">
@@ -61,11 +62,11 @@
                 </div>
 
                 <FormItem2 For="() => sso.CallbackUrl" Class="col">
-                    <FluentTextField @bind-Value="@sso.CallbackUrl" Class="w-100" />
+                    <FluentTextInput @bind-Value="@sso.CallbackUrl" Class="w-100" />
                 </FormItem2>
 
                 <FormItem2 For="() => sso.RedirectUris" Class="col">
-                    <FluentTextField @bind-Value="@sso.RedirectUris" Class="w-100" />
+                    <FluentTextInput @bind-Value="@sso.RedirectUris" Class="w-100" />
                 </FormItem2>
 
                 <FluentCheckbox @bind-Value="sso.RequirePkce">
@@ -73,7 +74,7 @@
                 </FluentCheckbox>
 
                 <FormItem2 For="() => sso.AllowedGrantTypes" Class="col">
-                    <FluentTextField @bind-Value="@sso.AllowedGrantTypes" Class="w-100" />
+                    <FluentTextInput @bind-Value="@sso.AllowedGrantTypes" Class="w-100" />
                 </FormItem2>
 
                 <div class="">

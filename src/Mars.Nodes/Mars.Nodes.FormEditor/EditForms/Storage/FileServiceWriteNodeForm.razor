@@ -21,7 +21,7 @@
     {
         <FormItem2 For="() => Node.StorageFileId" Class="">
             <div class="hstack">
-                <FluentTextField @bind-Value="@Node.StorageFileId" Class="w-100" />
+                <FluentTextInput @bind-Value="@Node.StorageFileId" Class="w-100" />
                 <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
             </div>
         </FormItem2>
@@ -30,7 +30,7 @@
     {
         <FormItem2 For="() => Node.FilePath" Class="">
             <div class="hstack">
-                <FluentTextField @bind-Value="@Node.FilePath" Class="w-100" />
+                <FluentTextInput @bind-Value="@Node.FilePath" Class="w-100" />
                 <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
             </div>
         </FormItem2>

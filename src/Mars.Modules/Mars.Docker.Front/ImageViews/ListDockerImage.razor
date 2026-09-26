@@ -7,12 +7,12 @@
 <ErrorBoundary>
     <ChildContent>
         <div class="hstack gap-2">
-            <FluentSearch @bind-Value=_searchText
-                          @bind-Value:after=HandleSearchInput
-                          Immediate
-                          ImmediateDelay="300"
-                          Appearance="FluentInputAppearance.Filled"
-                          AriaLabel="Search" />
+            <FluentTextInput @bind-Value=_searchText
+                             @bind-Value:after=HandleSearchInput
+                             Immediate
+                             ImmediateDelay="300"
+                             Appearance="TextInputAppearance.FilledDarker"
+                             AriaLabel="Search" />
             <FluentButton aria-label="refresh" Title="Refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
             <div class="ms-auto">
                 <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDownload())" OnClick="ShowPullDialog">Pull</FluentButton>

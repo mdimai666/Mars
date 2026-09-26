@@ -9,11 +9,11 @@
 <ContentWrapper Title="@AppRes.Feedbacks" WrapperClass="vstack">
 
     <div class="d-flex flex-column flex-lg-row gap-3">
-        <FluentSearch @bind-Value=_searchText
+        <FluentTextInput @bind-Value=_searchText
                       @bind-Value:after=HandleSearchInput
                       Immediate
                       ImmediateDelay="300"
-                      Appearance="FluentInputAppearance.Filled"
+                      Appearance="TextInputAppearance.FilledDarker"
                       AriaLabel="Search" />
 
         <a class="btn btn-outline-primary ms-auto" @onclick=DownloadExcel>

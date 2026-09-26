@@ -15,7 +15,7 @@
 
         <FormItem2 For="() => Node.UrlPattern">
             <div class="vstack gap-2">
-                <FluentTextField @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
+                <FluentTextInput @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
                 <div class="vstack gap-2 align-items-start">
                     <a href="@Q.ServerUrlJoin(Node.UrlPattern)" role="button" class="" target="_blank">
                         @Q.ServerUrlJoin(Node.UrlPattern)
@@ -45,7 +45,7 @@
         @if (Node.AllowMultipart)
         {
             <FormItem2 For="() => Node.MaxFileSize">
-                <FluentTextField @bind-Value=@Node.MaxFileSize Class="" Placeholder="10mb" />
+                <FluentTextInput @bind-Value=@Node.MaxFileSize Class="" Placeholder="10mb" />
                 <div class="hstack gap-2">
                     <a role="button" @onclick="@(() => Node.MaxFileSize = "1mb")">1mb</a>
                     <a role="button" @onclick="@(() => Node.MaxFileSize = "5mb")">5mb</a>

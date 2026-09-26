@@ -8,11 +8,11 @@
     <div class="card-body p-1 h-100 d-flex flex-column">
 
         <div class="input-group input-group-sm">
-            <FluentSearch @ref=inputSearch @bind-Value="@SearchText"
-                          Appearance="FluentInputAppearance.Filled"
-                          Immediate
-                          Placeholder="Search..."
-                          AutoComplete="off" />
+            <FluentTextInput @ref=inputSearch @bind-Value="@SearchText"
+                             Appearance="TextInputAppearance.FilledDarker"
+                             Immediate
+                             Placeholder="Search..."
+                             AutoComplete="off" />
         </div>
 
         <div class="flex-fill flex-grow-0" style="height: calc(100% - 31px)">
@@ -45,7 +45,7 @@
     [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
     [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnNodeContextMenu { get; set; }
 
-    FluentSearch inputSearch = default!;
+    FluentTextInput inputSearch = default!;
     bool _wasVisible;
 
     string SearchText = "";

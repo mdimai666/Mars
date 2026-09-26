@@ -17,7 +17,7 @@
     @if (Node.Kind == EForeachKind.Repeat)
     {
         <FormItem2 For="()=>Node.RepeatCount">
-            <FluentNumberField @bind-Value=Node.RepeatCount Placeholder="payload" Min="0" />
+            <FluentNumberInput @bind-Value=Node.RepeatCount Placeholder="payload" Min="0" />
         </FormItem2>
 
     }

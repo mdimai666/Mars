@@ -14,8 +14,8 @@
             </div>
             <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
                 <div class="hstack">
-                    <FluentTextField @bind-Value=item.Name Placeholder="Key" />
-                    <FluentTextField @bind-Value=item.Value Placeholder="Value" />
+                    <FluentTextInput @bind-Value=item.Name Placeholder="Key" />
+                    <FluentTextInput @bind-Value=item.Value Placeholder="Value" />
                     <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                 </div>
             </div>

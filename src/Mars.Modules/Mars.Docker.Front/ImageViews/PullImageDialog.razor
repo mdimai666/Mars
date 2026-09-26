@@ -12,8 +12,8 @@
 </FluentDialogHeader>
 <FluentDialogBody Class="text-start">
     <div class="d-flex flex-column gap-3">
-        <FluentTextField Label="Image *" Placeholder="alpine" Disabled="_busy" @bind-Value="_image" />
-        <FluentTextField Label="Tag" Placeholder="latest" Disabled="_busy" @bind-Value="_tag" />
+        <FluentTextInput Label="Image *" Placeholder="alpine" Disabled="_busy" @bind-Value="_image" />
+        <FluentTextInput Label="Tag" Placeholder="latest" Disabled="_busy" @bind-Value="_tag" />
 
         @if (_busy)
         {

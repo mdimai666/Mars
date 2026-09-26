@@ -45,7 +45,7 @@
         </div>
         <FluentCheckbox @bind-Value=Node.RunAtStartup />
         <FluentLabel>@(L["delay millis"])</FluentLabel>
-        <FluentNumberField @bind-Value=Node.StartupDelayMillis Min="10" Disabled=!Node.RunAtStartup />
+        <FluentNumberInput @bind-Value=Node.StartupDelayMillis Min="10" Disabled=!Node.RunAtStartup />
     </div>
 
     <div class="hstack gap-3" style="min-height:32px;">

@@ -7,9 +7,11 @@
 <div class="form-group d-flex flex-column flex-fill">
     <label>TemplateFile</label>
 
-    <FluentTextField @bind-Value="Node.TemplateFile" Class="" >
-        <FluentButton slot="end" OnClick="ShowModalForSelect">file</FluentButton>
-    </FluentTextField>
+    <FluentTextInput @bind-Value="Node.TemplateFile" Class="" >
+        <EndTemplate>
+            <FluentButton OnClick="ShowModalForSelect">file</FluentButton>
+        </EndTemplate>
+    </FluentTextInput>
 
 </div>
 

@@ -8,13 +8,13 @@
 
         <div class="d-flex">
             <div class="flex-fill d-flex gap-2">
-                <FluentSearch @bind-Value=_searchText
-                              @bind-Value:after=HandleSearchInput
-                              Immediate
-                              ImmediateDelay="300"
-                              Autofocus
-                              Appearance="FluentInputAppearance.Filled"
-                              AriaLabel="Search" />
+                <FluentTextInput @bind-Value=_searchText
+                                 @bind-Value:after=HandleSearchInput
+                                 Immediate
+                                 ImmediateDelay="300"
+                                 Autofocus
+                                 Appearance="TextInputAppearance.FilledDarker"
+                                 AriaLabel="Search" />
 
                 <FluentSelect TOption=@(KeyValuePair<string, string>)
                               @bind-Value=_sortValue

@@ -66,7 +66,7 @@
             else if (Node.Item.Kind == FormItemKind.Container)
             {
                 <div class="hstack gap-1 align-items-center">
-                    <FluentTextField Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Имя таба"
+                    <FluentTextInput Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Имя таба"
                                      Style="width:200px" />
                     <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
                                           Title="Удалить контейнер" OnClick="RemoveAsync" />
@@ -76,7 +76,7 @@
             else if (Node.Item.Kind == FormItemKind.Heading)
             {
                 <div class="hstack gap-1 align-items-center">
-                    <FluentTextField Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок"
+                    <FluentTextInput Value="@Node.Item.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок"
                                      Style="width:180px" />
                     <FormLayoutIconButton Class="layout-actions" Icon="@(new Icons.Regular.Size16.Delete())"
                                           Title="Удалить заголовок" OnClick="RemoveAsync" />

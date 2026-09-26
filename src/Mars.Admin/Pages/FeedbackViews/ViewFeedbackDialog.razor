@@ -6,12 +6,12 @@
 
 <EditForm Model="@Model" novalidate Context="model">
     <FluentStack Orientation="Orientation.Vertical">
-        <FluentTextField Value="@Model.Title" Label="Title" ReadOnly Class="w-100" />
-        <FluentTextField Value="@Model.Email" Label="Email" ReadOnly Class="w-100" />
-        <FluentTextField Value="@Model.Phone" Label="Phone" ReadOnly Class="w-100" />
-        <FluentTextField Value="@Model.Type" Label="Type" ReadOnly Class="w-100" />
+        <FluentTextInput Value="@Model.Title" Label="Title" ReadOnly Class="w-100" />
+        <FluentTextInput Value="@Model.Email" Label="Email" ReadOnly Class="w-100" />
+        <FluentTextInput Value="@Model.Phone" Label="Phone" ReadOnly Class="w-100" />
+        <FluentTextInput Value="@Model.Type" Label="Type" ReadOnly Class="w-100" />
         <FluentTextArea Value="@Model.Content" Label="Content" Rows="10" ReadOnly Class="w-100" />
-        <FluentTextField Value="@Model.FilledUsername" Label="FilledUsername" ReadOnly Class="w-100" />
+        <FluentTextInput Value="@Model.FilledUsername" Label="FilledUsername" ReadOnly Class="w-100" />
         <FluentCheckbox Value=@Model.IsAuthorizedUser Label="IsAuthorizedUser" ReadOnly Class="w-100" />
     </FluentStack>
 </EditForm>

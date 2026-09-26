@@ -18,19 +18,19 @@
 
     <div class="vstack gap-3">
         <FormItem2 For="()=>context.FromName">
-            <FluentTextField @bind-Value=@context.FromName Class="w-100" />
+            <FluentTextInput @bind-Value=@context.FromName Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.Host">
-            <FluentTextField @bind-Value=@context.Host Class="w-100" />
+            <FluentTextInput @bind-Value=@context.Host Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.Port">
-            <FluentNumberField @bind-Value=@context.Port Class="w-100" />
+            <FluentNumberInput @bind-Value=@context.Port Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.SmtpUser">
-            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@context.SmtpUser Class="w-100" AutoComplete="off" />
+            <FluentTextInput TextInputType="@TextInputType.Email" @bind-Value=@context.SmtpUser Class="w-100" AutoComplete="off" />
         </FormItem2>
         <FormItem2 For="()=>context.SmtpPassword">
-            <FluentTextField TextFieldType="@TextFieldType.Password" @bind-Value=@context.SmtpPassword Class="w-100" AutoComplete="new-password" />
+            <FluentTextInput TextInputType="@TextInputType.Password" @bind-Value=@context.SmtpPassword Class="w-100" AutoComplete="new-password" />
         </FormItem2>
         <div style="margin-left: 46%;">
             <FluentCheckbox @bind-Value=@context.Secured>
@@ -55,10 +55,10 @@
 
     <div class="vstack gap-3">
         <FormItem2 For="()=>testMailMessage.Email">
-            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@testMailMessage.Email Class="w-100" />
+            <FluentTextInput TextInputType="@TextInputType.Email" @bind-Value=@testMailMessage.Email Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>testMailMessage.Subject">
-            <FluentTextField @bind-Value=@testMailMessage.Subject Class="w-100" />
+            <FluentTextInput @bind-Value=@testMailMessage.Subject Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>testMailMessage.Message">
             <FluentTextArea @bind-Value=@testMailMessage.Message Class="w-100" />

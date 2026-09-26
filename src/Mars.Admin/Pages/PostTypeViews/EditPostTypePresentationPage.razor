@@ -27,13 +27,13 @@
             <div class="vstack gap-3">
 
                 <div class="vstack">
-                    <FluentTextField Value=@context.PostType.Title Label="@AppRes.Title"
-                                     Appearance="@FluentInputAppearance.Filled"
+                    <FluentTextInput Value=@context.PostType.Title Label="@AppRes.Title"
+                                     Appearance="@TextInputAppearance.FilledDarker"
                                      ReadOnly
                                      Style="zoom:1.4" />
                 </div>
                 <div class="">
-                    <FluentTextField Value=@context.PostType.TypeName Label="TypeName" ReadOnly />
+                    <FluentTextInput Value=@context.PostType.TypeName Label="TypeName" ReadOnly />
                 </div>
 
             </div>
@@ -50,7 +50,7 @@
 
                         <FormItem2 For="() => context.ListViewTemplate">
                             <div class="hstack">
-                                <FluentTextField @bind-Value=@context.ListViewTemplate Placeholder="postTypes/<typeName>/listView.hbs" Class="w-50" />
+                                <FluentTextInput @bind-Value=@context.ListViewTemplate Placeholder="postTypes/<typeName>/listView.hbs" Class="w-50" />
                                 <FluentMenuButton Text="..." OnMenuChanged="HandleOnMenuListViewTemplateChanged" ButtonAppearance="Appearance.Neutral" >
                                     <FluentMenuItem Id="open_presentation_template" Disabled="@context.ListViewTemplate.IsNullOrEmpty()">open</FluentMenuItem>
                                     <FluentMenuItem Id="create_presentation_template">create example</FluentMenuItem>

@@ -15,8 +15,8 @@
 else
 {
     <div class="vstack gap-3 p-3" style="width: 420px;">
-        <FluentTextField Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
-        <FluentTextField Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
+        <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
+        <FluentTextInput Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
         <FluentLabel Typo="Typography.Body" Color="@Color.Neutral">
             Плагин будет установлен в data/plugins и активируется после рестарта сервера.
         </FluentLabel>

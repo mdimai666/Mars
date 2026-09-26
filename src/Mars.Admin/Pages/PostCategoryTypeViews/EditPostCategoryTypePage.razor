@@ -24,14 +24,14 @@
             <div class="vstack gap-3">
 
                 <div class="vstack">
-                    <FluentTextField @bind-Value=@context.Title Label="@AppRes.Title"
-                                     Appearance="@FluentInputAppearance.Filled"
+                    <FluentTextInput @bind-Value=@context.Title Label="@AppRes.Title"
+                                     Appearance="@TextInputAppearance.FilledDarker"
                                      Required
                                      Style="zoom:1.4" />
                     <FluentValidationMessage For="@(() => context.Title)" />
                 </div>
                 <div class="">
-                    <FluentTextField @bind-Value=@context.TypeName Label="TypeName" />
+                    <FluentTextInput @bind-Value=@context.TypeName Label="TypeName" />
                     <FluentValidationMessage For="@(() => context.TypeName)" />
                 </div>
 

@@ -40,9 +40,9 @@
                 }
                 break;
             default:
-                <FluentTextField Label="@argument.Label" Value="@GetValue(argument)"
+                <FluentTextInput Label="@argument.Label" Value="@GetValue(argument)"
                                  ValueChanged="@(v => SetValue(argument, v))"
-                                 Type="@(argument.Type == XActionArgumentType.Number ? TextFieldType.Number : TextFieldType.Text)"
+                                 Type="@(argument.Type == XActionArgumentType.Number ? TextInputType.Number : TextInputType.Text)"
                                  Required="@argument.Required" Class="w-100" />
                 break;
         }

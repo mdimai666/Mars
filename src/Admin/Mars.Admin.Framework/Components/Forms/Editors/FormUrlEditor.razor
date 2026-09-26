@@ -3,8 +3,8 @@
 
 @* Общий редактор «URL-адрес» *@
 
-<FluentTextField @bind-Value=Text
-                 TextFieldType="@TextFieldType.Url"
+<FluentTextInput @bind-Value=Text
+                 TextInputType="@TextInputType.Url"
                  Placeholder="https://"
                  Name="@Binding.Field.Key"
                  Disabled="@Binding.ReadOnly"

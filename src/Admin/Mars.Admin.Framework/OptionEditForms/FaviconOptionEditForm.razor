@@ -8,10 +8,10 @@
     <h3>Настройки Favicon</h3>
     <div class="vstack gap-4">
         <FormItem2 For=@(() => context.ThemeColor)>
-            <FluentTextField TextFieldType="@TextFieldType.Color" @bind-Value="context.ThemeColor" Style="width:40px;" />
+            <FluentTextInput TextInputType="@TextInputType.Color" @bind-Value="context.ThemeColor" Style="width:40px;" />
         </FormItem2>
         <FormItem2 For=@(() => context.BackgroundColor)>
-            <FluentTextField TextFieldType="@TextFieldType.Color" @bind-Value="context.BackgroundColor" Style="width:40px;" />
+            <FluentTextInput TextInputType="@TextInputType.Color" @bind-Value="context.BackgroundColor" Style="width:40px;" />
         </FormItem2>
         <FormItem2 For=@(() => context.FaviconSourceImageId)>
             <Mars.Admin.Framework.Components.MediaViews.FSelectMedia @bind-Value=context.FaviconSourceImageId />

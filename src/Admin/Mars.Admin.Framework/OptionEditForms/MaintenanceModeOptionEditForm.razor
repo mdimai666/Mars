@@ -34,7 +34,7 @@
     {
         <FluentCard Class="my-4">
             <FormItem2 For="()=>context.MaintenanceStaticPageTitle">
-                <FluentTextField @bind-Value=@context.MaintenanceStaticPageTitle Class="w-100" />
+                <FluentTextInput @bind-Value=@context.MaintenanceStaticPageTitle Class="w-100" />
             </FormItem2>
             <FormItem2 For="()=>context.MaintenanceStaticPageContent">
                 <MarsCodeEditor2.CodeEditor2 Lang="@CodeEditor2.Language.handlebars"
@@ -68,9 +68,11 @@
             </div>
 
             <FormItem2 For="()=>context.RenderPageUrl">
-                <FluentTextField @bind-Value=@context.RenderPageUrl Placeholder="/maintenance">
-                    <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Slot="start" Color="Color.Accent" />
-                </FluentTextField>
+                <FluentTextInput @bind-Value=@context.RenderPageUrl Placeholder="/maintenance">
+                    <StartTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Color="Color.Accent" />
+                    </StartTemplate>
+                </FluentTextInput>
             </FormItem2>
         </div>
     }

@@ -114,7 +114,7 @@ public class SetupWizardTests : BaseE2ETests
         // Step 6: Authorize with test user (already seeded in test DB)
         await Page.FillAsync("[name='login-email'] input", UserConstants.TestUserUsername);
         await Page.FillAsync("[name='password'] input", UserConstants.TestUserPassword);
-        await Page.ClickAsync("[type='submit'] button");
+        await Page.ClickAsync("fluent-button[type='submit']");
         await Page.WaitForURLAsync("**/dev", new() { Timeout = 15000 });
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
@@ -122,8 +122,10 @@ public class SetupWizardTests : BaseE2ETests
         await Page.GotoAsync($"{BaseUrl}/dev/Users");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Assert — Users page should load with the grid
-        await Page.WaitForSelectorAsync(".adaptive-table", new() { Timeout = 15000 });
+        // Assert — Users page should load with the grid.
+        // v5 FluentDataGrid renders as <div class="fluent-data-grid"> (standard HTML table
+        // markup), not a <fluent-data-grid> custom element.
+        await Page.WaitForSelectorAsync(".fluent-data-grid", new() { Timeout = 15000 });
         var usersContent = await Page.ContentAsync();
         usersContent.Should().Contain("testuser@mail.localhost");
     }

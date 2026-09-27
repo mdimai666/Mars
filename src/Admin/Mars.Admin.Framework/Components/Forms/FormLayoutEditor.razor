@@ -59,7 +59,7 @@ else
                             <FluentTabs>
                                 @foreach (var container in containers)
                                 {
-                                    <FluentTab Label="@TabTitle(container.Item)">
+                                    <FluentTab Header="@TabTitle(container.Item)">
                                         <FormLayoutCell Node="@container" />
                                     </FluentTab>
                                 }

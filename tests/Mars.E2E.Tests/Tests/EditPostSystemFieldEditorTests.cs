@@ -40,7 +40,7 @@ public class EditPostSystemFieldEditorTests : BaseE2ETests
         await FillFieldAsync(Page, "slug", "title-as-color");
 
         var saveResponse = await Page.RunAndWaitForResponseAsync(
-            async () => await Page.Locator("button[type='submit']").ClickAsync(),
+            async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
             response => response.Url.Contains("/api/Post") && response.Request.Method == "POST",
             new() { Timeout = 10000 });
 
@@ -96,11 +96,13 @@ public class EditPostSystemFieldEditorTests : BaseE2ETests
     /// <summary>
     /// Заполнение поля формы: текстовый input/textarea внутри строки поля (значение пишется
     /// по расфокусу). Селектор по <c>name</c> не годится — имя есть и у хоста Fluent-компонента,
-    /// а первым в строке редактора цвета идёт палитра.
+    /// а первым в строке редактора цвета идёт палитра. В v5 внутренний input FluentTextInput
+    /// живёт в shadow DOM (Playwright пробивает её descendant-селектором), атрибут type у него
+    /// может отсутствовать — поэтому исключаем только палитру.
     /// </summary>
     static async Task FillFieldAsync(IPage page, string fieldKey, string value)
     {
-        var input = page.Locator($"[data-key='{fieldKey}'] input[type='text'], [data-key='{fieldKey}'] textarea").First;
+        var input = page.Locator($"[data-key='{fieldKey}'] input:not([type='color']), [data-key='{fieldKey}'] textarea").First;
         await input.WaitForAsync(new() { Timeout = 5000 });
         await input.ClickAsync();
         await page.Keyboard.PressAsync("Control+a");

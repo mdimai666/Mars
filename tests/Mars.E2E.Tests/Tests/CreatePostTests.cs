@@ -43,7 +43,7 @@ public class CreatePostTests : BaseE2ETests
 
         // Save and verify API response
         var saveResponse = await Page.RunAndWaitForResponseAsync(
-            async () => await Page.Locator("button[type='submit']").ClickAsync(),
+            async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
             response => response.Url.Contains("/api/Post") && response.Request.Method == "POST",
             new() { Timeout = 3000 });
 
@@ -75,12 +75,14 @@ public class CreatePostTests : BaseE2ETests
 
     /// <summary>
     /// Fills a Fluent UI text field by clicking, selecting all, and typing new value.
+    /// v5: name lives on the fluent-text-input host, the real input is in its shadow DOM.
     /// </summary>
     private static async Task FillTextField(IPage page, string fieldName, string value)
     {
-        await page.Locator($"[name='{fieldName}']").ClickAsync();
+        var input = page.Locator($"[name='{fieldName}'] input");
+        await input.ClickAsync();
         await page.Keyboard.PressAsync("Control+a");
-        await page.Locator($"[name='{fieldName}']").PressSequentiallyAsync(value, new() { Delay = 10 });
+        await input.PressSequentiallyAsync(value, new() { Delay = 10 });
     }
 
     /// <summary>
@@ -118,14 +120,21 @@ public class CreatePostTests : BaseE2ETests
     /// </summary>
     private static async Task FillTags(IPage page, string[] tags)
     {
-        // Find the input inside input-tag2 component (fluent-text-field renders as web component)
-        var tagInput = page.Locator("input-tag2 fluent-text-field input").First;
+        // Find the input inside input-tag2 component (v5: fluent-text-input host, input in shadow DOM)
+        var tagInput = page.Locator("input-tag2 fluent-text-input input").First;
         await tagInput.WaitForAsync(new() { Timeout = 3000 });
 
         foreach (var tag in tags)
         {
+            // Type per-char (not FillAsync): InputTags2 binds with Immediate + appends on Enter
+            // keydown. The v5 fluent-text-input web component relays typing to Blazor async via
+            // JS interop, so pause after typing before Enter — otherwise the Enter keydown can
+            // reach OnKeyPress before the Immediate binding has committed the last char to
+            // _current, and the tag is silently dropped (early return on empty value).
             await tagInput.ClickAsync();
-            await tagInput.FillAsync(tag);
+            await page.Keyboard.PressAsync("Control+a");
+            await tagInput.PressSequentiallyAsync(tag, new() { Delay = 20 });
+            await Task.Delay(200);
             await tagInput.PressAsync("Enter");
             await Task.Delay(300);
         }

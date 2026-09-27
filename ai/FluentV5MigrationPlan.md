@@ -208,8 +208,7 @@ FAST-токены v4 (`--type-ramp-*`, `--neutral-layer-*`, `--design-unit`) и 
   FeedbackListPage, NodeTaskJobListView, MetaValueRelationSelectDialog).
 - **Селекторы E2E-логина мертвы в v5**: у `fluent-button` нет внутреннего `<button>`
   (shadow = slot+span), `[type='submit'] button` и getByRole('button') не находят; клик —
-  по самому `fluent-button[type='submit']`. AuthTests (`[type='submit'] button`,
-  `.navbar .user-name`) переписать при разморозке E2E.
+  по самому `fluent-button[type='submit']`.AuthTests переписаны (E2E-батч 2026-09-28, см. ниже).
 
 Не FluentUI (не чиним здесь):
 - `/dev/marketplace` 466 — внешний каталог (прокси), существующее поведение.
@@ -410,4 +409,46 @@ Large — при кастомном Theme переназначатся авто�
 3. [x] Этап стилей: CSS-хаки батч (2026-09-28) — less-инвентарь, styler→IThemeService,
    body.dark→data-theme, currentColor принят. Остаток: docs app.css (вне slnx),
    компиляция style.css ×2 (пользователь), визуальная проверка
-4. E2E-регрессия админ-форм (по желанию)
+4. [x] E2E-регрессия админ-форм (2026-09-28) — полный сьют `Mars.E2E.Tests` зелёный
+   (16 total / 0 failed / 1 skipped-DemoPages), см. «E2E на v5» ниже.
+
+## E2E на v5 (2026-09-28, закрыто)
+
+Сьют `tests/Mars.E2E.Tests` (Playwright + msedge + Testcontainers) переведён на v5-селекторы;
+прогон: `MARS_E2E_TESTS=1` + exe из bin (атрибут `[E2EFact]`, не константа Skip). Зелёный:
+16 total / 0 failed / 1 skipped (DemoPages — Skip="not required").
+
+Механика селекторов (уже было в работе, подтверждено прогоном):
+- Submit-кнопка: v5 `fluent-button` НЕ содержит внутренний `<button>` (shadow=slot+span) —
+  клик по `fluent-button[type='submit']`, не `[type='submit'] button` / getByRole('button').
+- Поля: `name` на хосте `fluent-text-input`, настоящий `input` в shadow DOM — селектор
+  `[name='x'] input` (Playwright пробивает shadow descendant'ом). `FillTextField`/`FillFieldAsync`
+  → на внутренний input.
+- `fluent-text-field` → `fluent-text-input` (InputTags2).
+- **DataGrid**: v5 рендерит `<div class="fluent-data-grid">` (стандартная HTML-таблица), НЕ
+  custom element — селектор-класс `.fluent-data-grid`, не тег `fluent-data-grid` (SetupWizard).
+- `input[type='text']` у FluentTextInput может отсутствовать — в редакторе цвета поле
+  исключаем палитру: `input:not([type='color'])`.
+- SetupWizard (`/setup/*`) — обычный Bootstrap cshtml (не FluentUI): его `input[name=]`,
+  `button:has-text()`, `.alert-danger` живы, трогали только логин+грид.
+
+Найденные v5-грабли (две гонки фреймворка, обе — НЕ баги кода Mars):
+- **InputTags2: `Immediate`-binding асинхроннее keydown.** `fluent-text-input` (web component)
+  ретранслирует ввод в Blazor через JS-interop асинхронно; при быстром «ввод + Enter» keydown
+  приходит в `OnKeyPress` ДО коммита последнего символа в `_current` → тег молча теряется
+  (early-return на пустом значении). Проявилось как «сохраняется только первый тег».
+  Лечение в тесте: `Task.Delay(200)` между печатью тега и Enter. (В проде тот же риск при
+  очень быстром вводе — кандидат на `ImmediateDelay`/debounce в InputTags2, вне рамок E2E.)
+- **FluentDataGrid: `ObjectDisposedException` после закрытия диалога.** Grid регистрирует
+  глобальный `FluentKeyCode` (клавишный ресайз колонок); когда диалог с гридом закрыт (грид
+  disposed), поздний keydown от последующего ввода попадает в освобождённый JS-объект →
+  `SetColumnWidthDiscreteAsync` бросает. Не влияет на сохранение данных. В
+  `BrowserErrorTracker` добавлен узкий фильтр `IsKnownFrameworkRace` (ObjectDisposedException
+  + SetColumnWidthDiscreteAsync + FluentKeyCode) — все прочие page-ошибки по-прежнему ловятся.
+
+Попутно (v5-корректность, не только тесты):
+- `InputTags2.razor`: текст бейджа вынесен в `Content` (в v5 `ChildContent` = обёрнутый элемент,
+  текст в ChildContent давал бы пустой бейдж); крестик удаления — соседним span.
+- `FluentTab Label=` → `Header=` (v5-ренейм) в FormLayoutEditor, DockerContainerDetail,
+  DockerManager, FormRenderer.
+

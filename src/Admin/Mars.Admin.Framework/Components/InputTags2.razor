@@ -5,10 +5,11 @@
 <input-tag2 class="@Class" style="@Style" @attributes=AdditionalAttributes>
     <div class="d-flex gap-2 flex-wrap">
         @foreach(var tag in Value??[]){
-            <FluentBadge Color="BadgeColor.Informative">
-                @tag
-                <span class="ms-2 cursor-pointer" @onclick=@(e=>RemoveTag(tag)) ><i class="bi bi-x-lg"></i></span>
-            </FluentBadge>
+            @* v5: текст бейджа — параметр Content, ChildContent — обёрнутый элемент; крестик удаления рядом *@
+            <span class="d-inline-flex align-items-center gap-1">
+                <FluentBadge Color="BadgeColor.Informative" Content="@tag" />
+                <span class="cursor-pointer" @onclick=@(e=>RemoveTag(tag)) ><i class="bi bi-x-lg"></i></span>
+            </span>
         }
     </div>
 

@@ -71,7 +71,7 @@ public class EditPostRelationFieldTests : BaseE2ETests
         await FillFieldAsync(Page, "slug", "post-with-relation");
 
         var saveResponse = await Page.RunAndWaitForResponseAsync(
-            async () => await Page.Locator("button[type='submit']").ClickAsync(),
+            async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
             response => response.Url.Contains("/api/Post") && response.Request.Method == "POST",
             new() { Timeout = 10000 });
 

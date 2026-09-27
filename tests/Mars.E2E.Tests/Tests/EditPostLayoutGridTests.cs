@@ -79,7 +79,7 @@ public class EditPostLayoutGridTests : BaseE2ETests
         await FillFieldAsync(Page, "slug", "grid-post");
 
         var saveResponse = await Page.RunAndWaitForResponseAsync(
-            async () => await Page.Locator("button[type='submit']").ClickAsync(),
+            async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
             response => response.Url.Contains("/api/Post") && response.Request.Method == "POST",
             new() { Timeout = 10000 });
 

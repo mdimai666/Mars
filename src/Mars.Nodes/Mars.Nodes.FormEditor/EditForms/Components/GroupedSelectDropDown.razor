@@ -64,8 +64,8 @@
     [Parameter] public string ButtonStyle { get; set; } = string.Empty;
 
     MarkupString _customButtonStyle => new MarkupString(new InlineStyleBuilder()
-        .AddStyle($"#{_buttonId}::part(content)", "width", "stretch")
-        .AddStyle($"#{_buttonId}::part(content)", "text-align", "start")
+        .AddStyle($"#{_buttonId}", "width", "stretch")
+        .AddStyle($"#{_buttonId}", "text-align", "start")
         .Build() ?? string.Empty);
 
     public string _value = "";

@@ -278,14 +278,106 @@ wwwroot попадают в отдачу только после пересбо�
 - Scoped css НЕ отключён (ScopedCssEnabled нигде нет) — razor.css работают; `::deep`
   по-прежнему не пробивает shadow DOM веб-компонент (и в v4 не пробивал).
 
-Открытые вопросы этапа стилей (обсудить):
-1. Маппинг токенов StyleDesignerPage (FluentDesignSystemProvider удалён) на v5 CSS-переменные.
-2. ~~Дефолт бейджей~~ — решено 2026-09-27: явные Color на использованиях (neutral→Informative,
-   black→Important), дефолт библиотеки не переопределяем.
-3. Дефолтный цвет `FluentIcon` Accent→currentColor: принять или вернуть акцент CSS-ом?
-4. ~~`FluentGrid.Spacing` default 3→0~~ — закрыто без действий: единственное использование
-   (FormsBuilderPage) уже имеет явный `Spacing="3"`.
-5. Правки мёртвых less-блоков (см. инвентарь) — компилирует пользователь.
+Открытые вопросы этапа стилей — ЗАКРЫТЫ (2026-09-28, см. раздел «CSS-хаки»):
+1. ~~Маппинг токенов StyleDesignerPage~~ — StylerStyle переписан на v5 ThemeSettings
+   (BrandColor/HueTorsion/Vibrancy/IsExact/Mode), применение через IThemeService.
+2. ~~Дефолт бейджей~~ — решено 2026-09-27: серый дефолт глобально + badge-accent.
+3. ~~Дефолтный цвет FluentIcon~~ — принят currentColor (решение пользователя 2026-09-28);
+   акцент там, где нужен, ставится точечно Color/WithColor (в нод-редакторе уже есть).
+4. ~~FluentGrid.Spacing~~ — закрыто без действий.
+5. ~~Мёртвые less-блоки~~ — вычищены батчем 2026-09-28.
+
+## CSS-хаки — батч 2026-09-28 (выполнен)
+
+Решения пользователя: StyleDesigner → IThemeService; `body.dark` выпилить целиком в пользу
+v5-темы; FluentIcon currentColor — принять.
+
+Факты о v5 (сняты с пакета 5.0.0 — бандл lib.module.js, reboot.css, default-fuib.css):
+- **Токены** инжектируются в рантайме через JS (adoptedStyleSheets): `--colorNeutral*`, `--colorBrand*`,
+  `--fontSizeBase100..600/Hero700..1000`, `--borderRadius{None,Small,Medium,Large,XLarge,Circular}`,
+  `--strokeWidth*`, `--spacing*`. Compat-мост на `:root`: `--success/--warning/--error/--info`
+  (+`-inverted`), `--font-monospace` → ЖИВЫ. Всё прочее v4 (`--type-ramp-*`, `--accent-fill-*`,
+  `--neutral-fill/layer/foreground/stroke-*`, `--design-unit`, `--neutral-base-color`,
+  `--control-corner-radius`, `--base-height-multiplier`, `--badge-fill-*`) — МЕРТВО.
+- **`::part` в v5**: dialog — `part="dialog"` (был control); switch — `checked-indicator`
+  (был switch); tree-item — `positioning-region` + `content` (был content-region);
+  button — частей НЕТ (slot+span); `control` остался у input/textarea.
+- **Тёмная тема**: IThemeService в dark ставит `document.body[data-theme="dark"]`
+  (+CustomEvent `themeChanged`) — канонический CSS-хук; в light атрибут снимается.
+- **IThemeService** (DI от AddFluentUIComponents, scoped; JS `Blazor.theme.*`):
+  SetThemeAsync(color/ThemeSettings/ThemeColorVariant/ThemeMode), CreateCustomThemeAsync,
+  GetColorRampFromSettingsAsync, SwitchThemeAsync, SetThemeToElementAsync (скоуп-превью),
+  персист в localStorage. ThemeSettings(Color, HueTorsion -0.5..0.5, Vibrancy -0.5..0.5,
+  Mode Light/Dark/System, IsExact).
+
+Что сделано:
+- **base.less**: `--mars-*` — алиасы на v5-токены (primary→colorBrandForeground1,
+  text→colorNeutralForeground1/3/Disabled, link→colorBrandForegroundLink,
+  bg→colorNeutralBackground1/2/3/1Selected, border→colorNeutralStroke1/2,
+  radius→borderRadiusMedium/Large) → тёмная тема флипается сама. Удалены body.dark-блоки
+  и prefers-color-scheme; не-флипаемое (тени, bg-white2/bg-black2 инверсии) перевешено
+  на `body[data-theme="dark"]`. Мёртвые body-декларации (type-ramp/neutral-*) убраны —
+  body типграфику/цвет задаёт default-fuib.css.
+- **Тема**: `StylerStyle` (Mars.Admin.Contracts) = BrandColor/HueTorsion/Vibrancy/IsExact/Mode
+  (вместо 13 FAST-параметров v4); App.razor.cs — SetupThemeAsync через
+  `IThemeService.SetThemeAsync(ThemeSettings)` (старт + событие App.SetupTheme);
+  App.razor — мёртвый `--bs-primary: var(--accent-base-color)` убран;
+  StyleDesignerPage — превью через `SetThemeToElementAsync(@ref, settings)` (скоуп, не
+  глобально), контролы: BrandColor/Mode(select)/IsExact/HueTorsion/Vibrancy, `@bind:after`
+  → live-превью; Save → Q.Root.Emit("App.SetupTheme") → глобальное применение.
+- **bs-styles.less**: удалён `.use-fluent-typo, fluent-dialog {h1..h6}` на мёртвых
+  `--type-ramp-*` (заголовки задаёт reboot.css: Hero900/800/700 + Base600/500/400);
+  body.dark-блок (card/accordion/dropdown) → обычные правила на `--mars-*` (флипаются).
+- **Мёртвые part'ы → живые**: dialogs.less + NodeEditContainer1 + AIToolChatModal —
+  `::part(control)`→`::part(dialog)`; NodeEditor1 — `#debug-mode-switch[checked]::part(checked-indicator)`
+  (v5 рендерит `checked="true"` на host), `.btn-terminate-all-tasks:hover{color:red}`
+  (наследуется в slot); DTreeView — `content-region`→`content`, мёртвый `::after`-calc убран;
+  GroupedSelectDropDown ×2 (FW+FormEditor) — `#id::part(content)` → стили на host
+  (width:stretch/text-align:start наследуются в slot).
+- **builderlayout.less**: `.sbtn.active` → `--colorBrandForeground1`; `.pressed-in` —
+  inset-тень на part(control) мертва → `filter: brightness(0.9)` на host.
+- **form.less**: `.fluent-input-label` → селектор элемента `fluent-label` (v5 рендерит
+  без класса, AutoInputLabel его не добавляет); description → `--colorNeutralForeground3`;
+  body.dark .top-navbar удалён (--mars-bg-surface флипается).
+- **fluent-sortable-list.less**: background → colorNeutralBackground2/4, item-height → 32px
+  (design-unit×8), `--warning` жив (compat) — оставлен.
+- **action-center.less**: весь переведён на v5-токены (colorNeutral*/colorBrand*).
+- **Мелочь по src**: typography (.text-accent→--mars-color-primary, .text-black2→
+  colorNeutralForeground1), file-uploader (dashed border→--mars-color-primary,
+  radius→borderRadiusMedium), class.less/extra2.less/filters.less — body.dark-блоки убраны
+  или перевешены на [data-theme="dark"] (ondark_* утилиты живы под новым хуком),
+  ExecutionBar/MetaValueFileMulti/MetaValueChildrenList/DropTileZone/FormLayoutEditor.razor.cs/
+  AIToolOptionEditForm/AdminLayout(Menu2 Style) — мёртвые токены в инлайн-стилях заменены/убраны.
+- **FormEditor wwwroot/css/style.less**: `body.dark .mars-value-input` → `[data-theme="dark"]`
+  (media prefers-color-scheme оставлен).
+- **docs + devstands (2026-09-28)**: MarsDocs app.css (body-блок, --bs-primary, .content,
+  .color-accent/.bg-accent → v5-токены; закомментированный .navigation-блок не трогали),
+  FluentMarkdownSection.razor.css (hljs/hljs-copy → colorNeutral*/colorBrand*),
+  MainLayout.razor (мёртвый Style-токен у DocsTreeMenu убран); StandNodesApp app.css —
+  мёртвый body-блок удалён. Сборка docs slnx: 0/0.
+
+Компиляция style.css (Mars.Admin + FormEditor) — за пользователем; после коммита css/js —
+bump MarsAppVersion. Остаток: визуальная проверка (сайдбар-нав ширина/отступы, FluentIcon
+currentColor в тулбарах, StyleDesigner-превью, тёмная тема через Mode=Dark).
+
+### Расширение StylerStyle — на подумать (записано 2026-09-28)
+
+Стайлер работает (скомпилирован и проверен пользователем 2026-09-28). Следующий шаг —
+новые параметры в `StylerStyle` (скругления и т.п.). Что даёт v5 `Theme`
+(`src/Core/Components/Theme/Styles/Theme.cs`, ветка dev): механизм —
+`IThemeService.CreateCustomThemeAsync(color, mode, isTeams)` → мутируем поля `Theme` →
+`SetThemeAsync(Theme)`. Доступно, помимо brand-палитры:
+- `Borders.Radius` — None/Small/Medium/Large/XLarge/Circular + Large2X..5X (кандидат №1);
+- `Typography` — шкалы Base100..600, Hero700..1000;
+- `Shadows` — Shadows2/4/8/16/28/64 (+ Brand-варианты);
+- `Spacings.Horizontal/Vertical` — None..XXXL (density-аналог v4);
+- `Strokes.Width` — Thin/Thick/Thicker/Thickest;
+- `Colors` — вся палитра (Brand/Neutral/Background.Overlay) после генерации рампы.
+
+Решить: какие из них выносить в styler UI (минимум — Radius; Spacing≈density, если
+запросим компактность), форма хранения (скаляры в StylerStyle vs JSON-проброс) и как
+это дружить с `--mars-radius-*` алиасами в base.less (они сейчас на borderRadiusMedium/
+Large — при кастомном Theme переназначатся автоматически, т.к. токены те же).
 
 ## Статус
 
@@ -315,6 +407,7 @@ wwwroot попадают в отдачу только после пересбо�
 
 1. Визуальная проверка админки пользователем (запуск Mars.WebApp) — диалоги/тосты/меню/гриды/нод-редактор
 2. [x] Menu2 + docs-навигация на FluentNav (2026-09-27)
-3. Этап стилей: инвентарь из раздела «Стили» + маппинг styler-токенов на CSS-переменные v5 +
-   FluentLabel Color/Typo→FluentText, FluentBadge Content/Fill, FluentTooltip Anchor, MouseButton
+3. [x] Этап стилей: CSS-хаки батч (2026-09-28) — less-инвентарь, styler→IThemeService,
+   body.dark→data-theme, currentColor принят. Остаток: docs app.css (вне slnx),
+   компиляция style.css ×2 (пользователь), визуальная проверка
 4. E2E-регрессия админ-форм (по желанию)

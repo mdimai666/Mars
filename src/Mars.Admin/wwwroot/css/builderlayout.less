@@ -65,9 +65,9 @@
         }
 
         &.active {
-            color: var(--accent-fill-rest);
+            color: var(--colorBrandForeground1);
             background: rgba(0,0,0,0.05);
-            border-left: var(--accent-fill-rest) solid 3px;
+            border-left: var(--colorBrandForeground1) solid 3px;
         }
 
         &:active {
@@ -85,8 +85,8 @@
 }
 
 .pressed-in {
-    fluent-button:not([disabled]):active::part(control) {
-        box-shadow: inset 0 0 6px 0px #979696 !important;
-        /*transform: translate(0.5px,0.5px);*/
+    // v5: у fluent-button нет shadow-частей — эффект нажатия через filter на host.
+    fluent-button:not([disabled]):active {
+        filter: brightness(0.9);
     }
 }

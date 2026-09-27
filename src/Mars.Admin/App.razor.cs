@@ -21,6 +21,7 @@ public partial class App
     [Inject] AuthenticationStateProvider authStateProvider { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] IThemeService ThemeService { get; set; } = default!;
 
     [Inject] HttpClientInterceptor Interceptor { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
@@ -47,7 +48,7 @@ public partial class App
         var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
         Q.UpdateInitialSiteData(vm);
         _logger.LogTrace("App.OnInitializedAsync - UpdateInitialSiteData updated.");
-        SetupTheme();
+        await SetupThemeAsync();
 
         hub.OnShowNotifyMessage += Hub_OnShowNotifyMessage;
         _logger.LogTrace("App.OnInitializedAsync - finish.");
@@ -85,16 +86,18 @@ public partial class App
 
     StylerStyle styler = new();
 
-    void SetupTheme()
+    async Task SetupThemeAsync()
     {
         var devAdminStyle = Q.Site.GetOption<DevAdminStyleOption>();
         styler = devAdminStyle.StylerStyle;
+
+        var mode = Enum.TryParse<ThemeMode>(styler.Mode, true, out var m) ? m : ThemeMode.System;
+        await ThemeService.SetThemeAsync(new ThemeSettings(styler.BrandColor, styler.HueTorsion, styler.Vibrancy, mode, styler.IsExact));
     }
 
     void SetupThemeExternal()
     {
-        SetupTheme();
-        StateHasChanged();
+        _ = SetupThemeAsync();
     }
     IEnumerable<Assembly> AdditionalAssemblies => WebAssemblyPluginFrontExtensions.PluginLoadAssemblies;
 

@@ -19,7 +19,6 @@
                       OptionValue="@((AIConfigNodeResponse f) => f.NodeId)"
                       OptionText="@((AIConfigNodeResponse f) => f.Title)"
                       Context="opt"
-                      Style="--base-height-multiplier:10"
                       @bind-Value="@context.DefaultAIToolConfig">
             <OptionTemplate>
                 <FluentText>@opt.Title</FluentText>

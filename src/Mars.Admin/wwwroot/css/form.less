@@ -4,17 +4,6 @@
     background: var(--mars-bg-surface);
 }
 
-body.dark {
-    .top-navbar {
-        background: var(--mars-bg-subtle);
-        color: white;
-
-        a {
-            color: white;
-        }
-    }
-}
-
 .EditOptionForm {
     .form-item {
         small {
@@ -28,7 +17,7 @@ body.dark {
 
 .d-fluent-input-description {
     margin-left: .5rem !important;
-    color: var(--neutral-base-color);
+    color: var(--colorNeutralForeground3);
 }
 
 :root {
@@ -47,9 +36,7 @@ form.compact d-formitem2, d-formitem2.compact, .form-group.compact d-formitem2, 
         flex: 1 1 auto;
         gap: 1em;
 
-        .fluent-input-label {
-            /*flex-basis: 80%;*/
-            /*flex-basis: var(--fluent-input-label-basis);*/
+        fluent-label {
             display: flex;
             justify-content: end;
             text-align: end;

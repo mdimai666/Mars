@@ -18,20 +18,22 @@
     }
     <FluentMenu Trigger="@buttonId"
                 OnClick="HandleOnMenuClick">
-        @if (_actions is not null && _actions.Any())
-        {
-            @foreach (var item in _actions)
+        <FluentMenuList>
+            @if (_actions is not null && _actions.Any())
             {
-                <FluentMenuItem Id="@item.Key">
-                    @item.Value
-                </FluentMenuItem>
+                @foreach (var item in _actions)
+                {
+                    <FluentMenuItem Id="@item.Key">
+                        @item.Value
+                    </FluentMenuItem>
+                }
+                @if (_actions.Any() && ChildContent != null)
+                {
+                    <FluentDivider />
+                }
             }
-            @if (_actions.Any() && ChildContent != null)
-            {
-                <FluentDivider />
-            }
-        }
-        @ChildContent
+            @ChildContent
+        </FluentMenuList>
     </FluentMenu>
 </div>
 

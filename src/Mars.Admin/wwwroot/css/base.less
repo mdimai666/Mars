@@ -1,5 +1,55 @@
 @import (reference) "_variables.less";
 
+/* Базовые цвета статусов (LESS-переменные — из них считаются light/dark производные) */
+@mars-success: #388554;
+@mars-warning: #f8c11d;
+@mars-danger:  #cf3e48;
+@mars-info:    #51c9ef;
+
+/* Производные статуса для светлой темы: fg — читаемый цвет текста на светлом bg,
+   on — текст на насыщенном bg-strong. */
+.mars-status(@name; @base; @fg: @base; @on: #ffffff) {
+    --mars-color-@{name}-fg: @fg;
+    --mars-color-@{name}-hover: mix(black, @base, 15%);
+    --mars-color-@{name}-pressed: mix(black, @base, 30%);
+    --mars-color-@{name}-on: @on;
+    --mars-color-@{name}-bg: mix(white, @base, 88%);
+    --mars-color-@{name}-bg-hover: mix(white, @base, 78%);
+    --mars-color-@{name}-bg-strong: @base;
+    --mars-color-@{name}-border: mix(white, @base, 68%);
+    --mars-color-@{name}-border-strong: mix(white, @base, 42%);
+}
+
+/* Тёмная тема: база осветляется, фоны подмешиваются к тёмной поверхности. */
+.mars-status-dark(@name; @base; @on: #ffffff) {
+    --mars-color-@{name}: mix(white, @base, 18%);
+    --mars-color-@{name}-fg: mix(white, @base, 25%);
+    --mars-color-@{name}-hover: mix(white, @base, 32%);
+    --mars-color-@{name}-pressed: mix(white, @base, 42%);
+    --mars-color-@{name}-on: @on;
+    --mars-color-@{name}-bg: mix(#1d1d1d, @base, 86%);
+    --mars-color-@{name}-bg-hover: mix(#1d1d1d, @base, 76%);
+    --mars-color-@{name}-bg-strong: @base;
+    --mars-color-@{name}-border: mix(#1d1d1d, @base, 62%);
+    --mars-color-@{name}-border-strong: mix(#1d1d1d, @base, 38%);
+}
+
+/* Натягивает Mars-статус на полное FluentUI-семейство палитры.
+   Значения — escaped-строки: голая интерполяция @{param} в значениях custom properties
+   падает NameError в less 4.1 (Web Compiler в VS); ~"..." работает во всех версиях. */
+.fluent-palette(@fam; @status) {
+    --colorPalette@{fam}Foreground1: ~"var(--mars-color-@{status}-fg)" !important;
+    --colorPalette@{fam}Foreground2: ~"var(--mars-color-@{status}-hover)" !important;
+    --colorPalette@{fam}Foreground3: ~"var(--mars-color-@{status}-pressed)" !important;
+    --colorPalette@{fam}ForegroundInverted: ~"var(--mars-color-@{status}-on)" !important;
+    --colorPalette@{fam}Background1: ~"var(--mars-color-@{status}-bg)" !important;
+    --colorPalette@{fam}Background2: ~"var(--mars-color-@{status}-bg-hover)" !important;
+    --colorPalette@{fam}Background3: ~"var(--mars-color-@{status}-bg-strong)" !important;
+    --colorPalette@{fam}Border1: ~"var(--mars-color-@{status}-border)" !important;
+    --colorPalette@{fam}Border2: ~"var(--mars-color-@{status}-border-strong)" !important;
+    --colorPalette@{fam}BorderActive: ~"var(--mars-color-@{status}-border-strong)" !important;
+}
+
 html, body {
     min-height: 100vh;
     height: unset !important;
@@ -19,10 +69,16 @@ body {
     /* Brand */
     --mars-color-primary: var(--colorBrandForeground1);
     --mars-color-accent: @color-accent;
-    --mars-color-success: #388554;
-    --mars-color-warning: #f8c11d;
-    --mars-color-danger: #cf3e48;
-    --mars-color-info: #51c9ef;
+    --mars-color-success: @mars-success;
+    --mars-color-warning: @mars-warning;
+    --mars-color-danger: @mars-danger;
+    --mars-color-info: @mars-info;
+
+    /* Производные статусов (light) — их ест Fluent-мост ниже */
+    .mars-status(success; @mars-success);
+    .mars-status(danger; @mars-danger);
+    .mars-status(warning; @mars-warning; mix(black, @mars-warning, 45%); mix(black, @mars-warning, 45%));
+    .mars-status(info; @mars-info);
 
     /* Text */
     --mars-text-primary: var(--colorNeutralForeground1);
@@ -45,16 +101,31 @@ body {
     --mars-border-focus: var(--mars-color-primary);
     --mars-border-error: var(--mars-color-danger);
 
-    /* Radius */
-    --mars-radius-sm: var(--borderRadiusMedium);
-    --mars-radius-md: var(--borderRadiusLarge);
-    --mars-radius-lg: 15px;
+    /* Radius — скаляр --mars-radius-base правит стайлер (inline на <html>);
+       производные sm/md/lg считаются через calc. 0 = острые углы (HUD).
+       Fluent-мост ниже натягивает их на --borderRadius*. */
+    --mars-radius-base: 4px;
+    --mars-radius-sm: var(--mars-radius-base);
+    --mars-radius-md: calc(var(--mars-radius-base) * 1.5);
+    --mars-radius-lg: calc(var(--mars-radius-base) * 3.75);
     --mars-radius-full: 9999px;
 
-    /* Shadow */
-    --mars-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --mars-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-    --mars-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    /* Stroke — скаляр правит стайлер */
+    --mars-stroke-hairline: 1px;
+
+    /* Shadow — базовая непрозрачность темо-зависима, --mars-shadow-alpha (0..2) правит стайлер.
+       calc в альфа-канале считается браузером; LESS отдаёт значение буквально (~"..."). */
+    --mars-shadow-alpha: 1;
+    --mars-shadow-sm-o: 0.05;
+    --mars-shadow-md-o: 0.07;
+    --mars-shadow-lg-o: 0.1;
+    --mars-shadow-sm: ~"0 1px 2px rgba(0, 0, 0, calc(var(--mars-shadow-sm-o) * var(--mars-shadow-alpha)))";
+    --mars-shadow-md: ~"0 4px 6px rgba(0, 0, 0, calc(var(--mars-shadow-md-o) * var(--mars-shadow-alpha)))";
+    --mars-shadow-lg: ~"0 10px 15px rgba(0, 0, 0, calc(var(--mars-shadow-lg-o) * var(--mars-shadow-alpha)))";
+
+    /* Font */
+    --mars-font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+    --mars-font-mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
 
     /* Z-index */
     --mars-z-dropdown: 1000;
@@ -86,13 +157,70 @@ body {
     --bs-warning-rgb: 248, 193, 29;
 }
 
+/* ═══ FluentUI v5 bridge: Mars-токены главнее ═══
+   v5 пишет тему inline на <html> (style.setProperty) и/или в document.adoptedStyleSheets
+   (:root) — !important авторского листа перебивает оба механизма.
+   Скоуп-превью стайлера (SetThemeToElementAsync — inline на элементе) ближе к потребителю
+   и внутри своего поддерева побеждает эти оверрайды — так и задумано. */
+html:root {
+    /* Статусы */
+    --colorStatusSuccessForeground1: var(--mars-color-success-fg) !important;
+    --colorStatusSuccessForegroundInverted: var(--mars-color-success-on) !important;
+    --colorStatusWarningForeground1: var(--mars-color-warning-fg) !important;
+    --colorStatusWarningForegroundInverted: var(--mars-color-warning-on) !important;
+    --colorStatusDangerForeground1: var(--mars-color-danger-fg) !important;
+    --colorStatusDangerForegroundInverted: var(--mars-color-danger-on) !important;
+
+    /* Палитры семантических компонентов (MessageBar/Badge/Toast): Red→danger, Green→success,
+       жёлтая группа→warning. Preset-палитры (Berry/Teal/…) не трогаем — ими никто не пользуется. */
+    .fluent-palette(Red; danger);
+    .fluent-palette(DarkRed; danger);
+    .fluent-palette(Green; success);
+    .fluent-palette(DarkGreen; success);
+    .fluent-palette(LightGreen; success);
+    .fluent-palette(Yellow; warning);
+    .fluent-palette(Marigold; warning);
+    .fluent-palette(DarkOrange; warning);
+
+    /* Скругления */
+    --borderRadiusNone: 0 !important;
+    --borderRadiusSmall: calc(var(--mars-radius-sm) / 2) !important;
+    --borderRadiusMedium: var(--mars-radius-sm) !important;
+    --borderRadiusLarge: var(--mars-radius-md) !important;
+    --borderRadiusXLarge: var(--mars-radius-lg) !important;
+    --borderRadiusCircular: var(--mars-radius-full) !important;
+
+    /* Тени */
+    --shadow2: var(--mars-shadow-sm) !important;
+    --shadow4: var(--mars-shadow-md) !important;
+    --shadow8: var(--mars-shadow-md) !important;
+    --shadow16: var(--mars-shadow-lg) !important;
+    --shadow28: var(--mars-shadow-lg) !important;
+    --shadow64: var(--mars-shadow-lg) !important;
+
+    /* Обводка и шрифты */
+    --strokeWidthThin: var(--mars-stroke-hairline) !important;
+    --fontFamilyBase: var(--mars-font-family) !important;
+    --fontFamilyMonospace: var(--mars-font-mono) !important;
+}
+
 /* ═══ Dark mode ═══
    Хук v5: IThemeService ставит data-theme="dark" на body (ThemeMode.Dark/System).
-   Цветовые --mars-* алиасы флипаются сами (v5-токены), здесь — только не-флипаемое. */
-body[data-theme="dark"] {
-    --mars-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-    --mars-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --mars-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+   Алиасы на colorNeutral/colorBrand-токены флипаются сами (v5), здесь — только
+   Mars-литералы. Селектор на html (:has) — эти значения потребляет Fluent-мост,
+   который резолвится на html, а не на body. */
+html:has(body[data-theme="dark"]) {
+    --mars-color-accent: mix(white, @color-accent, 18%);
+
+    .mars-status-dark(success; @mars-success);
+    .mars-status-dark(danger; @mars-danger);
+    .mars-status-dark(warning; @mars-warning; mix(black, @mars-warning, 45%));
+    .mars-status-dark(info; @mars-info);
+
+    /* В dark тени плотнее; стайлер-множитель --mars-shadow-alpha продолжает действовать. */
+    --mars-shadow-sm-o: 0.2;
+    --mars-shadow-md-o: 0.3;
+    --mars-shadow-lg-o: 0.4;
 }
 
 a {

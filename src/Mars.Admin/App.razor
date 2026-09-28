@@ -1,4 +1,11 @@
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Builder.StyleDesignerViews
+
+<style>
+    html:root {
+        @((MarkupString)StylerCssVars.GlobalVars(styler))
+    }
+</style>
 
 @if (Q.Site is not null)
 {

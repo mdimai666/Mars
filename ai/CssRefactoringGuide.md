@@ -338,11 +338,11 @@ wwwroot/css/
 
 **Важно:** `dotnet build` НЕ компилирует LESS. `style.css` — артефакт в git, его нужно перегенерировать отдельно:
 
-1. **Visual Studio** — расширение *Web Compiler* компилирует автоматически при сохранении `.less` (конфиг: `src/AppAdmin/compilerconfig.json`, autoprefixer выключен, минификация выключена).
+1. **Visual Studio** — расширение *Web Compiler* компилирует автоматически при сохранении `.less` (конфиг: `src/Mars.Admin/compilerconfig.json`, autoprefixer выключен, минификация выключена). **Web Compiler использует less ~4.1** — не свежайший; см. грабли версий ниже.
 2. **Из командной строки** (эталонный компилятор lessc, нужен Node.js):
 
 ```bash
-cd src/AppAdmin/wwwroot/css
+cd src/Mars.Admin/wwwroot/css
 npx --yes --package less lessc style.less style.css
 ```
 
@@ -353,3 +353,29 @@ Deprecation-предупреждения про `@media @mobiles` (bare @variabl
 ```bash
 dotnet build Mars.slnx
 ```
+
+### Грабли LESS (проверено 2026-09-29 на 2.7.3 / 3.9.0 / 4.1.3 / latest)
+
+- **Интерполяция `@{param}` в ЗНАЧЕНИЯХ custom properties** (`--x: var(--y-@{param})`)
+  падает `NameError: variable @param is undefined` на less 3.9–4.1 (т.е. в Web Compiler);
+  в свежих 4.x починено. **Рабочая форма для всех версий — escaped-строка:**
+  `--x: ~"var(--y-@{param})";`. Интерполяция в ИМЕНАХ свойств
+  (`--colorPalette@{fam}Foreground1:`) работает везде. `mix()` и голые `@var` в значениях
+  custom properties вычисляются во всех версиях (в т.ч. внутри параметрических миксинов).
+- **`*/` внутри css-комментария** (`--colorNeutral*/--colorBrand*`) закрывает комментарий
+  раньше времени → `ParseError: Unrecognised input` на следующем тексте. В комментариях
+  не писать «звёздочка+слэш» подряд.
+- `calc(var(--x) / 2)` в значениях проходит как есть (less 4 не лезет с математикой в calc).
+- Вывод less 4.1.3 и latest совпадает побайтово (кроме пробела в `--bs-light-rgb: 255,255,255`
+  — косметика).
+
+**Рецепт проверки правок агентом** (репозиторный `style.css` не трогать — его компилирует
+пользователь): скомпилировать во временный файл старой версией и убедиться, что вывод валиден:
+
+```bash
+cd src/Mars.Admin/wwwroot/css
+npx --yes --package less@4.1.3 lessc style.less %TEMP%\style-check.css
+```
+
+Если правки используют синтаксис новее 4.1 — проверить ОБЕИМИ версиями (4.1.3 и latest)
+и сравнить вывод. FormEditor компилируется так же: `src/Mars.Nodes/Mars.Nodes.FormEditor/wwwroot/css/style.less`.

@@ -359,7 +359,103 @@ v5-темы; FluentIcon currentColor — принять.
 bump MarsAppVersion. Остаток: визуальная проверка (сайдбар-нав ширина/отступы, FluentIcon
 currentColor в тулбарах, StyleDesigner-превью, тёмная тема через Mode=Dark).
 
+## Mars-токены главнее Fluent (2026-09-29, less готов — ждёт компиляции/проверки)
+
+Решение пользователя: план A — `--mars-*` семантический слой-источник, Fluent натягивается
+на Mars-токены; редизайн после миграции будет менять значения `--mars-*`, а не маппинги.
+Альтернатива (переход на нейминг Fluent в нашем css) отклонена.
+
+Механика (проверено по бандлу 5.0.0): v5 пишет сгенерированные токены **inline на `<html>`**
+(`style.setProperty`, fn `rv(t, documentElement)`) и/или в `document.adoptedStyleSheets`
+(обычные `:root`-декларации). Наш мост — `html:root { --token: var(--mars-*) !important }` —
+перебивает оба механизма (important авторского листа > inline без important; adopted-листы
+v5 не important). Compat `--success/--warning/--error/--info` определены как `var(--colorStatus*)`
+→ переподхватывают оверрайды сами. Скоуп-превью стайлера (inline на элементе) глубже каскада —
+в своём поддереве побеждает мост, так задумано.
+
+Сделано в `base.less` (Mars.Admin):
+- LESS-переменные `@mars-success/warning/danger/info` + миксины `.mars-status` /
+  `.mars-status-dark` (производные: fg/hover/pressed/on/bg/bg-hover/bg-strong/border/
+  border-strong; light — mix с white/black, dark — mix с #1d1d1d, база осветляется),
+  `.fluent-palette(@fam; @status)` — генератор 10 v5-токенов палитры на семейство.
+- `:root`: статус-литералы через LESS-переменные + light-производные ×4 статуса;
+  radius-токены теперь ЛИТЕРАЛЫ (sm 4px/md 6px — разорвана циркулярность алиасов
+  borderRadiusMedium/Large); новые `--mars-stroke-hairline: 1px`, `--mars-font-family`
+  (Roboto-стек), `--mars-font-mono`.
+- Мост `html:root` (~100 important-деклараций): `--colorStatus{Success,Warning,Danger}
+  Foreground1/Inverted` ×6; палитры Red/DarkRed→danger, Green/DarkGreen/LightGreen→success,
+  Yellow/Marigold/DarkOrange→warning (8 семейств ×10); `--borderRadius*` ×6 из mars-radius
+  (None 0/Small sm÷2/Medium sm/Large md/XLarge lg/Circular full); `--shadow{2..64}` из
+  mars-shadow sm/md/lg; `--strokeWidthThin`; `--fontFamilyBase/Monospace`. Preset-палитры
+  (Berry/Teal/…) и neutral/brand НЕ трогаем (brand генерит IThemeService из StylerStyle).
+- Dark: производные статусов + accent + shadows переехали с `body[data-theme="dark"]` на
+  `html:has(body[data-theme="dark"])` — мост резолвится на html, body-блок туда не дотягивался.
+- Warning: fg/on = mix(black, 45%) (тёмно-жёлтый #886a10) — белый/яркий на жёлтом нечитаем,
+  v5 для warning-inverted тоже использует shade.
+- Проверка: тестовая компиляция lessc во временный файл — успешно (репозиторный style.css
+  не трогал). Грабли LESS: `*/` внутри css-комментария (`--colorNeutral*/--colorBrand*`)
+  закрывает комментарий раньше времени — в комментариях звёздочки+слэш не писать.
+- **Грабли версий LESS (Web Compiler в VS ≈ less 4.1):** голая интерполяция `@{param}`
+  в ЗНАЧЕНИЯХ custom properties падает `NameError: variable @status is undefined`
+  (воспроизведено на 3.9.0 и 4.1.3; в latest 4.x починено). Лечение: escaped-строки
+  `~"var(--x-@{param})"` — работают на 2.7.3/3.9/4.1.3/latest, вывод идентичен.
+  `mix()` и голые `@var` в значениях custom properties вычисляются во всех версиях;
+  интерполяция в ИМЕНАХ свойств (`--colorPalette@{fam}Foreground1:`) работает везде.
+  Правило: после правок less проверять компиляцией на less@4.1.3
+  (`npx --package less@4.1.3 lessc style.less %TEMP%\...`), не только latest.
+
+Ожидаемые визуальные изменения: семантика MessageBar/Badge/Toast покрасится в Mars-цвета;
+шрифт Fluent-компонентов станет Roboto (как body); borderRadiusXLarge 8→15px (1 использование);
+тени Fluent станут проще (одна вместо ambient+key пары).
+
+Остаток этапа: пользователь компилирует style.css + визуалка (или Playwright-обход по команде);
+шаг 4 — переписать `ai/CssRefactoringGuide.md` под v5 (карта mars→fluent, механика моста,
+dark-хук), bump MarsAppVersion после коммита. Шаг 3 (скаляры стайлера) — ГОТОВ, см. ниже.
+
+### Шаг 3 — скаляры стайлера (2026-09-29, less+C# готовы, ждёт компиляции/визуалки)
+
+Реализовано через CSS-переменные, НЕ Theme-мутацию (important-мост на html её бы перебрил).
+- `StylerStyle` (Mars.Admin.Contracts): +`Radius` (int 0..12, default 4; 0 = острые углы
+  под HUD-редизайн), +`StrokeWidth` (int 1..3, default 1), +`ShadowIntensity` (double 0..2,
+  default 1). Старый сохранённый JSON без этих полей десериализуется в дефолты.
+- `base.less`: radius выводятся из `--mars-radius-base` (sm=base, md=×1.5, lg=×3.75 — при
+  default 4 дают прежние 4/6/15px), тени — из `--mars-shadow-alpha`; базовая непрозрачность
+  `-o` темо-зависима (light 0.05/0.07/0.1, dark 0.2/0.3/0.4), множитель глобальный.
+  calc в альфа-канале (`rgba(0,0,0,calc(var(-o)*var(alpha)))`) отдан браузеру через `~"..."`
+  (Chromium считает; LESS не вычисляет). Проверка less@4.1.3 + latest — вывод идентичен.
+- `StylerCssVars` (Mars.Admin/Builder/StyleDesignerViews): `GlobalVars` — минимум 3 скаляра
+  на `html:root` (остальное считает base.less); `PreviewVars` — полный набор (mars-токены +
+  fluent `--borderRadius*`/`--strokeWidthThin`/`--shadow*`) для скоуп-превью, т.к. important-мост
+  на html в поддереве не перерезолвится — preview-контейнер несёт готовые fluent-токены inline.
+- `App.razor`: `<style>html:root{@GlobalVars(styler)}</style>` (реактивно, без JS-интеропа и
+  cache-busting); `App.razor.cs` — `StateHasChanged` после SetupThemeAsync (Save → App.SetupTheme).
+- `StyleDesignerPage.razor`: 3 слайдера (Radius/StrokeWidth/ShadowIntensity) с `:after=PreviewThemeAsync`;
+  preview — ВНЕШНИЙ div `@ref=previewElement` (JS-тема через SetThemeToElementAsync), ВНУТРЕННИЙ
+  div со `style=@PreviewStyle` (геометрия). Порядок критичен: `Er(tokens,el)` пишет на элемент
+  ПОЛНЫЙ токен-набор inline, включая геометрию (`borderRadiusMedium:"4px"`, `strokeWidthThin:"1px"`
+  — хардкод-дефолты в бандле). Если геометрию положить на внешний, а JS-тему на внутренний —
+  компоненты читают ближайший (внутренний) inline и видят JS-дефолт, слайдеры не работают
+  (баг, пойман 2026-09-29). Правильно: JS-тема снаружи, геометрия внутри (ближе к компонентам,
+  перебивает унаследованные JS-дефолты). `PreviewStyle` — вычисляемое свойство от модели.
+- Баг тайминга (2026-09-29): бренд-тема превью залипала на ДЕФОЛТНОМ BrandColor при открытии
+  страницы. Корень: `EditOptionForm._model = new()` (никогда не null) → `form.Model` на первом
+  рендере уже не-null, но это дефолт, а реальная модель грузится асинхронно в `Load()` и приходит
+  через `OnLoadData`. Попытка фикса через `OnAfterRenderAsync(firstRender)`/флаг не работала —
+  тема применялась к дефолту и больше не переприменялась. **Правильный фикс:** применять
+  `PreviewThemeAsync` в `OnLoadData` (fires когда реальная модель готова), firstRender-логику убрать.
+  Геометрия (`PreviewStyle`) — вычисляемое свойство, обновляется сама на ре-рендере.
+- Проверка: `dotnet build Mars.slnx` — 0 errors (единственный warning MSB9008 — предсуществующий,
+  Mars.QueryLang.Contracts в WebApiClient.Integration.Tests, не связано).
+
+Остаток шага 3: пользователь компилирует style.css + визуалка (Radius=0 → острые углы везде,
+StrokeWidth, тени 0/2). Кандидат на bump MarsAppVersion после коммита (меняется base.less).
+
 ### Расширение StylerStyle — на подумать (записано 2026-09-28)
+
+**Обновление 2026-09-29:** Radius/StrokeWidth/ShadowIntensity реализованы (шаг 3 выше) через
+CSS-переменные на `html:root`, НЕ через v5 `Theme`-мутацию — т.к. important-мост перебивает
+Theme-инъекцию. Механизм ниже (CreateCustomThemeAsync) остаётся релевантен, только если
+понадобятся Spacings/Typography, которые НЕ покрыты mars-мостом.
 
 Стайлер работает (скомпилирован и проверен пользователем 2026-09-28). Следующий шаг —
 новые параметры в `StylerStyle` (скругления и т.п.). Что даёт v5 `Theme`
@@ -470,4 +566,3 @@ Large — при кастомном Theme переназначатся авто�
   → `ScriptNode? callerNode` (под сигнатуру `IScriptCustomFunction`).
 - CS8619 `SiteScribanFunctions.cs` — `SnapshotData`/`dCopy`/`diff` → `object?` (ScriptObject.Value nullable).
 - CS8613 `WebSitePartsTemplateLoader.cs` — `LoadAsync`: `ValueTask<string>` → `ValueTask<string?>` (под ITemplateLoader).
-

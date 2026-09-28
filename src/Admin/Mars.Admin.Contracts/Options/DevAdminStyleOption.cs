@@ -23,4 +23,13 @@ public class StylerStyle
 
     /// <summary>ThemeMode: Light | Dark | System</summary>
     public string Mode { get; set; } = "System";
+
+    /// <summary>Базовый радиус скруглений, px (0 = острые углы). Производные: sm=base, md=×1.5, lg=×3.75.</summary>
+    public int Radius { get; set; } = 4;
+
+    /// <summary>Толщина обводки контролов (--strokeWidthThin), px.</summary>
+    public int StrokeWidth { get; set; } = 1;
+
+    /// <summary>Интенсивность теней, 0..2 (1 = по умолчанию, 0 = без теней).</summary>
+    public double ShadowIntensity { get; set; } = 1;
 }

@@ -93,6 +93,7 @@ public partial class App
 
         var mode = Enum.TryParse<ThemeMode>(styler.Mode, true, out var m) ? m : ThemeMode.System;
         await ThemeService.SetThemeAsync(new ThemeSettings(styler.BrandColor, styler.HueTorsion, styler.Vibrancy, mode, styler.IsExact));
+        await InvokeAsync(StateHasChanged);
     }
 
     void SetupThemeExternal()

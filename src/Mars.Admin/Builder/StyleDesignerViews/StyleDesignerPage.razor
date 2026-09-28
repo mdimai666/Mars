@@ -11,7 +11,11 @@
             <div class="me-4">
                 <h5>Components</h5>
                 <FluentCard>
+                    @* JS-тема (SetThemeToElementAsync) пишет полный набор токенов inline на внешний div;
+                       геометрия стайлера — на внутренний: он ближе к компонентам и перебивает
+                       унаследованные JS-дефолты radius/shadow/stroke. *@
                     <div @ref="previewElement">
+                    <div style="@PreviewStyle">
 
                         <FluentStack VerticalGap="20" Orientation="@Orientation.Vertical">
 
@@ -60,6 +64,7 @@
                         </FluentStack>
 
                     </div>
+                    </div>
                 </FluentCard>
             </div>
         </div>
@@ -93,6 +98,12 @@
                             <FluentSlider TValue="double" Label="Vibrancy" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.Vibrancy @bind-Value:after="PreviewThemeAsync" />
                         </div>
 
+                        <div>
+                            <FluentSlider TValue="int" Label="Radius" Min="0" Max="12" Step="1" @bind-Value=@context.StylerStyle.Radius @bind-Value:after="PreviewThemeAsync" />
+                            <FluentSlider TValue="int" Label="StrokeWidth" Min="1" Max="3" Step="1" @bind-Value=@context.StylerStyle.StrokeWidth @bind-Value:after="PreviewThemeAsync" />
+                            <FluentSlider TValue="double" Label="ShadowIntensity" Min="0" Max="2" Step="0.1" @bind-Value=@context.StylerStyle.ShadowIntensity @bind-Value:after="PreviewThemeAsync" />
+                        </div>
+
                     </div>
                 </EditOptionForm>
             </div>
@@ -105,13 +116,7 @@
 
     ElementReference previewElement;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && form?.Model is not null)
-        {
-            await PreviewThemeAsync();
-        }
-    }
+    string PreviewStyle => form?.Model is null ? "" : StylerCssVars.PreviewVars(form.Model.StylerStyle);
 
     // Скоуп-превью: тема применяется только к контейнеру компонентов, глобальная — после Save.
     async Task PreviewThemeAsync()
@@ -130,7 +135,11 @@
 
     void OnLoadData()
     {
+        // EditOptionForm._model стартует как new() (не null) и грузится асинхронно,
+        // поэтому тему превью надо применять ЗДЕСЬ (реальная модель готова), а не по
+        // firstRender — иначе превью залипает на дефолтном BrandColor до первого контроля.
         StateHasChanged();
+        _ = PreviewThemeAsync();
     }
 
     void AfterSave(DevAdminStyleOption value)

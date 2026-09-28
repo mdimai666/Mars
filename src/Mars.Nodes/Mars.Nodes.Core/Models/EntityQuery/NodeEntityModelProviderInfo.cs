@@ -1,3 +1,5 @@
+using Mars.QueryLang.Contracts;
+
 namespace Mars.Nodes.Core.Models.EntityQuery;
 
 public record NodeEntityModelProviderInfo

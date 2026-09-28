@@ -11,7 +11,7 @@ using Mars.SiteEngine.Host.Templators;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 
-namespace Mars.SiteEngine.Tests.QueryLangProcessings;
+namespace Mars.QueryLang.Tests.QueryLangProcessings;
 
 public class QueryLangProcessingTests
 {
@@ -173,7 +173,7 @@ public class QueryLangProcessingTests
             var methods = type
                   .GetMethods(BindingFlags.Static | BindingFlags.Public);
             //.Where(mi => mi.GetParameters().Length == 1
-            //           && mi.GetParameters()[0].ParameterType == typeof(string));
+            //           && mi.GetParameters()[0].ParameterType == typeof(string))
 
             list.AddRange(methods.Select(mi => new MethodPrimalSignature
             {

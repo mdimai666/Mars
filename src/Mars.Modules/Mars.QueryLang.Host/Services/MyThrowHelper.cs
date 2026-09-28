@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace Mars.QueryLang.Host.Services;
 
-public static class MyThrowHelper
+internal static class MyThrowHelper
 {
     [DebuggerStepThrough]
     public static void IfArgumentCount(object[] args, int count, string error = "")

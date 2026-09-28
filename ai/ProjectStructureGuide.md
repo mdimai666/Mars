@@ -100,6 +100,11 @@ Query-объекты и маппинги лежат в `Abstractions` (не в `
 5. Физическая раскладка плоская; подпапки на диске не создаются, группировка — виртуальные папки `Mars.slnx`.
 6. Опции: движок — семейство `Mars.Options` (Abstractions/Contracts/Host); конкретные модели опций живут в `Contracts` модуля-владельца и регистрируются его Use-хуком.
 
+Точечные примечания/исключения (зафиксированы 2026-09):
+
+- `Mars.QueryLang`: базовый проект без суффикса играет роль `.Abstractions` (интерфейсы сервисов + общие парсеры), отдельного `.Abstractions` нет. Wire-модели сигнатур LINQ-методов (`LinqMethodSignature`, `LinqMethodParameter`, `MethodHelperInfo`) — в `Mars.QueryLang.Contracts`; на него ссылается `Mars.Nodes.Core` (модели `EntityQuery`), потребители — `Mars.WebApp.Nodes.Host/Front`.
+- `Mars.QueryLang.Host` → `Mars.MetaModelGenerator`: допустимо, пока MetaModelGenerator не разделён на Contracts/Abstractions/Host.
+
 ## Как добавлять новый модуль
 
 1. Состав: как правило `Mars.X.Contracts` + `Mars.X.Abstractions` + `Mars.X.Host` (+ `.Front` при наличии WASM-фронта).

@@ -126,15 +126,11 @@ public class CreatePostTests : BaseE2ETests
 
         foreach (var tag in tags)
         {
-            // Type per-char (not FillAsync): InputTags2 binds with Immediate + appends on Enter
-            // keydown. The v5 fluent-text-input web component relays typing to Blazor async via
-            // JS interop, so pause after typing before Enter — otherwise the Enter keydown can
-            // reach OnKeyPress before the Immediate binding has committed the last char to
-            // _current, and the tag is silently dropped (early return on empty value).
+            // Enter коммитит тег через ChangeAfterKeyPress v5-компонента (значение приходит
+            // с событием) — пауза между печатью и Enter не нужна.
             await tagInput.ClickAsync();
             await page.Keyboard.PressAsync("Control+a");
             await tagInput.PressSequentiallyAsync(tag, new() { Delay = 20 });
-            await Task.Delay(200);
             await tagInput.PressAsync("Enter");
             await Task.Delay(300);
         }

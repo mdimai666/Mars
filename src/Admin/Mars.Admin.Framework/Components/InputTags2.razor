@@ -1,6 +1,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inherits FluentComponentBase
+@inject IJSRuntime JS
 
 <input-tag2 class="@Class" style="@Style" @attributes=AdditionalAttributes>
     <div class="d-flex gap-2 flex-wrap">
@@ -14,7 +15,14 @@
     </div>
 
     <EditForm Model="_holder" class="mt-2">
-        <FluentTextInput @bind-Value=_current Immediate Appearance="TextInputAppearance.FilledDarker" @onkeydown=OnKeyPress />
+        <FluentTextInput @ref="_inputRef"
+                         Value="@_current"
+                         ValueChanged="OnCurrentValue"
+                         Immediate
+                         ChangeAfterKeyPress="commitKeys"
+                         OnChangeAfterKeyPress="OnCommitKey"
+                         Appearance="TextInputAppearance.FilledDarker"
+                         @onkeydown=OnKeyPress />
         @if(validationMessage != null)
         {
             <FluentText Color="Color.Error" Style="font-size:12px;" >@validationMessage</FluentText>
@@ -49,40 +57,84 @@
 
     string? validationMessage;
 
+    /// <summary>
+    /// Enter/Space фиксируют тег через ChangeAfterKeyPress, а не @onkeydown: v5 web-компонент
+    /// доставляет ввод в Blazor асинхронным interop'ом, и keydown-обработчик может увидеть
+    /// _current до коммита последнего символа. В OnCommitKey значение приходит вместе с
+    /// событием (<see cref="FluentKeyPressEventArgs.Value"/>), гонки нет.
+    /// </summary>
+    static readonly KeyPress[] commitKeys = [KeyPress.For(KeyCode.Enter), KeyPress.For(KeyCode.Space)];
+
+    /// <summary>
+    /// ChangeAfterKeyPress на Enter/Space поднимает и событие change → <see cref="OnCurrentValue"/>
+    /// с напечатанным текстом, которое приходит ПОСЛЕ OnCommitKey и перезаписало бы очистку
+    /// <c>_current</c>. Флаг гасит эту обратную перезапись (только при успешном добавлении тега).
+    /// </summary>
+    bool _committing;
+
+    FluentTextInput? _inputRef;
+    IJSObjectReference? _module;
+
     void SetValue(string[] tags)
     {
         _value = tags;
         _ = ValueChanged.InvokeAsync(tags);
     }
 
+    /// <summary>
+    /// v5: атрибут value у &lt;input&gt; — это defaultValue, рендер <c>Value=""</c> уже набранный
+    /// текст не стирает; свойство хоста — стирает (FAST синхронизирует его с контролом), поэтому
+    /// чистим через JS. См. InputTags2.razor.js.
+    /// </summary>
+    async Task ClearInputAsync()
+    {
+        if (_inputRef is null) return;
+
+        _module ??= await JS.InvokeAsync<IJSObjectReference>("import",
+            "./_content/mdimai666.Mars.Admin.Framework/Components/InputTags2.razor.js");
+        await _module.InvokeVoidAsync("clear", _inputRef.Element);
+    }
+
+    void OnCurrentValue(string value)
+    {
+        if (_committing)
+        {
+            _committing = false;
+            return;
+        }
+
+        _current = value ?? "";
+    }
+
+    void OnCommitKey(FluentKeyPressEventArgs e)
+    {
+        var tag = (e.Value ?? _current).Trim();
+
+        validationMessage = null;
+
+        if (string.IsNullOrEmpty(tag)) return;
+
+        if (!TextTool.IsValidSlug(tag))
+        {
+            validationMessage = "not valid tag";
+        }
+        else if (!Value.Contains(tag))
+        {
+            SetValue([.. Value, tag]);
+            _committing = true;
+            _current = "";
+            _ = ClearInputAsync();
+        }
+        else
+        {
+            validationMessage = "duplicate";
+        }
+    }
+
     void OnKeyPress(KeyboardEventArgs e)
     {
-        var tag = _current.Trim();
-
-        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Code == "Space")
-        {
-            validationMessage = null;
-
-            if (string.IsNullOrEmpty(tag)) return;
-
-            if(!TextTool.IsValidSlug(tag))
-            {
-                validationMessage = "not valid tag";
-            }
-            else if(!Value.Contains(tag))
-            {
-                SetValue([..Value, tag ]);
-                _current = "";
-            }
-            else
-            {
-                validationMessage = "duplicate";
-            }
-        }
-        else if(e.Code == "Backspace")
-        {
-            if(_current.Length == 0 && Value.Count()>0) SetValue(Value[..^1]);
-        }
+        if (e.Code == "Backspace" && _current.Length == 0 && Value.Length > 0)
+            SetValue(Value[..^1]);
     }
 
     void RemoveTag(string tag)

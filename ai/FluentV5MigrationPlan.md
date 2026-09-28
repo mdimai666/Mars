@@ -432,23 +432,42 @@ Large — при кастомном Theme переназначатся авто�
 - SetupWizard (`/setup/*`) — обычный Bootstrap cshtml (не FluentUI): его `input[name=]`,
   `button:has-text()`, `.alert-danger` живы, трогали только логин+грид.
 
-Найденные v5-грабли (две гонки фреймворка, обе — НЕ баги кода Mars):
-- **InputTags2: `Immediate`-binding асинхроннее keydown.** `fluent-text-input` (web component)
-  ретранслирует ввод в Blazor через JS-interop асинхронно; при быстром «ввод + Enter» keydown
-  приходит в `OnKeyPress` ДО коммита последнего символа в `_current` → тег молча теряется
-  (early-return на пустом значении). Проявилось как «сохраняется только первый тег».
-  Лечение в тесте: `Task.Delay(200)` между печатью тега и Enter. (В проде тот же риск при
-  очень быстром вводе — кандидат на `ImmediateDelay`/debounce в InputTags2, вне рамок E2E.)
+Найденные v5-грабли (гонки/рассинхрон фреймворка, обе — НЕ баги логики Mars):
+- **InputTags2: `Immediate`-binding асинхроннее keydown + рассинхрон value.** `fluent-text-input`
+  (web component) ретранслирует ввод в Blazor через JS-interop асинхронно; при быстром
+  «ввод + Enter» keydown приходит ДО коммита последнего символа → тег молча теряется. Плюс
+  Blazor рендерит `Value` как АТРИБУТ `value` хоста, а у `<input>` атрибут = defaultValue:
+  после пользовательского ввода рендер `Value=""` видимый текст НЕ стирает (стирает только
+  установка СВОЙСТВА `el.value`). **Исправлено на уровне приложения (2026-09-29):** Enter/Space
+  коммитят тег через `ChangeAfterKeyPress`+`OnChangeAfterKeyPress` (значение приходит в
+  `FluentKeyPressEventArgs.Value`, гонки нет); флаг `_committing` гасит обратную перезапись
+  `_current` от change-события; очистка поля — через collocated `InputTags2.razor.js`
+  (`clear(el)` ставит свойство `el.value=''`, сохраняет фокус, в отличие от `@key`-пересоздания).
+  Тест больше не нуждается в `Task.Delay` между печатью и Enter. (Кандидат на upstream-репорт:
+  программная очистка FluentTextInput из Blazor невозможна без JS — атрибут value не sync'ится в control.)
 - **FluentDataGrid: `ObjectDisposedException` после закрытия диалога.** Grid регистрирует
   глобальный `FluentKeyCode` (клавишный ресайз колонок); когда диалог с гридом закрыт (грид
   disposed), поздний keydown от последующего ввода попадает в освобождённый JS-объект →
   `SetColumnWidthDiscreteAsync` бросает. Не влияет на сохранение данных. В
   `BrowserErrorTracker` добавлен узкий фильтр `IsKnownFrameworkRace` (ObjectDisposedException
   + SetColumnWidthDiscreteAsync + FluentKeyCode) — все прочие page-ошибки по-прежнему ловятся.
+  (Кандидат на upstream-репорт: FluentKeyCode не отписывается до dispose JS-ссылки грида.)
 
 Попутно (v5-корректность, не только тесты):
 - `InputTags2.razor`: текст бейджа вынесен в `Content` (в v5 `ChildContent` = обёрнутый элемент,
   текст в ChildContent давал бы пустой бейдж); крестик удаления — соседним span.
 - `FluentTab Label=` → `Header=` (v5-ренейм) в FormLayoutEditor, DockerContainerDetail,
   DockerManager, FormRenderer.
+
+## Warnings-чистка (2026-09-29)
+
+Полная пересборка `dotnet build Mars.slnx --no-incremental` — **0 warnings / 0 errors**
+(было 6 существовавших, не связанных с миграцией). Проверка: SiteEngine.Tests 87/0, E2E 16/0/1.
+- CS4014 `EditNavMenuPage.razor.cs` — fire-and-forget `Task.Run` → `_ = Task.Run(...)`.
+- CS8620 `SchedulerManager.cs` — `new JobDataMap(data)`: Quartz ждёт `IDictionary<string,object?>`,
+  IDictionary инвариантен → копия `data.ToDictionary(k, (object?)v)` (значения всегда non-null).
+- CS8767 ×2 `SiteScribanFunctionsContributor.cs` — `Invoke`/`InvokeAsync`: `ScriptNode callerNode`
+  → `ScriptNode? callerNode` (под сигнатуру `IScriptCustomFunction`).
+- CS8619 `SiteScribanFunctions.cs` — `SnapshotData`/`dCopy`/`diff` → `object?` (ScriptObject.Value nullable).
+- CS8613 `WebSitePartsTemplateLoader.cs` — `LoadAsync`: `ValueTask<string>` → `ValueTask<string?>` (под ITemplateLoader).
 

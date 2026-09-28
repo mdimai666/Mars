@@ -10,10 +10,10 @@
     </Project>
   </Folder>
   <Folder Name="/Benchmarks/">
-    <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">
+    <Project Path="benchmarks/Benchmark.NodeExpression/Benchmark.NodeExpression.csproj">
       <Build Solution="Debug|*" Project="false" />
     </Project>
-    <Project Path="benchmarks/Benchmark.NodeExpression/Benchmark.NodeExpression.csproj">
+    <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">
       <Build Solution="Debug|*" Project="false" />
     </Project>
     <Project Path="benchmarks/Benchmarks.DatabaseQuery/Benchmarks.DatabaseQuery.csproj" />
@@ -217,6 +217,7 @@
     <File Path="pack-local-nugets.ps1" />
     <File Path="Product_release_plan.md" />
     <File Path="publish-docker.ps1" />
+    <File Path="QWEN.md" />
     <File Path="README.md" />
     <File Path="Trubles.md" />
   </Folder>
@@ -228,8 +229,8 @@
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
     <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
     <Project Path="tests/Mars.Cms.Tests/Mars.Cms.Tests.csproj" />
-    <Project Path="tests/Mars.CommandLine.Scripting.Tests/Mars.CommandLine.Scripting.Tests.csproj" />
     <Project Path="tests/Mars.CodeCompletion.Tests/Mars.CodeCompletion.Tests.csproj" />
+    <Project Path="tests/Mars.CommandLine.Scripting.Tests/Mars.CommandLine.Scripting.Tests.csproj" />
     <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Tests/Mars.Datasource.Tests.csproj" />

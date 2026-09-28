@@ -409,8 +409,11 @@ v5 не important). Compat `--success/--warning/--error/--info` определе
 тени Fluent станут проще (одна вместо ambient+key пары).
 
 Остаток этапа: пользователь компилирует style.css + визуалка (или Playwright-обход по команде);
-шаг 4 — переписать `ai/CssRefactoringGuide.md` под v5 (карта mars→fluent, механика моста,
-dark-хук), bump MarsAppVersion после коммита. Шаг 3 (скаляры стайлера) — ГОТОВ, см. ниже.
+bump MarsAppVersion после коммита. Шаг 3 (скаляры стайлера) — ГОТОВ, см. ниже.
+Шаг 4 — ГОТОВ (2026-09-29): `ai/CssRefactoringGuide.md` переписан под v5 (архитектура трёх
+слоёв, карта mars→fluent, механика important-моста, живые/мёртвые v5-токены, ::part-карта,
+data-theme dark-хук, стайлер StylerCssVars, рецепты и грабли LESS; дореволюционная история
+и мёртвые AppAdmin/AppFront.*/FluentDesignSystemProvider-секции удалены — в git-истории файла).
 
 ### Шаг 3 — скаляры стайлера (2026-09-29, less+C# готовы, ждёт компиляции/визуалки)
 

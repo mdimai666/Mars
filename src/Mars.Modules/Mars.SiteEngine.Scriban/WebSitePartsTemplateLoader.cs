@@ -27,6 +27,6 @@ public class WebSitePartsTemplateLoader(IReadOnlyCollection<WebSitePart>? parts)
         return part.Content;
     }
 
-    public ValueTask<string> LoadAsync(TemplateContext context, SourceSpan callerSpan, string templatePath)
+    public ValueTask<string?> LoadAsync(TemplateContext context, SourceSpan callerSpan, string templatePath)
         => new(Load(context, callerSpan, templatePath));
 }

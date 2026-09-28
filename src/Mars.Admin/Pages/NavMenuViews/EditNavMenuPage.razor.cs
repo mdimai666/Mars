@@ -43,7 +43,7 @@ public partial class EditNavMenuPage
     {
         if (firstRender)
         {
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 _availRoles = (await client.Role.List(new())).Items;
             });

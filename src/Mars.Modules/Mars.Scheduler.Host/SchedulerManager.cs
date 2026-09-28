@@ -79,7 +79,9 @@ internal class SchedulerManager : ISchedulerManager
 
         if (data is not null)
         {
-            builder.UsingJobData(new JobDataMap(data));
+            // Quartz JobDataMap принимает IDictionary<string, object?>; IDictionary инвариантен,
+            // поэтому копируем с nullable-значениями (значения здесь всегда non-null).
+            builder.UsingJobData(new JobDataMap(data.ToDictionary(kv => kv.Key, kv => (object?)kv.Value)));
         }
 
         IJobDetail job = builder.Build();

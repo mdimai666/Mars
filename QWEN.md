@@ -1,6 +1,6 @@
 # Mars Project Context
 
-Full overview: @ai/ProjectDescription.md
+Full overview (read on demand, not imported): `ai/ProjectDescription.md`
 
 ## Quick Summary
 
@@ -51,6 +51,8 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 - Публичная документация сайта — `docs/dev_docs/`, конвенция в `ai/DocsGuide.md`.
 
 ## Build & Test
+
+Test suite guide (harness, opt-in gates, verification recipes, rejected ideas): `ai/TestingGuide.md`
 
 ```
 dotnet build Mars.slnx                          # full solution build

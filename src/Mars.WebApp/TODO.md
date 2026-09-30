@@ -9,7 +9,7 @@
 [ ] - Make a repository mapping as Select(Expression) instead end mapping. (do benchmark before)
 
 # CLI
-[ ] - Execute scripts
+[x] - Execute scripts
 [x] - Mainterance mode change
 [ ] - sql execute
 [x] - inject node
@@ -17,7 +17,7 @@
 # Admin
 [x] - style editor
 [x] - post type list view mode
-[.] - PostType Manage page edit
+[x] - PostType Manage page edit
 [ ] - Add hotkeys page
 [ ] - Privacy page
 [ ] - Cookies alert
@@ -68,7 +68,7 @@
 [ ] - add https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-9.0&tabs=visual-studio
 [ ] - https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-9.0&tabs=windows
 [ ] - add patch https://stackoverflow.com/questions/36767759/using-net-core-web-api-with-jsonpatchdocument
-[ ] - add [scriban/scriban: A fast, powerful, safe and lightweight scripting language and engine for .NET](https://github.com/scriban/scriban)
+[x] - add [scriban/scriban: A fast, powerful, safe and lightweight scripting language and engine for .NET](https://github.com/scriban/scriban)
 
 # Scripting
 [-] - add Microsoft.DiaSymReader
@@ -76,7 +76,7 @@
 # Nodes
 [x] - Excel node
 [ ] - add Env support to variables get
-[ ] - add commands like Inject for "Power Toys: Commant Palette Util"
+[x] - add commands like Inject for "Power Toys: Commant Palette Util"
 
 ## Entity upgrade plan
 [x] - Setup 'Modified' -> DateTimeOffset? ModifiedAt
@@ -84,5 +84,5 @@
 [ ] - 
 
 # Features
-[ ] - Add AI functions https://devblogs.microsoft.com/dotnet/local-ai-models-with-dotnet-aspire/
+[x] - Add AI functions https://devblogs.microsoft.com/dotnet/local-ai-models-with-dotnet-aspire/
 [ ] - NodeJs Plugin (Vite, Vue, React from admin)  https://learn.microsoft.com/en-us/dotnet/aspire/get-started/build-aspire-apps-with-nodejs

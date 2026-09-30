@@ -86,8 +86,10 @@
                         </DFluentDeleteButton>
                         <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle">@AppRes.Action</FluentButton>
                         <FluentMenu Trigger="@($"useractions-{context.Id}")" OnClick="@(e => OnUserMenuClick(e, context))">
-                            <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
-                            <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                            <FluentMenuList>
+                                <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
+                                <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                            </FluentMenuList>
                         </FluentMenu>
                     </div>
                 </TemplateColumn>

@@ -9,9 +9,11 @@
     </FluentButton>
 
     <FluentMenu Trigger="editor2-actionmenu-button" @ref=actionMenu>
-        <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
-        @* <FluentDivider></FluentDivider> *@
-        @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
+        <FluentMenuList>
+            <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
+            @* <FluentDivider></FluentDivider> *@
+            @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
+        </FluentMenuList>
     </FluentMenu>
 </div>
 

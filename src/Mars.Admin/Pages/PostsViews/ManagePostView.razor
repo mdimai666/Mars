@@ -130,7 +130,9 @@
                                     <FluentOverflow TItem="string" Style="width: 100%;">
                                         @foreach (var cat in context.Categories ?? [])
                                         {
-                                            <FluentBadge Color="BadgeColor.Informative" OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
+                                            <span style="cursor: pointer;" @onclick="@(() => ClickPostItemCategory(cat.Id))">
+                                                <FluentBadge Color="BadgeColor.Informative">@cat.Title</FluentBadge>
+                                            </span>
                                         }
                                     </FluentOverflow>
                                 </TemplateColumn>

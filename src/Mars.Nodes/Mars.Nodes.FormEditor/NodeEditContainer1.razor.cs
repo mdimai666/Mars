@@ -23,6 +23,37 @@ public partial class NodeEditContainer1
     FluentDialog _dialog = default!;
     bool _visible;
 
+    // v5: FluentDialog без Hidden — показ/скрытие императивно; _visible остаётся источником правды,
+    // синхронизация после рендера. OnStateChange(Closed) обрабатывает dismiss (ESC/backdrop).
+    bool _dialogShown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_dialog is null) return;
+
+        if (_visible && !_dialogShown)
+        {
+            await _dialog.ShowAsync();
+            _dialogShown = true;
+        }
+        else if (!_visible && _dialogShown)
+        {
+            await _dialog.HideAsync();
+            _dialogShown = false;
+        }
+    }
+
+    void OnDialogStateChange(DialogEventArgs e)
+    {
+        if (e.State != DialogState.Closed) return;
+
+        _dialogShown = false;
+        if (_visible)
+        {
+            OnDialogDismiss(e);
+        }
+    }
+
     Node? _node = default!;
 
     public Node? Node => _node;

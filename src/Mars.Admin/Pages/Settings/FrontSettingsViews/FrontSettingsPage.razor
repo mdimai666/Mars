@@ -115,8 +115,10 @@
                                 </FluentButton>
                                 <FluentButton Id="@FrontMenuId(front)" Appearance="ButtonAppearance.Subtle" Title="Действия">...</FluentButton>
                                 <FluentMenu Trigger="@FrontMenuId(front)">
-                                    <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: false))>Удалить</FluentMenuItem>
-                                    <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: true))>Удалить с папкой</FluentMenuItem>
+                                    <FluentMenuList>
+                                        <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: false))>Удалить</FluentMenuItem>
+                                        <FluentMenuItem OnClick=@(() => DeleteFront(front, withFolder: true))>Удалить с папкой</FluentMenuItem>
+                                    </FluentMenuList>
                                 </FluentMenu>
                             </div>
                         </div>

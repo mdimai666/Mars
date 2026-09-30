@@ -23,7 +23,7 @@
                                 OnUpdate="OnSortCards"
                                 Context="item"
                                 Class="d-child-cards"
-                                ListItemHeight="auto">
+                                Style="--fluent-sortable-list-item-height: auto">
                 <ItemTemplate>
                     <div class="d-child-card" @key="item" @onclick="@(() => OpenCard(item.Id))">
                         @if (CardPreviewUrl(item) is string previewUrl && !string.IsNullOrEmpty(previewUrl))

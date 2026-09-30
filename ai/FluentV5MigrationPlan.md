@@ -558,6 +558,79 @@ Large — при кастомном Theme переназначатся авто�
 - `FluentTab Label=` → `Header=` (v5-ренейм) в FormLayoutEditor, DockerContainerDetail,
   DockerManager, FormRenderer.
 
+## Аудит «тихих» v5-поломок (2026-09-29)
+
+Триггер: `XActionsDropDown` выглядел как «два меню» — v5 `FluentMenu` требует обёртку
+`FluentMenuList` (веб-компонент берёт ПЕРВЫЙ элемент дефолтного слота как `_menuList` и
+вешает на него popover; без обёртки пункты рендерятся статично, а в попап улетает первый
+пункт). Компилятор это не ловит: ChildContent — RenderFragment, структура детей не типируется.
+
+Классификация «тихих» поломок (что чем ловится):
+- **Удалённые/переименованные КОМПОНЕНТЫ** — ловит сборка: неизвестный тег = warning RZ10012
+  (проверено песочницей). Сборка Mars.slnx без warning'ов ⇒ мёртвых тегов в репо нет.
+  ВНИМАНИЕ: `FluentValidationMessage` ЖИВ в 5.0.0 (generic `FluentValidationMessage<TValue>`,
+  7 использований компилируются) — пункт этапа 5 «удалён → FluentField» был неточен.
+- **Удалённые ПАРАМЕТРЫ живых компонентов** — НЕ ловит сборка (splatting в
+  AdditionalAttributes мёртвым HTML-атрибутом). Детектор — только grep по именам.
+  Sweep 2026-09-29 (UseMenuService/Anchor=/@bind-Open/Thresholds/Typo=/Fill=/Autofocus=/
+  Enctype=/ColumnOptionsLabels/ListItemFilteredColor/Visible=): чисто; `Anchor=` — только
+  FluentTooltip (жив), `Visible=` — FluentMessageBar/FluentOverlay (жив; у MessageBar
+  `Visible="_isInvalidState"` — валидное C#-выражение: Razor парсит значения НЕстрок-параметров
+  как выражения без @), `Autofocus` — жив в FluentInputBase.
+- **Структурные контракты** (обёртки/слоты) — НЕ ловит ничто, только аудит по докам.
+- **Дефолты** (Spacing 3→0, Icon currentColor) — только визуалка.
+
+Починено (меню-аудит, 20 из 20 `<FluentMenu` проверены):
+- Обёртка `FluentMenuList` добавлена: XActionsDropDown (коммит 869cacbf), UsersPage,
+  FrontSettingsPage, EditPostTypePresentationPage, ObjectsQueryWorkspace ×2,
+  PostStatusesEditor, CodeEditorExtraToolbar, OpenIDClientOptionEditForm, AppEntityReadNodeForm.
+- Мёртвые v4-параметры переписаны на Trigger+FluentMenuList: HttpResponseNodeForm,
+  HttpInFormSaveFilesNodeForm (инлайн-`<style>` вынесен ИЗ меню — иначе style-элемент стал
+  бы `_menuList`), CodeEditorFunctionNodeToolbar (FormEditor); `open1`/`open`-поля удалены.
+- Сборка Mars.slnx зелёная. Коммит — после визуальной проверки пользователем.
+
+Структурный аудит остальных компонентов (агент, 2026-09-29) — завершён. Метод: migration-гайды
++ XML/рефлексия пакета 5.0.0 + исходники тега v5.0.0 (MCP-гайды описывают dev и дважды
+разошлись с релизом — проверка по пакету обязательна).
+
+Найдено и ПОЧИНЕНО (сборка Mars.slnx зелёная):
+- **NodeEditContainer1 — диалог редактора ноды не открывался**: единственный декларативный
+  диалог на мёртвых `Hidden`/`TrapFocus`/`PreventScroll`/`@ondialogdismiss`; переведён на
+  паттерн AIToolChatModal (`_dialogShown` + ShowAsync/HideAsync в OnAfterRenderAsync +
+  OnStateChange(Closed) → OnDialogDismiss только если `_visible` — защита от двойного save
+  при закрытии кнопкой).
+- **ManagePostView: клик по бейджу категории мёртв** — у FluentBadge v5 нет OnClick
+  (проверено по XML); обёрнут в `<span @onclick style="cursor:pointer">` (одно-корневой
+  ребёнок для FluentOverflow сохранён).
+- SchedulerPage: `FluentDivider Orientation=` (мёртв) → `Vertical`.
+- DockerContainerDetail: `FluentSpinner Width="16"` (мёртв) → `Size="SpinnerSize.ExtraSmall"`.
+- `FluentSortableList ListItemHeight=` (мёртв в v5) ×5 → `Style="--fluent-sortable-list-item-height: …"`
+  (AppEntityCreateNodeForm 48px, SwitchNodeForm/StringNodeForm 58px, MetaValueFileMulti/
+  MetaValueChildrenList auto).
+- DebugPage/StyleSampleForm: `FluentAutocomplete AutoComplete="off"` (мёртв — у Autocomplete
+  такого параметра нет, есть у TextInput) — удалён.
+- SkeletonContent: `Width="w-100"` (pre-existing, CSS-класс как длина) → `Class="w-100"`.
+
+Ложняки аудита (отсеяны проверкой по пакету/коду):
+- `FluentDropZone Data=` — **ЖИВОЙ параметр** в 5.0.0 (`Data : Object`, рефлексия); его читает
+  FormLayoutEditor `args.Target.Data` — не трогать.
+- LinkInNodeForm `Heading=` — внутри `@* *@`-комментария.
+- Badge-текст в ChildContent (~35 мест), Radio ChildContent, Stack gap-числа без px
+  (AddMissingPx), GridItem lowercase xs/sm — в 5.0.0 валидны.
+
+Чисто (аудировано без находок): Dialog-шим и все диалоги, Tabs (везде Header=), Nav, TreeView,
+Overflow, InputFile, Autocomplete (null-Icon нет), Button, DataGrid, Tooltip, MessageBar,
+Label, Text, Select/Option, MultiSplitter, Grid, DatePicker, Providers.
+`TrapFocus`/`PreventScroll` в C#-инициализаторах DialogParameters (9 файлов) — свойства шима,
+игнорируются намеренно.
+
+Не проверено статически: диспатчит ли v5-веб-компонент закрытие по ESC/backdrop в
+`OnStateChange(Closed)` у NodeEditContainer1 (save-при-закрытии-по-фону) — на визуалке:
+открыть ноду, кликнуть фон, проверить save; ESC.
+
+Идея сетки на будущее: DOM-assertions в Playwright-обходе (внутри каждого `fluent-menu`
+есть `fluent-menu-list`; на хостах нет мёртвых атрибутов `anchor`/`usemenuservice`).
+
 ## Warnings-чистка (2026-09-29)
 
 Полная пересборка `dotnet build Mars.slnx --no-incremental` — **0 warnings / 0 errors**

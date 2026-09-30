@@ -7,23 +7,24 @@
 <div class="d-flex align-items-center gap-2 flex-fill">
     <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/di:services?search=" OnSnippetSelect="OnSelectSnippet" Style="max-width: 250px;" />
 
-    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e => open = !open) Class="ms-auto">
+    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 Class="ms-auto">
         Tools
         <FluentIcon Slot="end" Value="@(new Icons.Regular.Size16.ChevronDown())" />
     </FluentButton>
 
-    <FluentMenu @bind-Open=open Anchor="editor2-actionmenu-button" @ref=actionMenu>
-        <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
-        @* <FluentMenuItem OnClick="OnAddServiceClick">AddService</FluentMenuItem> *@
-        @* <FluentDivider></FluentDivider> *@
-        @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
+    <FluentMenu Trigger="editor2-actionmenu-button" @ref=actionMenu>
+        <FluentMenuList>
+            <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
+            @* <FluentMenuItem OnClick="OnAddServiceClick">AddService</FluentMenuItem> *@
+            @* <FluentDivider></FluentDivider> *@
+            @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
+        </FluentMenuList>
     </FluentMenu>
 </div>
 
 @code {
     FluentButton actionMenuButton1 = default!;
     FluentMenu actionMenu = default!;
-    bool open = false;
 
     [CascadingParameter]
     MarsCodeEditor2.CodeEditor2 editor2 { get; set; } = default!;

@@ -74,10 +74,12 @@
                 <div class="mt-1 hstack gap-1">
                     <FluentButton Id="@_addMenuButtonId" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
                     <FluentMenu Trigger="@_addMenuButtonId" OnClick="HandleOnAddItemMenuClick">
-                        @foreach (var item in AddButtonMenuItems)
-                        {
-                            <FluentMenuItem Id="@item.Key">@item.Value</FluentMenuItem>
-                        }
+                        <FluentMenuList>
+                            @foreach (var item in AddButtonMenuItems)
+                            {
+                                <FluentMenuItem Id="@item.Key">@item.Value</FluentMenuItem>
+                            }
+                        </FluentMenuList>
                     </FluentMenu>
                 </div>
                 <div class="my-2">

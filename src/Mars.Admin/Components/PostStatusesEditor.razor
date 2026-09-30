@@ -14,7 +14,9 @@
             <FluentButton OnClick="AddAsync">Добавить</FluentButton>
             <FluentButton Id="@_actionsMenuId" Appearance="ButtonAppearance.Default">@AppRes.Actions</FluentButton>
             <FluentMenu Trigger="@_actionsMenuId">
-                <FluentMenuItem OnClick="AddDefaultsAsync">Добавить стандартные</FluentMenuItem>
+                <FluentMenuList>
+                    <FluentMenuItem OnClick="AddDefaultsAsync">Добавить стандартные</FluentMenuItem>
+                </FluentMenuList>
             </FluentMenu>
         </div>
     </div>

@@ -107,10 +107,12 @@
         <div>
             <FluentButton Id="@_addProviderButtonId">Add provider</FluentButton>
             <FluentMenu Trigger="@_addProviderButtonId" OnClick="OnAddProviderMenuClick">
-                @foreach (var (key, title) in OpenIDClientOption.DriverList)
-                {
-                    <FluentMenuItem Id="@key">@title</FluentMenuItem>
-                }
+                <FluentMenuList>
+                    @foreach (var (key, title) in OpenIDClientOption.DriverList)
+                    {
+                        <FluentMenuItem Id="@key">@title</FluentMenuItem>
+                    }
+                </FluentMenuList>
             </FluentMenu>
         </div>
 

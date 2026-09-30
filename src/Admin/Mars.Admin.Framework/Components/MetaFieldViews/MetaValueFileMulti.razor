@@ -33,7 +33,7 @@
     @if (_rows.Count > 0)
     {
         <FluentSortableList Id=@_sortableId Items="_rows" OnUpdate="OnSort" Context="row"
-                            ListItemHeight="auto"
+                            Style="--fluent-sortable-list-item-height: auto"
                             Class="@(IsCardsView ? "d-file-cards" : "")">
             <ItemTemplate>
                 @{

@@ -36,11 +36,13 @@
                 </span>
             </FluentButton>
             <FluentMenu Trigger="@_examplesButtonId">
-                @foreach (var item in HttpDocumentExamples.All)
-                {
-                    var example = item;
-                    <FluentMenuItem Label="@example.Name" OnClick="@(() => AddExampleAsync(example))" />
-                }
+                <FluentMenuList>
+                    @foreach (var item in HttpDocumentExamples.All)
+                    {
+                        var example = item;
+                        <FluentMenuItem Label="@example.Name" OnClick="@(() => AddExampleAsync(example))" />
+                    }
+                </FluentMenuList>
             </FluentMenu>
         }
         else if (activeTab is { IsDocument: false, Language: DatasourceLanguage.Linq })
@@ -53,11 +55,13 @@
                 </span>
             </FluentButton>
             <FluentMenu Trigger="@_fileExamplesButtonId">
-                @foreach (var item in FileQueryExamples.All)
-                {
-                    var example = item;
-                    <FluentMenuItem Label="@example.Name" OnClick="@(() => AddFileExampleAsync(example))" />
-                }
+                <FluentMenuList>
+                    @foreach (var item in FileQueryExamples.All)
+                    {
+                        var example = item;
+                        <FluentMenuItem Label="@example.Name" OnClick="@(() => AddFileExampleAsync(example))" />
+                    }
+                </FluentMenuList>
             </FluentMenu>
         }
     </ToolbarActions>

@@ -107,7 +107,7 @@ Motion:     --mars-duration-{fast,normal,slow} (100/200/400ms), --mars-easing-de
 | dialog | `::part(control)` | `::part(dialog)` |
 | switch | `::part(switch)` | `::part(checked-indicator)`; host несёт `checked="true"` |
 | tree-item | `::part(content-region)` | `::part(content)` + `::part(positioning-region)` |
-| button | `::part(control)` | частей НЕТ (shadow = slot+span); стили на host, наследуются в slot |
+| button | `::part(control)` | внутреннего `<button>` НЕТ (shadow = slot+span.content), клик по host; есть `::part(content)` — span-обёртка слота (проверено на живом DOM 2026-10-01); стили на host наследуются в slot |
 | input/textarea | `::part(control)` | без изменений |
 
 `::deep` не пробивает shadow DOM веб-компонента (как и в v4). Scoped razor.css НЕ отключены

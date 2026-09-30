@@ -1,0 +1,11 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="vstack gap-1" data-gallery-variant="@Caption">
+    <FluentText Size="TextSize.Size200" Class="text-secondary">@Caption</FluentText>
+    <div>@ChildContent</div>
+</div>
+
+@code {
+    [Parameter] public string Caption { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

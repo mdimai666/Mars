@@ -1,0 +1,33 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Spinner / ProgressBar">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentSpinner (SpinnerSize)">
+            <div class="hstack gap-3 align-items-center">
+                <FluentSpinner Size="SpinnerSize.Tiny" />
+                <FluentSpinner Size="SpinnerSize.ExtraSmall" />
+                <FluentSpinner Size="SpinnerSize.Small" />
+                <FluentSpinner Size="SpinnerSize.Medium" />
+                <FluentSpinner Size="SpinnerSize.Large" />
+                <FluentSpinner Size="SpinnerSize.ExtraLarge" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentProgressBar">
+            <div class="vstack gap-2" style="width:320px;">
+                <FluentText Size="TextSize.Size200" Class="text-secondary">Indeterminate (без Value):</FluentText>
+                <FluentProgressBar />
+                <FluentText Size="TextSize.Size200" Class="text-secondary">Value=40:</FluentText>
+                <FluentProgressBar Value="40" Min="0" Max="100" />
+                <FluentText Size="TextSize.Size200" Class="text-secondary">Value=75, State=Success:</FluentText>
+                <FluentProgressBar Value="75" Min="0" Max="100" State="ProgressState.Success" />
+                <FluentText Size="TextSize.Size200" Class="text-secondary">Value=90, State=Error:</FluentText>
+                <FluentProgressBar Value="90" Min="0" Max="100" State="ProgressState.Error" />
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>

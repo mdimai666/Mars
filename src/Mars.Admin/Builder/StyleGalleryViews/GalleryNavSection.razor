@@ -1,0 +1,36 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Nav">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentNav (активный пункт — текущая страница)">
+            <div class="card" style="width:260px;">
+                <div class="card-body p-2" style="--nav-bg-color: transparent;">
+                    <FluentNav>
+                        <FluentNavSectionHeader Title="Разделы" />
+                        <FluentNavItem Href="/dev/builder/style-gallery" Match="NavLinkMatch.All"
+                                       IconRest="@(new Icons.Regular.Size20.Color())"
+                                       IconActive="@(new Icons.Filled.Size20.Color())">
+                            Style Gallery (активный)
+                        </FluentNavItem>
+                        <FluentNavItem Href="/dev/builder/debug"
+                                       IconRest="@(new Icons.Regular.Size20.WindowConsole())">
+                            Debug
+                        </FluentNavItem>
+                        <FluentNavCategory Title="Контент" Expanded
+                                           IconRest="@(new Icons.Regular.Size20.Folder())"
+                                           IconActive="@(new Icons.Filled.Size20.Folder())">
+                            <FluentNavItem Href="/dev/PostType">PostTypes</FluentNavItem>
+                            <FluentNavItem Href="/dev/Users">Users</FluentNavItem>
+                            <FluentNavItem Href="/dev/Plugins" Disabled>Plugins (disabled)</FluentNavItem>
+                        </FluentNavCategory>
+                    </FluentNav>
+                </div>
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>

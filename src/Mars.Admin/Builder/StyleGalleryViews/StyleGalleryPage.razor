@@ -1,0 +1,27 @@
+@page "/builder/style-gallery"
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<ContentWrapper Title="Style Gallery — FluentUI v5" FullWidth WrapperClass="vstack gap-3">
+
+    <FluentMessageBar Intent="MessageBarIntent.Info" AllowDismiss="false">
+        Скрытая dev-страница: все используемые Fluent-компоненты в одном месте для визуальной проверки
+        и прогона playwright-харнессом (tools/ui/). В навигацию не добавляется, заход по URL /dev/builder/style-gallery.
+    </FluentMessageBar>
+
+    <GalleryButtonsSection />
+    <GalleryBadgesSection />
+    <GalleryTypographySection />
+    <GalleryInputsSection />
+    <GallerySelectsSection />
+    <GalleryMenuSection />
+    <GalleryDataGridSection />
+    <GalleryDialogSection />
+    <GalleryNavSection />
+    <GalleryTabsSection />
+    <GalleryTreeViewSection />
+    <GalleryMessageBarSection />
+    <GalleryTooltipSection />
+    <GalleryProgressSection />
+    <GalleryAvatarSection />
+
+</ContentWrapper>

@@ -50,6 +50,15 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
   «Инварианты», «Отклонено», рецепты «как добавить».
 - Публичная документация сайта — `docs/dev_docs/`, конвенция в `ai/DocsGuide.md`.
 
+## Вёрстка админки (FluentUI v5)
+
+- Начинать с `ai/FluentUiGuide.md` (инструменты, правила вёрстки, цикл правки); факты
+  библиотеки — `ai/FluentV5Reference.md`, CSS/токены/less — `ai/CssRefactoringGuide.md`.
+- Не раскапывать nuget-пакет/GitHub ради фактов, которые уже есть в гайдах; новую находку
+  дописывать в гайд (амортизация расследований).
+- Правки стилей — только `.less`; визуальная проверка без скриншотов — харнесс `tools/ui/`
+  (crawl/probe/tokens/diff/sweep, см. `tools/ui/README.md`).
+
 ## Build & Test
 
 Test suite guide (harness, opt-in gates, verification recipes, rejected ideas): `ai/TestingGuide.md`

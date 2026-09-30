@@ -7,7 +7,6 @@
                   @ref=_dialog
                   Modal=true
                   Class="AIToolChatModal"
-                  Style="--dialog-width: 600px;"
                   OnStateChange="OnDialogStateChange">
         <FluentDialogBody>
             <TitleTemplate>
@@ -111,6 +110,9 @@
 
     fluent-dialog.AIToolChatModal::part(dialog) {
         /* margin-bottom: 0 !important; */
+        /* v5: --dialog-width мёртв (max-width 600px в shadow-стилях) — ширина здесь */
+        width: 600px;
+        max-width: 600px;
         border-radius: 0;
     }
 </style>

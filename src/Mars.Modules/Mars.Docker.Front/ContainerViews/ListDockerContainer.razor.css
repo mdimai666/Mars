@@ -6,7 +6,7 @@
 .docker-group-count {
     font-size: 12px;
     opacity: 0.7;
-    border: 1px solid var(--neutral-stroke-2, #ccc);
+    border: 1px solid var(--colorNeutralStroke2);
     border-radius: 10px;
     padding: 0 8px;
 }

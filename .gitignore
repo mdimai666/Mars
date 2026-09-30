@@ -13,6 +13,12 @@
 # AI agent working directory
 .qwen/
 
+# tools/ui harness local state (auth, reports)
+tools/ui/auth.json
+tools/ui/auth.local.json
+tools/ui/diff/
+tools/ui/sweep-report.json
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

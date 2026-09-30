@@ -686,3 +686,90 @@ ASPNETCORE_URLS/`--urls`, который к тому же съедает CLI-к�
 
 Остаток на пользователе: живой осмотр (в т.ч. тёмная тема через StyleDesigner Mode=Dark),
 коммит батча визуалки (оставлен незакоммиченным по правилу «коммит по явной команде»).
+
+## Инструменты UI и визуальные фиксы (2026-10-01)
+
+Решения пользователя (на просьбу сократить «глубокие раскопки» библиотеки в сессиях):
+- **(A)** Правило в QWEN.md: факты по v5 — из гайдов, не из пакета; находки дописывать в гайды.
+- **(B)** Дистиллят пакета 5.0.0 — `ai/FluentV5Reference.md` (токены со значениями, ::part-карта,
+  rendering-факты, параметры используемых компонентов, мёртвые v4-параметры + машинный блок
+  `sweep-dead-params`).
+- **(C)** Постоянный харнесс — `tools/ui/` (в git): crawl.js (обход 35 страниц + DOM-assertions
+  из assertions.json), probe.js (computed-замеры), tokens.js (снапшот темы), diff.js (pixel-diff
+  v4↔v5 против базы `2026\Mars`:5003), sweep.js (мёртвые v4-параметры), serve.ps1.
+  playwright-core + системный Edge (channel msedge); **по умолчанию без скриншотов**.
+  Auth — `tools/ui/auth.local.json` (gitignore), storageState в auth.json.
+- Хаб-гайд **`ai/FluentUiGuide.md`** («как верстать»: маршрут фактов, инструменты, цикл правки,
+  инварианты v5, грабли, рецепты); мягкая ссылка в QWEN.md. Дополнительные тулзы одобрены:
+  pixel-diff, sweep, галерея компонентов (`/dev/builder/style-gallery`, скрытая dev-страница).
+
+Починено (2 бага живого осмотра, метод — probe.js замер вместо раскопок):
+- **Фон серый вместо белого**: `.admin-layout { background: var(--mars-bg-surface) }` (#fafafa,
+  красил весь viewport) → `var(--mars-bg-page)` (#ffffff) в layout.less.
+- **Заголовок таблицы 76px**: v5 FluentDataGrid пишет на `th` INLINE `height: <ItemSize>`
+  (у нас ItemSize="76" для виртуализации в ManagePostView и др.) — в v4 так не делал.
+  Лечение: `.fluent-data-grid th { height: auto !important; }` в fluent-ui.less (inline
+  перебивается только important); ItemSize не трогать — он нужен для расчёта скролла строк.
+  Попутно: старое правило целилось в v4-класс `.column-header` — в v5 на th его НЕТ
+  (правило и mobile-селектор `th.column-header` были мертвы → `th`).
+- style.css перекомпилирован lessc 4.1.3 + BOM; перемер: .admin-layout rgb(255,255,255),
+  th = 40px (min-height). Оба факта закреплены assertions в tools/ui/assertions.json.
+
+Грабли харнесса (исправлены в tools/ui/ui-lib.js): админка — WASM, «логин/шелл» решается
+на клиенте ПОСЛЕ старта приложения; проверка URL сразу после domcontentloaded — гонка
+(сохранялся пустой auth.json, страницы редиректило на Login). Ждать появления
+`.admin-layout, fluent-nav` или формы логина.
+
+### Sweep-батч (2026-10-01, после создания FluentV5Reference.md)
+
+`tools/ui/sweep.js` (конфиг — блок `sweep-dead-params` в Reference) нашёл 86 вхождений;
+после чистки паттернов и обучения sweep.js комментариям (`@* *@`, `//`, `/* */`) осталось 3 —
+легитимный API нашего GroupedSelectDropDown (`SelectedOptionChanged=` на НЕ-Fluent теге).
+
+Починено (сборка FW + SemanticKernel.Front + Docker.Front — 0 errors):
+- **ModalMediaSelect**: мёртвый inline `--dialog-width: 80vw; z-index:998` →
+  `fluent-dialog.ModalMediaSelect::part(dialog) { width/max-width: 80vw }` (паттерн
+  NodeEditDialog); z-index на host убран — модальный `<dialog>` живёт в top layer.
+- **AIToolChatModal**: мёртвый inline `--dialog-width: 600px` → width/max-width 600px
+  в существующий `::part(dialog)`-блок.
+- **FluentMarkdownSection.razor.css** (11 мёртвых v4-токенов, деградация без фолбэков):
+  `--stroke-width`→`--strokeWidthThin`, `--neutral-stroke-rest`→`--colorNeutralStroke1`,
+  `--control-corner-radius`→`--borderRadiusMedium`, `--neutral-layer-2`→`--colorNeutralBackground2`,
+  `--accent-fill-rest`→`--colorBrandForeground1`, fill-strong-rest/hover/active→
+  Stroke1/BrandStroke1/BrandStroke2.
+- **Docker.Front ×4 razor.css** (токены с фолбэками — выглядели ок, но не флипались в dark):
+  `--neutral-fill-4/3`→`--colorNeutralBackground3/4` (row-hover 0.02→Background2),
+  `--neutral-stroke-2/3`→`--colorNeutralStroke2/3`.
+- docs `app.css` `.navigation`-блок — закомментирован, НЕ трогаем (решение этапа docs);
+  sweep его теперь пропускает.
+
+Уточнение фактов (проверено бандлом + живым DOM 2026-10-01): у `fluent-button` ЕСТЬ
+`::part(content)` (span-обёртка слота) — таблица частей в `CssRefactoringGuide.md` исправлена
+(«частей НЕТ» было неверно; внутреннего `<button>` по-прежнему нет).
+
+Шум sweep-паттернов устранён в Reference: `MessageIntent` — только razor-аттрибут
+`Intent="MessageIntent` (Mars.Core.Models.MessageIntent — наш enum, легитимен);
+`TrapFocus/PreventScroll/SelectedOption*` — только форма `= "` (C#-инициализаторы шима
+DialogParameters не матчатся).
+
+### Галерея компонентов (2026-10-01, агент)
+
+`src/Mars.Admin/Builder/StyleGalleryViews/` (19 файлов, каждый ≤105 строк): скрытая
+dev-страница `@page "/builder/style-gallery"` (URL `/dev/builder/style-gallery`, в навигацию
+не добавлена). 15 секций: Buttons/Badges/Typography/Inputs/Selects/Menu/DataGrid
+(ItemSize=76+Virtualize — регрессионный кейс заголовка)/Dialog (шим + инлайн)/Nav/Tabs/
+TreeView/MessageBar/Tooltip/Progress/Avatar; данные статические, инварианты v5 соблюдены.
+Секции несут `data-gallery-section`/`data-gallery-variant` для харнесса; страница добавлена
+в PAGES crawl.js + assertions (≥14 секций, th ≤40px). Сборка Mars.slnx — 0/0.
+Грабля (нашёл агент): угловые скобки в css-комментарии внутри `<style>`-блока .razor
+(`<dialog>`) ломают сборку RZ9980 — комментарий в ModalMediaSelect.razor поправлен.
+
+Runtime-фикс галереи (crawl поймал BLAZOR_ERROR_UI): **FluentCombobox вызывает
+`GetOptionValue/GetOptionText` с null** (OnAfterRenderAsync → `FluentListBase.GetOptionValue(null)`)
+— NRE на не-null-safe лямбде `p => p.Id`. Лечение: `p => p?.Id ?? 0` / `p?.Name ?? ""`
+(GallerySelectsSection); FluentSelect таким не страдает. Записано в Reference (грабли №19)
+и FluentUiGuide (инвариант списочных); в репо FluentCombobox больше нигде не используется.
+Итог: crawl style-gallery + /dev/Post + /dev/nodered — **failed=0** (15 секций, th=40px,
+`--dialog-width` после пересборки отсутствует, диалог ноды 1600×664 + ESC).
+Попутно в Reference исправлен факт: DataGrid рендерит `table.fluent-data-grid` (не div),
+у `fluent-button` есть `::part(content)` — проверено живым DOM.

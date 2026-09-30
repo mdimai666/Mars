@@ -1,0 +1,75 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Selects">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentSelect (TOption/TValue = string)">
+            <div style="width:220px;">
+                <FluentSelect Name="gallery-select" TOption="string" TValue="string" Label="Категория" @bind-Value="_selectValue">
+                    <FluentOption Value="@string.Empty">Выберите категорию…</FluentOption>
+                    <FluentOption Value="@("option-a")">Option A</FluentOption>
+                    <FluentOption Value="@("option-b")">Option B</FluentOption>
+                    <FluentOption Value="@("option-c")">Option C</FluentOption>
+                </FluentSelect>
+                <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Выбрано: @(_selectValue ?? "—")</FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentSelect (типизированные опции)">
+            <div style="width:220px;">
+                <FluentSelect TOption="GalleryPlanet" TValue="int" Label="Планета"
+                              Items="_planets"
+                              OptionText="@(p => p.Name)"
+                              OptionValue="@(p => p.Id)"
+                              @bind-Value="_planetId" />
+                <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Id: @_planetId</FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentAutocomplete (Multiple)">
+            <div style="width:260px;">
+                <FluentAutocomplete TOption="string" TValue="string"
+                                    Label="Уровни"
+                                    Items="_levels"
+                                    Placeholder="Выберите уровни"
+                                    MaximumSelectedOptions="3"
+                                    @bind-SelectedItems="_selectedLevels" />
+                <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Выбрано: @string.Join(", ", _selectedLevels)</FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentCombobox">
+            <div style="width:220px;">
+                @* v5: FluentCombobox вызывает GetOptionValue/GetOptionText с null
+                   (OnAfterRenderAsync) — лямбды обязаны быть null-safe *@
+                <FluentCombobox TOption="GalleryPlanet" TValue="int"
+                                Label="Планета (combobox)"
+                                Items="_planets"
+                                OptionText="@(p => p?.Name ?? string.Empty)"
+                                OptionValue="@(p => p?.Id ?? 0)"
+                                Placeholder="Выберите планету"
+                                @bind-Value="_comboboxValue" />
+                <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Значение: @_comboboxValue</FluentText>
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>
+
+@code {
+    record GalleryPlanet(int Id, string Name);
+
+    static readonly GalleryPlanet[] _planets =
+    [
+        new(1, "Меркурий"), new(2, "Венера"), new(3, "Земля"), new(4, "Марс"), new(5, "Юпитер"),
+    ];
+
+    static readonly string[] _levels = ["Debug", "Info", "Warning", "Error", "Fatal"];
+
+    string? _selectValue = "option-b";
+    int _planetId = 3;
+    int _comboboxValue = 4;
+    IEnumerable<string> _selectedLevels = ["Info", "Warning"];
+}

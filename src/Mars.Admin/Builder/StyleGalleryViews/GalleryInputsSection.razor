@@ -1,0 +1,81 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Inputs">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentTextInput">
+            <div class="vstack gap-2" style="width:240px;">
+                <FluentTextInput Name="gallery-text" @bind-Value="_text" Label="Текст" Placeholder="Введите текст" />
+                <FluentTextInput @bind-Value="_textDisabled" Label="Disabled" Disabled />
+                <FluentTextInput Appearance="TextInputAppearance.FilledDarker" Label="FilledDarker" @bind-Value="_text2">
+                    <StartTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+                    </StartTemplate>
+                </FluentTextInput>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentNumberInput">
+            <div class="vstack gap-2" style="width:200px;">
+                <FluentNumberInput Name="gallery-number" @bind-Value="_number" Label="Число" Min="0" Max="100" />
+                <FluentNumberInput @bind-Value="_decimal" Label="Decimal, Step=0.5" Step="0.5m" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentTextArea">
+            <div style="width:260px;">
+                <FluentTextArea Name="gallery-textarea" @bind-Value="_textarea" Label="Описание" Rows="4" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentCheckbox">
+            <div class="vstack gap-2">
+                <FluentCheckbox Name="gallery-check" @bind-Value="_checked" Label="Обычный чекбокс" />
+                <FluentCheckbox @bind-Value="_checked2">Чекбокс с ChildContent-подписью</FluentCheckbox>
+                <FluentCheckbox @bind-Value="_checkedDisabled" Label="Disabled" Disabled />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentSwitch">
+            <div class="vstack gap-2">
+                <FluentSwitch Name="gallery-switch" @bind-Value="_switch" Label="Включено" />
+                <FluentSwitch @bind-Value="_switchOff" Label="Выключено" />
+                <FluentSwitch @bind-Value="_switchDisabled" Label="Disabled" Disabled />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentRadioGroup">
+            <FluentRadioGroup @bind-Value="_radio" Orientation="Orientation.Vertical">
+                <FluentRadio TValue="string" Value="@("one")">Вариант один</FluentRadio>
+                <FluentRadio TValue="string" Value="@("two")">Вариант два</FluentRadio>
+                <FluentRadio TValue="string" Value="@("three")">Вариант три</FluentRadio>
+            </FluentRadioGroup>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentDatePicker">
+            <div class="vstack gap-2" style="width:220px;">
+                <FluentDatePicker Name="gallery-date" @bind-Value="_date" Label="Дата" />
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>
+
+@code {
+    string _text = "Значение";
+    string _text2 = "";
+    string _textDisabled = "Нельзя редактировать";
+    int _number = 42;
+    decimal _decimal = 1.5m;
+    string _textarea = "Многострочный текст";
+    bool _checked = true;
+    bool _checked2;
+    bool _checkedDisabled = true;
+    bool _switch = true;
+    bool _switchOff;
+    bool _switchDisabled = true;
+    string _radio = "two";
+    DateTime? _date = new DateTime(2026, 10, 1);
+}

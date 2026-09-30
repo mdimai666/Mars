@@ -1,0 +1,29 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Tooltip">
+
+    <div class="hstack gap-4 flex-wrap align-items-center">
+
+        <GalleryVariant Caption="FluentTooltip (Anchor по id)">
+            <div class="hstack gap-2">
+                <FluentButton Id="gallery-tooltip-anchor">Наведи курсор</FluentButton>
+                <FluentTooltip Anchor="gallery-tooltip-anchor">
+                    Тултип кнопки (FluentTooltip, Anchor — id элемента)
+                </FluentTooltip>
+
+                <FluentText Id="gallery-tooltip-text-anchor" Class="text-primary">Наведи на текст</FluentText>
+                <FluentTooltip Anchor="gallery-tooltip-text-anchor">
+                    Тултип у текста
+                </FluentTooltip>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="Параметр Tooltip у FluentButton">
+            <FluentButton Appearance="ButtonAppearance.Subtle" Tooltip="Тултип через параметр компонента">
+                Кнопка с Tooltip-параметром
+            </FluentButton>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>

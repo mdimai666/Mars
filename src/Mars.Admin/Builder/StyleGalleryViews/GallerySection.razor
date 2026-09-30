@@ -1,0 +1,13 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<section class="card" data-gallery-section="@Title">
+    <div class="card-body">
+        <FluentText As="TextTag.H2" Size="TextSize.Size600" Block Class="mb-3">@Title</FluentText>
+        @ChildContent
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,42 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Avatar">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="Name (инициалы и цвет генерируются)">
+            <div class="hstack gap-2 align-items-center">
+                <FluentAvatar Name="Иван Петров" Size="AvatarSize.Size32" />
+                <FluentAvatar Name="Мария Смирнова" Size="AvatarSize.Size32" />
+                <FluentAvatar Name="Alex Johnson" Size="AvatarSize.Size32" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="Initials + Color">
+            <div class="hstack gap-2 align-items-center">
+                <FluentAvatar Initials="МИ" Size="AvatarSize.Size32" Color="AvatarColor.Brand" />
+                <FluentAvatar Initials="CR" Size="AvatarSize.Size32" Color="AvatarColor.Cranberry" />
+                <FluentAvatar Initials="CF" Size="AvatarSize.Size32" Color="AvatarColor.Cornflower" />
+                <FluentAvatar Initials="NT" Size="AvatarSize.Size32" Color="AvatarColor.Neutral" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="Size: 24 / 32 / 48 / 56">
+            <div class="hstack gap-2 align-items-center">
+                <FluentAvatar Initials="24" Size="AvatarSize.Size24" Color="AvatarColor.Brand" />
+                <FluentAvatar Initials="32" Size="AvatarSize.Size32" Color="AvatarColor.Brand" />
+                <FluentAvatar Initials="48" Size="AvatarSize.Size48" Color="AvatarColor.Brand" />
+                <FluentAvatar Initials="56" Size="AvatarSize.Size56" Color="AvatarColor.Brand" />
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="Shape=Square / Active">
+            <div class="hstack gap-2 align-items-center">
+                <FluentAvatar Initials="SQ" Size="AvatarSize.Size48" Shape="AvatarShape.Square" Color="AvatarColor.Cornflower" />
+                <FluentAvatar Name="Active Ring" Size="AvatarSize.Size48" Active ActiveAppearance="AvatarActiveAppearance.Ring" />
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>

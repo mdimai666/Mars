@@ -1,0 +1,21 @@
+{
+  "all": [
+    { "name": "body background is white", "selector": "body", "css": { "background-color": "rgb(255, 255, 255)" } },
+    { "name": "admin-layout background is white", "selector": ".admin-layout", "css": { "background-color": "rgb(255, 255, 255)" }, "optional": true },
+    { "name": "fluent-menu items wrapped in fluent-menu-list", "each": "fluent-menu", "hasChild": "fluent-menu-list" },
+    { "name": "no dead attr usemenuservice", "absent": "[usemenuservice]" },
+    { "name": "sidebar nav background transparent", "selector": ".admin-layout .menu-admin1", "css": { "--nav-bg-color": "transparent" }, "optional": true }
+  ],
+  "pages": {
+    "/dev/Post*": [
+      { "name": "data-grid header compact", "selector": ".fluent-data-grid th", "box": { "maxHeight": 40 } }
+    ],
+    "/dev/builder/style-gallery": [
+      { "name": "gallery sections rendered", "selector": "[data-gallery-section]", "exists": { "min": 14 } },
+      { "name": "gallery grid header compact (ItemSize=76 regression)", "selector": ".fluent-data-grid th", "box": { "maxHeight": 40 } }
+    ],
+    "/dev/nodered": [
+      { "name": "no dead --dialog-width inline", "absent": "fluent-dialog[style*='--dialog-width']" }
+    ]
+  }
+}

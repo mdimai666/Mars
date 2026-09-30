@@ -1,5 +1,8 @@
-.fluent-data-grid .fluent-data-grid-row .column-header {
-    height: unset !important;
+// v5: у th больше нет класса column-header, а компонент пишет на th inline
+// height: <ItemSize> (ожидаемая высота строки виртуализации) — заголовок растягивается.
+// Возвращаем контентный размер (inline перебивается только important).
+.fluent-data-grid th {
+    height: auto !important;
 }
 
 .fluent-data-grid tr.fluent-data-grid-row.empty-content-row td.empty-content-row.empty-content-cell {
@@ -12,7 +15,7 @@
             grid-template-columns: auto !important;
         }
 
-        td[role="gridcell"]:not(:nth-child(1)), th.column-header {
+        td[role="gridcell"]:not(:nth-child(1)), th {
             display: none;
         }
     }

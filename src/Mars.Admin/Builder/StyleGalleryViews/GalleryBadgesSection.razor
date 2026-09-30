@@ -1,0 +1,38 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Badges">
+
+    <GalleryVariant Caption="BadgeColor: Brand / Danger / Important / Informative / Severe / Subtle / Success / Warning">
+        <div class="hstack gap-2 flex-wrap">
+            <FluentBadge Color="BadgeColor.Brand" Content="Brand" />
+            <FluentBadge Color="BadgeColor.Danger" Content="Danger" />
+            <FluentBadge Color="BadgeColor.Important" Content="Important" />
+            <FluentBadge Color="BadgeColor.Informative" Content="Informative" />
+            <FluentBadge Color="BadgeColor.Severe" Content="Severe" />
+            <FluentBadge Color="BadgeColor.Subtle" Content="Subtle" />
+            <FluentBadge Color="BadgeColor.Success" Content="Success" />
+            <FluentBadge Color="BadgeColor.Warning" Content="Warning" />
+        </div>
+    </GalleryVariant>
+
+    <div class="mt-3">
+        <GalleryVariant Caption="Акцент: класс badge-accent (дефолт Brand серится оверрайдом fluent-ui.less)">
+            <div class="hstack gap-2 flex-wrap">
+                <FluentBadge Class="badge-accent" Content="badge-accent" />
+                <FluentBadge Content="default (без класса)" />
+            </div>
+        </GalleryVariant>
+    </div>
+
+    <div class="mt-3">
+        <GalleryVariant Caption="BadgeAppearance: Filled / Tint / Outline / Ghost">
+            <div class="hstack gap-2 flex-wrap">
+                <FluentBadge Color="BadgeColor.Informative" Appearance="BadgeAppearance.Filled" Content="Filled" />
+                <FluentBadge Color="BadgeColor.Informative" Appearance="BadgeAppearance.Tint" Content="Tint" />
+                <FluentBadge Color="BadgeColor.Informative" Appearance="BadgeAppearance.Outline" Content="Outline" />
+                <FluentBadge Color="BadgeColor.Informative" Appearance="BadgeAppearance.Ghost" Content="Ghost" />
+            </div>
+        </GalleryVariant>
+    </div>
+
+</GallerySection>

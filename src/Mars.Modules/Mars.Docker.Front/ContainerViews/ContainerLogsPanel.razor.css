@@ -1,6 +1,6 @@
 .docker-logs {
-    background: var(--neutral-fill-4, rgba(0, 0, 0, 0.04));
-    border: 1px solid var(--neutral-stroke-2, #e0e0e0);
+    background: var(--colorNeutralBackground3);
+    border: 1px solid var(--colorNeutralStroke2);
     border-radius: 4px;
     padding: 8px 10px;
     max-height: 420px;

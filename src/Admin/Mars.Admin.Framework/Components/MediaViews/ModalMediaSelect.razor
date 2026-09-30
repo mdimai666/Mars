@@ -5,7 +5,6 @@
               Modal=true
               @ref=Dialog
               Class="ModalMediaSelect"
-              Style="--dialog-width: 80vw;z-index:998;"
               OnStateChange="@(e => { if (e.State == DialogState.Closed) _visible = false; })">
     <FluentDialogBody>
         <TitleTemplate>
@@ -160,5 +159,12 @@
        (по умолчанию нижние действия плитки скрыты до :hover) */
     .d-media-select-multi .d-document-uploader .d-file-list .d-file-item .d-file-item-actions-bottom {
         opacity: 1 !important;
+    }
+
+    fluent-dialog.ModalMediaSelect::part(dialog) {
+        /* v5: --dialog-width мёртв (max-width 600px в shadow-стилях) — ширина здесь;
+           z-index на host не нужен — модальный dialog живёт в top layer */
+        width: 80vw;
+        max-width: 80vw;
     }
 </style>

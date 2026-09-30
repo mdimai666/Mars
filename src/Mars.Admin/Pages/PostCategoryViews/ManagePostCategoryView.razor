@@ -10,7 +10,11 @@
                       Immediate
                       ImmediateDelay="300"
                       Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search" />
+                      AriaLabel="Search">
+            <StartTemplate>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+            </StartTemplate>
+        </FluentTextInput>
         <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
         <div class="ms-auto">
             <FluentButton Appearance="ButtonAppearance.Primary"

@@ -14,7 +14,11 @@
                       Immediate
                       ImmediateDelay="300"
                       Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search" />
+                      AriaLabel="Search">
+            <StartTemplate>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+            </StartTemplate>
+        </FluentTextInput>
 
         <a class="btn btn-outline-primary ms-auto" @onclick=DownloadExcel>
             <i class="bi bi-table"></i>

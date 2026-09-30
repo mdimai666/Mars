@@ -35,7 +35,11 @@
                               ImmediateDelay="300"
                               Appearance="TextInputAppearance.FilledDarker"
                               AriaLabel="Поиск"
-                              Placeholder="Поиск по каталогу" />
+                              Placeholder="Поиск по каталогу">
+                    <StartTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+                    </StartTemplate>
+                </FluentTextInput>
                 <FluentSwitch @bind-Value=_recommendedOnly @bind-Value:after=ReloadAsync>
                     Только рекомендованные
                 </FluentSwitch>

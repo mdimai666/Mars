@@ -642,3 +642,47 @@ Label, Text, Select/Option, MultiSplitter, Grid, DatePicker, Providers.
   → `ScriptNode? callerNode` (под сигнатуру `IScriptCustomFunction`).
 - CS8619 `SiteScribanFunctions.cs` — `SnapshotData`/`dCopy`/`diff` → `object?` (ScriptObject.Value nullable).
 - CS8613 `WebSitePartsTemplateLoader.cs` — `LoadAsync`: `ValueTask<string>` → `ValueTask<string?>` (под ITemplateLoader).
+
+## Визуальный проход Playwright (2026-09-30)
+
+Метод: `.qwen/tmp/fv5-visual.js` (playwright-core + msedge, headless): два сервера —
+master-копия `2026\Mars` (v4, порт 5003) и мигрированный (5005; порт задаётся env `Urls=`,
+т.к. ConfigureKestrel в CliSocketServer читает `Urls` из конфигурации и перебивает
+ASPNETCORE_URLS/`--urls`, который к тому же съедает CLI-клиент). Обход 35 страниц +
+открытие диалога ноды dblclick по `.red-ui-flow-node__body` + ESC. Скриншоты:
+`.qwen/tmp/fv4-shots` (база) и `.qwen/tmp/fv5-shots-new2` (после правок).
+
+Найдено и ПОЧИНЕНО:
+- **NodeEditContainer1**: v5 `--dialog-width` мёртв (у shadow-`dialog` жёсткий
+  `max-width: 600px`, центрирование margin:auto) → панель редактора ноды стала узкой.
+  Лечение: ширина/прижатие к низу в `fluent-dialog.NodeEditDialog::part(dialog)`
+  (width/max-width min(1600px,100vw), margin-top:auto, margin-bottom:0); мёртвый
+  inline-Style убран. Проверено обходом: box 1600×664, bottom=1000, ESC закрывает.
+- **Подчёркивания всех ссылок**: v5 reboot.css (`a { text-decoration: underline }`)
+  грузится ПОСЛЕ style.css и перебивает наше `a { ... }` → в base.less `body a`
+  (специфичность 0,0,2; hover-правила reboot 0,1,1 остаются живы).
+- **Сайдбар**: серые «панели» FluentNav посреди страницы — пункты красятся
+  `--nav-bg-color` (Background4) → в layout.less `.admin-layout .menu-admin1`
+  ставит `--nav-bg-color: transparent` (hover остаётся). Низ сайдбара встал на место.
+- **Лупа поиска**: FluentSearch→FluentTextInput потерял иконку (v5 не рендерит её сам,
+  type=search даёт только native clear) → StartTemplate с Icons.Regular.Size16.Search
+  в 15 местах (батч-скрипт `.qwen/tmp/fv5-add-search-icons.js` + фикс `>`
+  `fv5-fix-close-angle.js`; docs-сайт не тронут — там Placeholder виден).
+- **Users**: FluentPersona→FluentAvatar потерял имя и цвет → имя-ссылка рядом
+  с аватаром (hstack), `Color="AvatarColor.Brand"`; то же в UserBar (навбар)
+  и EditUserPage. Кнопка-триггер меню «Действие» получила IconEnd ChevronDown (в v4
+  MenuButton был с шевроном).
+- style.css пересобран АВТОМАТСКИ: `npx less@4.1.3 lessc --source-map-map-inline` + BOM
+  (формат репо). Дифф с выводом Web Compiler минимальный (пробелы в `255, 255, 255`),
+  правки less видны без ручной компиляции пользователем.
+
+НЕ регрессии (сравнено с master-базой, не чиним): битые svg-миниатюры в Media (биты и в v4),
+порядок колонок грида постов (сохранённые настройки колонок в БД), отсутствие Debug-консоли
+справа в nodered (персист-состояние), спиннер поверх текста Loading-кнопки (поведение v5),
+«1» в тексте стартовой страницы (контент фронта из БД).
+
+Верификация: `dotnet build Mars.slnx` 0/0; E2E `Mars.E2E.Tests` 16 total / 0 failed /
+1 skipped (DemoPages); обход 35/35 ok, консоль чистая. Bump MarsAppVersion → 0.8.3-alpha.36.
+
+Остаток на пользователе: живой осмотр (в т.ч. тёмная тема через StyleDesigner Mode=Dark),
+коммит батча визуалки (оставлен незакоммиченным по правилу «коммит по явной команде»).

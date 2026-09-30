@@ -16,7 +16,11 @@
                       Immediate
                       ImmediateDelay="300"
                       Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search" />
+                      AriaLabel="Search">
+            <StartTemplate>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+            </StartTemplate>
+        </FluentTextInput>
         <FluentCheckbox Value=_includeComponent
                         ValueChanged=HandleIncludeComponentChanged
                         Style="margin-left: 12px;">

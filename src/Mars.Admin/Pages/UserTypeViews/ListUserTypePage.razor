@@ -14,7 +14,11 @@
                       Immediate
                       ImmediateDelay="300"
                       Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search" />
+                      AriaLabel="Search">
+            <StartTemplate>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+            </StartTemplate>
+        </FluentTextInput>
         <div class="ms-auto">
             <a href="@urlEditPage">
                 <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>

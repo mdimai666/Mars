@@ -223,7 +223,9 @@ html:has(body[data-theme="dark"]) {
     --mars-shadow-lg-o: 0.4;
 }
 
-a {
+/* v5 reboot.css грузится после style.css и подчеркивает все `a` —
+   body a поднимает специфичность, сохраняя v4-вид без подчеркиваний */
+body a {
     color: var(--mars-text-link);
     text-decoration: none;
 }

@@ -13,7 +13,11 @@
                                  ImmediateDelay="300"
                                  Autofocus
                                  Appearance="TextInputAppearance.FilledDarker"
-                                 AriaLabel="Search" />
+                                 AriaLabel="Search">
+                    <StartTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+                    </StartTemplate>
+                </FluentTextInput>
 
                 <FluentSelect TOption=@(KeyValuePair<string, string>)
                               TValue="string"

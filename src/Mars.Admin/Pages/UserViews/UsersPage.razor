@@ -17,7 +17,11 @@
                       Immediate
                       ImmediateDelay="300"
                       Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search" />
+                      AriaLabel="Search">
+            <StartTemplate>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+            </StartTemplate>
+        </FluentTextInput>
         <div class="ms-auto">
             <FluentButton Appearance="ButtonAppearance.Primary"
                           OnClick="OnClickCreateUser"
@@ -46,11 +50,13 @@
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
                     <div class="vstack">
-                        <a href="@urlEditPage/@context.Id" class="text-primary">
+                        <div class="hstack gap-2">
                             <FluentAvatar Name="@context.FullName"
                                           Image="@context.AvatarUrl"
-                                          Size="AvatarSize.Size32" />
-                        </a>
+                                          Size="AvatarSize.Size32"
+                                          Color="AvatarColor.Brand" />
+                            <a href="@urlEditPage/@context.Id" class="text-primary">@context.FullName</a>
+                        </div>
                     </div>
                 </TemplateColumn>
                 <PropertyColumn Property="@(f => f.Email)" Title="@AppRes.Email" Sortable="true" />
@@ -84,7 +90,8 @@
                         <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                         </DFluentDeleteButton>
-                        <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle">@AppRes.Action</FluentButton>
+                        <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle"
+                                      IconEnd="@(new Icons.Regular.Size16.ChevronDown())">@AppRes.Action</FluentButton>
                         <FluentMenu Trigger="@($"useractions-{context.Id}")" OnClick="@(e => OnUserMenuClick(e, context))">
                             <FluentMenuList>
                                 <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>

@@ -28,6 +28,7 @@
         <div class="vstack gap-2">
             <FluentAvatar Name="@model.FullName"
                           Image="@model.AvatarUrl"
+                          Color="AvatarColor.Brand"
                           Size="AvatarSize.Size56" />
             <div class="spacer-1"></div>
             <FormItem2 For="@(() => model.UserName)">

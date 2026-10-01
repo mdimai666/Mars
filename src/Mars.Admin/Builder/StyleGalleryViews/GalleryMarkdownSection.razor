@@ -1,0 +1,46 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Markdown (FluentMarkdownSection)">
+
+    <GalleryVariant Caption="Content: заголовки, таблица, блок кода (hljs + copy-кнопка), blockquote">
+        <div class="card" style="max-width:720px;">
+            <div class="card-body">
+                <FluentMarkdownSection Content="@_markdown" />
+            </div>
+        </div>
+    </GalleryVariant>
+
+</GallerySection>
+
+@code {
+    static readonly string _markdown = """
+        # Mars Markdown
+
+        Текст с **жирным**, *курсивом*, `инлайновым кодом` и [ссылкой](https://example.com).
+
+        ## Таблица
+
+        | Нода     | Тип      | Описание                  |
+        |----------|----------|---------------------------|
+        | Switch   | function | Ветвление по условию      |
+        | Http     | network  | HTTP-запрос               |
+        | Template | output   | Рендер шаблона Handlebars |
+
+        ## Блок кода
+
+        ```csharp
+        public record Post(string Title, string Slug)
+        {
+            public override string ToString() => $"{Title} ({Slug})";
+        }
+        ```
+
+        > Blockquote: точка визуальной проверки токенов FluentMarkdownSection.razor.css (v5).
+
+        - пункт маркированного списка;
+        - второй пункт.
+
+        1. нумерованный пункт;
+        2. второй нумерованный пункт.
+        """;
+}

@@ -58,9 +58,9 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 1. `probe.js` — замер факта: какой токен/правило/inline виноваты (inline на элементе =
    компонент пишет сам — CSS перебивается только `!important`).
 2. Правка ТОЛЬКО `.less` (какой файл за что — `CssRefactoringGuide.md` §«Структура»).
-3. Компиляция (исключение визуального цикла — обычно компилирует пользователь):
-   в `src/Mars.Admin/wwwroot/css`:
-   `npx --package less@4.1.3 lessc --source-map-map-inline style.less style.css` + дописать BOM.
+3. Компиляция: `pwsh -NoProfile -File tools/ui/build-css.ps1` (lessc 4.1.3 + BOM, оба входа:
+   Mars.Admin и FormEditor); `-Check` — детектор рассинхрона less↔style.css (ничего не пишет).
+   Обычно компилирует пользователь — скрипт для визуального цикла без него.
 4. `probe.js` / `crawl.js` — перемер. Новые wwwroot-ФАЙЛЫ попадают в отдачу только после
    пересборки; правки существующего `style.css` подхватываются на лету.
 5. После коммита css/js — bump `MarsAppVersion` в `Directory.Build.props` (cache-busting).

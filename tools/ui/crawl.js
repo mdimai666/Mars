@@ -72,11 +72,17 @@ async function runAssertion(page, a) {
       }
       return bad.length === 0 ? ok(`all ${n} ok`) : fail(`${a.each}: no ${a.hasChild} in #${bad.join(',#')} (${n} total)`);
     }
-    // selector + css / box
+    // selector + css / box / text
     const loc = page.locator(a.selector);
     const n = await loc.count();
     if (n === 0) return a.optional ? ok('absent (optional)') : fail(`${a.selector}: not found`);
     const el = loc.first();
+    if (a.text) {
+      const t = ((await el.textContent()) || '').trim();
+      if (a.text.contains && !t.includes(a.text.contains)) return fail(`${a.selector}: text "${t.slice(0, 40)}" !contains "${a.text.contains}"`);
+      if (a.text.equals && t !== a.text.equals) return fail(`${a.selector}: text "${t.slice(0, 40)}" != "${a.text.equals}"`);
+      return ok(a.selector);
+    }
     if (a.css) {
       const actual = await el.evaluate((e, props) => {
         const cs = getComputedStyle(e);

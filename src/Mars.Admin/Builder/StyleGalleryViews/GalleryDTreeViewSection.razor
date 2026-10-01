@@ -1,0 +1,59 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="DTreeView">
+
+    <GalleryVariant Caption="Статические узлы из плоского списка (KeyExp/ParentExp), иконки в ItemTemplate">
+        <div class="card" style="width:340px;">
+            <div class="card-body p-2">
+                <DTreeView Items="_rows"
+                           KeyExp="r => r.Id"
+                           ParentExp="r => r.ParentId"
+                           TModel="GalleryTreeRow"
+                           TKey="int"
+                           ItemHeight="32px"
+                           Context="item">
+                    <div class="hstack gap-2 align-items-center">
+                        <FluentIcon Value="@(RowIcon(item.Node))" />
+                        <span>@item.Node.Title</span>
+                        @if (item.Node.Badge is not null)
+                        {
+                            <FluentBadge Content="@item.Node.Badge" Color="BadgeColor.Informative" />
+                        }
+                    </div>
+                </DTreeView>
+            </div>
+        </div>
+    </GalleryVariant>
+
+</GallerySection>
+
+@code {
+    record GalleryTreeRow(int Id, int ParentId, string Title, string Kind, string? Badge);
+
+    // ParentId = 0 у корней (0 отсутствует среди Id → TreeHelper считает узел корневым)
+    static readonly List<GalleryTreeRow> _rows =
+    [
+        new(1, 0, "Общие", "folder", null),
+        new(2, 1, "Профиль", "settings", null),
+        new(3, 1, "Безопасность", "lock", "2FA"),
+        new(4, 0, "Система", "folder", null),
+        new(5, 4, "Логи", "document", null),
+        new(6, 4, "Плагины", "extension", "12"),
+        new(7, 0, "README.md", "document", null),
+    ];
+
+    static Icon RowIcon(GalleryTreeRow row) => row.Kind switch
+    {
+        "folder" => FolderIcon,
+        "settings" => SettingsIcon,
+        "lock" => LockIcon,
+        "extension" => ExtensionIcon,
+        _ => DocumentIcon,
+    };
+
+    static readonly Icon FolderIcon = new Icons.Regular.Size16.Folder();
+    static readonly Icon SettingsIcon = new Icons.Regular.Size16.Settings();
+    static readonly Icon LockIcon = new Icons.Regular.Size16.LockClosed();
+    static readonly Icon ExtensionIcon = new Icons.Regular.Size16.PuzzlePiece();
+    static readonly Icon DocumentIcon = new Icons.Regular.Size16.Document();
+}

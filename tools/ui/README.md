@@ -34,6 +34,7 @@ pwsh -NoProfile -File tools/ui/serve.ps1 -Port 5003 # (в копии master-ре
 | `tokens.js` | Дамп всех CSS-переменных темы с `<html>` (inline + computed + adoptedStyleSheets). Снапшот/diff тем. |
 | `diff.js` | Pixel-diff двух папок скриншотов (`--a out-v4 --b out-v5`), числовой отчёт + diff-картинки в `diff/`. |
 | `sweep.js` | Grep по src/docs/devstands на мёртвые v4-параметры (список — из `ai/FluentV5Reference.md`, блок `sweep-dead-params`, иначе встроенный). Только репорт. |
+| `build-css.ps1` | Компиляция `style.less` → `style.css` (lessc 4.1.3 + BOM, оба входа: Mars.Admin и FormEditor). `-Check` — детектор рассинхрона less↔css (exit 1 если style.css устарел), ничего не пишет. |
 
 Примеры:
 
@@ -48,7 +49,8 @@ node sweep.js
 
 1. `probe.js` — замер факта (какой токен/правило виноваты).
 2. Правка `.less` (ТОЛЬКО less, см. `ai/CssRefactoringGuide.md`).
-3. Компиляция: `npx --package less@4.1.3 lessc --source-map-map-inline style.less style.css` + BOM (рецепт-исключение для визуального цикла).
+3. Компиляция: `pwsh -NoProfile -File tools/ui/build-css.ps1 [-Entry admin|formeditor]`
+   (или вручную по рецепту `ai/CssRefactoringGuide.md` — результат идентичен).
 4. `probe.js` / `crawl.js` — перемер. После коммита css/js — bump `MarsAppVersion`.
 
 Отчёты пишутся в `tools/ui/out/` (не в git).

@@ -65,6 +65,10 @@
 
         <div class="mt-4 flex-fill d-flex flex-column">
             <div style="height: 534px; overflow:auto; flex: 1 1 auto;">
+                @* v5: DataGrid запоминает ПОРЯДОК РЕГИСТРАЦИИ колонок — рендерим грид только
+                   когда динамические колонки построены, иначе статичная Actions окажется первой *@
+                @if (_gridReady)
+                {
                 <FluentDataGrid ItemsProvider="dataProvider"
                                 @ref=table
                                 @key="_gridVersion"
@@ -197,6 +201,7 @@
                         </div>
                     </TemplateColumn>
                 </FluentDataGrid>
+                }
             </div>
             <br />
             <div class="hstack">

@@ -21,6 +21,14 @@
     }
 }
 
+// v5: веб-компонент fluent-button несёт min-width: 96px (стандарт текстовой кнопки Fluent v9).
+// Icon-only через IconStart/IconEnd компонент-square'ит сам, а кнопка с иконкой в ChildContent
+// (DFluentDeleteButton и подобные) растягивается 3:1 — возвращаем контентный размер.
+// (v5 FluentIcon рендерит голый <svg> без обёртки fluent-icon)
+fluent-button:has(> svg:only-child) {
+    min-width: auto;
+}
+
 // v5: дефолт бейджа — brand-синий (компонент всегда пишет color="brand"), в v4 был neutral.
 // Возвращаем серый дефолт глобально; осознанный акцент — класс badge-accent.
 fluent-badge[color="brand"]:not(.badge-accent) {

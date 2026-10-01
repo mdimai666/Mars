@@ -599,6 +599,16 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
     `FluentListBase.GetOptionValue(null)`) — лямбды `OptionValue`/`OptionText` ОБЯЗАНЫ быть
     null-safe (`p => p?.Id ?? 0`), иначе NRE при рендере (поймано crawl 2026-10-01 на
     GallerySelectsSection; FluentSelect таким не страдает). Кандидат на upstream-репорт.
+20. **FluentDataGrid фиксирует ПОРЯДОК РЕГИСТРАЦИИ колонок** (v4 брал порядок из дерева
+    рендера). Если статичная колонка (напр. Actions) отрендерилась на первом рендере ДО
+    асинхронно строящегося `@foreach` — она навсегда останется первой. Лечение: не рендерить
+    грид, пока все колонки готовы (`@if (_gridReady)`, паттерн ManagePostView 2026-10-01);
+    пересоздание через `@key` порядок исправляет только если колонки уже на месте.
+21. **fluent-button host несёт `min-width: 96px`** (стандарт текстовой кнопки Fluent v9,
+    из host-стилей бандла). Icon-only через параметры `IconStart`/`IconEnd` компонент
+    square'ит сам (32×32), а кнопка с иконкой в **ChildContent** растягивается 3:1.
+    Оверрайд в `fluent-ui.less`: `fluent-button:has(> svg:only-child) { min-width: auto; }`.
+    Связанный факт: **v5 FluentIcon рендерит голый `<svg>`** (без обёртки `fluent-icon`).
 
 ---
 

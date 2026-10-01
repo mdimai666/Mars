@@ -37,6 +37,9 @@ public partial class ManagePostView : IDisposable
     IReadOnlyCollection<PostStatusResponse> _postStatuses = [];
     List<GridColumn> _columns = [];
     int _gridVersion;
+    // грид рендерится только после построения колонок: v5 DataGrid фиксирует порядок
+    // регистрации колонок, и пустой первый рендер поставил бы статичную Actions первой
+    bool _gridReady;
 
     // фильтры колонок (сессионно, без сохранения) — состояние в панели
     bool _filtersVisible;
@@ -57,6 +60,7 @@ public partial class ManagePostView : IDisposable
         if (prevPostTypeName != PostType.TypeName)
         {
             prevPostTypeName = PostType.TypeName;
+            _gridReady = false;
 
             // презентация берётся с сервера — начальные данные сайта могли устареть
             var presentation = await client.PostType.GetPresentationEditModel(PostType.Id);
@@ -68,6 +72,7 @@ public partial class ManagePostView : IDisposable
 
             RebuildColumns();
             BuildDataProvider();
+            _gridReady = true;
             Refresh();
         }
 

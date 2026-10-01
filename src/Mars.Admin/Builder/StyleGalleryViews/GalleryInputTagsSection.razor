@@ -1,0 +1,18 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="InputTags2">
+
+    <GalleryVariant Caption="Предзаполненные теги; Enter/Space — добавить, Backspace — удалить последний, крестик — удалить тег">
+        <div class="card" style="width:340px;">
+            <div class="card-body p-2">
+                <InputTags2 @bind-Value="_tags" />
+            </div>
+        </div>
+        <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Теги: @string.Join(", ", _tags)</FluentText>
+    </GalleryVariant>
+
+</GallerySection>
+
+@code {
+    string[] _tags = ["mars", "fluentui-v5", "gallery"];
+}

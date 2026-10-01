@@ -773,3 +773,39 @@ Runtime-фикс галереи (crawl поймал BLAZOR_ERROR_UI): **FluentCo
 `--dialog-width` после пересборки отсутствует, диалог ноды 1600×664 + ESC).
 Попутно в Reference исправлен факт: DataGrid рендерит `table.fluent-data-grid` (не div),
 у `fluent-button` есть `::part(content)` — проверено живым DOM.
+
+### build-css.ps1 и фиксы таблиц (2026-10-01, второй раунд)
+
+- **`tools/ui/build-css.ps1`** — компиляция less→css одной командой (lessc 4.1.3 + BOM,
+  входы admin и formeditor) + `-Check` — детектор рассинхрона less↔style.css (exit 1).
+  Грабли: временный файл ОБЯЗАН лежать в каталоге css (inline-sourcemap хранит пути
+  относительно выхода), а поле `"file"` внутри base64-map переписывается на style.css —
+  иначе сравнение/детерминизм ломаются.
+- **Баг «Действия первой колонкой»** (список постов): v5 DataGrid фиксирует ПОРЯДОК
+  РЕГИСТРАЦИИ колонок (v4 брал из дерева рендера). ManagePostView рендерил грид до
+  асинхронной постройки `_columns` — на первом рендере существовала только статичная
+  Actions, остальные колонки appended после → Actions навсегда первая. На UsersPage
+  (статичные колонки) порядка нет — гипотеза подтверждена замером. Фикс: гейт
+  `@if (_gridReady)` вокруг FluentDataGrid (+ флаг в code-behind, сброс при смене типа).
+  Проверка probe/crawl: Действия 9-я из 9; в crawl.js добавлен text-assertion
+  («actions column is last»). Reference — грабли №20.
+- **Баг «кнопка удалить 3:1»**: host-стили v5 fluent-button несут `min-width: 96px`
+  (стандарт текстовой кнопки Fluent v9). Icon-only через параметры IconStart/IconEnd
+  компонент square'ит сам (32×32 — тулбар ок), а с иконкой в ChildContent
+  (DFluentDeleteButton + FluentIcon) — нет → 96×32. Фикс: `fluent-ui.less`
+  `fluent-button:has(> svg:only-child) { min-width: auto; }`. Замер: 42×32.
+  Текстовые кнопки в ячейках (PostType «Удалить») остаются 96px — это норма;
+  assertion поэтому ограничен `:has(> svg:only-child)` и optional. Reference — грабли №21
+  (+ факт: v5 FluentIcon рендерит голый `<svg>`, без тега fluent-icon).
+- style.css (admin) перекомпилирован build-css.ps1; targeted crawl /dev/Post + /dev/PostType
+  + /dev/Users + style-gallery — failed=0.
+
+Расширение галереи кастомными Mars-компонентами (2026-10-01, агент): +7 секций —
+FluentMarkdownSection (sample c hljs/blockquote/таблицей — точка проверки починенных
+токенов), DTreeView (иконки во FluentIcon внутри ItemTemplate — TreeHelper.CreateTree
+не заполняет IconStart/End/Aside, API DTreeView их не пробрасывает; чекбоксы не показаны —
+параметр не проброшен), InputTags2, GroupedSelectDropDown, FluentSortableList (Handle=true,
+по образцу SwitchNodeForm), FluentMultiSplitter (3 панели), MediaUploadZone (AutoUpload=false —
+рендер не дёргает API, IMarsWebApiClient используется только в OnFileUploadedHandler).
+Итого 22 секции; assertion min поднят до 21. Сборка Mars.slnx 0/0; crawl style-gallery +
+Post + Users + debug — failed=0.

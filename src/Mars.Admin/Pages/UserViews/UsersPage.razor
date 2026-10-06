@@ -1,5 +1,6 @@
 @page "/Users"
 @using Mars.Admin.Pages.Settings
+@using Mars.Admin.Shared.Cloudy
 @inject IStringLocalizer<AppRes> L
 @using Mars.Identity.Contracts.Users
 @using Microsoft.AspNetCore.Authorization
@@ -15,7 +16,7 @@
     </Kpis>
 </CloudyPageHead>
 
-<CloudyBrowser>
+<CloudyBrowser Scrollable>
     <HeadLeft>
         <CloudyChips Items="RoleNames" Selected="_roleFilter" SelectedChanged="SetRoleFilter" />
     </HeadLeft>
@@ -25,69 +26,68 @@
     </HeadRight>
 
     <ChildContent>
-        <div class="cloudy-list users-list">
-            <div class="cloudy-list__head">
-                <span></span>
-                <span>Member</span>
-                <span>@AppRes.Roles</span>
-                <span class="u-hide-1100">@AppRes.CreatedAt</span>
-                <span></span>
-            </div>
-
-            @if (_users.Count > 0)
-            {
-                <ul class="cloudy-list__items">
-                    @{
-                        var idx = 0;
-                    }
-                    @foreach (var user in _users)
+        <FluentDataGrid TGridItem="UserDetailResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,1fr) minmax(120px,150px) 120px 92px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+            <TemplateColumn Title="Member" Sortable="true"
+                            SortBy="@(GridSort<UserDetailResponse>.ByAscending(p => p.LastName))">
+                <div class="cloudy-grid-member">
+                    <CloudyAvatar Name="@context.FullName" ImageUrl="@context.AvatarUrl" Tint="@TintFor(context.Id)" />
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@urlEditPage/@context.Id" title="@context.FullName">@context.FullName</a>
+                        <span class="cloudy-stack__sub" title="@context.Email">@context.Email</span>
+                    </div>
+                </div>
+            </TemplateColumn>
+            <TemplateColumn Title="@AppRes.Roles">
+                <div class="cloudy-tags">
+                    @foreach (var r in context.Roles.Take(2))
                     {
-                        var rowIdx = idx++;
-                        <li class="cloudy-list__row">
-                            <CloudyAvatar Name="@user.FullName" ImageUrl="@user.AvatarUrl" Tint="@rowIdx" />
-                            <div class="cloudy-stack">
-                                <a class="cloudy-stack__title" href="@urlEditPage/@user.Id" title="@user.FullName">@user.FullName</a>
-                                <span class="cloudy-stack__sub" title="@user.Email">@user.Email</span>
-                            </div>
-                            <div class="cloudy-tags u-hide-900">
-                                @foreach (var r in user.Roles.Take(2))
-                                {
-                                    <CloudyTag Text="@r" Tint="@RoleTint(r)" />
-                                }
-                                @if (user.Roles.Count > 2)
-                                {
-                                    <CloudyTag Text="@($"+{user.Roles.Count - 2}")" Muted />
-                                }
-                            </div>
-                            <time class="cloudy-time u-hide-1100" title="@user.CreatedAt.ToString("g")">@user.CreatedAt.ToString("dd.MM.yy")</time>
-                            <div class="cloudy-row-actions">
-                                <DFluentDeleteButton OnConfirm=@(e => Delete(user.Id))>
-                                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
-                                </DFluentDeleteButton>
-                                <FluentButton Id="@($"useractions-{user.Id}")" Appearance="ButtonAppearance.Subtle"
-                                              IconStart="@(new Icons.Regular.Size20.MoreHorizontal())"
-                                              aria-label="More actions" />
-                                <FluentMenu Trigger="@($"useractions-{user.Id}")" OnClick="@(e => OnUserMenuClick(e, user))">
-                                    <FluentMenuList>
-                                        <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
-                                        <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
-                                    </FluentMenuList>
-                                </FluentMenu>
-                            </div>
-                        </li>
+                        <CloudyTag Text="@r" Tint="@RoleTint(r)" />
                     }
-                </ul>
-            }
-            else if (_loaded)
-            {
+                    @if (context.Roles.Count > 2)
+                    {
+                        <CloudyTag Text="@($"+{context.Roles.Count - 2}")" Muted />
+                    }
+                </div>
+            </TemplateColumn>
+            <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                            SortBy="@(GridSort<UserDetailResponse>.ByDescending(p => p.CreatedAt))"
+                            IsDefaultSortColumn="true" Align="DataGridCellAlignment.End">
+                <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.ToString("dd.MM.yy")</time>
+            </TemplateColumn>
+            <TemplateColumn Align="DataGridCellAlignment.End">
+                <div class="cloudy-row-actions">
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                    </DFluentDeleteButton>
+                    <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle"
+                                  IconStart="@(new Icons.Regular.Size20.MoreHorizontal())"
+                                  aria-label="More actions" />
+                    <FluentMenu Trigger="@($"useractions-{context.Id}")" OnClick="@(e => OnUserMenuClick(e, context))">
+                        <FluentMenuList>
+                            <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
+                            <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                        </FluentMenuList>
+                    </FluentMenu>
+                </div>
+            </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
                 <p class="cloudy-empty">No users match your search.</p>
-            }
-        </div>
+            </EmptyContent>
+        </FluentDataGrid>
     </ChildContent>
 
     <Foot>
         <TotalResultsFound TotalCount="@_total" />
-        <CloudyPager Skip="_skip" Total="_total" PageSize="PageSize" SkipChanged="OnSkipChanged" />
     </Foot>
 </CloudyBrowser>
 

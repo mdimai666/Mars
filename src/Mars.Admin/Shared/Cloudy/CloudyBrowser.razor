@@ -1,4 +1,4 @@
-<section class="cloudy-browser @Class">
+<section class="cloudy-browser @Class @(Scrollable ? "cloudy-browser--scroll" : null)">
     @if (HeadLeft is not null || HeadRight is not null)
     {
         <header class="cloudy-browser__head">
@@ -6,7 +6,7 @@
             <div class="cloudy-browser__head-right">@HeadRight</div>
         </header>
     }
-    @ChildContent
+    <div class="cloudy-browser__body">@ChildContent</div>
     @if (Foot is not null)
     {
         <footer class="cloudy-browser__foot">@Foot</footer>
@@ -15,6 +15,8 @@
 
 @code {
     [Parameter] public string? Class { get; set; }
+    /// <summary>Тело панели становится flex-fill областью с внутренним скроллом (для FluentDataGrid с Virtualize).</summary>
+    [Parameter] public bool Scrollable { get; set; }
     [Parameter] public RenderFragment? HeadLeft { get; set; }
     [Parameter] public RenderFragment? HeadRight { get; set; }
     [Parameter] public RenderFragment? Foot { get; set; }

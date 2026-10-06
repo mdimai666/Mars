@@ -1,3 +1,5 @@
+using Mars.Admin.Shared.Cloudy;
+using Mars.Contracts.Common;
 using Mars.Identity.Contracts.Roles;
 using Mars.Identity.Contracts.Users;
 using Mars.Identity.Contracts.UserTypes;
@@ -9,54 +11,47 @@ namespace Mars.Admin.Pages.UserViews;
 
 public partial class UsersPage
 {
-    const int PageSize = 50;
-
     string urlEditPage = "/dev/EditUser";
 
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
 
+    FluentDataGrid<UserDetailResponse> _grid = default!;
+    GridItemsProvider<UserDetailResponse> _dataProvider = default!;
+
     string _searchText = "";
     string? _roleFilter;
-    int _skip;
     int? _total;
     int? _totalAll;
     int? _newThisMonth;
-    bool _loaded;
-    List<UserDetailResponse> _users = [];
     IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
     IReadOnlyCollection<string> RoleNames => _availRoles.Select(r => r.Name).ToList();
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            _availRoles = (await _client.Role.List(new())).Items;
-            await Task.WhenAll(LoadUsers(), LoadKpi());
-        }
-        finally
-        {
-            _loaded = true;
-        }
+        _dataProvider = CloudyGridProvider.Create<UserDetailResponse>(LoadUsers);
+        _availRoles = (await _client.Role.List(new())).Items;
+        await LoadKpi();
     }
 
-    async Task LoadUsers()
+    async Task<ListDataResult<UserDetailResponse>> LoadUsers(int skip, int take, string? sort)
     {
         var data = await _client.User.ListDetail(new()
         {
-            Skip = _skip,
-            Take = PageSize,
-            Sort = "LastName",
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? nameof(UserDetailResponse.CreatedAt), // FullName [NotMapped] — сортировка только по маппед-полям
             Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
             Roles = _roleFilter is null ? null : [_roleFilter],
         });
 
-        _users = [.. data.Items];
-        _total = data.TotalCount ?? _users.Count;
+        _total = data.TotalCount ?? data.Items.Count;
         if (_roleFilter is null && string.IsNullOrWhiteSpace(_searchText))
         {
             _totalAll = _total;
         }
+        StateHasChanged();
+        return data;
     }
 
     async Task LoadKpi()
@@ -70,39 +65,36 @@ public partial class UsersPage
         _newThisMonth = fresh.TotalCount ?? 0;
     }
 
-    async Task OnSearchChanged(string text)
+    void RefreshGrid() => _grid?.RefreshDataAsync();
+
+    void OnSearchChanged(string text)
     {
         _searchText = text;
-        _skip = 0;
-        await LoadUsers();
+        RefreshGrid();
     }
 
-    async Task SetRoleFilter(string? role)
+    void SetRoleFilter(string? role)
     {
         _roleFilter = role;
-        _skip = 0;
-        await LoadUsers();
-    }
-
-    async Task OnSkipChanged(int skip)
-    {
-        _skip = skip;
-        await LoadUsers();
+        RefreshGrid();
     }
 
     public async Task Delete(Guid id)
     {
         await _client.User.Delete(id).SmartDelete();
-        await Task.WhenAll(LoadUsers(), LoadKpi());
+        RefreshGrid();
+        await LoadKpi();
     }
 
     public async Task HandleSearchInput()
     {
-        _skip = 0;
-        await Task.WhenAll(LoadUsers(), LoadKpi());
+        RefreshGrid();
+        await LoadKpi();
     }
 
     static string Fmt(int? v) => v?.ToString() ?? "—";
+
+    static int TintFor(Guid id) => (id.GetHashCode() & 0x7FFFFFFF) % 5;
 
     int TintIndex(string role)
     {

@@ -14,19 +14,24 @@
     `AdminLayout` оставлен (rollback / явный `@layout`).
   - `CloudyTechLayout.razor` — тёмная «тех»-зона `/tech/*` (topbar + рельс); `CloudyTechTopBar`,
     `CloudyTechSideBar`.
-  - Паттерн-компоненты списочных страниц (уровень 2): `CloudyPageHead`, `CloudyKpi`, `CloudyBrowser`,
+  - Паттерн-компоненты списочных страниц (уровень 2): `CloudyPageHead`, `CloudyKpi`, `CloudyBrowser`
+    (параметр `Scrollable` — flex-fill тело с внутренним скроллом для DataGrid-страниц),
     `CloudyChips`, `CloudySearchBox` (встроенный дебаунс 300мс), `CloudyPager`, `CloudyAvatar`,
     `CloudyTag` — API однострочное, композиции без «конструктора страниц».
+  - `CloudyGridProvider.cs` — фабрика `GridItemsProvider<T>` для FluentDataGrid: маппит
+    skip/take/sort запроса на серверный List-вызов (`ListDataResult<T>`), дефолт take=50.
 - Стили: `src/Mars.Admin/wwwroot/css/`
   - `cloudy.less` — светлая зона: токены `--cld-*` на `.cloudy-layout` + тёмный блок
     `body[data-theme="dark"] .cloudy-layout`; топбар/сайдбар/hero/kpi/acrylic/chip/badge/user-menu.
   - `cloudy-tech.less` — tech-зона: токены `--ct-*` на `.cloudy-tech` (база тёмная) + светлый блок
     `body:not([data-theme="dark"]) .cloudy-tech` (значения `.tech.light` прототипа); ремап
     `--cld-menu-*` → `--ct-*` для UserBar-меню.
-  - `cloudy-list.less` — общие паттерны списочных страниц: `.cloudy-browser`, `.cloudy-list`
-    (колонки через `--cloudy-list-cols` страницы), `.cloudy-tint-0..4`/`.cloudy-dot-0..4`,
-    `.cloudy-avatar`, `.cloudy-tag(s)`, `.cloudy-stack`, `.cloudy-time`, `.cloudy-row-actions`,
-    `.cloudy-empty`, `.cloudy-chips`, `.cloudy-searchbox`, `.cloudy-pager`, `u-hide-1100/900`.
+  - `cloudy-list.less` — общие паттерны списочных страниц: `.cloudy-browser` (+ `--scroll`
+    модификатор и `__body`), `.cloudy-list` (колонки через `--cloudy-list-cols` страницы),
+    `table.cloudy-grid.fluent-data-grid` (скин DataGrid) + `.cloudy-grid-member`,
+    `.cloudy-tint-0..4`/`.cloudy-dot-0..4`, `.cloudy-avatar`, `.cloudy-tag(s)`, `.cloudy-stack`,
+    `.cloudy-time`, `.cloudy-row-actions`, `.cloudy-empty`, `.cloudy-chips`, `.cloudy-searchbox`,
+    `.cloudy-pager`, `u-hide-1100/900`.
   - Импорт всех трёх — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
     (см. `ai/CssRefactoringGuide.md`; руками `style.css` не править).
 - Страницы:
@@ -58,7 +63,7 @@
 
 ## Рецепты
 
-**Списочная страница (как UsersPage):**
+**Списочная страница на `.cloudy-list` (статичный список без грида; UsersPage до 2026-10-06):**
 1. `CloudyPageHead` (Title/Subtitle/KpiCols) + `CloudyKpi` (Icon или Tint-точка). Карточка KPI —
    фиксированной ширины `--cloudy-kpi-width: 168px` (= (720−3×16)/4 из прототипа), колонки
    `--cloudy-kpi-cols` (дефолт 4); НЕ растягивать карточки на контейнер (1fr) — при cols<4 разъезжаются.
@@ -72,6 +77,30 @@
    и в row).
 4. Данные: `client.X.ListDetail(new(){ Skip, Take, Sort, Search, Roles/CreatedFrom })`; счётчики KPI —
    `Take=1` → `TotalCount`. Загрузка — `Task.WhenAll(LoadUsers(), LoadKpi())`.
+
+**Страница с FluentDataGrid (бесконечная подгрузка, как UsersPage 2026-10-06):**
+1. `CloudyBrowser Scrollable` — тело становится flex-fill скролл-контейнером
+   (`height: calc(100vh - var(--cloudy-browser-inset, 520px))`); при необходимости страница
+   уточняет inset в scoped-css через `Class` (корневой элемент панели inherits scope-атрибут).
+2. `FluentDataGrid`: `ItemsProvider` из `CloudyGridProvider.Create(loader)` (loader —
+   `(skip, take, sort) → client.X.ListDetail/List`), `Virtualize` + `ItemSize` (≈ высота строки:
+   2×13px padding + контент), `GridTemplateColumns` — схема колонок СТРОКОЙ в razor (не CSS;
+   дефолтный `DisplayMode=Grid` даёт fr/minmax — см. FluentV5Reference №22 про Virtualize+Grid),
+   `GenerateHeader=Sticky`,
+   `Class="cloudy-grid"` (скин в cloudy-list.less). Фут — только `TotalResultsFound`
+   (total обновляет loader провайдера + `StateHasChanged`); `CloudyPager` не используется.
+3. Колонки — `TemplateColumn` с паттерн-ячейками: Member = `.cloudy-grid-member`
+   (CloudyAvatar + `.cloudy-stack`), теги = `.cloudy-tags`, дата = `.cloudy-time`,
+   действия = `.cloudy-row-actions` (`Align="DataGridCellAlignment.End"`).
+   Сортировка — только маппед-поля (`GridSort<T>.ByAscending(p => p.LastName)`);
+   дефолтная сортировка таблиц (конвенция 2026-10-06) — **CreatedAt DESC**:
+   `IsDefaultSortColumn` + `ByDescending(p => p.CreatedAt)` на колонке даты, фолбэк
+   loader'а — `nameof(T.CreatedAt)`; стикер аватара — детерминированный тинт из id
+   (`(id.GetHashCode() & 0x7FFFFFFF) % 5`).
+4. Фильтры/поиск/удаление/create → `_grid.RefreshDataAsync()` (не пересоздание провайдера).
+5. Колонки и `EmptyContent`/`LoadingContent` — ОБЯЗАТЕЛЬНО явный `<ChildContent>` для колонок
+   (RZ9996, та же грабля что у CloudyBrowser). Responsive-скрытие колонок (`u-hide-*`) на
+   DataGrid НЕ перенесено — при необходимости менять `GridTemplateColumns` + nth-child по брейкпоинтам.
 
 **KPI «новые за месяц»:** фильтр `CreatedFrom` (DateTimeOffset?) проброшен
 `ListUserQueryRequest` → `ListUserQuery` → `ToQuery` (`Mars.Identity.Abstractions/Dto/Users/
@@ -136,5 +165,9 @@ UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
 - Готовы: лэйауты + топбары/сайдбары, темизация обеих зон, шаг 1 (Index/Posts/Categories/Users/
   Settings + моки Dashboard/Legion), шаг 2 (TechViews-моки + рабочая TechLogsPage), паттерны списков
   (cloudy-list.less + 8 компонентов), UsersPage мигрирована на них.
-- Дальше: обсудить FluentDataGrid (что остаётся гридом, что переводится на `.cloudy-list`);
-  перенос Posts/Categories на list-паттерны; редактор поста и Nodes — ПОСЛЕДНИЕ шаги редизайна.
+- 2026-10-06: FluentDataGrid-паттерн для cloudy (решение пользователя: DataGrid + скин, паттерн
+  без обёртки-компонента, flex-fill скролл) — `CloudyGridProvider`, `.cloudy-browser--scroll`,
+  `table.cloudy-grid` скин; UsersPage переведена на бесконечную подгрузку (CloudyPager убран
+  с неё, компонент жив для пейджинговых страниц). ManagePostView (tech-зона) не тронут.
+- Дальше: перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
+  responsive-скрытие колонок DataGrid (не перенесено); редактор поста и Nodes — ПОСЛЕДНИЕ шаги.

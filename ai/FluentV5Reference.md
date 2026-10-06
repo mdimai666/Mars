@@ -609,6 +609,25 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
     square'ит сам (32×32), а кнопка с иконкой в **ChildContent** растягивается 3:1.
     Оверрайд в `fluent-ui.less`: `fluent-button:has(> svg:only-child) { min-width: auto; }`.
     Связанный факт: **v5 FluentIcon рендерит голый `<svg>`** (без обёртки `fluent-icon`).
+22. **FluentDataGrid DOM-контракт v5** (вытянуто из bundle.scp.css/DLL 2026-10-06):
+    корень — `table.fluent-data-grid` + атрибут `display-mode` из параметра
+    `DisplayMode` (`DataGridDisplayMode.Grid|Table`, ДЕФОЛТ Grid); в режиме Grid —
+    `display:grid`, `thead/tbody/tr` = `display:contents`, th/td — ПРЯМЫЕ grid-элементы
+    (fr-единицы в `GridTemplateColumns` работают только в Grid-режиме; в Table — ширины
+    через `Width` у колонок). Следствие: стили «строки» (фон/hover/разделители) задавать
+    ПО ЯЧЕЙКАМ, у tr нет бокса. Docs-предупреждение: с `Virtualize` авторы рекомендуют
+    Table-режим («Grid может давать odd scrolling behavior»); в Mars Grid+Virtualize
+    используется штатно (ManagePostView, UsersPage) — при странностях скролла первым
+    делом пробовать Table. `ItemSize` обязателен при Virtualize.
+    Hover бандла: `tr[hover]:not([row-type=header],[row-type=sticky-header],…):hover td`
+    → `cursor:pointer; background: var(--datagrid-hover-color, --colorNeutralStroke2)`
+    (фон переопределяется CSS-переменной без войны специфичностей; cursor — только
+    дублированием селектора). Sticky-заголовок: `tr[row-type=sticky-header]>th` →
+    `position:sticky;top:0;background-color:var(--colorNeutralBackground4);z-index:2`.
+    Состояния строк: `tr[row-state=empty-content|loading-content|error-content|detail-content]`.
+    Фрагменты: `ChildContent/RowDetails/EmptyContent/LoadingContent/ErrorContent` —
+    при использовании именованных колонки ОБЯЗАТЕЛЬНО заворачивать в явный `<ChildContent>`
+    (RZ9996). Базовые th/td: `border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2)`.
 
 ---
 

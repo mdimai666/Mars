@@ -47,6 +47,29 @@
         padding: 16px 28px;
         border-top: 1px solid var(--cld-line);
     }
+
+    //------------- scrollable-вариант: тело — flex-fill с внутренним скроллом -------------
+    // Используется страницами с FluentDataGrid (Virtualize нужен ограниченный по высоте
+    // scroll-контейнер). --cloudy-browser-inset — суммарная высота ВСЕГО вокруг тела
+    // (топбар, page head, head/foot панели, отступы лэйаута); страница уточняет его
+    // в своём scoped-css через Class-параметр.
+    &--scroll {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - var(--cloudy-browser-inset, 520px));
+        min-height: 480px;
+
+        .cloudy-browser__head,
+        .cloudy-browser__foot {
+            flex: none;
+        }
+
+        .cloudy-browser__body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
+    }
 }
 
 //------------- список: head + строки на общем гриде -------------
@@ -86,6 +109,83 @@
             background: var(--cld-hover-bg);
         }
     }
+}
+
+//------------- FluentDataGrid в cloudy-скине -------------
+// DOM v5 (bundle.scp.css): table.fluent-data-grid[display-mode=grid] — display:grid,
+// thead/tbody/tr — display:contents, th/td — прямые grid-элементы; вид «строки»
+// собирается по ячейкам. Hover-фон управляется переменной --datagrid-hover-color.
+table.cloudy-grid.fluent-data-grid {
+    width: 100%;
+    height: auto;
+    column-gap: 14px;
+    --datagrid-hover-color: var(--cld-hover-bg);
+
+    th,
+    td {
+        border-bottom: 1px solid var(--cld-line);
+        padding: 13px 0;
+        text-align: start;
+        background: transparent;
+    }
+    // боковые поля страницы (как padding 28px у .cloudy-list__row) — крайними ячейками
+    th:first-child,
+    td:first-child {
+        padding-left: 28px;
+    }
+
+    th:last-child,
+    td:last-child {
+        padding-right: 28px;
+    }
+
+    th[col-justify=end],
+    td[col-justify=end] {
+        text-align: end;
+    }
+
+    th[cell-type=columnheader] {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        color: var(--cld-muted);
+        font-size: 13px;
+        font-weight: 500;
+
+        [col-sort-button] {
+            min-width: auto; // грабля v5: fluent-button host несёт min-width:96px
+
+            &:hover {
+                background-color: #ffffff57;
+            }
+        }
+    }
+    // sticky-заголовок: фон непрозрачный, строки скроллятся под ним
+    tr[row-type=sticky-header] > th {
+        background-color: transparent;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+    // hover-правило бандла имеет высокую специфичность (:not-цепочка) —
+    // дублируем селектор со своим префиксом, чтобы убрать cursor:pointer
+    tr[hover]:not([row-type=header],[row-type=sticky-header],[row-state=loading-content],[row-state=detail-content],[row-state=empty-content],[row-state=error-content]):hover td {
+        cursor: default;
+    }
+
+    tr[row-state=empty-content] > td,
+    tr[row-state=loading-content] > td {
+        border-bottom: none;
+        padding: 0;
+    }
+}
+
+// ячейка «Member»: аватар + имя/почта (замена связке колонок .cloudy-list)
+.cloudy-grid-member {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
 }
 
 //------------- ячейки -------------

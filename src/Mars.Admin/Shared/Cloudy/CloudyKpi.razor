@@ -1,0 +1,21 @@
+<article class="cloudy-kpi">
+    <div>
+        <span class="cloudy-kpi__label">@Label</span>
+        <strong class="cloudy-kpi__value">@Value</strong>
+    </div>
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="cloudy-kpi__icon"><i class="bi @Icon"></i></span>
+    }
+    else if (Tint is not null)
+    {
+        <span class="cloudy-kpi__dot cloudy-dot-@Tint"></span>
+    }
+</article>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public int? Tint { get; set; }
+}

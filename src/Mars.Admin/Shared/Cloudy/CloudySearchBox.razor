@@ -1,0 +1,31 @@
+<div class="cloudy-searchbox">
+    <i class="bi bi-search"></i>
+    <input type="text" placeholder="@Placeholder" aria-label="@Placeholder" @oninput="OnInput" />
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public int DebounceMs { get; set; } = 300;
+
+    CancellationTokenSource? _cts;
+
+    async Task OnInput(ChangeEventArgs e)
+    {
+        var text = e.Value?.ToString() ?? "";
+        _cts?.Cancel();
+        using var cts = _cts = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(DebounceMs, cts.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        Value = text;
+        await ValueChanged.InvokeAsync(text);
+    }
+}

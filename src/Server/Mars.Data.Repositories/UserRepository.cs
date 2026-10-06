@@ -261,8 +261,13 @@ internal class UserRepository : IUserRepository, IDisposable
         if (query.Roles?.Any() ?? false)
         {
             queryable = queryable.Include(s => s.Roles)
-                                    //.Where(s=>s.Roles.Any(x=>EF.Functions.ILike(x.Name, x.Name)))
-                                    .Where(entity => entity.Roles!.All(role => query.Roles.Contains(role.Name)));
+                                    .Where(entity => entity.Roles!.Any(role => query.Roles.Contains(role.Name)));
+        }
+
+        if (query.CreatedFrom is not null)
+        {
+            var createdFrom = query.CreatedFrom.Value;
+            queryable = queryable.Where(s => s.CreatedAt >= createdFrom);
         }
 
         return queryable;

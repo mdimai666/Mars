@@ -75,6 +75,10 @@
     --line-dot: #d4d9e8;
     --blue-soft: #ddebfb;
     --blue: #4c82d6;
+    --blue-deep: #2f7de0;
+    --purple: #7c5cf6;
+    --teal: #0f9e8e;
+    --green-deep: #2f9e57;
     --amber-live: #e8c468;
     --violet-dot: #8b93e8;
     --red: #cc5f5f;
@@ -151,6 +155,10 @@ body[data-theme="dark"] .cloudy-layout {
     --line-dot: #2a3650;
     --blue-soft: rgba(124, 179, 249, .14);
     --blue: #7cb3f9;
+    --blue-deep: #7cb3f9;
+    --purple: #b3a1f9;
+    --teal: #7ce0d3;
+    --green-deep: #86e0a8;
     --violet-dot: #8375fa;
     --red: #f99a9a;
 }
@@ -477,11 +485,11 @@ body[data-theme="dark"] .cloudy-layout {
 }
 
 .cloudy-kpis {
+    --cloudy-kpi-cols: 4;
+    --cloudy-kpi-width: 168px;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cloudy-kpi-cols), minmax(0, var(--cloudy-kpi-width)));
     gap: 16px;
-    flex: 1;
-    max-width: 720px;
 }
 
 .cloudy-kpi {
@@ -733,7 +741,7 @@ body[data-theme="dark"] .cloudy-layout {
 //------------- адаптив -------------
 @media (max-width: 1200px) {
     .cloudy-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, var(--cloudy-kpi-width)));
     }
 }
 
@@ -800,6 +808,6 @@ body[data-theme="dark"] .cloudy-layout {
     }
 
     .cloudy-kpis {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, var(--cloudy-kpi-width));
     }
 }

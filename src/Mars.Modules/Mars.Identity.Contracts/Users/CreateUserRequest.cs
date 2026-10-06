@@ -91,6 +91,7 @@ public record UserListItemResponse
 public record ListUserQueryRequest : BasicListQueryRequest
 {
     public IReadOnlyCollection<string>? Roles { get; init; }
+    public DateTimeOffset? CreatedFrom { get; init; }
 }
 
 public record TableUserQueryRequest : BasicTableQueryRequest

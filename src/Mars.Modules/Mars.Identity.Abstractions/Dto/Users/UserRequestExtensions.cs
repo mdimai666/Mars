@@ -54,7 +54,8 @@ public static class UserRequestExtensions
             Search = request.Search,
             Sort = request.Sort,
 
-            Roles = request.Roles
+            Roles = request.Roles,
+            CreatedFrom = request.CreatedFrom
         };
 
     public static ListUserQuery ToQuery(this TableUserQueryRequest request)

@@ -1,0 +1,17 @@
+/* схема колонок списка; сами паттерны — в cloudy-list.less */
+
+.users-list {
+    --cloudy-list-cols: 40px minmax(0, 1fr) minmax(120px, 150px) 110px 92px;
+}
+
+@media (max-width: 1100px) {
+    .users-list {
+        --cloudy-list-cols: 40px minmax(0, 1fr) minmax(120px, 150px) 92px;
+    }
+}
+
+@media (max-width: 900px) {
+    .users-list {
+        --cloudy-list-cols: 40px minmax(0, 1fr) 92px;
+    }
+}

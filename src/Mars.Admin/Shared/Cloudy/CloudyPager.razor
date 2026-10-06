@@ -1,0 +1,26 @@
+<div class="cloudy-pager">
+    <button type="button" class="cloudy-chip cloudy-pager__btn" disabled="@(Skip <= 0)"
+            @onclick="() => SkipChanged.InvokeAsync(Skip - PageSize)">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    <span>@RangeText()</span>
+    <button type="button" class="cloudy-chip cloudy-pager__btn" disabled="@(!HasNext)"
+            @onclick="() => SkipChanged.InvokeAsync(Skip + PageSize)">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+</div>
+
+@code {
+    [Parameter] public int Skip { get; set; }
+    [Parameter] public int? Total { get; set; }
+    [Parameter] public int PageSize { get; set; } = 50;
+    [Parameter] public EventCallback<int> SkipChanged { get; set; }
+
+    bool HasNext => Total is not null && Skip + PageSize < Total;
+
+    string RangeText()
+    {
+        if (Total is null || Total == 0) return "0";
+        return $"{Skip + 1}–{Math.Min(Skip + PageSize, Total.Value)}";
+    }
+}

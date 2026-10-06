@@ -1,0 +1,317 @@
+//-------------------------------------------------------------
+// CLOUDY LIST — общие паттерны списочных страниц редизайна
+// (browser-панель, список-грид, тинты, теги, поиск, пейджер)
+// Источник: прототип mars-redesign-project (Users/Posts/Categories)
+// Колонки списка задаёт страница: --cloudy-list-cols
+//-------------------------------------------------------------
+
+//------------- панель-браузер: акрил + слоты head/foot -------------
+.cloudy-browser {
+    border-radius: 18px;
+    background: var(--cld-acrylic-bg);
+    border: 1px solid var(--cld-acrylic-border);
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--cld-line);
+        flex-wrap: wrap;
+    }
+
+    &__head-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    &__head-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-left: auto;
+    }
+
+    &__foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 28px;
+        border-top: 1px solid var(--cld-line);
+    }
+}
+
+//------------- список: head + строки на общем гриде -------------
+// ВАЖНО: --cloudy-list-cols здесь НЕ объявлять — собственное объявление
+// перебило бы значение, заданное страницей; дефолт — через var(..., fallback)
+.cloudy-list {
+    &__head,
+    &__row {
+        display: grid;
+        grid-template-columns: var(--cloudy-list-cols, minmax(0, 1fr));
+        gap: 14px;
+        align-items: center;
+    }
+
+    &__head {
+        padding: 12px 28px;
+        border-bottom: 1px solid var(--cld-line);
+        color: var(--cld-muted);
+        font-size: 13px;
+    }
+
+    &__items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__row {
+        padding: 13px 28px;
+        transition: background .15s ease;
+
+        + .cloudy-list__row {
+            border-top: 1px solid var(--cld-line);
+        }
+
+        &:hover {
+            background: var(--cld-hover-bg);
+        }
+    }
+}
+
+//------------- ячейки -------------
+.cloudy-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    &__title {
+        color: var(--cld-ink-soft);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+            color: var(--cld-primary);
+        }
+    }
+
+    &__sub {
+        color: var(--cld-muted);
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.cloudy-time {
+    color: var(--cld-muted);
+    font-size: 13.5px;
+}
+
+.cloudy-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.cloudy-empty {
+    margin: 0;
+    padding: 40px 28px;
+    color: var(--cld-muted);
+    font-size: 14px;
+    text-align: center;
+}
+
+//------------- тинты: цикл из 5 цветов (прототип) -------------
+.cloudy-tint-0 {
+    background: rgba(47, 125, 224, .14);
+    color: var(--blue-deep);
+}
+
+.cloudy-tint-1 {
+    background: rgba(124, 92, 246, .14);
+    color: var(--purple);
+}
+
+.cloudy-tint-2 {
+    background: rgba(47, 158, 87, .14);
+    color: var(--green-deep);
+}
+
+.cloudy-tint-3 {
+    background: rgba(217, 130, 11, .14);
+    color: var(--cld-dev);
+}
+
+.cloudy-tint-4 {
+    background: rgba(15, 158, 142, .14);
+    color: var(--teal);
+}
+
+// плотные точки (KPI-индикаторы)
+.cloudy-dot-0 {
+    background: var(--blue-deep);
+}
+
+.cloudy-dot-1 {
+    background: var(--purple);
+}
+
+.cloudy-dot-2 {
+    background: var(--green-deep);
+}
+
+.cloudy-dot-3 {
+    background: var(--cld-dev);
+}
+
+.cloudy-dot-4 {
+    background: var(--teal);
+}
+
+//------------- аватар -------------
+.cloudy-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    flex: none;
+
+    &--img {
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+//------------- теги/бейджи -------------
+.cloudy-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-self: start;
+    min-width: 0;
+}
+
+.cloudy-tag {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--primary {
+        background: var(--cld-primary-soft);
+        color: var(--cld-primary);
+    }
+
+    &--muted {
+        background: rgba(121, 131, 154, .14);
+        color: var(--cld-icon-ink);
+    }
+}
+
+//------------- чипы-фильтры -------------
+.cloudy-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+//------------- поле поиска -------------
+.cloudy-searchbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid var(--cld-line);
+    border-radius: 10px;
+    background: var(--cld-field);
+    color: var(--cld-muted);
+    transition: border-color .15s ease;
+
+    &:focus-within {
+        border-color: var(--cld-primary);
+    }
+
+    input {
+        border: none;
+        background: transparent;
+        font: inherit;
+        font-size: 14px;
+        color: var(--cld-ink);
+        outline: none;
+        width: 170px;
+
+        &::placeholder {
+            color: var(--cld-muted);
+        }
+    }
+}
+
+//------------- пейджер -------------
+.cloudy-pager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--cld-muted);
+    font-size: 13.5px;
+
+    &__btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+
+        &[disabled] {
+            opacity: .4;
+            pointer-events: none;
+        }
+    }
+}
+
+//------------- скрытие колонок на брейкпоинтах -------------
+@media (max-width: 1100px) {
+    .u-hide-1100 {
+        display: none !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .u-hide-900 {
+        display: none !important;
+    }
+
+    .cloudy-list__head {
+        display: none;
+    }
+
+    .cloudy-browser__head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cloudy-browser__head-right {
+        justify-content: space-between;
+        margin-left: 0;
+    }
+}

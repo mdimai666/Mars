@@ -1,0 +1,140 @@
+# CloudyRedesignGuide — редизайн админки «cloudy»
+
+Гайд для агента по редизайну админ-зоны Mars (ветка `feat/redesign-cloudy-variant`, старт 2026-10-03).
+Источник истины по UI — Vue-прототип `C:\Users\D\Documents\VisualStudio\2026\mars-redesign-project`
+(`src/assets/main.css` — ВСЯ палитра: `:root` = светлая зона + тёмный tech, `.tech.light` = светлый tech;
+`src/components/*.vue` — разметка страниц; `admin_*.png` — референс-скриншоты).
+Смежные гайды: `ai/FluentUiGuide.md` (компоненты v5), `ai/CssRefactoringGuide.md` (слои токенов,
+`--mars-*`), `ai/TestingGuide.md`. Пользователь: без пиксель-перфекта, «общая схема».
+
+## Раскладка кода
+
+- Лэйауты: `src/Mars.Admin/Shared/Cloudy/`
+  - `CloudyLayout.razor` — DefaultLayout всей админки (`App.razor`); светлая зона, классы `.cloudy-*`.
+    `AdminLayout` оставлен (rollback / явный `@layout`).
+  - `CloudyTechLayout.razor` — тёмная «тех»-зона `/tech/*` (topbar + рельс); `CloudyTechTopBar`,
+    `CloudyTechSideBar`.
+  - Паттерн-компоненты списочных страниц (уровень 2): `CloudyPageHead`, `CloudyKpi`, `CloudyBrowser`,
+    `CloudyChips`, `CloudySearchBox` (встроенный дебаунс 300мс), `CloudyPager`, `CloudyAvatar`,
+    `CloudyTag` — API однострочное, композиции без «конструктора страниц».
+- Стили: `src/Mars.Admin/wwwroot/css/`
+  - `cloudy.less` — светлая зона: токены `--cld-*` на `.cloudy-layout` + тёмный блок
+    `body[data-theme="dark"] .cloudy-layout`; топбар/сайдбар/hero/kpi/acrylic/chip/badge/user-menu.
+  - `cloudy-tech.less` — tech-зона: токены `--ct-*` на `.cloudy-tech` (база тёмная) + светлый блок
+    `body:not([data-theme="dark"]) .cloudy-tech` (значения `.tech.light` прототипа); ремап
+    `--cld-menu-*` → `--ct-*` для UserBar-меню.
+  - `cloudy-list.less` — общие паттерны списочных страниц: `.cloudy-browser`, `.cloudy-list`
+    (колонки через `--cloudy-list-cols` страницы), `.cloudy-tint-0..4`/`.cloudy-dot-0..4`,
+    `.cloudy-avatar`, `.cloudy-tag(s)`, `.cloudy-stack`, `.cloudy-time`, `.cloudy-row-actions`,
+    `.cloudy-empty`, `.cloudy-chips`, `.cloudy-searchbox`, `.cloudy-pager`, `u-hide-1100/900`.
+  - Импорт всех трёх — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
+    (см. `ai/CssRefactoringGuide.md`; руками `style.css` не править).
+- Страницы:
+  - Шаг 1 (in-place на cloudy): `Pages/Index.razor` (Home), `Pages/PostsViews/ManagePostPage`,
+    `Pages/PostCategoryViews/ManagePostCategoryPage`, `Pages/UserViews/UsersPage` (полностью
+    перестроена по прототипу), `Pages/Settings/SettingsPageWrapper` (даёт cloudy-подложку всем
+    подразделам настроек). Моки: `Pages/DashboardPage`, `Pages/LegionPage` (+ scoped `.razor.css`).
+  - Шаг 2 (tech-зона): `Pages/TechViews/` — моки Automation/Database/Frontend/Marketplace/Plugins +
+    реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`); `_Imports.razor`
+    задаёт `@layout CloudyTechLayout`. Реальный Builder и nodered НЕ тронуты.
+  - `Shared/UserBar.razor` — аватар + bootstrap-dropdown `.cloudy-user-menu`; пункт переключения темы
+    (`DevAdminStyleOption.StylerStyle.Mode` → `Q.Root.Emit("App.SetupTheme")` → `App.razor.cs`
+    `SetupThemeAsync` → `IThemeService` → `body[data-theme]`; хелпер `marsIsDarkTheme` в
+    `wwwroot/js/scripts.js`).
+
+## Темизация (решение 2026-10-06)
+
+- ОДИН глобальный переключатель (UserBar); обе зоны либо светлые, либо тёмные.
+- Хук темы — `body[data-theme="dark"]` (ставит IThemeService v5); Fluent-компоненты флипаются сами,
+  cloudy-зоны — через переопределения токенов в less (см. выше).
+- Тёмная палитра cloudy-зоны ВЫДУМАНА на языке tech-палитры прототипа (в прототипе админ-зона
+  light-only): surface/card `#141824`, line `#1d2637`, ink `#e8eaf6`, primary `#8375fa`, небо
+  `--tech-sky-*`. Светлая tech-зона — один-в-один `.tech.light`.
+- Лэйауты публикуют токены с прототипными именами для страниц: tech — `--tint-*`, `--tk-*`,
+  `--tech-canvas/grid-line/accent-deep` + константы `--white/--field/--mist-*/--mac-*/--gold/--warn/
+  --err/--violet/--blue-deep/--ink-slate/--line-pale/--line-strong` (светлые мокапы-превью остаются
+  светлыми в обеих темах); cloudy — доп. токены `--muted-out/--muted-dim/--line-*/--blue(-soft)/
+  --purple/--teal/--green-deep/--red(-live)/--amber-live/--violet-dot` (Dashboard/Legion/Users).
+
+## Рецепты
+
+**Списочная страница (как UsersPage):**
+1. `CloudyPageHead` (Title/Subtitle/KpiCols) + `CloudyKpi` (Icon или Tint-точка). Карточка KPI —
+   фиксированной ширины `--cloudy-kpi-width: 168px` (= (720−3×16)/4 из прототипа), колонки
+   `--cloudy-kpi-cols` (дефолт 4); НЕ растягивать карточки на контейнер (1fr) — при cols<4 разъезжаются.
+2. `CloudyBrowser`: `HeadLeft` = `CloudyChips`, `HeadRight` = `CloudySearchBox` + `.cloudy-btn-primary`;
+   `<ChildContent>` ОБЯЗАТЕЛЬНО явный (RZ9996); `Foot` = `TotalResultsFound` + `CloudyPager`.
+3. В теле — `.cloudy-list` + свой класс страницы (`<div class="cloudy-list users-list">`);
+   `--cloudy-list-cols` задаётся В SCOPED-CSS НА ЭТОМ ЭЛЕМЕНТЕ (`.users-list { --cloudy-list-cols: … }`
+   + media-варианты) — не на `CloudyBrowser`/предке: см. граблю про custom properties. Ячейки:
+   `CloudyAvatar`, `.cloudy-stack` (title/sub), `.cloudy-tags`+`CloudyTag`, `.cloudy-time`,
+   `.cloudy-row-actions`; empty — `.cloudy-empty`; скрываемые колонки — `u-hide-1100/900` (и в head,
+   и в row).
+4. Данные: `client.X.ListDetail(new(){ Skip, Take, Sort, Search, Roles/CreatedFrom })`; счётчики KPI —
+   `Take=1` → `TotalCount`. Загрузка — `Task.WhenAll(LoadUsers(), LoadKpi())`.
+
+**KPI «новые за месяц»:** фильтр `CreatedFrom` (DateTimeOffset?) проброшен
+`ListUserQueryRequest` → `ListUserQuery` → `ToQuery` (`Mars.Identity.Abstractions/Dto/Users/
+UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
+
+**Новая страница в tech-зоне:** положить в `Pages/TechViews/` (layout из `_Imports`), маршрут
+`/tech/*` или `/dev/tech/*`; цвета — только `var(--ct-*)`/прототипные токены зоны.
+
+## Грабли
+
+- **Scoped-css страниц НЕ должен определять токены темы локально** (`--tint-*: …` на корне страницы) —
+  локальные определения перекрывают наследование и блокируют флип темы. Все локальные блоки удалены
+  2026-10-06; новые значения — только в less лэйаутов.
+- **RZ9996**: у компонента с именованными RenderFragment-параметрами (HeadLeft/Foot/…) неявный контент
+  не смешивается — оборачивать в явный `<ChildContent>`.
+- **Custom property, объявленная на самом паттерн-элементе, перебивает унаследованную от предка**
+  (свойство на элементе всегда ближе наследования). Поэтому `.cloudy-list` НЕ объявляет
+  `--cloudy-list-cols` — дефолт через `var(--cloudy-list-cols, minmax(0,1fr))` в месте использования,
+  а значение страница задаёт на своём элементе (класс страницы рядом с `.cloudy-list`). Баг 2026-10-06:
+  переменная на `CloudyBrowser`-предке не доходила, строки списка схлопывались в одну колонку.
+- **z-index tech-лэйаута** (фикс 2026-10-06): `.cloudy-tech-topbar` — `position:relative; z-index:30`
+  (иначе дропдаун UserBar перекрывается панелями страниц); `.cloudy-tech-body` — БЕЗ z-index (иначе
+  фиксированные модалки страниц z-60+ заперты под топбаром). Светлый `.cloudy-topbar` stacking context
+  не создаёт.
+- **`.cloudy-search` ≠ `.cloudy-searchbox`**: первое — кликабельная «поисковая строка» топбара (300px,
+  kbd), второе — реальный input списка из `cloudy-list.less`. Не путать/не объединять.
+- **Сортировка списков**: `Sort="FullName"` НЕ работает (FullName `[NotMapped]` у `UserEntity`) —
+  использовать маппед-поля (`LastName`, `-CreatedAt`).
+- **`ListDataResult.Empty()` при пустой выборке** → `TotalCount == null`, не 0 (`ToListDataResult` в
+  `src/Server/Mars.Data/Extensions/ListDataExtensions.cs`) — счётчики писать через `?? 0`.
+- **Фильтр `Roles`** в `UserRepository.ListAllInternal` — семантика `Any` («имеет хотя бы одну роль»);
+  до 2026-10-06 был баг `All` (пользователь должен иметь ВСЕ указанные роли и никакие другие).
+- **Мёртвый `EUserStatus`**: `UserEntity.Status` никогда не пишется и не маппится в DTO — колонки
+  «статус пользователя» в UI не существует; не показывать фейк.
+- **Сборка при живом `tools/ui/serve.ps1`** ломает fingerprint-ассеты (404 на .wasm) — сначала
+  остановить сервер (детали: память проекта `wasm-fingerprint-stale-server`).
+- После коммита, затрагивающего css/js — bump `MarsAppVersion` в `Directory.Build.props` (cache-busting).
+
+## Инварианты
+
+- Новые/переделанные страницы — только классы `cloudy.*` / `cloudy-tech.*` / `cloudy-list.*` и токены
+  `--cld-*` / `--ct-*`; хардкод цветов — только rgba-«проливки» статусов (работают в обеих темах).
+- Палитра — из прототипа (`main.css`); новые оттенки сначала искать там (`:root` / `.tech.light`).
+- Метод замещения: старые страницы продолжают работать в `CloudyLayout` (их стили на `--mars-*`
+  флипаются темой автоматически); «старое пока игнорируем» (пользователь, 2026-10-06).
+- Blazor-компоненты ≤ ~400–500 строк (razor + code-behind суммарно).
+- Проверка точечная: `build-css.ps1 -Entry admin -Check` + `dotnet build` затронутых проектов;
+  визуальная проверка — пользователем (или `tools/ui` crawl/probe, БЕЗ скриншотов по умолчанию).
+
+## Отклонено
+
+- Раздельные переключатели темы для cloudy/tech-зон (как sun/moon в TechTopBar прототипа) — пока
+  глобальный; идея отложена (2026-10-06).
+- Подсчёт пользователей по ролям (чипы-счётчики, ролевые KPI) — убрано; KPI = Total + New this month.
+- Колонки Status/Last active из прототипа — нет реальных данных (см. грабли); заменены на CreatedAt.
+- `DeskDemoPage` из прототипа не переносить.
+- Мега-компонент «конструктор страниц» — вместо него мелкие компонуемые компоненты + CSS-паттерны.
+- Пиксель-перфект по скриншотам прототипа.
+
+## Статус / следующие шаги
+
+- Готовы: лэйауты + топбары/сайдбары, темизация обеих зон, шаг 1 (Index/Posts/Categories/Users/
+  Settings + моки Dashboard/Legion), шаг 2 (TechViews-моки + рабочая TechLogsPage), паттерны списков
+  (cloudy-list.less + 8 компонентов), UsersPage мигрирована на них.
+- Дальше: обсудить FluentDataGrid (что остаётся гридом, что переводится на `.cloudy-list`);
+  перенос Posts/Categories на list-паттерны; редактор поста и Nodes — ПОСЛЕДНИЕ шаги редизайна.

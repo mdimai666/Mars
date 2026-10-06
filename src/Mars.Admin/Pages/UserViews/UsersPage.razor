@@ -8,115 +8,88 @@
 @attribute [Display(Name = "Пользователи")]
 @attribute [DParentPage(typeof(SettingsPage))]
 
-<div class="flex-fill d-flex flex-column">
-    <header class="cloudy-hero">
-        <h1>@AppRes.Users</h1>
-        <p>Manage accounts, roles and access.</p>
-    </header>
+<CloudyPageHead Title="@AppRes.Users" Subtitle="Manage accounts, roles and access." KpiCols="2">
+    <Kpis>
+        <CloudyKpi Label="Total users" Value="@Fmt(_totalAll)" Icon="bi-people" />
+        <CloudyKpi Label="New this month" Value="@Fmt(_newThisMonth)" Icon="bi-person-plus" />
+    </Kpis>
+</CloudyPageHead>
 
-    <section class="cloudy-acrylic">
-        <div class="cloudy-acrylic__body">
+<CloudyBrowser>
+    <HeadLeft>
+        <CloudyChips Items="RoleNames" Selected="_roleFilter" SelectedChanged="SetRoleFilter" />
+    </HeadLeft>
+    <HeadRight>
+        <CloudySearchBox Placeholder="Search users…" ValueChanged="OnSearchChanged" />
+        <button type="button" class="cloudy-btn-primary" @onclick="OnClickCreateUser">@AppRes.Create</button>
+    </HeadRight>
 
-    <div class="hstack">
-        <FluentTextInput @bind-Value=_searchText
-                      @bind-Value:after=HandleSearchInput
-                      Immediate
-                      ImmediateDelay="300"
-                      Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search">
-            <StartTemplate>
-                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
-            </StartTemplate>
-        </FluentTextInput>
-        <div class="ms-auto">
-            <FluentButton Appearance="ButtonAppearance.Primary"
-                          OnClick="OnClickCreateUser"
-                          IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-            @* <a href="@urlEditPage">
-                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-            </a> *@
+    <ChildContent>
+        <div class="cloudy-list users-list">
+            <div class="cloudy-list__head">
+                <span></span>
+                <span>Member</span>
+                <span>@AppRes.Roles</span>
+                <span class="u-hide-1100">@AppRes.CreatedAt</span>
+                <span></span>
+            </div>
+
+            @if (_users.Count > 0)
+            {
+                <ul class="cloudy-list__items">
+                    @{
+                        var idx = 0;
+                    }
+                    @foreach (var user in _users)
+                    {
+                        var rowIdx = idx++;
+                        <li class="cloudy-list__row">
+                            <CloudyAvatar Name="@user.FullName" ImageUrl="@user.AvatarUrl" Tint="@rowIdx" />
+                            <div class="cloudy-stack">
+                                <a class="cloudy-stack__title" href="@urlEditPage/@user.Id" title="@user.FullName">@user.FullName</a>
+                                <span class="cloudy-stack__sub" title="@user.Email">@user.Email</span>
+                            </div>
+                            <div class="cloudy-tags u-hide-900">
+                                @foreach (var r in user.Roles.Take(2))
+                                {
+                                    <CloudyTag Text="@r" Tint="@RoleTint(r)" />
+                                }
+                                @if (user.Roles.Count > 2)
+                                {
+                                    <CloudyTag Text="@($"+{user.Roles.Count - 2}")" Muted />
+                                }
+                            </div>
+                            <time class="cloudy-time u-hide-1100" title="@user.CreatedAt.ToString("g")">@user.CreatedAt.ToString("dd.MM.yy")</time>
+                            <div class="cloudy-row-actions">
+                                <DFluentDeleteButton OnConfirm=@(e => Delete(user.Id))>
+                                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                </DFluentDeleteButton>
+                                <FluentButton Id="@($"useractions-{user.Id}")" Appearance="ButtonAppearance.Subtle"
+                                              IconStart="@(new Icons.Regular.Size20.MoreHorizontal())"
+                                              aria-label="More actions" />
+                                <FluentMenu Trigger="@($"useractions-{user.Id}")" OnClick="@(e => OnUserMenuClick(e, user))">
+                                    <FluentMenuList>
+                                        <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
+                                        <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                                    </FluentMenuList>
+                                </FluentMenu>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else if (_loaded)
+            {
+                <p class="cloudy-empty">No users match your search.</p>
+            }
         </div>
-    </div>
+    </ChildContent>
 
-    <div class="mt-4">
-        <div style="height: 534px; overflow:auto;">
-            <FluentDataGrid ItemsProvider="dataProvider"
-                            @ref=table
-                            ItemSize="46"
-                            Virtualize
-                            ShowHover="false"
-                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                            OnRowClick="OnRowClick"
-                            GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
-                            Class="data-table--adaptive"
-                            TGridItem="UserDetailResponse">
-                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.LastName))"
-                                Title="FullName"
-                                InitialSortDirection="DataGridSortDirection.Ascending"
-                                IsDefaultSortColumn="true"
-                                Sortable="true">
-                    <div class="vstack">
-                        <div class="hstack gap-2">
-                            <FluentAvatar Name="@context.FullName"
-                                          Image="@context.AvatarUrl"
-                                          Size="AvatarSize.Size32"
-                                          Color="AvatarColor.Brand" />
-                            <a href="@urlEditPage/@context.Id" class="text-primary">@context.FullName</a>
-                        </div>
-                    </div>
-                </TemplateColumn>
-                <PropertyColumn Property="@(f => f.Email)" Title="@AppRes.Email" Sortable="true" />
-                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.Roles))"
-                                Sortable="false"
-                                Title="@AppRes.Roles"
-                                Filtered="_roleFilter.Any()">
-                    <ChildContent>
-                        <FluentOverflow TItem="string" Style="width: 100%;">
-                            @foreach (var role in context.Roles)
-                            {
-                                <FluentBadge Color="BadgeColor.Informative">@role</FluentBadge>
-                            }
-                        </FluentOverflow>
-                    </ChildContent>
-                    <ColumnOptions>
-                        <div class="search-box">
-                            <FluentAutocomplete TOption="string" TValue="string"
-                                                Label="@AppRes.Roles"
-                                                Items="@_availRoles.Select(s=>s.Name)"
-                                                Placeholder="Select"
-                                                IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                                ValueChanged="HandleSearchInput"
-                                                @bind-SelectedItems="@_roleFilter" />
-                        </div>
-                    </ColumnOptions>
-                </TemplateColumn>
-                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Sortable="true" />
-                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                    <div class="hstack">
-                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
-                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
-                        </DFluentDeleteButton>
-                        <FluentButton Id="@($"useractions-{context.Id}")" Appearance="ButtonAppearance.Subtle"
-                                      IconEnd="@(new Icons.Regular.Size16.ChevronDown())">@AppRes.Action</FluentButton>
-                        <FluentMenu Trigger="@($"useractions-{context.Id}")" OnClick="@(e => OnUserMenuClick(e, context))">
-                            <FluentMenuList>
-                                <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
-                                <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
-                            </FluentMenuList>
-                        </FluentMenu>
-                    </div>
-                </TemplateColumn>
-            </FluentDataGrid>
-        </div>
-        <br />
-        <div class="hstack">
-            <TotalResultsFound TotalCount="@data.TotalCount" />
-        </div>
-    </div>
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+        <CloudyPager Skip="_skip" Total="_total" PageSize="PageSize" SkipChanged="OnSkipChanged" />
+    </Foot>
+</CloudyBrowser>
 
-    <CreateUserModal @bind-Visible="visibleCreateUserModal" Content="createFormData" AfterCreate="HandleSearchInput" />
-    <ChangePasswordModal @bind-Visible="visibleChangeUserPasswordModal" Content="changeUserPasswordFormData" />
-
-        </div>
-    </section>
-</div>
+<CreateUserModal @bind-Visible="visibleCreateUserModal" Content="createFormData" AfterCreate="HandleSearchInput" />
+<ChangePasswordModal @bind-Visible="visibleChangeUserPasswordModal" Content="changeUserPasswordFormData" />

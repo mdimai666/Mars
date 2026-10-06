@@ -1,0 +1,22 @@
+<header class="cloudy-hero cloudy-hero--split">
+    <div>
+        <h1>@Title</h1>
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <p>@Subtitle</p>
+        }
+    </div>
+    @if (Kpis is not null)
+    {
+        <div class="cloudy-kpis" style="--cloudy-kpi-cols:@KpiCols">
+            @Kpis
+        </div>
+    }
+</header>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public int KpiCols { get; set; } = 4;
+    [Parameter] public RenderFragment? Kpis { get; set; }
+}

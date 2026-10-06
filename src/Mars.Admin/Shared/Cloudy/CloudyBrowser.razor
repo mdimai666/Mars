@@ -1,0 +1,22 @@
+<section class="cloudy-browser @Class">
+    @if (HeadLeft is not null || HeadRight is not null)
+    {
+        <header class="cloudy-browser__head">
+            <div class="cloudy-browser__head-left">@HeadLeft</div>
+            <div class="cloudy-browser__head-right">@HeadRight</div>
+        </header>
+    }
+    @ChildContent
+    @if (Foot is not null)
+    {
+        <footer class="cloudy-browser__foot">@Foot</footer>
+    }
+</section>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? HeadLeft { get; set; }
+    [Parameter] public RenderFragment? HeadRight { get; set; }
+    [Parameter] public RenderFragment? Foot { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,23 @@
+@if (!string.IsNullOrEmpty(ImageUrl))
+{
+    <span class="cloudy-avatar cloudy-avatar--img" style="background-image:url('@ImageUrl')"></span>
+}
+else
+{
+    <span class="cloudy-avatar cloudy-tint-@(Tint % 5)">@Initials()</span>
+}
+
+@code {
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? ImageUrl { get; set; }
+    [Parameter] public int Tint { get; set; }
+
+    string Initials()
+    {
+        if (string.IsNullOrWhiteSpace(Name)) return "";
+        var letters = Name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(w => char.ToUpper(w[0]));
+        return new string(letters.ToArray());
+    }
+}

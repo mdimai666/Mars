@@ -1,119 +1,118 @@
-using System.Collections.ObjectModel;
-using Mars.Admin.Framework.Dialogs;
-using Mars.Admin.Pages.FeedbackViews;
 using Mars.Identity.Contracts.Roles;
 using Mars.Identity.Contracts.Users;
 using Mars.Identity.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
 namespace Mars.Admin.Pages.UserViews;
 
 public partial class UsersPage
 {
+    const int PageSize = 50;
+
     string urlEditPage = "/dev/EditUser";
 
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
-    [Inject] IDialogService _dialogService { get; set; } = default!;
-    [Inject] IMessageService _messageService { get; set; } = default!;
 
-    FluentDataGrid<UserDetailResponse> table = default!;
     string _searchText = "";
-    IEnumerable<string> _roleFilter = [];
-    ListDataResult<UserDetailResponse> data = ListDataResult<UserDetailResponse>.Empty();
-
-    GridItemsProvider<UserDetailResponse> dataProvider = default!;
-
+    string? _roleFilter;
+    int _skip;
+    int? _total;
+    int? _totalAll;
+    int? _newThisMonth;
+    bool _loaded;
+    List<UserDetailResponse> _users = [];
     IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
-    protected override void OnParametersSet()
+    IReadOnlyCollection<string> RoleNames => _availRoles.Select(r => r.Name).ToList();
+
+    protected override async Task OnInitializedAsync()
     {
-        dataProvider = new GridItemsProvider<UserDetailResponse>(
-            async req =>
-            {
-                var sortBy = req.GetSortByProperties();
-                var sortColumn = sortBy.Count == 0
-                                        ? nameof(UserDetailResponse.FullName)
-                                        : sortBy.First().PropertyName;
-                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
-
-                //_roleFilter
-
-                data = await _client.User.ListDetail(new()
-                {
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-
-                    Roles = _roleFilter.ToList(),
-                });
-
-                var collection = new Collection<UserDetailResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
-
-        //_ = Load();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
+        try
         {
-            Task.Run(async () =>
-            {
-                _availRoles = (await _client.Role.List(new())).Items;
-            });
+            _availRoles = (await _client.Role.List(new())).Items;
+            await Task.WhenAll(LoadUsers(), LoadKpi());
+        }
+        finally
+        {
+            _loaded = true;
         }
     }
 
-    void HandleSearchInput()
+    async Task LoadUsers()
     {
-        table.RefreshDataAsync();
+        var data = await _client.User.ListDetail(new()
+        {
+            Skip = _skip,
+            Take = PageSize,
+            Sort = "LastName",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            Roles = _roleFilter is null ? null : [_roleFilter],
+        });
+
+        _users = [.. data.Items];
+        _total = data.TotalCount ?? _users.Count;
+        if (_roleFilter is null && string.IsNullOrWhiteSpace(_searchText))
+        {
+            _totalAll = _total;
+        }
     }
 
-    async void OnRowClick(FluentDataGridRow<UserDetailResponse> row)
+    async Task LoadKpi()
     {
+        var all = await _client.User.ListDetail(new() { Take = 1, Sort = "LastName" });
+        _totalAll = all.TotalCount ?? 0;
 
-        if (row.Item is null) return;
-        return;
+        var now = DateTimeOffset.Now;
+        var monthStart = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, now.Offset);
+        var fresh = await _client.User.ListDetail(new() { Take = 1, Sort = "LastName", CreatedFrom = monthStart });
+        _newThisMonth = fresh.TotalCount ?? 0;
+    }
 
-        DialogParameters parameters = new()
-        {
-            Title = row.Item.FullName,
-            //PrimaryActionEnabled = false,
-            //PrimaryAction = "Yes",
-            //Width = "500px",
-            //TrapFocus = _trapFocus,
-            //Modal = _modal,
-            PreventScroll = true
-        };
+    async Task OnSearchChanged(string text)
+    {
+        _searchText = text;
+        _skip = 0;
+        await LoadUsers();
+    }
 
-        var detail = await _client.NavMenu.Get(row.Item.Id);
+    async Task SetRoleFilter(string? role)
+    {
+        _roleFilter = role;
+        _skip = 0;
+        await LoadUsers();
+    }
 
-        if (detail is not null)
-        {
-            IDialogReference dialog = await _dialogService.ShowDialogAsync<ViewFeedbackDialog>(detail, parameters);
-            DialogResult? result = await dialog.Result;
-        }
-        else
-        {
-            _ = _messageService.Error("element not found");
-        }
-
+    async Task OnSkipChanged(int skip)
+    {
+        _skip = skip;
+        await LoadUsers();
     }
 
     public async Task Delete(Guid id)
     {
         await _client.User.Delete(id).SmartDelete();
-        _ = table.RefreshDataAsync();
+        await Task.WhenAll(LoadUsers(), LoadKpi());
     }
+
+    public async Task HandleSearchInput()
+    {
+        _skip = 0;
+        await Task.WhenAll(LoadUsers(), LoadKpi());
+    }
+
+    static string Fmt(int? v) => v?.ToString() ?? "—";
+
+    int TintIndex(string role)
+    {
+        var i = _availRoles.Select(r => r.Name).ToList()
+            .FindIndex(n => string.Equals(n, role, StringComparison.OrdinalIgnoreCase));
+        return (i < 0 ? 0 : i) % 5;
+    }
+
+    int? RoleTint(string role)
+        => role.Equals("admin", StringComparison.OrdinalIgnoreCase) ? null : TintIndex(role);
 
     bool visibleCreateUserModal;
     CreateUserEditFormData createFormData = new();
@@ -137,7 +136,6 @@ public partial class UsersPage
                                     ?? "";
 
         visibleCreateUserModal = true;
-
     }
 
     bool visibleChangeUserPasswordModal;

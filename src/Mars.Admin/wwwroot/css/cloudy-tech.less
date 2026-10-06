@@ -263,13 +263,35 @@
     scrollbar-width: thin;
 }
 
-// UserBar (bootstrap) на тёмном фоне
+// UserBar на тёмном фоне
 .cloudy-tech {
-    .user-name {
-        color: var(--ct-ink);
+    .cloudy-user-menu {
+        border-color: var(--ct-line);
+        background: var(--ct-card);
+        box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
 
-        .text-secondary {
-            color: var(--ct-muted);
+        &__item {
+            color: var(--ct-item-ink);
+
+            &:hover,
+            &:active {
+                background: var(--ct-accent-soft);
+                color: var(--ct-nav-active);
+            }
+
+            &--danger {
+                color: #ff6b70;
+
+                &:hover,
+                &:active {
+                    background: rgba(255, 107, 112, .12);
+                    color: #ff6b70;
+                }
+            }
+        }
+
+        &__sep {
+            background: var(--ct-line);
         }
     }
 }

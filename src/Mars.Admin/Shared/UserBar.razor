@@ -1,3 +1,4 @@
+@using Microsoft.FluentUI.AspNetCore.Components
 @using System
 @using System.Collections.Generic
 @using System.Linq
@@ -23,43 +24,26 @@
 }
 else
 {
-    <div class="dropdown">
-        <a type="button" class="1dropdown-toggle " data-bs-toggle="dropdown">
-            <div class="d-flex align-items-center">
-                @* <div class="user-avatar user-select-none"> *@
-                @* <div class="icon-user"></div> *@
-
-                <Microsoft.FluentUI.AspNetCore.Components.FluentAvatar Initials=@Q.User.Initials()
-                                                                        Image="@Q.User.AvatarUrl"
-                                                                        Color="Microsoft.FluentUI.AspNetCore.Components.AvatarColor.Brand"
-                                                                        Size="Microsoft.FluentUI.AspNetCore.Components.AvatarSize.Size56" />
-
-                @* </div> *@
-                <div class="user-name text-black2 d-none d-lg-block ms-3">
-                    <div class="_email fz16px fw-600">@Q.User.FirstName</div>
-                    <div class="text-secondary fz12px fw-400">@Q.User.Email</div>
-                </div>
-            </div>
+    <div class="dropdown cloudy-userbar">
+        <a type="button" class="cloudy-userbar__trigger" data-bs-toggle="dropdown" aria-expanded="false" title="@Q.User.Email">
+            <FluentAvatar Initials="@Q.User.Initials()"
+                          Image="@Q.User.AvatarUrl"
+                          Color="AvatarColor.Brand"
+                          Size="AvatarSize.Size40" />
         </a>
-        <ul class="dropdown-menu dropdown-menu-end Montserrat rounded-0 shadow">
-            @*<li><a class="dropdown-item" href="/Personal">Личный кабинет</a></li>*@
-            <li><a class="dropdown-item" href="EditUser/@Q.User.Id">Профиль</a></li>
-            <li><a class="dropdown-item" href="/dev/ApiKeys">API-ключи</a></li>
-            <li><a class="dropdown-item" href="/dev/Passkeys">Пасскеи</a></li>
-            @*<li><a class="dropdown-item" href="/EditUser">Профиль</a></li>*@
+        <div class="dropdown-menu dropdown-menu-end cloudy-user-menu">
+            <a class="cloudy-user-menu__item" href="EditUser/@Q.User.Id">Профиль</a>
+            <a class="cloudy-user-menu__item" href="/dev/ApiKeys">API-ключи</a>
+            <a class="cloudy-user-menu__item" href="/dev/Passkeys">Пасскеи</a>
 
             @if (Q.User.IsAdmin)
             {
-                @* <li><a class="dropdown-item" href="@Q.ClientUrlJoin("/Admin")">Админка</a></li> *@
-                <li class=""><a class="dropdown-item" href="/dev/builder">builder</a></li>
+                <a class="cloudy-user-menu__item" href="/dev/builder">Builder</a>
             }
 
-            @* <li class="ondark-block"><a class="dropdown-item f-dark-theme-toggle">Светлая тема</a></li> *@
-            @* <li class="onlight-block"><a class="dropdown-item f-dark-theme-toggle">Темная тема</a></li> *@
-
-            <li><hr size="1" class="dropdown-divider" /></li>
-            <li><a class="dropdown-item text-danger1" href="/dev/logout">Выйти</a></li>
-        </ul>
+            <div class="cloudy-user-menu__sep"></div>
+            <a class="cloudy-user-menu__item cloudy-user-menu__item--danger" href="/dev/logout">Выйти</a>
+        </div>
     </div>
 }
 

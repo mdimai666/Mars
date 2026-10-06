@@ -141,7 +141,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 480px;
+    width: 300px;
+    max-width: 300px;
     height: 46px;
     padding: 0 14px;
     border-radius: 12px;
@@ -198,43 +199,61 @@
     }
 }
 
-.cloudy-mode {
+.cloudy-avatar {
     display: flex;
-    gap: 2px;
-    padding: 4px;
-    border: 1px solid var(--cld-line);
-    border-radius: 13px;
-    background: var(--cld-white);
+    align-items: center;
+}
 
-    &__btn {
+//------------- юзер-меню (UserBar) -------------
+.cloudy-userbar {
+    &__trigger {
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding: 7px 14px;
-        border: none;
-        border-radius: 9px;
-        background: transparent;
-        color: var(--cld-muted);
-        font-size: 13.5px;
-        font-weight: 600;
         cursor: pointer;
         text-decoration: none;
+    }
+}
 
-        &.active {
+.cloudy-user-menu {
+    min-width: 220px;
+    padding: 8px;
+    border: 1px solid var(--cld-line);
+    border-radius: 14px;
+    background: var(--cld-white);
+    box-shadow: 0 18px 44px rgba(38, 45, 58, .16);
+
+    &__item {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--cld-ink-ui);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+
+        &:hover,
+        &:active {
             background: var(--cld-primary-soft);
             color: var(--cld-primary);
         }
 
-        &--dev.active {
-            background: var(--cld-dev-soft);
-            color: var(--cld-dev);
+        &--danger {
+            color: var(--cld-red-badge);
+
+            &:hover,
+            &:active {
+                background: rgba(229, 72, 77, .1);
+                color: var(--cld-red-badge);
+            }
         }
     }
-}
 
-.cloudy-avatar {
-    display: flex;
-    align-items: center;
+    &__sep {
+        height: 1px;
+        margin: 6px 4px;
+        background: var(--cld-line);
+    }
 }
 
 //------------- тело: сайдбар + контент -------------

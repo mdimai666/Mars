@@ -35,13 +35,8 @@
             </FluentMenu>
         </div>
 
-        <div class="cloudy-mode" role="group" aria-label="Режим работы">
-            <a class="cloudy-mode__btn active" href="/dev/">Сайт</a>
-            <a class="cloudy-mode__btn cloudy-mode__btn--dev" href="/dev/tech/automation">
-                <i class="bi bi-code-slash"></i>
-                Разработка
-            </a>
-        </div>
+        <FluentButton Class="cloudy-dev-btn" Size="ButtonSize.Small" Title="Технический режим"
+                      @onclick='() => Nav.NavigateTo("/dev/tech/automation")'>D</FluentButton>
 
         <div class="cloudy-avatar">
             <UserBar />

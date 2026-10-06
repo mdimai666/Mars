@@ -2,40 +2,13 @@
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Настройки")]
 
-<div class="flex-fill d-flex flex-column">
-    <header class="cloudy-hero">
-        <h1>Настройки</h1>
-        <p>Manage your site preferences.</p>
-    </header>
-
-    <section class="cloudy-acrylic">
-        <div class="cloudy-acrylic__body">
-            <div class="cloudy-settings d-flex flex-column flex-lg-row flex-fill gap-4">
-                <aside class="cloudy-settings__aside">
-                    <ASideOptions />
-                </aside>
-                <div class="flex-fill">
-                    <div class="float-end position-relative z-1">
-                        <XActionsDropDown ContextPart="wrapper" />
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-9">
-                            <Mars.Admin.Framework.OptionEditForms.SiteSettingsEditForm />
-                        </div>
-                        <div class="col-12 col-xl-3">
-                            <NavLink href="/dev/builder/styler">Изменить цвета системы</NavLink>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<SettingsPageWrapper Subtitle="Manage your site preferences.">
+    <div class="row">
+        <div class="col-12 col-xl-9">
+            <Mars.Admin.Framework.OptionEditForms.SiteSettingsEditForm />
         </div>
-    </section>
-</div>
-
-<style>
-    @@media (min-width: 1200px) {
-        .cloudy-settings .cloudy-settings__aside {
-            flex: 0 0 200px;
-        }
-    }
-</style>
+        <div class="col-12 col-xl-3">
+            <NavLink href="/dev/builder/styler">Изменить цвета системы</NavLink>
+        </div>
+    </div>
+</SettingsPageWrapper>

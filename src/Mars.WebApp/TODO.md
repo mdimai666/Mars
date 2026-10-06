@@ -86,3 +86,4 @@
 # Features
 [ ] - Add AI functions https://devblogs.microsoft.com/dotnet/local-ai-models-with-dotnet-aspire/
 [ ] - NodeJs Plugin (Vite, Vue, React from admin)  https://learn.microsoft.com/en-us/dotnet/aspire/get-started/build-aspire-apps-with-nodejs
+[ ] - Agent chat components [Build Agentic UI with the new Blazor AI components - .NET Blog](https://devblogs.microsoft.com/dotnet/build-agentic-ui-blazor/)

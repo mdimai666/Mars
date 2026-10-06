@@ -81,7 +81,9 @@
 
 .cloudy-tech-topbar {
     position: relative;
-    z-index: 1;
+    // выше контента страницы: дропдаун UserBar заперт в stacking context топбара,
+    // и при z-index:1 меню перекрывали панели страниц
+    z-index: 30;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
@@ -204,7 +206,8 @@
 
 .cloudy-tech-body {
     position: relative;
-    z-index: 1;
+    // без z-index: не создавать stacking context, иначе фиксированная модалка
+    // страницы логов (z-index 60+) окажется под топбаром (z-index 30)
     flex: 1;
     min-height: 0;
     display: flex;

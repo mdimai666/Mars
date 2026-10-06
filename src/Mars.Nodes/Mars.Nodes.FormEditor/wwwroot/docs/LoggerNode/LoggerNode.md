@@ -3,4 +3,4 @@
 Write some message in log file
 /app/logs/{date}.log
 
-[/dev/builder/debug](/dev/builder/debug)
+[/dev/tech/logs](/dev/tech/logs)

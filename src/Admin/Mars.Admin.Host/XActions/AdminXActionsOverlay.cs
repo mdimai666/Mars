@@ -1,9 +1,9 @@
 #if !NOADMIN
-using Mars.Admin.Builder.DebugViews;
 using Mars.Admin.Builder.NodeViews;
 using Mars.Admin.Pages.PostsViews;
 using Mars.Admin.Pages.PostTypeViews;
 using Mars.Admin.Pages.Settings;
+using Mars.Admin.Pages.TechViews;
 #endif
 using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Builder;
@@ -35,10 +35,10 @@ internal static class AdminXActionsOverlay
         actionManager.AddFrontContexts("App.Logs", typeof(SettingsAboutSystemPage).FullName!);
 
         actionManager.Add(a => a
-            .Id(typeof(DebugPage).FullName!)
+            .Id(typeof(TechLogsPage).FullName!)
             .Label("Логи")
             .Category("Разработка")
-            .Link("builder/debug")
+            .Link("tech/logs")
             .FrontContexts(typeof(SettingsPage).FullName!, typeof(NodeRedPage).FullName!));
 
 #if DEBUG

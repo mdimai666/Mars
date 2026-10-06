@@ -284,3 +284,22 @@ window.d_actionCenter_preventArrowCaret = function (element) {
         }
     });
 };
+
+// Скачать текст как файл (Export на странице логов и т.п.)
+window.marsDownloadText = function (filename, text) {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+};
+
+// Текущая эффективная тема FluentUI v5 (data-theme на body ставит IThemeService)
+window.marsIsDarkTheme = function () {
+    const t = document.body.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+};

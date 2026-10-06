@@ -70,6 +70,22 @@ public class LogFileFilterTests : IDisposable
     }
 
     [Fact]
+    public void FilterLines_ByUntil_DropsNewerEntries()
+    {
+        var log = string.Join('\n',
+            Entry("2026-08-10T09:00:00.0000000+09:00", "WARN", "day10"),
+            Entry("2026-08-11T23:59:59.0000000+09:00", "WARN", "day11-late"),
+            Entry("2026-08-12T00:00:01.0000000+09:00", "WARN", "day12"));
+
+        using var reader = new StringReader(log);
+        var until = new DateTime(2026, 8, 11).AddDays(1).AddTicks(-1);
+        var result = LogFileFilter.FilterLines(reader, null, null, until).ToArray();
+
+        result.Should().HaveCount(2);
+        result.Should().NotContain(l => l.Contains("day12"));
+    }
+
+    [Fact]
     public void FilterLines_LegacyFormat_StillParsed()
     {
         var log = string.Join('\n',
@@ -127,6 +143,22 @@ public class LogFileFilterTests : IDisposable
         var result = LogFileFilter.ReadSeamless(dir, null, new DateTime(2026, 8, 11), 1000);
 
         result.Should().ContainSingle().Which.Should().Contain("day11");
+    }
+
+    [Fact]
+    public void ReadSeamless_SkipsFilesNewerThanUntil()
+    {
+        WriteLogFile("2026-08-10",
+            Entry(new DateTimeOffset(2026, 8, 10, 10, 0, 0, Tz), "WARN", "day10"));
+        WriteLogFile("2026-08-11",
+            Entry(new DateTimeOffset(2026, 8, 11, 12, 0, 0, Tz), "WARN", "day11"));
+        WriteLogFile("2026-08-12",
+            Entry(new DateTimeOffset(2026, 8, 12, 12, 0, 0, Tz), "WARN", "day12"));
+
+        var result = LogFileFilter.ReadSeamless(dir, null, null, 1000, new DateTime(2026, 8, 11, 23, 59, 59));
+
+        result.Should().HaveCount(2);
+        result.Should().NotContain(l => l.Contains("day12"));
     }
 
     [Fact]

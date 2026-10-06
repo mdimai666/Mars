@@ -1,4 +1,8 @@
 @page "/tech/logs"
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+@inject IJSRuntime JS
 
 <PageTitle>Logs</PageTitle>
 
@@ -9,86 +13,119 @@
             <p>Platform events and diagnostics.</p>
         </div>
         <div class="hero-actions">
-            <button class="live-btn" type="button">
+            <button class="live-btn @(_live ? "on" : null)" type="button" @onclick="ToggleLive" title="Автообновление каждые 5 секунд">
                 <span class="live-dot"></span>
                 Live
             </button>
-            <button class="export-btn" type="button">
+            <button class="export-btn" type="button" @onclick="Export" title="Скачать текущую выборку">
                 <i class="bi bi-box-arrow-up"></i>
                 Export
             </button>
+            <div class="view-switch">
+                <FluentSwitch @bind-Value="_monacoView" @bind-Value:after="OnViewChanged" Label="Monaco" />
+            </div>
         </div>
     </header>
 
     <section class="logs-panel">
         <header class="logs-head">
             <div class="chips">
-                @foreach (var chip in _chips)
+                @foreach (var chip in CurrentChips)
                 {
-                    <button class="chip @(_filter == chip.Id ? "active" : null)" type="button" @onclick="() => _filter = chip.Id">
+                    <button class="chip @(IsChipActive(chip.Id) ? "active" : null)" type="button" @onclick="() => OnChipClick(chip.Id)">
                         @chip.Label
                     </button>
                 }
             </div>
-            <label class="logs-search">
-                <i class="bi bi-search"></i>
-                <input type="text" placeholder="Search logs..." @bind="_query" @bind:event="oninput" />
-            </label>
+            <div class="head-right">
+                <button class="dates-toggle @(_dateMode ? "on" : null)" type="button" @onclick="ToggleDateMode"
+                        title="@(_dateMode ? "Быстрые периоды" : "Фильтр по датам")">
+                    <i class="bi bi-calendar3"></i>
+                </button>
+                @if (_dateMode)
+                {
+                    <div class="date-filter">
+                        <input type="date" @bind="_from" @bind:after="OnDateChanged" title="Дата с" />
+                        <span class="date-filter__sep">—</span>
+                        <input type="date" @bind="_to" @bind:after="OnDateChanged" title="Дата по" />
+                        @if (_from is not null || _to is not null)
+                        {
+                            <button class="date-filter__reset" type="button" @onclick="ResetDates" title="Сбросить даты">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="chips">
+                        @foreach (var chip in PeriodChips)
+                        {
+                            <button class="chip @(_period == chip.Id ? "active" : null)" type="button" @onclick="() => OnPeriodClick(chip.Id)">
+                                @chip.Label
+                            </button>
+                        }
+                    </div>
+                }
+                @if (!_monacoView)
+                {
+                    <label class="logs-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search logs..." @bind="_query" @bind:event="oninput" />
+                    </label>
+                }
+            </div>
         </header>
 
-        <ul class="logs-list">
-            @foreach (var log in Filtered())
-            {
-                <li class="log-row">
-                    <time>@log.Time</time>
-                    <span class="level @log.Level">@log.Level</span>
-                    <span class="source">@log.Source</span>
-                    <span class="message">@log.Message</span>
-                </li>
-            }
-            @if (!Filtered().Any())
-            {
-                <li class="empty">No log entries match.</li>
-            }
-        </ul>
+        @if (Busy)
+        {
+            <div class="empty">Loading…</div>
+        }
+        else if (error is not null)
+        {
+            <div class="empty error">@error</div>
+        }
+        else if (_monacoView)
+        {
+            <div class="logs-monaco">
+                <CodeEditor2 Lang="@CodeEditor2.Language.log" Value="@text" @ref="editor" OnInit="OnEditorInit"
+                             ContainerCssStyle="height:100%;border:none;border-radius:0;overflow:hidden;"
+                             OptionsJson='{"wordWrap":"off","minimap":{"enabled":false},"readOnly":true}' />
+            </div>
+        }
+        else
+        {
+            <ul class="logs-list">
+                @foreach (var log in FilteredEntries())
+                {
+                    <li class="log-row" title="Показать запись целиком" @onclick="() => ShowEntry(log)">
+                        <time>@FormatTime(log.Ts)</time>
+                        <span class="level @log.Level.ToLowerInvariant()">@log.Level</span>
+                        <span class="source">@log.Source</span>
+                        <span class="message">@log.Message</span>
+                    </li>
+                }
+                @if (!FilteredEntries().Any())
+                {
+                    <li class="empty">No log entries match.</li>
+                }
+            </ul>
+        }
     </section>
 </div>
 
-@code {
-    private record Chip(string Id, string Label);
-
-    private record LogEntry(string Time, string Level, string Source, string Message);
-
-    private string _filter = "all";
-    private string _query = "";
-
-    private readonly Chip[] _chips =
-    [
-        new("all", "All"),
-        new("error", "Errors"),
-        new("warn", "Warnings"),
-        new("info", "Info"),
-        new("debug", "Debug"),
-    ];
-
-    private readonly LogEntry[] _logs =
-    [
-        new("14:32:08", "error", "api", "POST /api/entities 500 — timeout after 5000ms"),
-        new("14:31:54", "warn", "db", "Replica lag 2.4s on db-2"),
-        new("14:31:12", "info", "scheduler", "Cron 'cleanup' finished in 840ms"),
-        new("14:30:47", "info", "auth", "User admin@site logged in from 192.168.0.6"),
-        new("14:30:15", "debug", "legion", "Flow 'User Registration' step 4/7"),
-        new("14:29:58", "warn", "media", "Image hero-banner.png exceeds 1MB"),
-        new("14:29:31", "info", "api", "GET /api/posts 200 in 42ms"),
-        new("14:28:56", "error", "webhook", "Delivery to https://hooks.site/notify failed (ECONNREFUSED)"),
-        new("14:28:20", "debug", "cache", "Cache miss: posts:page1"),
-        new("14:27:44", "info", "entities", "Entity 'User' #128 created"),
-        new("14:27:03", "warn", "auth", "3 failed login attempts for user 'editor'"),
-        new("14:26:19", "info", "backup", "Snapshot created (24 MB)"),
-    ];
-
-    private IEnumerable<LogEntry> Filtered() =>
-        _logs.Where(log =>
-            (_filter == "all" || log.Level == _filter) &&
-            log.Message.Contains(_query, StringComparison.OrdinalIgnoreCase));
+@if (_entry is not null)
+{
+    <div class="log-modal-backdrop" @onclick="CloseEntry"></div>
+    <div class="log-modal" role="dialog" aria-modal="true">
+        <header class="log-modal__head">
+            <span class="level @_entry.Level.ToLowerInvariant()">@_entry.Level</span>
+            <span class="log-modal__ts">@_entry.Ts.ToString("yyyy-MM-dd HH:mm:ss")</span>
+            <span class="log-modal__source">@_entry.Source</span>
+            <button class="log-modal__close" type="button" @onclick="CloseEntry" title="Закрыть">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <pre class="log-modal__text">@_entry.Message</pre>
+    </div>
 }

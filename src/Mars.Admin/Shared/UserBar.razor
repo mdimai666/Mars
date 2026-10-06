@@ -2,8 +2,11 @@
 @using System
 @using System.Collections.Generic
 @using System.Linq
+@using System.Text.Json
 @using System.Web
+@using Mars.Admin.Contracts.Options
 @using Mars.Admin.Framework.Features
+@using Mars.Options.Contracts.Dto.Options
 
 @if (Q.User is null || !Q.User.IsAuth)
 {
@@ -41,6 +44,10 @@ else
                 <a class="cloudy-user-menu__item" href="/dev/builder">Builder</a>
             }
 
+            <a class="cloudy-user-menu__item" href="#" @onclick="ToggleTheme" @onclick:preventDefault>
+                @(isDark ? "Светлая тема" : "Тёмная тема")
+            </a>
+
             <div class="cloudy-user-menu__sep"></div>
             <a class="cloudy-user-menu__item cloudy-user-menu__item--danger" href="/dev/logout">Выйти</a>
         </div>
@@ -48,14 +55,48 @@ else
 }
 
 @code {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] IJSRuntime JS { get; set; } = default!;
+
+    bool isDark;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         Q.Root.On(Q.User.GetType(), EmitTypeMode.All, OnUpdateProfile);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isDark = await JS.InvokeAsync<bool>("marsIsDarkTheme");
+            StateHasChanged();
+        }
+    }
+
     void OnUpdateProfile()
     {
         StateHasChanged();
+    }
+
+    async Task ToggleTheme()
+    {
+        var opt = Q.Site.GetOption<DevAdminStyleOption>() ?? new DevAdminStyleOption();
+        opt.StylerStyle.Mode = isDark ? "Light" : "Dark";
+
+        await client.Option.SaveOption(opt).SmartSave();
+
+        var key = nameof(DevAdminStyleOption);
+        var summary = new OptionSummaryResponse
+        {
+            Key = key,
+            Type = typeof(DevAdminStyleOption).FullName!,
+            Value = JsonSerializer.Serialize(opt)
+        };
+        Q.Site.Options = [.. Q.Site.Options.Where(s => s.Key != key), summary];
+
+        isDark = !isDark;
+        Q.Root.Emit("App.SetupTheme");
     }
 }

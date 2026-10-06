@@ -111,7 +111,7 @@ public static class MainServer
             .Id("App.Logs")
             .Label("App logs")
             .Category("Разработка")
-            .Link("/dev/builder/debug"));
+            .Link("/dev/tech/logs"));
 
 #if DEBUG
         actionManager.Add(a =>

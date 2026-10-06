@@ -1,23 +1,5 @@
 .fe-page {
-    --tech-canvas: rgba(13, 16, 32, .55);
-    --tech-grid-line: rgba(255, 255, 255, .04);
-    --tech-accent-deep: #4429d0;
-    --purple-strong: #5237e8;
-    --white: #fff;
     --ok: var(--ct-ok);
-    --warn: #f59e0b;
-    --mac-red: #ff5f57;
-    --mac-amber: #febc2e;
-    --mac-green: #28c840;
-    --violet: #6d4df6;
-    --mist-violet: #ece7fd;
-    --blue-deep: #2f7de0;
-    --mist-blue: #e3eefb;
-    --ink-slate: #475069;
-    --mist-gray: #eceef4;
-    --field: #fbfcff;
-    --line-pale: #e3e7f4;
-    --line-strong: #cdd3e6;
 
     --pv-accent: var(--violet);
     --pv-soft: var(--mist-violet);
@@ -255,7 +237,7 @@
     padding: 2px 7px;
     border-radius: 6px;
     background: rgba(124, 92, 255, .15);
-    color: #b3a1f9;
+    color: var(--tint-purple);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;

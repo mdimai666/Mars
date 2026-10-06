@@ -1,13 +1,3 @@
-/* Локальные переменные прототипа, отсутствующие в глобальном наборе .cloudy-layout (значения из mars-redesign main.css) */
-.dash-page {
-    --muted-out: #b6bccd;
-    --line-strong: #cdd3e6;
-    --line-track: #e3e7f3;
-    --line-dot: #d4d9e8;
-    --blue-soft: #ddebfb;
-    --blue: #4c82d6;
-}
-
 .hero h1 {
     margin: 0 0 10px;
     font-size: 34px;

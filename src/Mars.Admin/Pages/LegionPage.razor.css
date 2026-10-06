@@ -1,13 +1,3 @@
-/* Локальные переменные прототипа, отсутствующие в глобальном наборе .cloudy-layout (значения из mars-redesign main.css) */
-.legion-page {
-    --line-track: #e3e7f3;
-    --amber-live: #e8c468;
-    --violet-dot: #8b93e8;
-    --muted-dim: #b9c0d4;
-    --red: #cc5f5f;
-    --red-live: #d97070;
-}
-
 .legion-head {
     display: flex;
     align-items: flex-start;
@@ -360,7 +350,7 @@
 .term-input input:focus {
     outline: none;
     border-color: var(--cld-primary);
-    box-shadow: 0 0 0 3px rgba(86, 97, 214, 0.15);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cld-primary) 15%, transparent);
 }
 
 .term-send {

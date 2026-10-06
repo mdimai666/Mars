@@ -1,13 +1,4 @@
 .market-page {
-    --tech-accent-deep: #4429d0;
-    --white: #fff;
-    --gold: #ffe3a3;
-    --tint-purple: #b3a1f9;
-    --tint-blue: #7cb3f9;
-    --tint-orange: #f9c97c;
-    --tint-green: #86e0a8;
-    --tint-teal: #7ce0d3;
-
     flex: 1;
     min-width: 0;
     display: flex;

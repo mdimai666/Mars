@@ -1,7 +1,9 @@
 //-------------------------------------------------------------
-// CLOUDY REDESIGN — новый светлый «облачный» лэйаут админки
+// CLOUDY REDESIGN — «облачный» лэйаут админки
 // Источник: прототип mars-redesign-project (Vue), admin_*.png
 // Переменные скоупятся на .cloudy-layout, префикс --cld-*
+// База — светлая палитра; тёмная — блок body[data-theme="dark"]
+// ниже (ночная версия на языке tech-палитры прототипа).
 //-------------------------------------------------------------
 
 .cloudy-layout {
@@ -39,6 +41,45 @@
     --cld-black: #000;
     --cld-shell-max: 1440px;
 
+    // фон: слои бэкдропа (в прототипе — константы светлой зоны)
+    --cld-corner: rgba(186, 158, 240, .35);
+    --cld-haze: rgba(255, 255, 255, .35);
+    --cld-horizon-strong: rgba(255, 255, 255, .9);
+    --cld-horizon-soft: rgba(255, 255, 255, .55);
+    --cld-grid-line: rgba(255, 255, 255, .4);
+
+    // интерактив
+    --cld-hover-bg: rgba(38, 45, 58, .06);
+    --cld-acrylic-bg: rgba(255, 255, 255, .45);
+    --cld-acrylic-border: rgba(255, 255, 255, .65);
+    --cld-acrylic-shadow: rgba(38, 45, 58, .1);
+    --cld-chip-bg: rgba(255, 255, 255, .5);
+    --cld-chip-hover-bg: #fff;
+    --cld-kbd-bg: #fff;
+
+    // user-меню (семантика; tech-зона ремапит их на --ct-* в cloudy-tech.less)
+    --cld-menu-bg: #fff;
+    --cld-menu-border: var(--cld-line);
+    --cld-menu-shadow: rgba(38, 45, 58, .16);
+    --cld-menu-ink: var(--cld-ink-ui);
+    --cld-menu-hover-bg: var(--cld-primary-soft);
+    --cld-menu-hover-ink: var(--cld-primary);
+    --cld-menu-danger: var(--cld-red-badge);
+    --cld-menu-danger-bg: rgba(229, 72, 77, .1);
+
+    // токены прототипа для страниц (Dashboard/Legion), светлая зона
+    --muted-out: #b6bccd;
+    --muted-dim: #b9c0d4;
+    --line-strong: #cdd3e6;
+    --line-track: #e3e7f3;
+    --line-dot: #d4d9e8;
+    --blue-soft: #ddebfb;
+    --blue: #4c82d6;
+    --amber-live: #e8c468;
+    --violet-dot: #8b93e8;
+    --red: #cc5f5f;
+    --red-live: #d97070;
+
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -48,14 +89,80 @@
     background: var(--cld-canvas);
 }
 
+//------------- тёмная тема: ночная версия на языке tech-палитры прототипа -------------
+body[data-theme="dark"] .cloudy-layout {
+    --cld-surface: #141824;
+    --cld-card: #141824;
+    --cld-line: #1d2637;
+    --cld-ink: #e8eaf6;
+    --cld-muted: #8b93a8;
+    --cld-muted-strong: #8f97b8;
+    --cld-primary: #8375fa;
+    --cld-primary-soft: rgba(105, 84, 249, .16);
+    --cld-primary-pale: rgba(105, 84, 249, .22);
+    --cld-field: #10151f;
+    --cld-canvas: #0a0f18;
+    --cld-sky-a: #0a0f1e;
+    --cld-sky-b: #0e1328;
+    --cld-sky-c: #181234;
+    --cld-ink-soft: #d5d8e8;
+    --cld-ink-ui: #d5d8e8;
+    --cld-ink-mid: #d5d8e8;
+    --cld-icon-ink: #c6cadd;
+    --cld-lavender: #6954f9;
+    --cld-avatar-bg: #1c2333;
+    --cld-avatar-ink: #8f97b8;
+    --cld-green-soft: rgba(134, 224, 168, .14);
+    --cld-green: #86e0a8;
+    --cld-green-live: #22c55e;
+    --cld-amber-soft: rgba(249, 201, 124, .14);
+    --cld-amber: #f9c97c;
+    --cld-red-badge: #ff6b70;
+    --cld-dev: #f9c97c;
+    --cld-dev-soft: rgba(249, 201, 124, .14);
+
+    --cld-corner: rgba(105, 84, 249, .22);
+    --cld-haze: rgba(105, 84, 249, .1);
+    --cld-horizon-strong: rgba(124, 105, 255, .22);
+    --cld-horizon-soft: rgba(124, 105, 255, .1);
+    --cld-grid-line: rgba(131, 117, 250, .12);
+
+    --cld-hover-bg: rgba(255, 255, 255, .04);
+    --cld-acrylic-bg: rgba(20, 24, 36, .55);
+    --cld-acrylic-border: rgba(255, 255, 255, .08);
+    --cld-acrylic-shadow: rgba(0, 0, 0, .4);
+    --cld-chip-bg: rgba(255, 255, 255, .06);
+    --cld-chip-hover-bg: rgba(255, 255, 255, .12);
+    --cld-kbd-bg: #1c2333;
+
+    --cld-menu-bg: #141824;
+    --cld-menu-border: #1d2637;
+    --cld-menu-shadow: rgba(0, 0, 0, .5);
+    --cld-menu-ink: #d5d8e8;
+    --cld-menu-hover-bg: rgba(105, 84, 249, .16);
+    --cld-menu-hover-ink: #fff;
+    --cld-menu-danger: #ff6b70;
+    --cld-menu-danger-bg: rgba(255, 107, 112, .12);
+
+    --muted-out: #79839a;
+    --muted-dim: #6a7288;
+    --line-strong: #2a3650;
+    --line-track: #1d2637;
+    --line-dot: #2a3650;
+    --blue-soft: rgba(124, 179, 249, .14);
+    --blue: #7cb3f9;
+    --violet-dot: #8375fa;
+    --red: #f99a9a;
+}
+
 //------------- фон: градиент + перспективная сетка -------------
 .cloudy-backdrop {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(90% 70% at 100% 100%, rgba(186, 158, 240, .35), transparent 60%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .35) 58%, rgba(255, 255, 255, 0) 80%),
+    background: radial-gradient(90% 70% at 100% 100%, var(--cld-corner), transparent 60%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, var(--cld-haze) 58%, rgba(255, 255, 255, 0) 80%),
         linear-gradient(90deg, var(--cld-sky-a) 0%, var(--cld-sky-b) 50%, var(--cld-sky-c) 100%);
     overflow: hidden;
 
@@ -66,8 +173,8 @@
         right: -30%;
         top: 58%;
         height: 90%;
-        background-image: linear-gradient(to right, rgba(255, 255, 255, .4) 1px, transparent 1px),
-            linear-gradient(to top, rgba(255, 255, 255, .4) 1px, transparent 1px);
+        background-image: linear-gradient(to right, var(--cld-grid-line) 1px, transparent 1px),
+            linear-gradient(to top, var(--cld-grid-line) 1px, transparent 1px);
         background-size: 56px 56px;
         transform: perspective(900px) rotateX(58deg);
         transform-origin: top center;
@@ -82,7 +189,7 @@
         right: 0;
         top: 50%;
         height: 28%;
-        background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, .9) 42%, rgba(255, 255, 255, .55) 65%, transparent 100%);
+        background: linear-gradient(180deg, transparent 0%, var(--cld-horizon-strong) 42%, var(--cld-horizon-soft) 65%, transparent 100%);
         filter: blur(6px);
     }
 }
@@ -168,7 +275,7 @@
         padding: 3px 7px;
         border-radius: 6px;
         border: 1px solid var(--cld-line);
-        background: var(--cld-white);
+        background: var(--cld-kbd-bg);
         color: var(--cld-muted);
     }
 }
@@ -217,16 +324,16 @@
 .cloudy-user-menu {
     min-width: 220px;
     padding: 8px;
-    border: 1px solid var(--cld-line);
+    border: 1px solid var(--cld-menu-border);
     border-radius: 14px;
-    background: var(--cld-white);
-    box-shadow: 0 18px 44px rgba(38, 45, 58, .16);
+    background: var(--cld-menu-bg);
+    box-shadow: 0 18px 44px var(--cld-menu-shadow);
 
     &__item {
         display: block;
         padding: 10px 12px;
         border-radius: 10px;
-        color: var(--cld-ink-ui);
+        color: var(--cld-menu-ink);
         font-size: 14.5px;
         font-weight: 600;
         text-decoration: none;
@@ -234,17 +341,17 @@
 
         &:hover,
         &:active {
-            background: var(--cld-primary-soft);
-            color: var(--cld-primary);
+            background: var(--cld-menu-hover-bg);
+            color: var(--cld-menu-hover-ink);
         }
 
         &--danger {
-            color: var(--cld-red-badge);
+            color: var(--cld-menu-danger);
 
             &:hover,
             &:active {
-                background: rgba(229, 72, 77, .1);
-                color: var(--cld-red-badge);
+                background: var(--cld-menu-danger-bg);
+                color: var(--cld-menu-danger);
             }
         }
     }
@@ -252,7 +359,7 @@
     &__sep {
         height: 1px;
         margin: 6px 4px;
-        background: var(--cld-line);
+        background: var(--cld-menu-border);
     }
 }
 
@@ -324,7 +431,7 @@
     text-decoration: none;
 
     &:hover {
-        background: rgba(38, 45, 58, .06);
+        background: var(--cld-hover-bg);
         color: var(--cld-ink);
     }
 
@@ -425,9 +532,9 @@
 
 .cloudy-acrylic {
     border-radius: 18px;
-    background: rgba(255, 255, 255, .45);
-    border: 1px solid rgba(255, 255, 255, .65);
-    box-shadow: 0 18px 44px rgba(38, 45, 58, .1);
+    background: var(--cld-acrylic-bg);
+    border: 1px solid var(--cld-acrylic-border);
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     backdrop-filter: blur(24px) saturate(160%);
     overflow: hidden;
@@ -449,7 +556,7 @@
 
 .cloudy-chip {
     border: none;
-    background: rgba(255, 255, 255, .5);
+    background: var(--cld-chip-bg);
     color: var(--cld-icon-ink);
     padding: 8px 14px;
     border-radius: 999px;
@@ -460,7 +567,7 @@
     text-decoration: none;
 
     &:hover {
-        background: var(--cld-white);
+        background: var(--cld-chip-hover-bg);
     }
 
     &.active {

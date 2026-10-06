@@ -1,10 +1,4 @@
 .logs-page {
-    --tint-purple: #b3a1f9;
-    --tint-blue: #7cb3f9;
-    --tint-red: #f99a9a;
-    --tint-orange: #f9c97c;
-    --tint-green: #86e0a8;
-
     flex: 1;
     min-width: 0;
     min-height: 0;
@@ -362,12 +356,12 @@
 }
 
 .level.trace {
-    color: #9aa1b5;
+    color: var(--ct-muted);
     background: rgba(154, 161, 181, .14);
 }
 
 .level.critical {
-    color: #ff9d9d;
+    color: var(--tint-red);
     background: rgba(220, 38, 38, .24);
 }
 

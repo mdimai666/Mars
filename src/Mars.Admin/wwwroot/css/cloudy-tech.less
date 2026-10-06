@@ -1,6 +1,9 @@
 //-------------------------------------------------------------
-// CLOUDY TECH — тёмный «тех»-лэйаут (Builder-зона редизайна)
+// CLOUDY TECH — «тех»-лэйаут (Builder-зона редизайна)
 // Источник: прототип mars-redesign-project, TechLayout/TechTopBar/TechSideBar
+// База — тёмная палитра; светлая — блок body:not([data-theme="dark"])
+// ниже (значения .tech.light из прототипа). Токены с прототипными
+// именами (--tint-*, --tech-canvas, ...) наследуются страницами зоны.
 //-------------------------------------------------------------
 
 .cloudy-tech {
@@ -32,6 +35,42 @@
     --ct-active-ink: #a79bfa;
     --ct-nav-active: #fff;
     --ct-ok: #22c55e;
+    --ct-danger: #ff6b70;
+    --ct-danger-bg: rgba(255, 107, 112, .12);
+
+    // алиасы прототипных имён для страниц зоны (тёмные значения)
+    --tech-canvas: rgba(13, 16, 32, .55);
+    --tech-grid-line: rgba(255, 255, 255, .04);
+    --tech-accent-deep: #4429d0;
+    --tk-purple: #b3a1f9;
+    --tk-green: #86e0a8;
+    --tint-purple: #b3a1f9;
+    --tint-blue: #7cb3f9;
+    --tint-red: #f99a9a;
+    --tint-orange: #f9c97c;
+    --tint-green: #86e0a8;
+    --tint-teal: #7ce0d3;
+
+    // константы прототипа (одинаковы в обеих темах; используются
+    // в т.ч. в светлых превью-мокапах страниц tech-зоны)
+    --white: #fff;
+    --purple-strong: #5237e8;
+    --err-ink: #f87171;
+    --warn: #f59e0b;
+    --err: #ef4444;
+    --gold: #ffe3a3;
+    --mac-red: #ff5f57;
+    --mac-amber: #febc2e;
+    --mac-green: #28c840;
+    --violet: #6d4df6;
+    --mist-violet: #ece7fd;
+    --mist-blue: #e3eefb;
+    --mist-gray: #eceef4;
+    --blue-deep: #2f7de0;
+    --ink-slate: #475069;
+    --field: #fbfcff;
+    --line-pale: #e3e7f4;
+    --line-strong: #cdd3e6;
 
     height: 100vh;
     display: flex;
@@ -39,6 +78,50 @@
     color: var(--ct-ink);
     background: var(--ct-bg);
     overflow: hidden;
+}
+
+//------------- светлая тема: значения .tech.light из прототипа -------------
+body:not([data-theme="dark"]) .cloudy-tech {
+    --ct-bg: #f2f4fb;
+    --ct-panel: rgba(255, 255, 255, .72);
+    --ct-card: #f6f8fc;
+    --ct-bar: rgba(255, 255, 255, .72);
+    --ct-line: #e5e9f4;
+    --ct-ink: #262d3a;
+    --ct-muted: #79839a;
+    --ct-accent-bright: #6d4df6;
+    --ct-accent-soft: rgba(105, 84, 249, .12);
+    --ct-hover-border: #c9d2ea;
+    --ct-item-ink: #333a49;
+    --ct-icon-ink: #5a6272;
+    --ct-icon-hover: #262d3a;
+    --ct-avatar-bg: #c3caf3;
+    --ct-avatar-ink: #8d97dd;
+    --ct-hover-bg: rgba(38, 45, 58, .05);
+    --ct-sky-a: #b1ccf3;
+    --ct-sky-b: #bdc5f4;
+    --ct-sky-c: #cdc3f5;
+    --ct-corner: rgba(186, 158, 240, .35);
+    --ct-haze: rgba(255, 255, 255, .35);
+    --ct-horizon-strong: rgba(255, 255, 255, .9);
+    --ct-horizon-soft: rgba(255, 255, 255, .55);
+    --ct-space-grid: rgba(255, 255, 255, .4);
+    --ct-active-ink: #5635e8;
+    --ct-nav-active: #262d3a;
+    --ct-danger: #dc3d43;
+    --ct-danger-bg: rgba(220, 61, 67, .1);
+
+    --tech-canvas: rgba(251, 252, 255, .6);
+    --tech-grid-line: rgba(38, 45, 58, .06);
+    --tech-accent-deep: #5635e8;
+    --tk-purple: #6d4df6;
+    --tk-green: #2f9e57;
+    --tint-purple: #7c5cf6;
+    --tint-blue: #2f7de0;
+    --tint-red: #dc3d43;
+    --tint-orange: #d9820b;
+    --tint-green: #2f9e57;
+    --tint-teal: #0f9e8e;
 }
 
 .cloudy-tech-backdrop {
@@ -266,35 +349,17 @@
     scrollbar-width: thin;
 }
 
-// UserBar на тёмном фоне
+// UserBar в tech-зоне: меню наследует базовые стили cloudy.less,
+// здесь только ремап семантических переменных на палитру зоны
 .cloudy-tech {
     .cloudy-user-menu {
-        border-color: var(--ct-line);
-        background: var(--ct-card);
-        box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
-
-        &__item {
-            color: var(--ct-item-ink);
-
-            &:hover,
-            &:active {
-                background: var(--ct-accent-soft);
-                color: var(--ct-nav-active);
-            }
-
-            &--danger {
-                color: #ff6b70;
-
-                &:hover,
-                &:active {
-                    background: rgba(255, 107, 112, .12);
-                    color: #ff6b70;
-                }
-            }
-        }
-
-        &__sep {
-            background: var(--ct-line);
-        }
+        --cld-menu-bg: var(--ct-card);
+        --cld-menu-border: var(--ct-line);
+        --cld-menu-shadow: rgba(0, 0, 0, .5);
+        --cld-menu-ink: var(--ct-item-ink);
+        --cld-menu-hover-bg: var(--ct-accent-soft);
+        --cld-menu-hover-ink: var(--ct-nav-active);
+        --cld-menu-danger: var(--ct-danger);
+        --cld-menu-danger-bg: var(--ct-danger-bg);
     }
 }

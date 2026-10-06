@@ -1,0 +1,31 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Shared.ActionCenter
+@inherits LayoutComponentBase
+
+<AuthorizeView>
+    <Authorized>
+        <CascadingValue Value=this>
+            <div class="cloudy-tech">
+                <div class="cloudy-tech-backdrop" aria-hidden="true"></div>
+
+                <CloudyTechTopBar />
+
+                <div class="cloudy-tech-body">
+                    <CloudyTechSideBar />
+
+                    <main class="cloudy-tech-page">
+                        @Body
+                    </main>
+                </div>
+            </div>
+
+            <ActionCenter />
+        </CascadingValue>
+    </Authorized>
+    <Authorizing>
+        <SharedLoader1 />
+    </Authorizing>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>

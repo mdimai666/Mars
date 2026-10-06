@@ -1,0 +1,482 @@
+@page "/tech/marketplace"
+
+<PageTitle>Marketplace</PageTitle>
+
+<div class="market-page">
+    <div class="market-shell">
+        <header class="market-hero">
+            <div class="promo">
+                <div class="slide">
+                    <span class="slide-cat">@Current.Category</span>
+                    <h2 class="slide-name">@Current.Name</h2>
+                    <p class="slide-desc">@Current.Desc</p>
+                    <div class="slide-meta">
+                        <span class="slide-author">@Current.Author</span>
+                        <span class="slide-rating">
+                            <i class="bi bi-star-fill"></i>
+                            @Rating(Current)
+                        </span>
+                        <span class="slide-installs">@Current.Installs installs</span>
+                    </div>
+                    <button class="slide-install @(Current.Installed ? "installed" : null)" type="button" @onclick="() => ToggleInstall(Current)">
+                        @if (Current.Installed)
+                        {
+                            <i class="bi bi-check"></i>
+                        }
+                        @(Current.Installed ? "Installed" : "Install")
+                    </button>
+                </div>
+
+                <div class="slide-bar">
+                    <div class="dots">
+                        @for (var i = 0; i < Popular.Count; i++)
+                        {
+                            var index = i;
+                            <button class="dot @(index == _slide ? "active" : null)" type="button" aria-label="Show @Popular[index].Name" @onclick="() => _slide = index"></button>
+                        }
+                    </div>
+                    <div class="slide-nav">
+                        <button class="nav-btn" type="button" aria-label="Previous" @onclick="Prev">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="nav-btn" type="button" aria-label="Next" @onclick="Next">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="market-summary">
+                <div class="sum-stats">
+                    <div class="sum-stat">
+                        <strong>@_items.Count</strong>
+                        <span>Plugins</span>
+                    </div>
+                    <div class="sum-stat">
+                        <strong>@_items.Select(item => item.Author).Distinct().Count()</strong>
+                        <span>Authors</span>
+                    </div>
+                </div>
+                <div class="sum-actions">
+                    <button class="sum-btn ghost" type="button">
+                        <i class="bi bi-code-slash"></i>
+                        Build a plugin
+                    </button>
+                    <button class="sum-btn accent" type="button">
+                        <i class="bi bi-robot"></i>
+                        AI Help
+                    </button>
+                </div>
+            </aside>
+        </header>
+
+        @foreach (var block in Blocks())
+        {
+            <section class="market-block">
+                <header class="block-head">
+                    <h2 class="block-title">
+                        <button type="button" title="All @block.Title.ToLowerInvariant()">
+                            @block.Title
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </h2>
+                    <span class="block-count">@block.Items.Count packages</span>
+                </header>
+
+                <div class="market-grid">
+                    @foreach (var item in block.Items)
+                    {
+                        <article class="pack-card">
+                            <header class="pack-top">
+                                <span class="pack-icon @Tint(item)">@item.Name[0]</span>
+                                <div class="pack-id">
+                                    <span class="pack-name">@item.Name</span>
+                                    <span class="pack-author">@item.Author</span>
+                                </div>
+                                <span class="cat @item.Category">@item.Category</span>
+                            </header>
+
+                            <p class="pack-desc">@item.Desc</p>
+
+                            <footer class="pack-foot">
+                                <span class="pack-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    @Rating(item)
+                                </span>
+                                <span class="pack-installs">@item.Installs installs</span>
+                                <span class="price @(item.Price is null ? "free" : null)">
+                                    @(item.Price is null ? "Free" : $"${item.Price}")
+                                </span>
+                                <button class="install-btn @(item.Installed ? "installed" : null)" type="button" @onclick="() => ToggleInstall(item)">
+                                    @if (item.Installed)
+                                    {
+                                        <i class="bi bi-check"></i>
+                                    }
+                                    @(item.Installed ? "Installed" : "Install")
+                                </button>
+                            </footer>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        <section class="catalog">
+            <header class="catalog-head">
+                <h2 class="block-title static">Catalog</h2>
+                <span class="block-count">@CatalogItems().Count() packages</span>
+            </header>
+
+            <label class="catalog-search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search packages..." @bind="_search" @bind:event="oninput" @bind:after="ResetPage" />
+            </label>
+
+            <div class="catalog-tabs">
+                @foreach (var tab in _tabs)
+                {
+                    <button class="ctab @(_catalogTab == tab.Id ? "active" : null)" type="button" @onclick="() => SetTab(tab.Id)">
+                        @tab.Label
+                        <span class="ctab-count">@CountFor(tab.Id)</span>
+                    </button>
+                }
+            </div>
+
+            <div class="catalog-body">
+                <aside class="catalog-filters">
+                    <div class="filter-group">
+                        <h3>Category</h3>
+                        @foreach (var tab in _tabs)
+                        {
+                            <label class="filter-option">
+                                <input type="radio" name="cat-category" value="@tab.Id" checked="@(_catalogTab == tab.Id)" @onchange="() => SetTab(tab.Id)" />
+                                <span>@tab.Label</span>
+                                <small>@CountFor(tab.Id)</small>
+                            </label>
+                        }
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Rating</h3>
+                        @foreach (var option in _ratingOptions)
+                        {
+                            <label class="filter-option">
+                                <input type="radio" name="cat-rating" value="@option.Value" checked="@(_minRating == option.Value)" @onchange="() => SetRating(option.Value)" />
+                                <span>@option.Label</span>
+                            </label>
+                        }
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Price</h3>
+                        <label class="filter-option">
+                            <input type="checkbox" checked="@_priceFree" @onchange="TogglePriceFree" />
+                            <span>Free</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" checked="@_pricePaid" @onchange="TogglePricePaid" />
+                            <span>Paid</span>
+                        </label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Tags</h3>
+                        <div class="tag-cloud">
+                            @foreach (var tag in AllTags())
+                            {
+                                <button class="tag-chip @(_activeTags.Contains(tag) ? "active" : null)" type="button" @onclick="() => ToggleTag(tag)">
+                                    @tag
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <button class="reset-btn" type="button" @onclick="ResetFilters">Reset filters</button>
+                </aside>
+
+                <div class="catalog-main">
+                    @if (PageItems().Any())
+                    {
+                        <ul class="catalog-list">
+                            @foreach (var item in PageItems())
+                            {
+                                <li class="cat-row">
+                                    <span class="pack-icon @Tint(item)">@item.Name[0]</span>
+                                    <div class="cat-id">
+                                        <span class="cat-name">@item.Name</span>
+                                        <span class="cat-author">@item.Author</span>
+                                    </div>
+                                    <span class="cat-desc">@item.Desc</span>
+                                    <span class="cat-rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        @Rating(item)
+                                    </span>
+                                    <span class="cat-installs">@item.Installs</span>
+                                    <span class="price @(item.Price is null ? "free" : null)">
+                                        @(item.Price is null ? "Free" : $"${item.Price}")
+                                    </span>
+                                    <button class="install-btn @(item.Installed ? "installed" : null)" type="button" @onclick="() => ToggleInstall(item)">
+                                        @if (item.Installed)
+                                        {
+                                            <i class="bi bi-check"></i>
+                                        }
+                                        @(item.Installed ? "Installed" : "Install")
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="empty">No packages match your filters.</p>
+                    }
+
+                    @if (PageCount() > 1)
+                    {
+                        <div class="pagination">
+                            <button class="page-btn" type="button" disabled="@(_page == 1)" aria-label="Previous page" @onclick="() => _page--">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            @for (var num = 1; num <= PageCount(); num++)
+                            {
+                                var n = num;
+                                <button class="page-btn @(n == _page ? "active" : null)" type="button" @onclick="() => _page = n">
+                                    @n
+                                </button>
+                            }
+                            <button class="page-btn" type="button" disabled="@(_page == PageCount())" aria-label="Next page" @onclick="() => _page++">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <footer class="market-footer">
+            @foreach (var column in _footerColumns)
+            {
+                <div class="footer-col">
+                    <h3>@column.Title</h3>
+                    <ul>
+                        @foreach (var link in column.Links)
+                        {
+                            <li><a href="#" @onclick:preventDefault>@link</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+        </footer>
+
+        <div class="market-legal">
+            <span>© 2026 Mars Marketplace</span>
+            <span>All packages are scanned before publishing.</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    private record TabDef(string Id, string Label);
+
+    private record RatingOption(double Value, string Label);
+
+    private record ShelfDef(string Id, string Title, string[] Names);
+
+    private record FooterColumn(string Title, string[] Links);
+
+    private sealed class MarketItem
+    {
+        public required string Name { get; init; }
+        public required string Author { get; init; }
+        public required string Category { get; init; }
+        public required double Rating { get; init; }
+        public required string Installs { get; init; }
+        public int? Price { get; init; }
+        public bool Installed { get; set; }
+        public required string[] Tags { get; init; }
+        public required string Desc { get; init; }
+    }
+
+    private int _slide;
+    private string _catalogTab = "all";
+    private string _search = "";
+    private double _minRating;
+    private bool _priceFree;
+    private bool _pricePaid;
+    private readonly List<string> _activeTags = [];
+    private int _page = 1;
+    private const int PageSize = 6;
+
+    private readonly TabDef[] _tabs =
+    [
+        new("all", "All"),
+        new("plugins", "Plugins"),
+        new("templates", "Templates"),
+        new("integrations", "Integrations"),
+        new("recipes", "Recipes"),
+    ];
+
+    private readonly RatingOption[] _ratingOptions =
+    [
+        new(0, "Any rating"),
+        new(4, "4★ & up"),
+        new(4.5, "4.5★ & up"),
+    ];
+
+    private readonly List<MarketItem> _items =
+    [
+        new() { Name = "SEO Toolkit", Author = "Mars Core", Category = "plugins", Rating = 4.8, Installs = "12.4k", Installed = true, Tags = ["seo", "content"], Desc = "Meta tags, sitemaps and indexation control for every entity." },
+        new() { Name = "Form Builder", Author = "Northwind Labs", Category = "templates", Rating = 4.9, Installs = "15.2k", Installed = true, Tags = ["forms", "ui"], Desc = "Drag-and-drop forms with validation, captcha and webhooks." },
+        new() { Name = "Commerce Suite", Author = "Mars Core", Category = "plugins", Rating = 4.6, Installs = "8.1k", Price = 49, Installed = true, Tags = ["payments", "store"], Desc = "Products, orders, coupons and payments for storefronts." },
+        new() { Name = "Aurora Theme", Author = "Orbita", Category = "templates", Rating = 4.7, Installs = "5.6k", Price = 29, Tags = ["theme", "blog"], Desc = "Editorial Handlebars theme with dark mode and 12 page layouts." },
+        new() { Name = "MQTT Bridge", Author = "Mars Core", Category = "integrations", Rating = 4.5, Installs = "4.7k", Installed = true, Tags = ["iot", "mqtt"], Desc = "Publish and subscribe IoT topics inside visual flows." },
+        new() { Name = "Analytics Studio", Author = "Orbita", Category = "plugins", Rating = 4.2, Installs = "2.3k", Price = 19, Installed = true, Tags = ["analytics", "dashboard"], Desc = "Funnels, cohorts and live dashboards over site events." },
+        new() { Name = "Telegram Notifier", Author = "Hexlab", Category = "integrations", Rating = 4.4, Installs = "6.8k", Installed = true, Tags = ["alerts", "telegram"], Desc = "Send flow events and alerts to Telegram channels." },
+        new() { Name = "Stripe Gateway", Author = "Hexlab", Category = "integrations", Rating = 4.6, Installs = "3.9k", Price = 39, Tags = ["payments", "subscriptions"], Desc = "Cards, subscriptions and payouts wired into Commerce flows." },
+        new() { Name = "Docs Theme", Author = "Northwind Labs", Category = "templates", Rating = 4.3, Installs = "2.8k", Tags = ["theme", "docs"], Desc = "Scriban documentation theme with search and versioned sides." },
+        new() { Name = "Kanban Board", Author = "Driftlab", Category = "templates", Rating = 4.1, Installs = "1.9k", Price = 12, Tags = ["board", "ui"], Desc = "Blazor WASM board module for tracking any entity type." },
+        new() { Name = "Storefront Theme", Author = "Hexlab", Category = "templates", Rating = 4.5, Installs = "3.4k", Price = 35, Tags = ["theme", "store"], Desc = "Commerce-first Handlebars theme with cart and checkout pages." },
+        new() { Name = "Landing Kit", Author = "Driftlab", Category = "templates", Rating = 4.0, Installs = "4.1k", Tags = ["theme", "landing"], Desc = "Scriban landing layouts with hero, pricing and FAQ blocks." },
+        new() { Name = "Blog Starter", Author = "Mars Core", Category = "recipes", Rating = 4.7, Installs = "5.2k", Installed = true, Tags = ["content", "pipeline"], Desc = "Spawns a content pipeline: Draft, Review, Publish and Notify nodes." },
+        new() { Name = "Store Setup", Author = "Mars Core", Category = "recipes", Rating = 4.4, Installs = "2.9k", Price = 15, Tags = ["store", "payments"], Desc = "Creates order flow nodes: capture, payment, invoice and email." },
+        new() { Name = "IoT Monitor", Author = "Hexlab", Category = "recipes", Rating = 4.3, Installs = "1.8k", Tags = ["iot", "alerts"], Desc = "Wires MQTT nodes: topic subscribe, threshold alerts, Telegram ping." },
+        new() { Name = "Lead Funnel", Author = "Driftlab", Category = "recipes", Rating = 4.0, Installs = "1.2k", Price = 12, Tags = ["forms", "crm"], Desc = "Preconfigured nodes for form capture, CRM entity and follow-ups." },
+    ];
+
+    private readonly ShelfDef[] _shelves =
+    [
+        new("recommended", "Recommended", ["Commerce Suite", "Aurora Theme", "SEO Toolkit", "Kanban Board"]),
+        new("popular", "Popular", ["Form Builder", "SEO Toolkit", "Commerce Suite", "Telegram Notifier"]),
+    ];
+
+    private readonly FooterColumn[] _footerColumns =
+    [
+        new("Resources", ["Developer guide", "Documentation", "Plugin API", "Video tutorials"]),
+        new("Marketplace", ["Become an author", "Submission rules", "Pricing & payouts", "Featured program"]),
+        new("Legal", ["Refund policy", "Terms of service", "Privacy policy", "License agreement"]),
+        new("Support", ["Help center", "Contact us", "Report a package", "Community forum"]),
+    ];
+
+    private static readonly string[] Tints = ["blue", "purple", "green", "orange", "teal"];
+
+    private List<MarketItem> Popular =>
+        [.. _items.OrderByDescending(InstallsValue).Take(5)];
+
+    private MarketItem Current => Popular[Math.Clamp(_slide, 0, Popular.Count - 1)];
+
+    private static double InstallsValue(MarketItem item) =>
+        double.TryParse(item.Installs.Replace("k", ""), out var value) ? value : 0;
+
+    private static string Rating(MarketItem item) => item.Rating.ToString("0.0");
+
+    private string Tint(MarketItem item) => Tints[_items.IndexOf(item) % Tints.Length];
+
+    private static void ToggleInstall(MarketItem item) => item.Installed = !item.Installed;
+
+    private IEnumerable<(string Id, string Title, List<MarketItem> Items)> Blocks() =>
+        _shelves.Select(shelf => (shelf.Id, shelf.Title,
+            Items: shelf.Names
+                .Select(name => _items.FirstOrDefault(item => item.Name == name))
+                .Where(item => item is not null)
+                .Select(item => item!)
+                .ToList()));
+
+    private void Prev() => _slide = (_slide - 1 + Popular.Count) % Popular.Count;
+
+    private void Next() => _slide = (_slide + 1) % Popular.Count;
+
+    private int CountFor(string tabId) =>
+        tabId == "all" ? _items.Count : _items.Count(item => item.Category == tabId);
+
+    private IEnumerable<string> AllTags() =>
+        _items.SelectMany(item => item.Tags).Distinct().Order().Take(10);
+
+    private void SetTab(string id)
+    {
+        _catalogTab = id;
+        _page = 1;
+    }
+
+    private void SetRating(double value)
+    {
+        _minRating = value;
+        _page = 1;
+    }
+
+    private void TogglePriceFree(ChangeEventArgs e)
+    {
+        _priceFree = e.Value is true;
+        _page = 1;
+    }
+
+    private void TogglePricePaid(ChangeEventArgs e)
+    {
+        _pricePaid = e.Value is true;
+        _page = 1;
+    }
+
+    private void ToggleTag(string tag)
+    {
+        if (!_activeTags.Remove(tag))
+        {
+            _activeTags.Add(tag);
+        }
+
+        _page = 1;
+    }
+
+    private void ResetPage() => _page = 1;
+
+    private void ResetFilters()
+    {
+        _catalogTab = "all";
+        _search = "";
+        _minRating = 0;
+        _priceFree = false;
+        _pricePaid = false;
+        _activeTags.Clear();
+        _page = 1;
+    }
+
+    private IEnumerable<MarketItem> CatalogItems()
+    {
+        var text = _search.Trim();
+        return _items.Where(item =>
+        {
+            if (_catalogTab != "all" && item.Category != _catalogTab)
+            {
+                return false;
+            }
+
+            if (text.Length > 0
+                && !item.Name.Contains(text, StringComparison.OrdinalIgnoreCase)
+                && !item.Author.Contains(text, StringComparison.OrdinalIgnoreCase)
+                && !item.Desc.Contains(text, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (item.Rating < _minRating)
+            {
+                return false;
+            }
+
+            if (_priceFree && !_pricePaid && item.Price is not null)
+            {
+                return false;
+            }
+
+            if (_pricePaid && !_priceFree && item.Price is null)
+            {
+                return false;
+            }
+
+            return _activeTags.Count == 0 || _activeTags.Any(tag => item.Tags.Contains(tag));
+        });
+    }
+
+    private int PageCount() => Math.Max(1, (int)Math.Ceiling(CatalogItems().Count() / (double)PageSize));
+
+    private IEnumerable<MarketItem> PageItems() =>
+        CatalogItems().Skip((_page - 1) * PageSize).Take(PageSize);
+}

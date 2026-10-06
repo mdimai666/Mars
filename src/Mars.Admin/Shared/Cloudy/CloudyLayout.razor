@@ -1,0 +1,37 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Shared.ActionCenter
+@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IStringLocalizer<AppRes> L
+
+<AuthorizeView>
+    <Authorized>
+        <CascadingValue Value=this>
+            <div class="cloudy-layout">
+                <div class="cloudy-backdrop" aria-hidden="true"></div>
+
+                <div class="cloudy-shell">
+                    <CloudyTopBar />
+
+                    <div class="cloudy-body">
+                        <CloudySideBar Items="menu_items" />
+
+                        <main class="cloudy-content">
+                            @Body
+                        </main>
+                    </div>
+                </div>
+            </div>
+
+            <ActionCenter />
+            <ChildPostEditorDrawer />
+        </CascadingValue>
+    </Authorized>
+    <Authorizing>
+        <SharedLoader1 />
+    </Authorizing>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>

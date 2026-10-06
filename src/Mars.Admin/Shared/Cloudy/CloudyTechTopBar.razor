@@ -1,0 +1,33 @@
+@using Mars.Admin.Shared.ActionCenter
+@inject ActionCenterService actionCenter
+
+<header class="cloudy-tech-topbar">
+    <div class="cloudy-tech-brand">
+        <span class="cloudy-tech-brand__logo"></span>
+        <span class="cloudy-tech-brand__name">@Q.Site?.SiteSettings?.SiteName</span>
+        <a class="cloudy-tech-badge" href="/dev/" title="Вернуться в режим сайта">Tech Mode</a>
+    </div>
+
+    <nav class="cloudy-tech-nav" aria-label="Технические разделы">
+        <NavLink href="/dev/tech/automation" class="cloudy-tech-nav__item">Automation</NavLink>
+        <NavLink href="/dev/tech/database" class="cloudy-tech-nav__item">Database</NavLink>
+        <NavLink href="/dev/tech/frontend" class="cloudy-tech-nav__item">Frontend</NavLink>
+        <NavLink href="/dev/tech/plugins" class="cloudy-tech-nav__item">Plugins</NavLink>
+        <NavLink href="/dev/tech/marketplace" class="cloudy-tech-nav__item">Market</NavLink>
+        <NavLink href="/dev/tech/logs" class="cloudy-tech-nav__item">Logs</NavLink>
+    </nav>
+
+    <div class="cloudy-tech-actions">
+        <button type="button" class="cloudy-tech-icon-btn" aria-label="Поиск"
+                @onclick="OpenActionCenter" title="Палитра команд (F1 / Ctrl+K)">
+            <i class="bi bi-search"></i>
+        </button>
+        <div class="cloudy-tech-avatar">
+            <UserBar />
+        </div>
+    </div>
+</header>
+
+@code {
+    void OpenActionCenter() => actionCenter.Open();
+}

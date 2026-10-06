@@ -1,0 +1,65 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Admin.Shared.ActionCenter
+@using Mars.Cms.Contracts.PostTypes
+@inject NavigationManager Nav
+@inject ActionCenterService actionCenter
+
+<header class="cloudy-topbar">
+    <div class="cloudy-brand">
+        <span class="cloudy-brand__mark"></span>
+        <span class="cloudy-brand__name">@Q.Site?.SiteSettings?.SiteName</span>
+    </div>
+
+    <button type="button" class="cloudy-search" @onclick="OpenActionCenter" title="Палитра команд (F1 / Ctrl+K)">
+        <i class="bi bi-search"></i>
+        <span class="cloudy-search__text">Команда или поиск…</span>
+        <kbd>F1</kbd>
+    </button>
+
+    <div class="cloudy-actions">
+        <div class="cloudy-create">
+            <FluentButton Id="cloudy-create-trigger" Appearance="ButtonAppearance.Subtle">
+                <i class="bi bi-plus-lg me-1"></i>
+                Создать
+                <i class="bi bi-chevron-down ms-1 small"></i>
+            </FluentButton>
+            <FluentMenu Trigger="cloudy-create-trigger" OnClick="OnCreateMenuClick">
+                <FluentMenuList>
+                    @foreach (var pt in PostTypes)
+                    {
+                        <FluentMenuItem Id="@pt.TypeName">
+                            <i class="bi bi-file-earmark-text me-2"></i>@pt.Title
+                        </FluentMenuItem>
+                    }
+                </FluentMenuList>
+            </FluentMenu>
+        </div>
+
+        <div class="cloudy-mode" role="group" aria-label="Режим работы">
+            <a class="cloudy-mode__btn active" href="/dev/">Сайт</a>
+            <a class="cloudy-mode__btn cloudy-mode__btn--dev" href="/dev/tech/automation">
+                <i class="bi bi-code-slash"></i>
+                Разработка
+            </a>
+        </div>
+
+        <div class="cloudy-avatar">
+            <UserBar />
+        </div>
+    </div>
+</header>
+
+@code {
+    IEnumerable<PostTypeAdminPanelItemResponse> PostTypes =>
+        (Q.Site?.PostTypes ?? [])
+            .Where(s => s.Visibility == PostTypeVisibility.Public)
+            .OrderBy(s => s.Title);
+
+    void OpenActionCenter() => actionCenter.Open();
+
+    void OnCreateMenuClick(MenuItemEventArgs args)
+    {
+        if (!string.IsNullOrEmpty(args.Id))
+            Nav.NavigateTo($"/dev/EditPost/{args.Id}");
+    }
+}

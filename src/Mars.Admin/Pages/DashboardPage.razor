@@ -1,0 +1,223 @@
+@page "/dashboard"
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="dash-page">
+    <header class="hero">
+        <h1>Welcome back!</h1>
+        <p>Manage your content and build your site.</p>
+    </header>
+
+    <div class="widgets">
+        <div class="col">
+            <section class="widget">
+                <header class="cal-head">
+                    <span class="cal-month">May</span>
+                    <div class="cal-tools">
+                        <button class="cal-tool" type="button"><i class="bi bi-calendar3"></i></button>
+                        <button class="cal-tool" type="button"><i class="bi bi-plus"></i></button>
+                    </div>
+                </header>
+                <div class="cal-grid cal-weekdays">
+                    @foreach (var day in _weekdays)
+                    {
+                        <span>@day</span>
+                    }
+                </div>
+                @foreach (var week in _weeks)
+                {
+                    <div class="cal-grid cal-week">
+                        @foreach (var cell in week)
+                        {
+                            <span class="@(cell.Out ? "out" : null) @(cell.Today ? "today" : null)">@cell.D</span>
+                        }
+                    </div>
+                }
+                <div class="cal-event">
+                    <span class="dot"></span>
+                    <span class="event-title">Spring launch notes</span>
+                    <span class="badge draft">Draft</span>
+                    <span class="event-time">Today, 14:00</span>
+                </div>
+            </section>
+
+            <section class="widget">
+                <h2>Recent Activity</h2>
+                <ul class="rows">
+                    @foreach (var item in _activity)
+                    {
+                        <li>
+                            <span class="row-chip"><i class="bi @item.Icon"></i></span>
+                            <span class="row-title">@item.Title</span>
+                            <span class="badge @item.Status.ToLowerInvariant()">@item.Status</span>
+                            <time class="row-date">@item.Date</time>
+                        </li>
+                    }
+                </ul>
+            </section>
+        </div>
+
+        <div class="col">
+            <section class="widget">
+                <h2>Tasks</h2>
+                <ul class="tasks">
+                    @foreach (var task in _tasks)
+                    {
+                        <li>
+                            <button class="task-check @(task.Done ? "done" : null)" type="button"
+                                    @onclick="() => task.Done = !task.Done">
+                                @if (task.Done)
+                                {
+                                    <i class="bi bi-check"></i>
+                                }
+                            </button>
+                            <span class="task-label">@task.Label</span>
+                            <span class="task-due">@task.Due</span>
+                        </li>
+                    }
+                </ul>
+                <button class="add-task" type="button">
+                    <i class="bi bi-plus"></i>
+                    Add Task
+                </button>
+            </section>
+
+            <section class="widget">
+                <h2>Quick Actions</h2>
+                <div class="actions">
+                    @foreach (var action in _actions)
+                    {
+                        <button class="action" type="button">
+                            <span class="action-chip @action.Tint"><i class="bi @action.Icon"></i></span>
+                            <span class="action-label">@action.Label</span>
+                        </button>
+                    }
+                </div>
+            </section>
+
+            <section class="widget">
+                <header class="widget-head">
+                    <h2>Notifications</h2>
+                    <button class="link" type="button">View all</button>
+                </header>
+                <ul class="rows">
+                    @foreach (var note in _notifications)
+                    {
+                        <li>
+                            <span class="note-chip @note.Kind"><i class="bi @note.Icon"></i></span>
+                            <span class="row-title">@note.Text</span>
+                            <time class="row-date">@note.Date</time>
+                        </li>
+                    }
+                </ul>
+            </section>
+        </div>
+
+        <div class="col">
+            <section class="widget">
+                <h2>Site Overview</h2>
+                <div class="overview">
+                    <div>
+                        <strong class="overview-num">1,256</strong>
+                        <span class="overview-sub">Page views</span>
+                    </div>
+                    <div class="overview-trend">
+                        <span class="trend">↑ 12%</span>
+                        <span class="overview-sub">vs last 7 days</span>
+                    </div>
+                </div>
+                <svg class="chart" viewBox="0 0 280 90" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M0,64 L20,52 L40,58 L60,44 L80,40 L100,34 L120,36 L140,30 L160,34 L180,28 L200,26 L220,14 L240,10 L260,18 L280,14 L280,90 L0,90 Z"
+                          fill="rgba(86, 97, 214, 0.12)" />
+                    <polyline points="0,64 20,52 40,58 60,44 80,40 100,34 120,36 140,30 160,34 180,28 200,26 220,14 240,10 260,18 280,14"
+                              fill="none" stroke="var(--cld-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="chart-days">
+                    @foreach (var day in _chartDays)
+                    {
+                        <span>@day</span>
+                    }
+                </div>
+            </section>
+
+            <section class="widget">
+                <header class="widget-head">
+                    <h2>Storage</h2>
+                    <span class="overview-sub">34% used</span>
+                </header>
+                <div class="storage-bar">
+                    <span class="storage-fill"></span>
+                </div>
+                <p class="storage-note">10.2 GB of 30 GB used</p>
+                <button class="manage-btn" type="button">Manage Media</button>
+            </section>
+
+            <section class="widget tips">
+                <header class="widget-head">
+                    <i class="bi bi-lightbulb"></i>
+                    <h2>Tips</h2>
+                </header>
+                <p class="tips-title">Organize your content with categories</p>
+                <p class="tips-text">Categories help your visitors find content more easily.</p>
+                <div class="tips-dots">
+                    <span class="tip-dot active"></span>
+                    <span class="tip-dot"></span>
+                    <span class="tip-dot"></span>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@code {
+    sealed record CalCell(int D, bool Out = false, bool Today = false);
+    sealed record ActivityItem(string Icon, string Title, string Status, string Date);
+    sealed record ActionItem(string Icon, string Label, string Tint);
+    sealed record NoteItem(string Kind, string Icon, string Text, string Date);
+    sealed class TaskItem(string label, string due, bool done)
+    {
+        public string Label { get; } = label;
+        public string Due { get; } = due;
+        public bool Done { get; set; } = done;
+    }
+
+    readonly string[] _weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    readonly CalCell[][] _weeks =
+    [
+        [new(28, Out: true), new(29, Out: true), new(30, Out: true), new(1), new(2), new(3), new(4)],
+        [new(5), new(6), new(7), new(8), new(9), new(10), new(11)],
+        [new(12), new(13), new(14), new(15), new(16), new(17), new(18)],
+        [new(19), new(20), new(21), new(22), new(23), new(24, Today: true), new(25)],
+        [new(26, Out: true), new(27, Out: true), new(28, Out: true), new(29, Out: true), new(30, Out: true), new(31, Out: true), new(1, Out: true)],
+    ];
+
+    readonly List<TaskItem> _tasks =
+    [
+        new("Review city grid update", "Today", false),
+        new("Publish spring launch notes", "Tomorrow", true),
+        new("Update homepage banner", "May 27", false),
+    ];
+
+    readonly ActionItem[] _actions =
+    [
+        new("bi-file-earmark-text", "New Post", "violet"),
+        new("bi-file-earmark-text", "New Page", "blue"),
+        new("bi-folder2-open", "Upload Media", "green"),
+        new("bi-tag", "New Category", "amber"),
+    ];
+
+    readonly ActivityItem[] _activity =
+    [
+        new("bi-image", "City grid update", "Published", "Apr 22, 2024"),
+        new("bi-files", "Night mode preview", "Draft", "Apr 20, 2024"),
+    ];
+
+    readonly NoteItem[] _notifications =
+    [
+        new("success", "bi-check", "Post published successfully", "Apr 22, 2024"),
+        new("info", "bi-exclamation-circle", "2 drafts are ready to publish", "Apr 21, 2024"),
+    ];
+
+    readonly string[] _chartDays = ["May 17", "May 18", "May 19", "May 20", "May 21", "May 22", "May 23"];
+}

@@ -1,0 +1,114 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using MenuItem = Mars.Admin.Framework.Models.MenuItem
+
+<aside class="cloudy-sidebar">
+    <nav class="cloudy-sidebar__scroll">
+        @foreach (var entry in _entries)
+        {
+            @if (entry.Item is null)
+            {
+                <div class="cloudy-sidebar__sep"></div>
+            }
+            else
+            {
+                <NavLink href="@entry.Item.Url" Match="@entry.Item.navLinkMatch"
+                         class="cloudy-side-btn" title="@entry.Item.Title">
+                    <i class="bi @IconFor(entry.Item.Url)" aria-hidden="true"></i>
+                </NavLink>
+            }
+        }
+    </nav>
+    <div class="cloudy-sidebar__bottom">
+        @if (_settings is not null)
+        {
+            <NavLink href="@_settings.Url" Match="@_settings.navLinkMatch"
+                     class="cloudy-side-btn" title="@_settings.Title">
+                <i class="bi bi-gear" aria-hidden="true"></i>
+            </NavLink>
+        }
+        <NavLink href="/dev/builder" class="cloudy-side-btn" title="Builder">
+            <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i>
+        </NavLink>
+    </div>
+</aside>
+
+@code {
+    [Parameter] public List<MenuItem> Items { get; set; } = [];
+
+    MenuItem? _settings;
+    List<Entry> _entries = [];
+
+    record Entry(MenuItem? Item);
+
+    protected override void OnParametersSet() => Rebuild();
+
+    void Rebuild()
+    {
+        _entries = [];
+        _settings = null;
+
+        foreach (var item in Flatten(Items ?? []))
+        {
+            if (item.IsDivider)
+            {
+                // схлопываем подряд идущие разделители и ведущий
+                if (_entries.Count > 0 && _entries[^1].Item is not null)
+                    _entries.Add(new Entry(null));
+                continue;
+            }
+
+            if (IsSettings(item.Url))
+            {
+                _settings = item;
+                continue;
+            }
+
+            _entries.Add(new Entry(item));
+        }
+
+        // убираем хвостовой разделитель
+        while (_entries.Count > 0 && _entries[^1].Item is null)
+            _entries.RemoveAt(_entries.Count - 1);
+    }
+
+    static IEnumerable<MenuItem> Flatten(IEnumerable<MenuItem> items)
+    {
+        foreach (var item in items)
+        {
+            if (item.SubItemFlag && item.SubItems is { Count: > 0 })
+            {
+                foreach (var sub in Flatten(item.SubItems))
+                    yield return sub;
+            }
+            else
+            {
+                yield return item;
+            }
+        }
+    }
+
+    static bool IsSettings(string url) =>
+        Normalize(url).EndsWith("/settings");
+
+    static string Normalize(string? url) =>
+        (url ?? "").TrimEnd('/').ToLowerInvariant();
+
+    internal static string IconFor(string? url)
+    {
+        var u = Normalize(url);
+        if (u is "/dev" or "/" or "") return "bi-house";
+        if (u.EndsWith("/media")) return "bi-image";
+        if (u.Contains("/post/") || u.EndsWith("/post")) return "bi-file-earmark-text";
+        if (u.EndsWith("/posttype")) return "bi-collection";
+        if (u.EndsWith("/navmenu")) return "bi-list-ul";
+        if (u.EndsWith("/feedbacklist")) return "bi-envelope";
+        if (u.EndsWith("/users")) return "bi-people";
+        if (u.EndsWith("/usertype")) return "bi-person-gear";
+        if (u.EndsWith("/postcategorytype")) return "bi-tags";
+        if (u.EndsWith("/postcategory")) return "bi-folder2-open";
+        if (u.EndsWith("/plugins")) return "bi-puzzle";
+        if (u.EndsWith("/marketplace")) return "bi-shop";
+        if (u.EndsWith("/settings")) return "bi-gear";
+        return "bi-three-dots";
+    }
+}

@@ -4,26 +4,71 @@
 @inject Mars.Admin.Framework.Services.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
 
-<ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
-    <SectionActions>
+<div class="flex-fill d-flex flex-column">
+    <header class="cloudy-hero cloudy-hero--split">
+        <div>
+            <h1>@(postType?.Title ?? "…")</h1>
+            <p>Write, edit and publish your articles.</p>
+        </div>
         @if (!_isSingle)
         {
-            <XActionsDropDown ContextPart="@POSTTYPE" AlsoShowRootContext="true" />
+            <div class="d-flex align-items-start">
+                <XActionsDropDown ContextPart="@postType!.TypeName" AlsoShowRootContext="true" />
+            </div>
         }
-    </SectionActions>
-    <ChildContent>
+    </header>
 
-        @if (_isSingle)
-        {
-            @if (_singlePostId != Guid.Empty)
+    @if (!_isSingle)
+    {
+        <div class="cloudy-kpis" style="margin-bottom:26px;">
+            <div class="cloudy-kpi">
+                <div>
+                    <span class="cloudy-kpi__label">Total posts</span>
+                    <strong class="cloudy-kpi__value">@Fmt(_totalCount)</strong>
+                </div>
+                <span class="cloudy-kpi__icon"><i class="bi bi-file-earmark-text"></i></span>
+            </div>
+            <div class="cloudy-kpi">
+                <div>
+                    <span class="cloudy-kpi__label">Categories</span>
+                    <strong class="cloudy-kpi__value">@Fmt(_categoriesCount)</strong>
+                </div>
+                <span class="cloudy-kpi__icon"><i class="bi bi-folder2-open"></i></span>
+            </div>
+            <div class="cloudy-kpi">
+                <div>
+                    <span class="cloudy-kpi__label">Media</span>
+                    <strong class="cloudy-kpi__value">@Fmt(_mediaCount)</strong>
+                </div>
+                <span class="cloudy-kpi__icon"><i class="bi bi-image"></i></span>
+            </div>
+            <div class="cloudy-kpi">
+                <div>
+                    <span class="cloudy-kpi__label">Statuses</span>
+                    <strong class="cloudy-kpi__value">@Fmt(_statusesCount)</strong>
+                </div>
+                <span class="cloudy-kpi__dot cloudy-kpi__dot--green"></span>
+            </div>
+        </div>
+    }
+
+    <section class="cloudy-acrylic flex-fill d-flex flex-column">
+        <div class="cloudy-acrylic__body flex-fill d-flex flex-column">
+            @if (_isSingle)
             {
-                <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard />
+                @if (_singlePostId != Guid.Empty)
+                {
+                    <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard />
+                }
             }
-        }
-        else
-        {
-            <ManagePostView @ref=_managePostView PostType=@postType />
-        }
+            else
+            {
+                <ManagePostView @ref=_managePostView PostType=@postType />
+            }
+        </div>
+    </section>
+</div>
 
-    </ChildContent>
-</ContentWrapper>
+@code {
+    static string Fmt(int? v) => v?.ToString() ?? "—";
+}

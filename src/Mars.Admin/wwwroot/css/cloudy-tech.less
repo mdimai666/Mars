@@ -1,0 +1,275 @@
+//-------------------------------------------------------------
+// CLOUDY TECH — тёмный «тех»-лэйаут (Builder-зона редизайна)
+// Источник: прототип mars-redesign-project, TechLayout/TechTopBar/TechSideBar
+//-------------------------------------------------------------
+
+.cloudy-tech {
+    --ct-bg: #0a0f18;
+    --ct-panel: rgba(10, 14, 26, .72);
+    --ct-card: #141824;
+    --ct-bar: rgba(13, 18, 32, .72);
+    --ct-line: #16202c;
+    --ct-ink: #e8eaf6;
+    --ct-muted: #8b93a8;
+    --ct-accent: #6954f9;
+    --ct-accent-bright: #8375fa;
+    --ct-accent-soft: rgba(105, 84, 249, .16);
+    --ct-hover-border: #2a3650;
+    --ct-item-ink: #d5d8e8;
+    --ct-icon-ink: #c6cadd;
+    --ct-icon-hover: #fff;
+    --ct-avatar-bg: #1c2333;
+    --ct-avatar-ink: #8f97b8;
+    --ct-hover-bg: rgba(255, 255, 255, .04);
+    --ct-sky-a: #0a0f1e;
+    --ct-sky-b: #0e1328;
+    --ct-sky-c: #181234;
+    --ct-corner: rgba(105, 84, 249, .22);
+    --ct-haze: rgba(105, 84, 249, .1);
+    --ct-horizon-strong: rgba(124, 105, 255, .22);
+    --ct-horizon-soft: rgba(124, 105, 255, .1);
+    --ct-space-grid: rgba(131, 117, 250, .12);
+    --ct-active-ink: #a79bfa;
+    --ct-nav-active: #fff;
+    --ct-ok: #22c55e;
+
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--ct-ink);
+    background: var(--ct-bg);
+    overflow: hidden;
+}
+
+.cloudy-tech-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: radial-gradient(90% 70% at 100% 100%, var(--ct-corner), transparent 60%),
+        linear-gradient(180deg, transparent 30%, var(--ct-haze) 58%, transparent 80%),
+        linear-gradient(90deg, var(--ct-sky-a) 0%, var(--ct-sky-b) 50%, var(--ct-sky-c) 100%);
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: -30%;
+        right: -30%;
+        top: 58%;
+        height: 90%;
+        background-image: linear-gradient(to right, var(--ct-space-grid) 1px, transparent 1px),
+            linear-gradient(to top, var(--ct-space-grid) 1px, transparent 1px);
+        background-size: 56px 56px;
+        transform: perspective(900px) rotateX(58deg);
+        transform-origin: top center;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%);
+        mask-image: linear-gradient(to bottom, transparent, #000 15%);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 28%;
+        background: linear-gradient(180deg, transparent 0%, var(--ct-horizon-strong) 42%, var(--ct-horizon-soft) 65%, transparent 100%);
+        filter: blur(6px);
+    }
+}
+
+.cloudy-tech-topbar {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    height: 68px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--ct-line);
+    flex: none;
+}
+
+.cloudy-tech-brand {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &__logo {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--ct-accent-bright);
+        box-shadow: 0 0 16px rgba(131, 117, 250, .55);
+        flex: none;
+    }
+
+    &__name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--ct-ink);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.cloudy-tech-badge {
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(105, 84, 249, .12);
+    color: var(--ct-active-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+        background: rgba(105, 84, 249, .24);
+        color: var(--ct-active-ink);
+    }
+}
+
+.cloudy-tech-nav {
+    align-self: stretch;
+    display: flex;
+    gap: 36px;
+
+    &__item {
+        position: relative;
+        border: none;
+        background: transparent;
+        color: var(--ct-muted);
+        font-size: 14.5px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            color: var(--ct-ink);
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: transparent;
+        }
+
+        &.active {
+            color: var(--ct-nav-active);
+            font-weight: 600;
+
+            &::after {
+                background: var(--ct-accent);
+                box-shadow: 0 -3px 14px rgba(105, 84, 249, .55), 0 0 10px rgba(105, 84, 249, .8);
+            }
+        }
+    }
+}
+
+.cloudy-tech-actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cloudy-tech-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    border: 1px solid var(--ct-line);
+    background: var(--ct-panel);
+    color: var(--ct-icon-ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--ct-icon-hover);
+        border-color: var(--ct-hover-border);
+    }
+}
+
+.cloudy-tech-body {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+}
+
+.cloudy-tech-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 78px;
+    flex: none;
+    overflow-y: auto;
+    scrollbar-width: thin;
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 4px;
+        border: none;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--ct-muted);
+        font-size: 10.5px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+
+        i {
+            font-size: 20px;
+        }
+
+        &:hover {
+            color: var(--ct-ink);
+            background: var(--ct-hover-bg);
+        }
+
+        &.active {
+            background: var(--ct-accent-soft);
+            color: var(--ct-active-ink);
+        }
+    }
+}
+
+.cloudy-tech-page {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+// UserBar (bootstrap) на тёмном фоне
+.cloudy-tech {
+    .user-name {
+        color: var(--ct-ink);
+
+        .text-secondary {
+            color: var(--ct-muted);
+        }
+    }
+}

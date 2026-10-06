@@ -5,18 +5,26 @@
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-<div class="vstack">
-    <div class="container">
-        @if (postType is not null)
-        {
+<div class="flex-fill d-flex flex-column">
+    @if (postType is not null)
+    {
+        <div class="container mb-3">
             <NavbarEditPostType ID="postType.Id" />
-        }
-    </div>
-    <ContentWrapper Title="@($"{AppRes.Categories}: {postType?.Title}")" WrapperClass="vstack">
-        <SectionActions>
-            <XActionsDropDown ContextPart="@POSTTYPE" />
-        </SectionActions>
-        <ChildContent>
+        </div>
+    }
+
+    <header class="cloudy-hero cloudy-hero--split">
+        <div>
+            <h1>@AppRes.Categories</h1>
+            <p>@postType?.Title</p>
+        </div>
+        <div class="d-flex align-items-start">
+            <XActionsDropDown ContextPart="@postType.TypeName" />
+        </div>
+    </header>
+
+    <section class="cloudy-acrylic">
+        <div class="cloudy-acrylic__body">
             @if (postType is null)
             {
                 <SharedContentNoRecords />
@@ -63,7 +71,6 @@
                     </div>
                 </div>
             }
-
-        </ChildContent>
-    </ContentWrapper>
+        </div>
+    </section>
 </div>

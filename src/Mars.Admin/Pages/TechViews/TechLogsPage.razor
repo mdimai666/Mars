@@ -1,0 +1,94 @@
+@page "/tech/logs"
+
+<PageTitle>Logs</PageTitle>
+
+<div class="logs-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Logs</h1>
+            <p>Platform events and diagnostics.</p>
+        </div>
+        <div class="hero-actions">
+            <button class="live-btn" type="button">
+                <span class="live-dot"></span>
+                Live
+            </button>
+            <button class="export-btn" type="button">
+                <i class="bi bi-box-arrow-up"></i>
+                Export
+            </button>
+        </div>
+    </header>
+
+    <section class="logs-panel">
+        <header class="logs-head">
+            <div class="chips">
+                @foreach (var chip in _chips)
+                {
+                    <button class="chip @(_filter == chip.Id ? "active" : null)" type="button" @onclick="() => _filter = chip.Id">
+                        @chip.Label
+                    </button>
+                }
+            </div>
+            <label class="logs-search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search logs..." @bind="_query" @bind:event="oninput" />
+            </label>
+        </header>
+
+        <ul class="logs-list">
+            @foreach (var log in Filtered())
+            {
+                <li class="log-row">
+                    <time>@log.Time</time>
+                    <span class="level @log.Level">@log.Level</span>
+                    <span class="source">@log.Source</span>
+                    <span class="message">@log.Message</span>
+                </li>
+            }
+            @if (!Filtered().Any())
+            {
+                <li class="empty">No log entries match.</li>
+            }
+        </ul>
+    </section>
+</div>
+
+@code {
+    private record Chip(string Id, string Label);
+
+    private record LogEntry(string Time, string Level, string Source, string Message);
+
+    private string _filter = "all";
+    private string _query = "";
+
+    private readonly Chip[] _chips =
+    [
+        new("all", "All"),
+        new("error", "Errors"),
+        new("warn", "Warnings"),
+        new("info", "Info"),
+        new("debug", "Debug"),
+    ];
+
+    private readonly LogEntry[] _logs =
+    [
+        new("14:32:08", "error", "api", "POST /api/entities 500 — timeout after 5000ms"),
+        new("14:31:54", "warn", "db", "Replica lag 2.4s on db-2"),
+        new("14:31:12", "info", "scheduler", "Cron 'cleanup' finished in 840ms"),
+        new("14:30:47", "info", "auth", "User admin@site logged in from 192.168.0.6"),
+        new("14:30:15", "debug", "legion", "Flow 'User Registration' step 4/7"),
+        new("14:29:58", "warn", "media", "Image hero-banner.png exceeds 1MB"),
+        new("14:29:31", "info", "api", "GET /api/posts 200 in 42ms"),
+        new("14:28:56", "error", "webhook", "Delivery to https://hooks.site/notify failed (ECONNREFUSED)"),
+        new("14:28:20", "debug", "cache", "Cache miss: posts:page1"),
+        new("14:27:44", "info", "entities", "Entity 'User' #128 created"),
+        new("14:27:03", "warn", "auth", "3 failed login attempts for user 'editor'"),
+        new("14:26:19", "info", "backup", "Snapshot created (24 MB)"),
+    ];
+
+    private IEnumerable<LogEntry> Filtered() =>
+        _logs.Where(log =>
+            (_filter == "all" || log.Level == _filter) &&
+            log.Message.Contains(_query, StringComparison.OrdinalIgnoreCase));
+}

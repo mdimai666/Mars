@@ -7,9 +7,15 @@
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Пользователи")]
 @attribute [DParentPage(typeof(SettingsPage))]
-@layout AdminLayout
 
-<ContentWrapper Title="@AppRes.Users">
+<div class="flex-fill d-flex flex-column">
+    <header class="cloudy-hero">
+        <h1>@AppRes.Users</h1>
+        <p>Manage accounts, roles and access.</p>
+    </header>
+
+    <section class="cloudy-acrylic">
+        <div class="cloudy-acrylic__body">
 
     <div class="hstack">
         <FluentTextInput @bind-Value=_searchText
@@ -111,4 +117,6 @@
     <CreateUserModal @bind-Visible="visibleCreateUserModal" Content="createFormData" AfterCreate="HandleSearchInput" />
     <ChangePasswordModal @bind-Visible="visibleChangeUserPasswordModal" Content="changeUserPasswordFormData" />
 
-</ContentWrapper>
+        </div>
+    </section>
+</div>

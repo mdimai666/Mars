@@ -1,0 +1,208 @@
+@page "/tech/frontend"
+
+<PageTitle>Frontend</PageTitle>
+
+<div class="fe-page theme-@_theme">
+    <header class="fe-toolbar">
+        <div class="tb-group">
+            <div class="segment">
+                @foreach (var d in _devices)
+                {
+                    <button class="seg-btn @(_device == d.Id ? "active" : null)" type="button" title="@d.Id" @onclick="() => _device = d.Id">
+                        <i class="bi @d.Icon"></i>
+                    </button>
+                }
+            </div>
+            <button class="icon-btn" type="button" title="Refresh preview">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+
+        <div class="url-bar">
+            <i class="bi bi-link-45deg"></i>
+            <span class="url">site.dev/</span>
+            <span class="route">home</span>
+        </div>
+
+        <div class="tb-group">
+            <div class="segment">
+                @foreach (var t in _themes)
+                {
+                    <button class="seg-btn labeled @(_theme == t.Id ? "active" : null)" type="button" @onclick="() => _theme = t.Id">
+                        @t.Label
+                    </button>
+                }
+            </div>
+            <button class="ghost-btn" type="button">
+                <i class="bi bi-link-45deg"></i>
+                Open site
+            </button>
+        </div>
+    </header>
+
+    <div class="fe-body">
+        <aside class="blocks-panel">
+            <header class="panel-head">
+                <h2>Blocks</h2>
+                <span class="head-note">home</span>
+            </header>
+            <ul class="block-list">
+                @foreach (var block in _blocks)
+                {
+                    <li>
+                        <button class="block-item @(_selected == block.Id ? "active" : null)" type="button" @onclick="() => _selected = block.Id">
+                            <span class="b-label">@block.Label</span>
+                            @if (block.Overridden)
+                            {
+                                <small class="b-flag">override</small>
+                            }
+                            <span class="b-ms">@block.Ms</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </aside>
+
+        <div class="stage">
+            <div class="browser">
+                <div class="browser-bar">
+                    <span class="tl red"></span>
+                    <span class="tl yellow"></span>
+                    <span class="tl green"></span>
+                    <span class="browser-url">site.dev/</span>
+                </div>
+                <div class="viewport">
+                    <div class="device @_device">
+                        <div class="pv pv-header @(_selected == "header" ? "sel" : null)" @onclick='() => _selected = "header"'>
+                            <span class="pv-logo"></span>
+                            <span class="pv-nav"><i></i><i></i><i></i><i></i></span>
+                            <span class="pv-actions"><i class="round"></i><i class="round avatar"></i></span>
+                        </div>
+
+                        <div class="pv pv-hero @(_selected == "hero" ? "sel" : null)" @onclick='() => _selected = "hero"'>
+                            <span class="pv-title"></span>
+                            <span class="pv-sub"></span>
+                            <span class="pv-btn"></span>
+                        </div>
+
+                        <div class="pv pv-posts @(_selected == "posts" ? "sel" : null)" @onclick='() => _selected = "posts"'>
+                            @for (var n = 0; n < 3; n++)
+                            {
+                                <article class="pv-card">
+                                    <span class="pv-cover"></span>
+                                    <span class="pv-line w80"></span>
+                                    <span class="pv-line w50"></span>
+                                </article>
+                            }
+                        </div>
+
+                        <div class="pv pv-footer @(_selected == "footer" ? "sel" : null)" @onclick='() => _selected = "footer"'>
+                            <i></i><i></i><i></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="inspector">
+            <header class="panel-head">
+                <h2>@Current.Label</h2>
+                @if (Current.Overridden)
+                {
+                    <span class="b-flag">override</span>
+                }
+            </header>
+            <dl class="insp-rows">
+                <div>
+                    <dt>Component</dt>
+                    <dd class="mono">@Current.Component</dd>
+                </div>
+                <div>
+                    <dt>Render</dt>
+                    <dd>@Current.Ms</dd>
+                </div>
+                <div>
+                    <dt>Markup</dt>
+                    <dd>@Current.Size</dd>
+                </div>
+            </dl>
+            <div class="tokens">
+                <h3>Theme tokens</h3>
+                <div class="swatches">
+                    <i class="sw-accent"></i>
+                    <i class="sw-soft"></i>
+                    <i class="sw-line"></i>
+                    <i class="sw-bg"></i>
+                </div>
+            </div>
+            <div class="insp-actions">
+                <button class="primary-btn" type="button">
+                    <i class="bi bi-pencil"></i>
+                    Edit template
+                </button>
+                <button class="ghost-btn" type="button">
+                    <i class="bi bi-code-slash"></i>
+                    Source
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <footer class="vitals">
+        @foreach (var vital in _vitals)
+        {
+            <span class="vital">
+                <i class="@vital.State"></i>
+                <strong>@vital.Label</strong>
+                @vital.Value
+            </span>
+        }
+        <span class="vital-note">measured on edge · 5 min ago</span>
+    </footer>
+</div>
+
+@code {
+    private record DeviceDef(string Id, string Icon);
+
+    private record ThemeDef(string Id, string Label);
+
+    private record BlockDef(string Id, string Label, string Component, string Ms, string Size, bool Overridden);
+
+    private record VitalDef(string Label, string Value, string State);
+
+    private string _device = "desktop";
+    private string _theme = "aurora";
+    private string _selected = "posts";
+
+    private readonly DeviceDef[] _devices =
+    [
+        new("desktop", "bi-display"),
+        new("tablet", "bi-tablet"),
+        new("mobile", "bi-phone"),
+    ];
+
+    private readonly ThemeDef[] _themes =
+    [
+        new("aurora", "Aurora"),
+        new("nebula", "Nebula"),
+        new("paper", "Paper"),
+    ];
+
+    private readonly BlockDef[] _blocks =
+    [
+        new("header", "Header", "partials/header.razor", "1.8 ms", "3.1 KB", true),
+        new("hero", "Hero", "blocks/hero.razor", "2.4 ms", "5.6 KB", false),
+        new("posts", "Post grid", "blocks/post-grid.razor", "6.1 ms", "18.2 KB", false),
+        new("footer", "Footer", "partials/footer.razor", "0.9 ms", "1.4 KB", false),
+    ];
+
+    private readonly VitalDef[] _vitals =
+    [
+        new("LCP", "1.2 s", "ok"),
+        new("INP", "180 ms", "ok"),
+        new("CLS", "0.04", "warn"),
+        new("SSR", "62 ms", "ok"),
+    ];
+
+    private BlockDef Current => _blocks.First(block => block.Id == _selected);
+}

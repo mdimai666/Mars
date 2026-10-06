@@ -1,0 +1,588 @@
+@page "/tech/database"
+@using System.Text.RegularExpressions
+
+<PageTitle>Database</PageTitle>
+
+<div class="db-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Database</h1>
+            <p>Postgres schemas, replicas and storage health.</p>
+        </div>
+        <div class="hero-actions">
+            <button class="ghost-btn @(_view == "console" ? "active" : null)" type="button" @onclick="ToggleView">
+                <i class="bi bi-terminal"></i>
+                Query console
+            </button>
+            @if (_view == "tables")
+            {
+                <button class="primary-btn" type="button">
+                    <i class="bi bi-plus"></i>
+                    New table
+                </button>
+            }
+        </div>
+    </header>
+
+    @if (_view == "tables")
+    {
+        <section class="stats">
+            @foreach (var stat in _stats)
+            {
+                <article class="stat">
+                    <span class="stat-icon tint-@stat.Tint">
+                        <i class="bi @stat.Icon"></i>
+                    </span>
+                    <div class="stat-text">
+                        <small>@stat.Label</small>
+                        <strong>@stat.Value</strong>
+                        <span>@stat.Sub</span>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+
+    <div class="db-grid">
+        @if (_view == "tables")
+        {
+            <section class="tables-panel">
+                <header class="tables-head">
+                    <div class="kinds">
+                        @foreach (var kind in _kinds)
+                        {
+                            <button class="kind-btn @(_kindFilter == kind.Id ? "active" : null)" type="button" @onclick="() => SetKind(kind.Id)">
+                                @kind.Label
+                            </button>
+                        }
+                    </div>
+                    <label class="tables-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search tables..." @bind="_query" @bind:event="oninput" />
+                    </label>
+                </header>
+
+                <div class="schema-chips">
+                    <button class="schema-chip @(_schemaFilter == "all" ? "active" : null)" type="button" @onclick='() => _schemaFilter = "all"'>
+                        All schemas
+                    </button>
+                    @foreach (var schema in VisibleSchemas)
+                    {
+                        <button class="schema-chip @(_schemaFilter == schema.Id ? "active" : null)" type="button" @onclick="() => _schemaFilter = schema.Id">
+                            <i class="dot-@schema.Kind"></i>
+                            @schema.Id
+                        </button>
+                    }
+                </div>
+
+                <div class="cols">
+                    <span>Name</span>
+                    <span>Rows</span>
+                    <span>Size</span>
+                    <span>Status</span>
+                    <span>Updated</span>
+                </div>
+
+                <ul class="tables-list">
+                    @foreach (var group in Groups())
+                    {
+                        <li class="group-head">
+                            <span class="g-name">@group.Schema.Id</span>
+                            <span class="kind @group.Schema.Kind">@KindLabel(group.Schema.Kind)</span>
+                            <span class="g-meta">@group.Schema.Meta</span>
+                            <span class="g-count">@group.Tables.Length tables · @group.Schema.Size</span>
+                        </li>
+                        @foreach (var table in group.Tables)
+                        {
+                            <li class="table-row">
+                                <span class="t-name">
+                                    <i class="bi bi-box-seam tint-@KindTint(group.Schema.Kind)"></i>
+                                    @table.Name
+                                </span>
+                                <span class="t-num">@table.Rows</span>
+                                <span class="t-num">@table.Size</span>
+                                <span class="status @table.Status">@(table.Status == "ok" ? "Healthy" : "Syncing")</span>
+                                <span class="t-updated">@table.Updated</span>
+                            </li>
+                        }
+                    }
+                    @if (!Groups().Any())
+                    {
+                        <li class="empty">No tables match.</li>
+                    }
+                </ul>
+            </section>
+        }
+        else
+        {
+            <section class="console">
+                <header class="console-head">
+                    <label class="schema-select">
+                        <i class="bi bi-database"></i>
+                        <select @bind="_consoleSchema">
+                            @foreach (var schema in _schemas)
+                            {
+                                <option value="@schema.Id">@schema.Id</option>
+                            }
+                        </select>
+                        <i class="bi bi-chevron-down"></i>
+                    </label>
+                    <div class="snippets">
+                        @foreach (var snippet in _snippets)
+                        {
+                            <button class="schema-chip" type="button" @onclick="() => _sql = snippet.Sql">
+                                @snippet.Label
+                            </button>
+                        }
+                    </div>
+                </header>
+
+                <textarea class="editor" spellcheck="false" placeholder="select * from ..." @bind="_sql" @bind:event="oninput"></textarea>
+
+                <footer class="console-foot">
+                    <button class="primary-btn" type="button" @onclick="Run">
+                        <i class="bi bi-play-fill"></i>
+                        Run
+                    </button>
+                    <button class="copy-btn" type="button" title="Copy to buffer" @onclick="CopyToBuffer">
+                        <i class="bi bi-files"></i>
+                    </button>
+                    <span class="run-hint">Ctrl + Enter</span>
+                    @if (_result is not null)
+                    {
+                        <span class="run-status @_result.Status">
+                            <i></i>
+                            @ResultText()
+                        </span>
+                    }
+                </footer>
+
+                @if (_result?.Notice is not null)
+                {
+                    <p class="result-notice">@_result.Notice</p>
+                }
+                else if (_result?.Error is not null)
+                {
+                    <p class="result-error">@_result.Error</p>
+                }
+                else if (_result is not null)
+                {
+                    <div class="result-scroll">
+                        <table class="result-table">
+                            <thead>
+                                <tr>
+                                    @foreach (var col in _result.Columns ?? [])
+                                    {
+                                        <th>@col</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in _result.Rows ?? [])
+                                {
+                                    <tr>
+                                        @foreach (var cell in row)
+                                        {
+                                            <td>@cell</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (_result.Rows is { Length: 0 })
+                        {
+                            <p class="empty">0 rows returned.</p>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="console-idle">Run a query to see results.</div>
+                }
+            </section>
+        }
+
+        <aside class="db-side">
+            @if (_view == "console")
+            {
+                <section class="side-card">
+                    <header class="side-head">
+                        <h2>Structure</h2>
+                    </header>
+                    <ul class="struct-list">
+                        @foreach (var group in _schemas.Select(schema => (Schema: schema, Tables: TablesOf(schema.Id))))
+                        {
+                            <li class="struct-schema">
+                                <i class="dot-@group.Schema.Kind"></i>
+                                @group.Schema.Id
+                            </li>
+                            @foreach (var table in group.Tables)
+                            {
+                                var tableId = $"{group.Schema.Id}.{table.Name}";
+                                <li>
+                                    <button class="struct-table @(_expandedTable == tableId ? "open" : null)" type="button" @onclick="() => ToggleTable(tableId)">
+                                        <i class="bi bi-chevron-right"></i>
+                                        @table.Name
+                                    </button>
+                                    @if (_expandedTable == tableId)
+                                    {
+                                        <ul class="struct-cols">
+                                            @foreach (var col in table.Columns)
+                                            {
+                                                <li>
+                                                    <span>@col.Name</span>
+                                                    <small>@col.Type</small>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        }
+                    </ul>
+                </section>
+
+                <section class="side-card">
+                    <header class="side-head">
+                        <h2>Buffer</h2>
+                        <span class="buffer-hint">click to paste</span>
+                    </header>
+                    <button class="buffer-body" type="button" @onclick="PasteBuffer">@_buffer</button>
+                </section>
+
+                <section class="side-card">
+                    <header class="side-head">
+                        <h2>History</h2>
+                        <button class="icon-btn" type="button" @onclick="() => _history.Clear()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </header>
+                    <ul class="history-list">
+                        @foreach (var item in _history)
+                        {
+                            <li>
+                                <button class="history-item" type="button" @onclick="() => _sql = item">@item</button>
+                            </li>
+                        }
+                        @if (_history.Count == 0)
+                        {
+                            <li class="empty-small">No queries yet.</li>
+                        }
+                    </ul>
+                </section>
+            }
+            else
+            {
+                <section class="side-card">
+                    <header class="side-head">
+                        <h2>Replicas</h2>
+                        <button class="icon-btn" type="button">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </header>
+                    <ul class="replica-list">
+                        @foreach (var replica in _replicas)
+                        {
+                            <li class="replica-row">
+                                <span class="dot @replica.State"></span>
+                                <span class="replica-name">
+                                    @replica.Name
+                                    <small>@replica.Role</small>
+                                </span>
+                                <span class="lag @replica.State">@replica.Lag</span>
+                            </li>
+                        }
+                    </ul>
+                </section>
+
+                <section class="side-card">
+                    <header class="side-head">
+                        <h2>Storage</h2>
+                    </header>
+                    <div class="storage">
+                        <div class="storage-top">
+                            <span>1.2 GB used</span>
+                            <span>4 GB</span>
+                        </div>
+                        <div class="meter">
+                            <span class="meter-fill"></span>
+                        </div>
+                        <p>Indexes 312 MB · WAL 48 MB</p>
+                    </div>
+                </section>
+
+                <section class="side-card backup-card">
+                    <span class="backup-icon">
+                        <i class="bi bi-box-arrow-up"></i>
+                    </span>
+                    <div class="backup-text">
+                        <strong>Snapshot · 24 MB</strong>
+                        <small>Today 14:26 · next at 02:00</small>
+                    </div>
+                </section>
+            }
+        </aside>
+    </div>
+</div>
+
+@code {
+    private record StatDef(string Icon, string Tint, string Label, string Value, string Sub);
+
+    private record KindDef(string Id, string Label);
+
+    private record SchemaDef(string Id, string Kind, string Meta, string Size);
+
+    private record ColumnDef(string Name, string Type);
+
+    private record TableDef(string Schema, string Name, string Rows, string Size, string Status, string Updated, ColumnDef[] Columns);
+
+    private record ReplicaDef(string Name, string Role, string Lag, string State);
+
+    private record SnippetDef(string Label, string Sql, int Ms, string[] Columns, string[][] Rows);
+
+    private sealed class QueryResult
+    {
+        public string Status { get; init; } = "ok";
+        public int Ms { get; init; }
+        public string[]? Columns { get; init; }
+        public string[][]? Rows { get; init; }
+        public string? Notice { get; init; }
+        public string? Error { get; init; }
+    }
+
+    private string _view = "tables";
+    private string _kindFilter = "all";
+    private string _schemaFilter = "all";
+    private string _query = "";
+    private string? _expandedTable = "public.users";
+
+    private string _consoleSchema = "public";
+    private string _sql = "select id, email, role, created_at\nfrom users\norder by created_at desc\nlimit 5;";
+    private string _buffer = "where status = 'paid'\n  and created_at > now() - interval '7 days'";
+    private QueryResult? _result;
+    private readonly List<string> _history = [];
+
+    private readonly KindDef[] _kinds =
+    [
+        new("all", "All types"),
+        new("core", "Core"),
+        new("plugin", "Plugins"),
+        new("custom", "Custom"),
+    ];
+
+    private readonly StatDef[] _stats =
+    [
+        new("bi-database", "purple", "Total size", "1.2 GB", "+124 MB this week"),
+        new("bi-box-seam", "blue", "Tables", "24", "4 schemas"),
+        new("bi-people", "teal", "Connections", "18 / 100", "peak 42 today"),
+        new("bi-graph-up", "green", "Queries", "342/s", "p95 18 ms"),
+    ];
+
+    private readonly SchemaDef[] _schemas =
+    [
+        new("public", "core", "Site core", "622.8 MB"),
+        new("shop", "plugin", "Shop plugin · v2.3", "45.8 MB"),
+        new("forum", "plugin", "Forum plugin · v1.8", "64.2 MB"),
+        new("loyalty", "custom", "Feature by admin", "12.4 MB"),
+    ];
+
+    private readonly TableDef[] _tables =
+    [
+        new("public", "users", "12,480", "4.6 MB", "ok", "2m ago",
+            [new("id", "int8"), new("email", "text"), new("role", "text"), new("created_at", "timestamptz")]),
+        new("public", "sessions", "214", "0.8 MB", "ok", "now",
+            [new("id", "uuid"), new("user_id", "int8"), new("token", "text"), new("expires_at", "timestamptz")]),
+        new("public", "posts", "3,214", "18.2 MB", "ok", "5m ago",
+            [new("id", "int8"), new("author_id", "int8"), new("title", "text"), new("status", "text"), new("published_at", "timestamptz")]),
+        new("public", "post_revisions", "28,904", "96.4 MB", "ok", "5m ago",
+            [new("id", "int8"), new("post_id", "int8"), new("body", "text"), new("edited_at", "timestamptz")]),
+        new("public", "media_assets", "1,842", "502.8 MB", "ok", "1h ago",
+            [new("id", "int8"), new("path", "text"), new("mime", "text"), new("bytes", "int8")]),
+        new("shop", "products", "1,286", "8.4 MB", "ok", "12m ago",
+            [new("id", "int8"), new("title", "text"), new("price", "numeric"), new("stock", "int4")]),
+        new("shop", "orders", "9,431", "36.2 MB", "ok", "now",
+            [new("id", "int8"), new("user_id", "int8"), new("status", "text"), new("total", "numeric"), new("created_at", "timestamptz")]),
+        new("shop", "carts", "342", "1.2 MB", "ok", "now",
+            [new("id", "int8"), new("user_id", "int8"), new("updated_at", "timestamptz")]),
+        new("forum", "threads", "4,806", "22.6 MB", "ok", "8m ago",
+            [new("id", "int8"), new("author_id", "int8"), new("title", "text"), new("created_at", "timestamptz")]),
+        new("forum", "replies", "58,120", "41.6 MB", "sync", "now",
+            [new("id", "int8"), new("thread_id", "int8"), new("author_id", "int8"), new("body", "text")]),
+        new("loyalty", "points", "20,412", "6.8 MB", "ok", "3m ago",
+            [new("id", "int8"), new("member_id", "int8"), new("delta", "int4"), new("reason", "text")]),
+        new("loyalty", "rewards", "46", "0.2 MB", "ok", "2d ago",
+            [new("id", "int8"), new("title", "text"), new("cost", "int4")]),
+        new("loyalty", "member_cards", "3,208", "5.4 MB", "ok", "1h ago",
+            [new("id", "int8"), new("user_id", "int8"), new("tier", "text"), new("since", "date")]),
+    ];
+
+    private readonly ReplicaDef[] _replicas =
+    [
+        new("db-1", "Primary", "0 ms", "ok"),
+        new("db-2", "Replica", "2.4 s", "lag"),
+        new("db-3", "Replica", "0.8 s", "ok"),
+    ];
+
+    private readonly SnippetDef[] _snippets =
+    [
+        new("top users",
+            "select id, email, role, created_at from users order by created_at desc limit 5;",
+            18,
+            ["id", "email", "role", "created_at"],
+            [
+                ["128", "mira@site", "editor", "2026-08-19"],
+                ["96", "oleg@site", "author", "2026-07-30"],
+                ["54", "ana@site", "editor", "2026-06-14"],
+                ["12", "dev@site", "admin", "2026-03-02"],
+                ["1", "admin@site", "admin", "2025-11-21"],
+            ]),
+        new("orders by status",
+            "select status, count(*) from shop.orders group by status;",
+            24,
+            ["status", "count"],
+            [
+                ["paid", "8,431"],
+                ["pending", "128"],
+                ["refunded", "611"],
+                ["cancelled", "261"],
+            ]),
+        new("tables per schema",
+            "select table_schema, count(*) from information_schema.tables group by table_schema;",
+            41,
+            ["table_schema", "count"],
+            [
+                ["public", "5"],
+                ["shop", "3"],
+                ["forum", "2"],
+                ["loyalty", "3"],
+            ]),
+    ];
+
+    private IEnumerable<SchemaDef> VisibleSchemas =>
+        _schemas.Where(schema => _kindFilter == "all" || schema.Kind == _kindFilter);
+
+    private TableDef[] TablesOf(string schemaId) => _tables.Where(table => table.Schema == schemaId).ToArray();
+
+    private IEnumerable<(SchemaDef Schema, TableDef[] Tables)> Groups()
+    {
+        var list = _schemaFilter == "all"
+            ? VisibleSchemas
+            : VisibleSchemas.Where(schema => schema.Id == _schemaFilter);
+        return list
+            .Select(schema => (Schema: schema, Tables: TablesOf(schema.Id)
+                .Where(table => table.Name.Contains(_query, StringComparison.OrdinalIgnoreCase))
+                .ToArray()))
+            .Where(group => group.Tables.Length > 0);
+    }
+
+    private static string KindLabel(string kind) => kind switch
+    {
+        "core" => "Core",
+        "plugin" => "Plugin",
+        "custom" => "Custom",
+        _ => kind,
+    };
+
+    private static string KindTint(string kind) => kind switch
+    {
+        "core" => "purple",
+        "plugin" => "blue",
+        "custom" => "teal",
+        _ => "purple",
+    };
+
+    private void ToggleView() => _view = _view == "console" ? "tables" : "console";
+
+    private void SetKind(string id)
+    {
+        _kindFilter = id;
+        var selected = _schemas.FirstOrDefault(schema => schema.Id == _schemaFilter);
+        if (selected is not null && id != "all" && selected.Kind != id)
+        {
+            _schemaFilter = "all";
+        }
+    }
+
+    private void ToggleTable(string id) => _expandedTable = _expandedTable == id ? null : id;
+
+    private void CopyToBuffer()
+    {
+        var text = _sql.Trim();
+        if (text.Length > 0)
+        {
+            _buffer = text;
+        }
+    }
+
+    private void PasteBuffer()
+    {
+        if (_buffer.Length == 0)
+        {
+            return;
+        }
+
+        _sql = _sql.Length > 0 ? $"{_sql}\n{_buffer}" : _buffer;
+    }
+
+    private string ResultText()
+    {
+        if (_result is null)
+        {
+            return "";
+        }
+
+        if (_result.Status == "error")
+        {
+            return "Failed";
+        }
+
+        return _result.Rows is not null
+            ? $"{_result.Rows.Length} rows · {_result.Ms} ms"
+            : $"Done · {_result.Ms} ms";
+    }
+
+    private static string Normalize(string text) =>
+        Regex.Replace(text.ToLowerInvariant(), @"\s+", " ").Trim();
+
+    private void Run()
+    {
+        var text = _sql.Trim();
+        if (text.Length == 0)
+        {
+            return;
+        }
+
+        var snippet = _snippets.FirstOrDefault(item => Normalize(item.Sql) == Normalize(text));
+        if (snippet is not null)
+        {
+            _result = new QueryResult { Status = "ok", Ms = snippet.Ms, Columns = snippet.Columns, Rows = snippet.Rows };
+        }
+        else if (text.StartsWith("select", StringComparison.OrdinalIgnoreCase))
+        {
+            _result = new QueryResult { Status = "ok", Ms = 6, Columns = [], Rows = [] };
+        }
+        else if (Regex.IsMatch(text, @"^(insert|update|delete|create|alter|drop)\b", RegexOptions.IgnoreCase))
+        {
+            _result = new QueryResult { Status = "ok", Ms = 9, Notice = "Query executed. No result set." };
+        }
+        else
+        {
+            var firstWord = text.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+            _result = new QueryResult { Status = "error", Error = $"ERROR: syntax error at or near \"{firstWord}\"" };
+        }
+
+        _history.Insert(0, text);
+        for (var i = _history.Count - 1; i > 0; i--)
+        {
+            if (_history[i] == text)
+            {
+                _history.RemoveAt(i);
+            }
+        }
+
+        while (_history.Count > 8)
+        {
+            _history.RemoveAt(_history.Count - 1);
+        }
+    }
+}

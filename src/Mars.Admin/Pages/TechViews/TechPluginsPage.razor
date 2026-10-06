@@ -1,0 +1,198 @@
+@page "/tech/plugins"
+
+<PageTitle>Plugins</PageTitle>
+
+<div class="plugins-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Plugins</h1>
+            <p>Extend Mars with .NET assemblies and frontend modules.</p>
+        </div>
+        <div class="hero-actions">
+            <a class="market-btn" href="/dev/tech/marketplace">
+                <i class="bi bi-search"></i>
+                Browse marketplace
+            </a>
+            <button class="upload-btn" type="button">
+                <i class="bi bi-box-arrow-up"></i>
+                Upload ZIP
+            </button>
+        </div>
+    </header>
+
+    <section class="plugins-panel">
+        <header class="plugins-head">
+            <div class="chips">
+                @foreach (var chip in _filters)
+                {
+                    <button class="chip @(_filter == chip.Id ? "active" : null)" type="button" @onclick="() => _filter = chip.Id">
+                        @chip.Label
+                    </button>
+                }
+            </div>
+            <label class="plugins-search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search plugins..." @bind="_query" @bind:event="oninput" />
+            </label>
+        </header>
+
+        @if (Filtered().Any())
+        {
+            <div class="plugins-grid">
+                @foreach (var plugin in Filtered())
+                {
+                    <article class="plugin-card">
+                        <header class="plugin-top">
+                            <span class="plugin-icon @Tint(plugin)">@plugin.Name[0]</span>
+                            <div class="plugin-id">
+                                <span class="plugin-name">@plugin.Name</span>
+                                <span class="plugin-ver">@plugin.Version</span>
+                            </div>
+                            <span class="kind @plugin.Kind">@plugin.Kind</span>
+                        </header>
+
+                        <p class="plugin-desc">@plugin.Desc</p>
+
+                        <div class="plugin-meta">
+                            <span class="plugin-author">@plugin.Author · @plugin.Downloads installs</span>
+                            @if (plugin.Schema is not null)
+                            {
+                                <span class="plugin-schema">
+                                    <i class="bi bi-database"></i>
+                                    @plugin.Schema
+                                </span>
+                            }
+                        </div>
+
+                        <footer class="plugin-foot">
+                            <button class="switch @(plugin.Enabled ? "on" : null)" type="button" role="switch"
+                                    aria-checked="@(plugin.Enabled ? "true" : "false")" aria-label="Toggle @plugin.Name"
+                                    @onclick="() => Toggle(plugin)">
+                                <span class="knob"></span>
+                            </button>
+                            <span class="plugin-state @(plugin.Enabled ? "on" : null)">
+                                @(plugin.Enabled ? "Enabled" : "Disabled")
+                            </span>
+                            @if (plugin.Update is not null)
+                            {
+                                <button class="update-btn" type="button">
+                                    Update to @plugin.Update
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="plugin-updated">Updated @plugin.Updated</span>
+                            }
+                        </footer>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="empty">No plugins match your search.</p>
+        }
+    </section>
+</div>
+
+@code {
+    private record FilterDef(string Id, string Label);
+
+    private sealed class PluginItem
+    {
+        public required string Name { get; init; }
+        public required string Version { get; init; }
+        public required string Kind { get; init; }
+        public required string Author { get; init; }
+        public required string Downloads { get; init; }
+        public string? Schema { get; init; }
+        public bool Enabled { get; set; }
+        public string? Update { get; init; }
+        public required string Updated { get; init; }
+        public required string Desc { get; init; }
+    }
+
+    private string _filter = "all";
+    private string _query = "";
+
+    private readonly FilterDef[] _filters =
+    [
+        new("all", "All"),
+        new("enabled", "Enabled"),
+        new("disabled", "Disabled"),
+        new("backend", "Backend"),
+        new("frontend", "Frontend"),
+        new("updates", "Updates"),
+    ];
+
+    private readonly List<PluginItem> _plugins =
+    [
+        new()
+        {
+            Name = "SEO Toolkit", Version = "v2.3.1", Kind = "backend", Author = "Mars Core",
+            Downloads = "12.4k", Schema = "seo_toolkit", Enabled = true, Updated = "2d ago",
+            Desc = "Meta tags, sitemaps and indexation control for every entity.",
+        },
+        new()
+        {
+            Name = "Form Builder", Version = "v3.0.2", Kind = "frontend", Author = "Northwind Labs",
+            Downloads = "15.2k", Enabled = true, Updated = "5d ago",
+            Desc = "Drag-and-drop forms with validation, captcha and webhooks.",
+        },
+        new()
+        {
+            Name = "Commerce", Version = "v1.8.0", Kind = "backend", Author = "Mars Core",
+            Downloads = "8.1k", Schema = "commerce", Enabled = true, Updated = "1w ago",
+            Desc = "Products, orders and payments for storefronts.",
+        },
+        new()
+        {
+            Name = "Media CDN", Version = "v2.1.3", Kind = "backend", Author = "Northwind Labs",
+            Downloads = "9.9k", Enabled = true, Updated = "3d ago",
+            Desc = "Resize, optimize and cache images at the edge.",
+        },
+        new()
+        {
+            Name = "MQTT Bridge", Version = "v1.2.0", Kind = "backend", Author = "Mars Core",
+            Downloads = "4.7k", Enabled = true, Updated = "2w ago",
+            Desc = "Publish and subscribe IoT topics inside visual flows.",
+        },
+        new()
+        {
+            Name = "Telegram Notifier", Version = "v1.4.0", Kind = "backend", Author = "Hexlab",
+            Downloads = "6.8k", Enabled = false, Update = "v2.0.0", Updated = "1mo ago",
+            Desc = "Send flow events and alerts to Telegram channels.",
+        },
+        new()
+        {
+            Name = "Analytics Studio", Version = "v0.9.4", Kind = "frontend", Author = "Orbita",
+            Downloads = "2.3k", Schema = "analytics", Enabled = false, Updated = "3w ago",
+            Desc = "Funnels, cohorts and live dashboards over site events.",
+        },
+    ];
+
+    private static readonly string[] Tints = ["blue", "purple", "green", "orange", "teal"];
+
+    private string Tint(PluginItem plugin) => Tints[_plugins.IndexOf(plugin) % Tints.Length];
+
+    private static void Toggle(PluginItem plugin) => plugin.Enabled = !plugin.Enabled;
+
+    private IEnumerable<PluginItem> Filtered()
+    {
+        var text = _query.Trim();
+        return _plugins.Where(plugin =>
+            (_filter switch
+            {
+                "enabled" => plugin.Enabled,
+                "disabled" => !plugin.Enabled,
+                "backend" => plugin.Kind == "backend",
+                "frontend" => plugin.Kind == "frontend",
+                "updates" => plugin.Update is not null,
+                _ => true,
+            })
+            && (text.Length == 0
+                || plugin.Name.Contains(text, StringComparison.OrdinalIgnoreCase)
+                || plugin.Author.Contains(text, StringComparison.OrdinalIgnoreCase)
+                || plugin.Desc.Contains(text, StringComparison.OrdinalIgnoreCase)));
+    }
+}

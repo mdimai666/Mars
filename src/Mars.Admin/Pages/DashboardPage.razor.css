@@ -1,0 +1,493 @@
+/* Локальные переменные прототипа, отсутствующие в глобальном наборе .cloudy-layout (значения из mars-redesign main.css) */
+.dash-page {
+    --muted-out: #b6bccd;
+    --line-strong: #cdd3e6;
+    --line-track: #e3e7f3;
+    --line-dot: #d4d9e8;
+    --blue-soft: #ddebfb;
+    --blue: #4c82d6;
+}
+
+.hero h1 {
+    margin: 0 0 10px;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--cld-ink);
+}
+
+.hero p {
+    margin: 0 0 34px;
+    color: var(--cld-muted-strong);
+    font-size: 17px;
+}
+
+.widgets {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.widget {
+    border-radius: 18px;
+    background: var(--cld-card);
+    padding: 22px 24px;
+}
+
+.widget h2 {
+    margin: 0 0 16px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.widget-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.widget-head h2 {
+    margin: 0 0 16px;
+}
+
+.link {
+    border: none;
+    background: none;
+    color: var(--cld-primary);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+.cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cal-month {
+    color: var(--cld-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.cal-tools {
+    display: flex;
+    gap: 8px;
+}
+
+.cal-tool {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    border: 1px solid var(--cld-line);
+    background: var(--cld-field);
+    color: var(--cld-icon-ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.cal-weekdays {
+    margin-bottom: 8px;
+}
+
+.cal-weekdays span {
+    color: var(--cld-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.cal-week span {
+    padding: 6px 0;
+    font-size: 13.5px;
+    color: var(--cld-ink-soft);
+    border-radius: 9px;
+}
+
+.cal-week + .cal-week {
+    margin-top: 2px;
+}
+
+.cal-week span.out {
+    color: var(--muted-out);
+}
+
+.cal-week span.today {
+    background: var(--cld-primary);
+    color: var(--cld-white);
+    font-weight: 600;
+}
+
+.cal-event {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--cld-line);
+    background: var(--cld-field);
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cld-lavender);
+    flex: none;
+}
+
+.event-title {
+    flex: 1;
+    min-width: 0;
+    color: var(--cld-ink-soft);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-time {
+    color: var(--cld-muted);
+    font-size: 13px;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12.5px;
+}
+
+.badge.draft {
+    background: var(--cld-amber-soft);
+    color: var(--cld-amber);
+}
+
+.badge.published {
+    background: var(--cld-green-soft);
+    color: var(--cld-green);
+}
+
+.rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rows li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.rows li + li {
+    border-top: 1px solid var(--cld-line);
+}
+
+.row-chip {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--cld-primary-soft);
+    color: var(--cld-primary);
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+.note-chip {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+.note-chip.success {
+    background: var(--cld-green-soft);
+    color: var(--cld-green);
+}
+
+.note-chip.info {
+    background: var(--cld-primary-soft);
+    color: var(--cld-primary);
+}
+
+.row-title {
+    flex: 1;
+    min-width: 0;
+    color: var(--cld-ink-soft);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.row-date {
+    color: var(--cld-muted);
+    font-size: 13px;
+}
+
+.tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tasks li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+}
+
+.task-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--line-strong);
+    background: transparent;
+    color: var(--cld-white);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    cursor: pointer;
+    flex: none;
+}
+
+.task-check.done {
+    border-color: var(--cld-primary);
+    background: var(--cld-primary);
+}
+
+.task-label {
+    flex: 1;
+    min-width: 0;
+    color: var(--cld-ink-soft);
+    font-size: 14px;
+}
+
+.task-due {
+    color: var(--cld-muted);
+    font-size: 13px;
+}
+
+.add-task {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    border: none;
+    background: none;
+    color: var(--cld-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.action-chip {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+}
+
+.action-chip.violet {
+    background: var(--cld-primary-soft);
+    color: var(--cld-primary);
+}
+
+.action-chip.blue {
+    background: var(--blue-soft);
+    color: var(--blue);
+}
+
+.action-chip.green {
+    background: var(--cld-green-soft);
+    color: var(--cld-green);
+}
+
+.action-chip.amber {
+    background: var(--cld-amber-soft);
+    color: var(--cld-amber);
+}
+
+.action-label {
+    font-size: 12.5px;
+    color: var(--cld-ink-soft);
+}
+
+.overview {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.overview-num {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.overview-sub {
+    color: var(--cld-muted);
+    font-size: 13px;
+}
+
+.overview-trend {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.trend {
+    color: var(--cld-green);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.chart {
+    width: 100%;
+    height: 80px;
+    display: block;
+}
+
+.chart-days {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.chart-days span {
+    color: var(--cld-muted);
+    font-size: 11px;
+}
+
+.storage-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--line-track);
+    overflow: hidden;
+}
+
+.storage-fill {
+    display: block;
+    width: 34%;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--cld-primary);
+}
+
+.storage-note {
+    margin: 12px 0 14px;
+    color: var(--cld-muted);
+    font-size: 13.5px;
+}
+
+.manage-btn {
+    align-self: flex-end;
+    border: none;
+    background: var(--cld-primary-soft);
+    color: var(--cld-primary);
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tips .widget-head {
+    justify-content: flex-start;
+    gap: 8px;
+    color: var(--cld-primary);
+}
+
+.tips .widget-head h2 {
+    color: var(--cld-ink);
+}
+
+.tips-title {
+    margin: 0 0 6px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--cld-ink-soft);
+}
+
+.tips-text {
+    margin: 0;
+    color: var(--cld-muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.tips-dots {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 16px;
+}
+
+.tip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--line-dot);
+}
+
+.tip-dot.active {
+    background: var(--cld-primary);
+}
+
+@media (max-width: 1100px) {
+    .widgets {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .widgets {
+        grid-template-columns: 1fr;
+    }
+}

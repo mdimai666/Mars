@@ -55,7 +55,7 @@ async function login(page, { user, pass }) {
 // Открывает браузер+страницу, логинится при необходимости, сохраняет auth.json.
 // ВАЖНО: админка — Blazor WASM, решение «логин/шелл» принимается на клиенте ПОСЛЕ старта
 // приложения, поэтому ждём появления шела (.admin-layout/fluent-nav) или формы логина.
-const SHELL_SEL = '.admin-layout, fluent-nav';
+const SHELL_SEL = '.admin-layout, .cloudy-layout, fluent-nav';
 const LOGIN_SEL = "[name='login-email']";
 
 async function newPage(browser, host, { viewport = { width: 1600, height: 1000 } } = {}) {

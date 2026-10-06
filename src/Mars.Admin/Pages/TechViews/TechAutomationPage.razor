@@ -1,0 +1,176 @@
+@page "/tech/automation"
+
+<PageTitle>Automation</PageTitle>
+
+<div class="automation-page">
+    <div class="automation-body">
+        <aside class="nodes-panel">
+            <header class="np-head">
+                <i class="bi bi-x-lg np-logo"></i>
+                <span class="np-title">Nodes</span>
+                <button class="np-close" type="button" aria-label="Свернуть панель">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+
+            <label class="np-search">
+                <input type="text" placeholder="Search nodes..." />
+                <i class="bi bi-search"></i>
+            </label>
+
+            <div class="np-scroll">
+                @foreach (var group in _groups)
+                {
+                    <section class="np-group">
+                        <h2>@group.Title</h2>
+                        @foreach (var item in group.Items)
+                        {
+                            <button class="node-item" type="button">
+                                <span class="node-icon tint-@item.Tint">
+                                    <i class="bi bi-box-seam"></i>
+                                </span>
+                                <span class="node-label">@item.Label</span>
+                                <i class="bi bi-three-dots node-more"></i>
+                            </button>
+                        }
+                    </section>
+                }
+            </div>
+        </aside>
+
+        <div class="canvas" aria-hidden="true"></div>
+
+        <aside class="inspector">
+            <header class="insp-head">
+                <span class="insp-icon">
+                    <i class="bi bi-lightning-charge"></i>
+                </span>
+                <div class="insp-titles">
+                    <span class="insp-title">Condition</span>
+                    <span class="insp-sub">Logic</span>
+                </div>
+                <button class="insp-close" type="button" aria-label="Закрыть панель">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+
+            <nav class="insp-tabs">
+                @foreach (var tab in _tabs)
+                {
+                    <button class="tab @(_activeTab == tab ? "active" : null)" type="button" @onclick="() => _activeTab = tab">
+                        @tab
+                    </button>
+                }
+            </nav>
+
+            <div class="insp-body">
+                <label class="insp-field">
+                    <span class="field-name">Label</span>
+                    <input type="text" value="Email verified?" />
+                </label>
+
+                <label class="insp-field">
+                    <span class="field-name">Description</span>
+                    <textarea rows="3">Check if user has verified their email</textarea>
+                </label>
+
+                <div class="insp-field">
+                    <span class="field-name">Condition</span>
+                    <code class="code-box">
+                        <span class="tk-purple">{{</span> user.email_verified
+                        <span class="tk-green">== true</span> <span class="tk-purple">}}</span>
+                    </code>
+                </div>
+
+                <div class="insp-field">
+                    <span class="field-name">On True</span>
+                    <button class="row-btn" type="button">
+                        Create User Profile
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="insp-field">
+                    <span class="field-name">On False</span>
+                    <button class="row-btn" type="button">
+                        Delay 1 hour
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <footer class="insp-foot">
+                <button class="delete-btn" type="button">
+                    <i class="bi bi-trash"></i>
+                    Delete Node
+                </button>
+            </footer>
+        </aside>
+    </div>
+
+    <footer class="tech-bottombar">
+        <div class="bb-left">
+            <button class="env-btn" type="button">
+                Development
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <span class="sys">
+                <span class="sys-dot"></span>
+                All systems operational
+            </span>
+        </div>
+
+        <div class="bb-right">
+            <span class="version">Version 2.4.1</span>
+            <button class="bb-btn" type="button">
+                <i class="bi bi-box-arrow-up"></i>
+                Backup
+            </button>
+            <button class="publish-btn" type="button">
+                <span class="publish-main">
+                    <i class="bi bi-play-fill"></i>
+                    Publish changes
+                </span>
+                <span class="publish-sep"></span>
+                <i class="bi bi-chevron-down publish-chev"></i>
+            </button>
+        </div>
+    </footer>
+</div>
+
+@code {
+    private record NodeItem(string Label, string Tint);
+
+    private record NodeGroup(string Title, NodeItem[] Items);
+
+    private readonly string[] _tabs = ["Settings", "Schema", "Logs"];
+    private string _activeTab = "Settings";
+
+    private readonly NodeGroup[] _groups =
+    [
+        new("Triggers",
+        [
+            new("Entity Created", "purple"),
+            new("Entity Updated", "purple"),
+            new("Entity Deleted", "red"),
+            new("Schedule", "orange"),
+            new("Webhook", "green"),
+        ]),
+        new("Actions",
+        [
+            new("Create Entity", "blue"),
+            new("Update Entity", "blue"),
+            new("Delete Entity", "red"),
+            new("Send Email", "green"),
+            new("HTTP Request", "teal"),
+            new("Log", "orange"),
+        ]),
+        new("Logic",
+        [
+            new("If / Else", "green"),
+            new("Switch", "teal"),
+            new("Delay", "purple"),
+            new("Loop", "purple"),
+        ]),
+    ];
+}

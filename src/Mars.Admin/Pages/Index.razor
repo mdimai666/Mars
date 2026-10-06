@@ -1,8 +1,119 @@
 @page "/"
 @page "/dev/"
+@using Mars.Contracts.Common
+@using Mars.Cms.Contracts.Posts
+@using Mars.Media.Contracts.Files
+@using Mars.WebApiClient.Interfaces
+@inject IMarsWebApiClient client
 
 <PageTitle>Admin</PageTitle>
 
-<div class="d-flex flex-fill">
-    <Mars.Admin.Framework.Pages.RemotePageViewer Url="/api/AdminFront/Render?file=admin_index.hbs" />
+<header class="cloudy-hero">
+    <h1>Welcome back!</h1>
+    <p>Manage your content and build your site.</p>
+</header>
+
+<div class="cloudy-stats">
+    <article class="cloudy-stat">
+        <div class="cloudy-stat__icon"><i class="bi bi-file-earmark-text"></i></div>
+        <div class="cloudy-stat__body">
+            <span class="cloudy-stat__label">Posts</span>
+            <strong class="cloudy-stat__value">@Fmt(_postsCount)</strong>
+            <span class="cloudy-stat__sub">Total</span>
+        </div>
+    </article>
+    <article class="cloudy-stat">
+        <div class="cloudy-stat__icon"><i class="bi bi-collection"></i></div>
+        <div class="cloudy-stat__body">
+            <span class="cloudy-stat__label">Post types</span>
+            <strong class="cloudy-stat__value">@Fmt(_typesCount)</strong>
+            <span class="cloudy-stat__sub">Total</span>
+        </div>
+    </article>
+    <article class="cloudy-stat">
+        <div class="cloudy-stat__icon"><i class="bi bi-folder2-open"></i></div>
+        <div class="cloudy-stat__body">
+            <span class="cloudy-stat__label">Categories</span>
+            <strong class="cloudy-stat__value">@Fmt(_categoriesCount)</strong>
+            <span class="cloudy-stat__sub">Total</span>
+        </div>
+    </article>
+    <article class="cloudy-stat">
+        <div class="cloudy-stat__icon"><i class="bi bi-image"></i></div>
+        <div class="cloudy-stat__body">
+            <span class="cloudy-stat__label">Media</span>
+            <strong class="cloudy-stat__value">@Fmt(_mediaCount)</strong>
+            <span class="cloudy-stat__sub">Files</span>
+        </div>
+    </article>
+
+    <section class="cloudy-recent">
+        <header class="cloudy-recent__head">
+            <h2>Recent Posts</h2>
+            <a class="cloudy-chip active" href="/dev/Post/post">View all</a>
+        </header>
+        <ul class="cloudy-recent__list">
+            @foreach (var post in _recentPosts)
+            {
+                <li>
+                    <span class="cloudy-recent__dot"></span>
+                    <span class="cloudy-recent__title">
+                        <a href="/dev/EditPost/post/@post.Id">@post.Title</a>
+                    </span>
+                    <span class="cloudy-badge @(IsPublished(post) ? "cloudy-badge--published" : "cloudy-badge--draft")">
+                        @(post.Status?.Value ?? "—")
+                    </span>
+                    <time class="cloudy-recent__date">@post.CreatedAt.ToString("d")</time>
+                </li>
+            }
+            @if (_loaded && _recentPosts.Count == 0)
+            {
+                <li><span class="cloudy-recent__title">Пока нет записей</span></li>
+            }
+        </ul>
+    </section>
 </div>
+
+@code {
+    bool _loaded;
+    int? _postsCount;
+    int? _typesCount;
+    int? _categoriesCount;
+    int? _mediaCount;
+    List<PostListItemResponse> _recentPosts = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _typesCount = Q.Site?.PostTypes?.Count ?? 0;
+
+        try
+        {
+            var recent = await client.Post.List("post", new ListPostQueryRequest
+            {
+                Take = 5,
+                Sort = "-CreatedAt",
+            });
+            _recentPosts = [.. recent.Items];
+            _postsCount = recent.TotalCount;
+
+            var categories = await client.PostCategory.ListForPostType("post", new() { Take = 1 });
+            _categoriesCount = categories.TotalCount;
+
+            var media = await client.Media.List(new ListFileQueryRequest { Take = 1 });
+            _mediaCount = media.TotalCount;
+        }
+        catch
+        {
+            // счётчики не критичны — hero остаётся полезным
+        }
+        finally
+        {
+            _loaded = true;
+        }
+    }
+
+    static string Fmt(int? v) => v?.ToString() ?? "—";
+
+    static bool IsPublished(PostListItemResponse post) =>
+        string.Equals(post.Status?.Key, "publish", StringComparison.OrdinalIgnoreCase);
+}

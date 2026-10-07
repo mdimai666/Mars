@@ -19,6 +19,7 @@ public class TestApi1Controller : ControllerBase
         _requestContext = requestContext;
     }
 
+    [HttpGet]
     public object CheckRequestContext()
     {
         _ = _requestContext.User?.Id;
@@ -34,11 +35,13 @@ public class TestApi1Controller : ControllerBase
         };
     }
 
+    [HttpGet]
     public TimeOnly TimeOnlyResponse()
     {
         return new TimeOnly(8, 12, 16);
     }
 
+    [HttpGet]
     public DateOnly DateOnlyResponse()
     {
         return new DateOnly(2022, 6, 22);

@@ -162,12 +162,17 @@ public partial class TechLogsPage : IDisposable
         _ = Load();
     }
 
-    IEnumerable<LogEntry> FilteredEntries() =>
-        string.IsNullOrEmpty(_query)
+    // лог-файл хронологический; в таблице свежие записи сверху
+    IEnumerable<LogEntry> FilteredEntries()
+    {
+        var source = string.IsNullOrEmpty(_query)
             ? entries
             : entries.Where(e =>
                 e.Message.Contains(_query, StringComparison.OrdinalIgnoreCase) ||
                 e.Source.Contains(_query, StringComparison.OrdinalIgnoreCase));
+
+        return source.Reverse();
+    }
 
     static string FormatTime(DateTime ts)
     {

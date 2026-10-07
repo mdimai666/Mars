@@ -14,13 +14,22 @@
     async Task OnInput(ChangeEventArgs e)
     {
         var text = e.Value?.ToString() ?? "";
-        _cts?.Cancel();
-        using var cts = _cts = new CancellationTokenSource();
+
+        var previous = _cts;
+        var cts = _cts = new CancellationTokenSource();
+        if (previous is not null)
+        {
+            // прежний `using var cts` диспожил CTS по завершении дебаунса, но поле на него оставалось —
+            // следующий Cancel() кидал ObjectDisposedException; теперь владение явное: cancel+dispose здесь
+            previous.Cancel();
+            previous.Dispose();
+        }
+
         try
         {
             await Task.Delay(DebounceMs, cts.Token);
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
             return;
         }

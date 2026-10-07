@@ -175,6 +175,10 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   не создаёт.
 - **`.cloudy-search` ≠ `.cloudy-searchbox`**: первое — кликабельная «поисковая строка» топбара (300px,
   kbd), второе — реальный input списка из `cloudy-list.less`. Не путать/не объединять.
+- **Дебаунс `CloudySearchBox` — без `using` на CTS**: предыдущий `CancellationTokenSource` отменять и
+  диспожить явно в момент замены новым (`previous.Cancel(); previous.Dispose();`). `using var cts = _cts = …`
+  диспожил CTS по завершении дебаунса, а поле продолжало на него указывать — следующий ввод падал
+  `ObjectDisposedException: CancellationTokenSource_Disposed` (баг 2026-10-07, исправлен).
 - **Сортировка списков**: `Sort="FullName"` НЕ работает (FullName `[NotMapped]` у `UserEntity`) —
   использовать маппед-поля (`LastName`, `-CreatedAt`).
 - **`ListDataResult.Empty()` при пустой выборке** → `TotalCount == null`, не 0 (`ToListDataResult` в

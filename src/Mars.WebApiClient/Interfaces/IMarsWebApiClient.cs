@@ -34,5 +34,6 @@ public interface IMarsWebApiClient
     IAIServiceClient AITool { get; }
     IAiChatServiceClient AiChat { get; }
     ICodeCompletionServiceClient CodeCompletion { get; }
+    IKpiServiceClient Kpi { get; }
 
 }

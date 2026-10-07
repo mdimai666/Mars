@@ -582,4 +582,10 @@
   <data name="CopyToClipboard" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
+  <data name="users.total" xml:space="preserve">
+    <value>Total users</value>
+  </data>
+  <data name="users.newThisMonth" xml:space="preserve">
+    <value>New this month</value>
+  </data>
 </root>

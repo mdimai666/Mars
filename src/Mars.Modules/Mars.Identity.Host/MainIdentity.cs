@@ -1,12 +1,14 @@
 using System.Reflection;
 using System.Threading.RateLimiting;
 using Mars.CommandLine.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Options;
 using Mars.Identity.Host.CommandLine;
+using Mars.Identity.Host.Kpi;
 using Mars.Identity.Host.Locators;
 using Mars.Identity.Host.Models;
 using Mars.Identity.Host.Services;
@@ -79,6 +81,8 @@ public static class MainIdentity
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
 
+        services.AddSingleton<IKpiHandler, UsersTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, UsersNewThisMonthKpiHandler>();
         return services;
     }
 

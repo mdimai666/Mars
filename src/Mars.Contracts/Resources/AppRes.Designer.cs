@@ -1366,6 +1366,24 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New this month.
+        /// </summary>
+        public static string users_newThisMonth {
+            get {
+                return ResourceManager.GetString("users.newThisMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total users.
+        /// </summary>
+        public static string users_total {
+            get {
+                return ResourceManager.GetString("users.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UserType.
         /// </summary>
         public static string UserType {

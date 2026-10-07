@@ -11,8 +11,8 @@
 
 <CloudyPageHead Title="@AppRes.Users" Subtitle="Manage accounts, roles and access." KpiCols="2">
     <Kpis>
-        <CloudyKpi Label="Total users" Value="@Fmt(_totalAll)" Icon="bi-people" />
-        <CloudyKpi Label="New this month" Value="@Fmt(_newThisMonth)" Icon="bi-person-plus" />
+        <CloudyKpi Label="@KpiLabel(UserKpiKeys.Total)" Value="@KpiValue(UserKpiKeys.Total)" Icon="bi-people" />
+        <CloudyKpi Label="@KpiLabel(UserKpiKeys.NewThisMonth)" Value="@KpiValue(UserKpiKeys.NewThisMonth)" Icon="bi-person-plus" />
     </Kpis>
 </CloudyPageHead>
 

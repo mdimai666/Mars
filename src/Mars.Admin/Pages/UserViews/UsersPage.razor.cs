@@ -21,8 +21,7 @@ public partial class UsersPage
     string _searchText = "";
     string? _roleFilter;
     int? _total;
-    int? _totalAll;
-    int? _newThisMonth;
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
     IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
     IReadOnlyCollection<string> RoleNames => _availRoles.Select(r => r.Name).ToList();
@@ -46,24 +45,20 @@ public partial class UsersPage
         });
 
         _total = data.TotalCount ?? data.Items.Count;
-        if (_roleFilter is null && string.IsNullOrWhiteSpace(_searchText))
-        {
-            _totalAll = _total;
-        }
         StateHasChanged();
         return data;
     }
 
     async Task LoadKpi()
     {
-        var all = await _client.User.ListDetail(new() { Take = 1, Sort = "LastName" });
-        _totalAll = all.TotalCount ?? 0;
-
-        var now = DateTimeOffset.Now;
-        var monthStart = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, now.Offset);
-        var fresh = await _client.User.ListDetail(new() { Take = 1, Sort = "LastName", CreatedFrom = monthStart });
-        _newThisMonth = fresh.TotalCount ?? 0;
+        _kpi = await _client.Kpi.Get([UserKpiKeys.Total, UserKpiKeys.NewThisMonth]);
     }
+
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
 
     void RefreshGrid() => _grid?.RefreshDataAsync();
 
@@ -91,8 +86,6 @@ public partial class UsersPage
         RefreshGrid();
         await LoadKpi();
     }
-
-    static string Fmt(int? v) => v?.ToString() ?? "—";
 
     static int TintFor(Guid id) => (id.GetHashCode() & 0x7FFFFFFF) % 5;
 

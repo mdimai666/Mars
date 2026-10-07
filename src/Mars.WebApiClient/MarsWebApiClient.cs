@@ -37,6 +37,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IAIServiceClient AITool { get; }
     public IAiChatServiceClient AiChat { get; }
     public ICodeCompletionServiceClient CodeCompletion { get; }
+    public IKpiServiceClient Kpi { get; }
 
     public MarsWebApiClient(IServiceProvider serviceProvider, IFlurlClient flurlClient)
     {
@@ -70,5 +71,6 @@ public class MarsWebApiClient : IMarsWebApiClient
         AITool = new AIServiceClient(serviceProvider, targetClient);
         AiChat = new AiChatServiceClient(serviceProvider, targetClient);
         CodeCompletion = new CodeCompletionServiceClient(serviceProvider, targetClient);
+        Kpi = new KpiServiceClient(serviceProvider, targetClient);
     }
 }

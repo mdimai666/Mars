@@ -76,7 +76,7 @@
    `.cloudy-row-actions`; empty — `.cloudy-empty`; скрываемые колонки — `u-hide-1100/900` (и в head,
    и в row).
 4. Данные: `client.X.ListDetail(new(){ Skip, Take, Sort, Search, Roles/CreatedFrom })`; счётчики KPI —
-   `Take=1` → `TotalCount`. Загрузка — `Task.WhenAll(LoadUsers(), LoadKpi())`.
+   через KPI-эндпоинт (см. рецепт ниже; старый способ `Take=1` → `TotalCount` не использовать).
 
 **Страница с FluentDataGrid (бесконечная подгрузка, как UsersPage 2026-10-06):**
 1. `CloudyBrowser Scrollable` — тело становится flex-fill скролл-контейнером
@@ -102,9 +102,29 @@
    (RZ9996, та же грабля что у CloudyBrowser). Responsive-скрытие колонок (`u-hide-*`) на
    DataGrid НЕ перенесено — при необходимости менять `GridTemplateColumns` + nth-child по брейкпоинтам.
 
-**KPI «новые за месяц»:** фильтр `CreatedFrom` (DateTimeOffset?) проброшен
-`ListUserQueryRequest` → `ListUserQuery` → `ToQuery` (`Mars.Identity.Abstractions/Dto/Users/
-UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
+**KPI-карточки (паттерн 2026-10-06/07):** серверные метрики — НЕ `ListDetail(Take=1)`-хаками, а через
+реестр `IKpiHandler` (`Mars.Contracts/Common/IKpiHandler.cs`, `KpiResult(Key, Value, Label?)`) +
+агрегатор `GET api/Kpi?keys=a,b` (`Mars.Server/Controllers/KpiController.cs`: Admin-only,
+неизвестные ключи игнорирует, `keys=a,b` и `keys=a&keys=b` равноценны). Контроллер — ЧИСТЫЙ
+агрегатор БЕЗ кэша: кэширование и инвалидация — ответственность хендлера (иначе TTL контроллера
+перебивает событийную инвалидацию — баг 2026-10-06: значения обновлялись «через минуту», не по событию).
+- Хендлер живёт в модуле-владельце метрики (пилот: `Mars.Identity.Host/Kpi/Users*KpiHandler` —
+  `IMemoryCache` TTL 10мин + инвалидация по `entity/user/add|delete` через `IEventManager`;
+  ключи-константы `Mars.Identity.Contracts/Users/UserKpiKeys.cs`).
+- Хендлер — SINGLETON, слушатели событий подписываются В КОНСТРУКТОРЕ (конструируется один раз
+  при первом резолве `IEnumerable<IKpiHandler>` контроллером; ленивая подписка до первого
+  `/api/Kpi` безвредна). Регистрация — обычная `AddSingleton<IKpiHandler, MyHandler>()`.
+  `IMarsAppLifetimeService` для этого НЕ использовать: его `GetOrderedList` подбирает только
+  Singleton-регистрации с явным `ImplementationType` и резолвит их по `ServiceType` — несколько
+  регистраций под одним интерфейсом ломают вызов `OnStartupAsync` (баг 2026-10-06: слушатели
+  не подписывались, значения обновлялись только по TTL). `TriggerEvent` — синхронный, инлайн.
+- Фронт: один вызов `_client.Kpi.Get([keys])` на страницу → словарь; `Label` с сервера — стабильный
+  ключ, переводится `IStringLocalizer<AppRes>` (записи в `Mars.Contracts/Resources/AppRes*.resx`,
+  имена = ключи, напр. `users.total`).
+- Фильтр `CreatedFrom` (DateTimeOffset?) для «новых за месяц» проброшен
+  `ListUserQueryRequest` → `ListUserQuery` → `ToQuery` (`Mars.Identity.Abstractions/Dto/Users/
+  UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
+- Пересмотреть позже: scope-группы ключей вместо явного списка, роли на отдельные ключи.
 
 **Новая страница в tech-зоне:** положить в `Pages/TechViews/` (layout из `_Imports`), маршрут
 `/tech/*` или `/dev/tech/*`; цвета — только `var(--ct-*)`/прототипные токены зоны.

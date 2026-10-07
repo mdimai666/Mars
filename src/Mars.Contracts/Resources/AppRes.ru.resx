@@ -582,4 +582,10 @@
   <data name="CopyToClipboard" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
   </data>
+  <data name="users.total" xml:space="preserve">
+    <value>Всего пользователей</value>
+  </data>
+  <data name="users.newThisMonth" xml:space="preserve">
+    <value>Новых за месяц</value>
+  </data>
 </root>

@@ -6,10 +6,12 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Host.Controllers;
 using Mars.Cms.Host.Handlers;
+using Mars.Cms.Host.Kpi;
 using Mars.Cms.Host.Seeding;
 using Mars.Cms.Host.Services;
 using Mars.Cms.Host.XActions;
 using Mars.Cms.Host.XActions.ContentRecipes;
+using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
 using Mars.Data.Seeding;
 using Mars.Forms.Abstractions;
@@ -58,6 +60,9 @@ public static class MainCms
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
         services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();
         services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();
+
+        services.AddSingleton<IKpiHandler, FeedbacksTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, FeedbacksNewThisWeekKpiHandler>();
 
         UseIMetaRelationModelProviderHandler(services);
         UseIMetaValueGeneratorHandler(services);

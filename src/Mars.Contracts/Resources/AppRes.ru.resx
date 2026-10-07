@@ -588,4 +588,13 @@
   <data name="users.newThisMonth" xml:space="preserve">
     <value>Новых за месяц</value>
   </data>
+  <data name="feedbacks.total" xml:space="preserve">
+    <value>Всего обращений</value>
+  </data>
+  <data name="feedbacks.newThisWeek" xml:space="preserve">
+    <value>Новых за неделю</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
 </root>

@@ -124,7 +124,8 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
 `OnStateChange`) — прошлый хак, НЕ повторять. Скины панелей/бэкдропа — НЕ css-классами диалога, а
 `cloudy-dialog.less` (грабля: диалоги рендерятся вне `.cloudy-layout` — токены `--cld-*` дублированы
 на хосте `fluent-dialog/fluent-drawer`, синхронизировать с cloudy.less). Мигрированы:
-`CreateUserDialog`, `ChangePasswordDialog` (вызов из UsersPage). Tech-зона: `log-modal` в TechLogsPage
+`CreateUserDialog`, `ChangePasswordDialog` (вызов из UsersPage), `ViewFeedbackDialog`
+(FeedbackListPage, read-only тело на FluentStack). Tech-зона: `log-modal` в TechLogsPage
 остаётся своей разметкой (`--ct-*` токены).
 
 **KPI-карточки (паттерн 2026-10-06/07):** серверные метрики — НЕ `ListDetail(Take=1)`-хаками, а через
@@ -135,7 +136,9 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
 перебивает событийную инвалидацию — баг 2026-10-06: значения обновлялись «через минуту», не по событию).
 - Хендлер живёт в модуле-владельце метрики (пилот: `Mars.Identity.Host/Kpi/Users*KpiHandler` —
   `IMemoryCache` TTL 10мин + инвалидация по `entity/user/add|delete` через `IEventManager`;
-  ключи-константы `Mars.Identity.Contracts/Users/UserKpiKeys.cs`).
+  ключи-константы `Mars.Identity.Contracts/Users/UserKpiKeys.cs`). Второй пилот:
+  `Mars.Cms.Host/Kpi/Feedbacks*KpiHandler` (инвалидация по `FeedbackAdd/FeedbackDelete`;
+  ключи `Mars.Cms.Contracts/Feedbacks/FeedbackKpiKeys.cs`).
 - Хендлер — SINGLETON, слушатели событий подписываются В КОНСТРУКТОРЕ (конструируется один раз
   при первом резолве `IEnumerable<IKpiHandler>` контроллером; ленивая подписка до первого
   `/api/Kpi` безвредна). Регистрация — обычная `AddSingleton<IKpiHandler, MyHandler>()`.
@@ -221,8 +224,19 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
 - 2026-10-07: KPI-эндпоинты (`IKpiHandler` + `api/Kpi`, пилот UsersPage); модалки — штатный
   `FluentDialog` через `IDialogService` (шим-вызов `ShowDialogAsync<T>`, `CloudyDialogHead`
   в TitleTemplate, скин `cloudy-dialog.less`) — CreateUserDialog/ChangePasswordDialog переведены
-  на сервис-диалоги.
-- Дальше: перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
+  на сервис-диалоги. FeedbackListPage переведена на DataGrid-паттерн (KPI `feedbacks.*`
+  хендлерами `Mars.Cms.Host/Kpi/`, ViewFeedbackDialog — на `CloudyDialogHead`, колонка CreatedAt
+  с «сегодня/вчера» — форматтер вынесен в расширение `FormatTime()`
+  (`Mars.Admin.Framework/Extensions/TimeFormatExtensions.cs`, общий с TechLogsPage), Type — тегом
+  без сортировки: поле сущности `FeedbackType`, Sort по `Type`
+  не сработает; тинт Type — ФИКСИРОВАННЫЙ маппинг (InfoMessage=0, BugReport=3, Question=1) +
+  детерминированный фолбэк: `string.GetHashCode()` рандомизирован на процесс, цвета «прыгали»
+  при каждой перезагрузке). Чипы-фильтры по Type отклонены (нет фильтра в `ListFeedbackQueryRequest`).
+  KPI-метрика фидбеков — «новых за НЕДЕЛЮ» (`feedbacks.newThisWeek`, отсчёт от понедельника;
+  решение пользователя 2026-10-07, не «за месяц» как у users).
+- Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
+  и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
+  2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
   responsive-скрытие колонок DataGrid (не перенесено); остальные диалоги
-  (PasskeysPage, PluginViews, FeedbackViews) — на `CloudyDialogHead`/скин по мере правки страниц;
+  (PasskeysPage, PluginViews) — на `CloudyDialogHead`/скин по мере правки страниц;
   редактор поста и Nodes — ПОСЛЕДНИЕ шаги.

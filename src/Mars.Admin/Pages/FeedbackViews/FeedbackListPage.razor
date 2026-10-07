@@ -6,84 +6,75 @@
 
 @inject IStringLocalizer<AppRes> L
 
-<ContentWrapper Title="@AppRes.Feedbacks" WrapperClass="vstack">
+<CloudyPageHead Title="@AppRes.Feedbacks" Subtitle="Visitor messages and contact requests." KpiCols="2">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.Total)" Value="@KpiValue(FeedbackKpiKeys.Total)" Icon="bi-chat-square-text" />
+        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.NewThisWeek)" Value="@KpiValue(FeedbackKpiKeys.NewThisWeek)" Icon="bi-envelope-plus" />
+    </Kpis>
+</CloudyPageHead>
 
-    <div class="d-flex flex-column flex-lg-row gap-3">
-        <FluentTextInput @bind-Value=_searchText
-                      @bind-Value:after=HandleSearchInput
-                      Immediate
-                      ImmediateDelay="300"
-                      Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search">
-            <StartTemplate>
-                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
-            </StartTemplate>
-        </FluentTextInput>
-
-        <a class="btn btn-outline-primary ms-auto" @onclick=DownloadExcel>
+<CloudyBrowser Scrollable>
+    <HeadRight>
+        <CloudySearchBox Placeholder="Search feedback…" ValueChanged="OnSearchChanged" />
+        <button type="button" class="cloudy-btn-primary" @onclick="DownloadExcel">
             <i class="bi bi-table"></i>
             @AppRes.DownloadExcel
-        </a>
-    </div>
+        </button>
+    </HeadRight>
 
-    <div class="mt-4 vstack flex-fill">
-        <div class="flex-fill" style="height: 534px; overflow:auto;">
-            <FluentDataGrid ItemsProvider="dataProvider"
-                            @ref=table
-                            ItemSize="72"
-                            Virtualize
-                            EmptyContent="DataGrid_EmptyContent"
-                            ShowHover
-                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                            OnRowClick="OnRowClick"
-                            Class="data-table--adaptive"
-                            GridTemplateColumns="* 2fr 2fr 1fr 1fr"
-                            TGridItem="FeedbackSummaryResponse">
-                <TemplateColumn SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.Title))"
-                                Title="@AppRes.Title"
-                                InitialSortDirection="DataGridSortDirection.Ascending"
-                                IsDefaultSortColumn="true"
-                                Sortable="true">
-                    <div class="d-none d-lg-block">
-                        @context.Title
-                    </div>
-                    <div class="d-block d-lg-none">
-                        <div class="fs-6">
-                            <a class="text-accent">@context.Title</a>
-                        </div>
-                        <div class="hstack gap-4">
-                            <div>@context.Phone</div>
-                            <div>@context.Email</div>
-                        </div>
-                        <div>@context.CreatedAt.LocalDateTime</div>
+    <ChildContent>
+        <FluentDataGrid TGridItem="FeedbackSummaryResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) 130px minmax(0,1fr) minmax(0,1.2fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        OnRowClick="OnRowClick"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <span class="cloudy-stack__title" title="@context.Title">@context.Title</span>
+                        <span class="cloudy-stack__sub" title="@context.Excerpt">@context.Excerpt</span>
                     </div>
                 </TemplateColumn>
-                <PropertyColumn Property=@(f => f.Phone) Title="@AppRes.Phone" Sortable="true" />
-                <PropertyColumn Property=@(f => f.Email) Title="@AppRes.Email" Sortable="true" />
-                <TemplateColumn SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.CreatedAt))"
-                                Title="@AppRes.CreatedAt"
-                                InitialSortDirection="DataGridSortDirection.Descending"
+                <TemplateColumn Title="@L["Type"]">
+                    <div class="cloudy-tags">
+                        <CloudyTag Text="@context.Type" Tint="@TintFor(context.Type)" />
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Phone" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Phone))">
+                    @context.Phone
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Email" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Email))">
+                    @context.Email
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.CreatedAt))"
                                 IsDefaultSortColumn="true"
-                                Sortable="true"
                                 Align="DataGridCellAlignment.End">
-                    @context.CreatedAt.LocalDateTime
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
                 </TemplateColumn>
-                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                    <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => Console.WriteLine("Edit clicked"))" />
-                    @* <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DemoLogger.WriteLine("Delete clicked"))" /> *@
-                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
                 </TemplateColumn>
-            </FluentDataGrid>
-        </div>
-        <br />
-        <div class="hstack">
-            <TotalResultsFound TotalCount="@data.TotalCount" />
-            @* <p>Total: <strong>@data.TotalCount results found</strong></p> *@
-            @* <PagesTotal Page=data.Page PageSize=data.PageSize TotalPages=data.TotalCount??data.ItemsCount /> *@
-            <div class="ms-auto">
-                @* <FluentPaginator State="pagination" /> *@
-            </div>
-        </div>
-    </div>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No feedbacks match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
 
-</ContentWrapper>
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

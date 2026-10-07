@@ -99,7 +99,7 @@
                 @foreach (var log in FilteredEntries())
                 {
                     <li class="log-row" title="Показать запись целиком" @onclick="() => ShowEntry(log)">
-                        <time>@FormatTime(log.Ts)</time>
+                        <time>@log.Ts.FormatTime()</time>
                         <span class="level @log.Level.ToLowerInvariant()">@log.Level</span>
                         <span class="source">@log.Source</span>
                         <span class="message">@log.Message</span>

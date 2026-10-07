@@ -1,5 +1,6 @@
-using System.Collections.ObjectModel;
+using Mars.Admin.Shared.Cloudy;
 using Mars.Cms.Contracts.Feedbacks;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -10,90 +11,101 @@ public partial class FeedbackListPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] IDialogService dialogService { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] AdminJs _appjs { get; set; } = default!;
 
-    FluentDataGrid<FeedbackSummaryResponse> table = default!;
+    FluentDataGrid<FeedbackSummaryResponse> _grid = default!;
+    GridItemsProvider<FeedbackSummaryResponse> _dataProvider = default!;
+
     string _searchText = "";
-    ListDataResult<FeedbackSummaryResponse> data = ListDataResult<FeedbackSummaryResponse>.Empty();
+    int? _total;
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
 
-    GridItemsProvider<FeedbackSummaryResponse> dataProvider = default!;
-    //PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
-
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        dataProvider = new GridItemsProvider<FeedbackSummaryResponse>(
-            async req =>
-            {
-                var sortBy = req.GetSortByProperties();
-                var sortColumn = sortBy.Count == 0 ? nameof(FeedbackSummaryResponse.CreatedAt) : sortBy.First().PropertyName;
-
-                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
-
-                data = await client.Feedback.List(new()
-                {
-                    //Page = pagination.CurrentPageIndex + 1,
-                    //PageSize = pagination.ItemsPerPage,
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-                });
-
-                var collection = new Collection<FeedbackSummaryResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
+        _dataProvider = CloudyGridProvider.Create<FeedbackSummaryResponse>(LoadFeedbacks);
+        await LoadKpi();
     }
 
-    void HandleSearchInput()
+    async Task<ListDataResult<FeedbackSummaryResponse>> LoadFeedbacks(int skip, int take, string? sort)
     {
-        table.RefreshDataAsync();
+        var data = await client.Feedback.List(new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? $"-{nameof(FeedbackSummaryResponse.CreatedAt)}",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
     }
 
-    async void OnRowClick(FluentDataGridRow<FeedbackSummaryResponse> row)
+    async Task LoadKpi()
     {
+        _kpi = await client.Kpi.Get([FeedbackKpiKeys.Total, FeedbackKpiKeys.NewThisWeek]);
+    }
 
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
+
+    void RefreshGrid() => _grid?.RefreshDataAsync();
+
+    void OnSearchChanged(string text)
+    {
+        _searchText = text;
+        RefreshGrid();
+    }
+
+    async Task OnRowClick(FluentDataGridRow<FeedbackSummaryResponse> row)
+    {
         if (row.Item is null) return;
 
-        DialogOptions options = new()
-        {
-            Header = { Title = row.Item.Title },
-            //PrimaryActionEnabled = false,
-            //PrimaryAction = "Yes",
-            //Width = "500px",
-            //TrapFocus = _trapFocus,
-            //Modal = _modal,
-        };
-
         var detail = await client.Feedback.Get(row.Item.Id);
-
-        if (detail is not null)
-        {
-            options.Parameters["Content"] = detail;
-            DialogResult? result = await dialogService.ShowDialogAsync<ViewFeedbackDialog>(options);
-        }
-        else
+        if (detail is null)
         {
             _ = _messageService.Error("element not found");
+            return;
         }
 
+        await _dialogService.ShowDialogAsync<ViewFeedbackDialog>(new DialogOptions
+        {
+            Modal = true,
+            Header = { CloseAction = { Visible = true } },
+            Parameters = { ["Content"] = detail },
+        });
     }
 
     public async Task Delete(Guid id)
     {
         await client.Feedback.Delete(id).SmartDelete();
-        _ = table.RefreshDataAsync();
+        RefreshGrid();
+        await LoadKpi();
     }
 
-    async void DownloadExcel()
+    async Task DownloadExcel()
     {
         string url = Q.ServerUrlJoin("api/Feedback/DownloadExcel");
-        //string fileName = $"feedbacks-{DateTime.Now.ToString("yyyy-MM-dd")}.xlsx";
-
         await _appjs.DownloadFileFromUrl(url);
+    }
+
+    // имена значений FeedbackType (Mars.Cms.Abstractions); GetHashCode у string рандомизирован на процесс — только фиксированный маппинг
+    static int TintFor(string type) => type switch
+    {
+        "InfoMessage" => 0,
+        "BugReport" => 3,
+        "Question" => 1,
+        _ => StableTint(type),
+    };
+
+    static int StableTint(string s)
+    {
+        var hash = 0;
+        foreach (var c in s) hash = unchecked(hash * 31 + c);
+        return (hash & 0x7FFFFFFF) % 5;
     }
 }

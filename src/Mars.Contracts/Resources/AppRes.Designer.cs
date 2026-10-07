@@ -592,6 +592,24 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New this week.
+        /// </summary>
+        public static string feedbacks_newThisWeek {
+            get {
+                return ResourceManager.GetString("feedbacks.newThisWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total feedbacks.
+        /// </summary>
+        public static string feedbacks_total {
+            get {
+                return ResourceManager.GetString("feedbacks.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Female.
         /// </summary>
         public static string Female {
@@ -1317,6 +1335,15 @@ namespace Mars.Contracts.Resources {
         public static string TotalResultsFound {
             get {
                 return ResourceManager.GetString("TotalResultsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
             }
         }
         

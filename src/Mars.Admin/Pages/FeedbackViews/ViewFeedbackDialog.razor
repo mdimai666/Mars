@@ -3,6 +3,9 @@
 @* <FluentMessageBarProvider Section="@App.MESSAGES_DIALOG" MaxMessageCount="1" /> *@
 
 <FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="@Model.Title" />
+    </TitleTemplate>
     <ChildContent>
         <EditForm Model="@Model" novalidate Context="model">
             <FluentStack Orientation="Orientation.Vertical">

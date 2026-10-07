@@ -588,4 +588,13 @@
   <data name="users.newThisMonth" xml:space="preserve">
     <value>New this month</value>
   </data>
+  <data name="feedbacks.total" xml:space="preserve">
+    <value>Total feedbacks</value>
+  </data>
+  <data name="feedbacks.newThisWeek" xml:space="preserve">
+    <value>New this week</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
 </root>

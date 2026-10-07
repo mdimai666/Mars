@@ -174,16 +174,6 @@ public partial class TechLogsPage : IDisposable
         return source.Reverse();
     }
 
-    static string FormatTime(DateTime ts)
-    {
-        var time = ts.ToString("HH:mm:ss");
-
-        if (ts.Date == DateTime.Today) return $"сегодня {time}";
-        if (ts.Date == DateTime.Today.AddDays(-1)) return $"вчера {time}";
-
-        return $"{ts:dd.MM.yy} {time}";
-    }
-
     void ToggleLive()
     {
         _live = !_live;

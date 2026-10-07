@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IDialogService dialogService
 
@@ -6,13 +5,13 @@
 
     <div class="hstack gap-4 flex-wrap align-items-start">
 
-        <GalleryVariant Caption="Через шим DialogServiceCompatExtensions.ShowDialogAsync<T>">
+        <GalleryVariant Caption="Через IDialogService.ShowDialogAsync<T> (нативный v5 API)">
             <div class="vstack gap-1">
-                <FluentButton Id="gallery-dialog-shim-open" Appearance="ButtonAppearance.Primary" OnClick="OpenShimDialog">
-                    Открыть шим-диалог
+                <FluentButton Id="gallery-dialog-service-open" Appearance="ButtonAppearance.Primary" OnClick="OpenServiceDialog">
+                    Открыть диалог сервиса
                 </FluentButton>
                 <FluentText Size="TextSize.Size200" Class="text-secondary">
-                    Результат: @(_shimResult ?? "—")
+                    Результат: @(_serviceDialogResult ?? "—")
                 </FluentText>
             </div>
         </GalleryVariant>
@@ -54,7 +53,7 @@
     FluentDialog? _inlineDialog;
     bool _inlineVisible;
     bool _inlineShown;
-    string? _shimResult;
+    string? _serviceDialogResult;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -84,20 +83,21 @@
 
     void CloseInlineDialog() => _inlineVisible = false;
 
-    async Task OpenShimDialog()
+    async Task OpenServiceDialog()
     {
-        var dialog = await dialogService.ShowDialogAsync<GallerySampleDialog>(
-            "Контент передан параметром Content шима.",
-            new DialogParameters
+        var result = await dialogService.ShowDialogAsync<GallerySampleDialog>(new DialogOptions
+        {
+            Header =
             {
-                Title = "Шим-диалог галереи",
-                Width = "480px",
-                Modal = true,
-                ShowDismiss = true,
-            });
+                Title = "Диалог галереи",
+                CloseAction = { Visible = true },
+            },
+            Width = "480px",
+            Modal = true,
+            Parameters = { ["Content"] = "Контент передан параметром Content." },
+        });
 
-        var result = await dialog.Result;
-        _shimResult = result.Cancelled
+        _serviceDialogResult = result.Cancelled
             ? "Cancelled"
             : $"CloseAsync: {result.Value as string ?? "—"}";
     }

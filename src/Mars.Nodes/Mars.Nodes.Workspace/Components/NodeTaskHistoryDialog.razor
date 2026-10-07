@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Nodes.Contracts.NodeTaskJob
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Workspace.Components.JobViews
@@ -38,17 +37,13 @@
 
     public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor)
     {
-        DialogParameters parameters = new()
+        _ = _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(new DialogOptions
         {
-            Title = "Job list history",
-            ShowDismiss = true,
+            Header = { Title = "Job list history", CloseAction = { Visible = true } },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        _ = _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(editor, parameters);
+            Parameters = { ["Content"] = editor }
+        });
     }
 
     void OnClickItem(NodeTaskResultSummaryResponse task)

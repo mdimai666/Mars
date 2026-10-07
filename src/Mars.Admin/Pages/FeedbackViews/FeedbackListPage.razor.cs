@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Cms.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -60,23 +59,22 @@ public partial class FeedbackListPage
 
         if (row.Item is null) return;
 
-        DialogParameters parameters = new()
+        DialogOptions options = new()
         {
-            Title = row.Item.Title,
+            Header = { Title = row.Item.Title },
             //PrimaryActionEnabled = false,
             //PrimaryAction = "Yes",
             //Width = "500px",
             //TrapFocus = _trapFocus,
             //Modal = _modal,
-            PreventScroll = true
         };
 
         var detail = await client.Feedback.Get(row.Item.Id);
 
         if (detail is not null)
         {
-            IDialogReference dialog = await dialogService.ShowDialogAsync<ViewFeedbackDialog>(detail, parameters);
-            DialogResult? result = await dialog.Result;
+            options.Parameters["Content"] = detail;
+            DialogResult? result = await dialogService.ShowDialogAsync<ViewFeedbackDialog>(options);
         }
         else
         {

@@ -14,6 +14,7 @@ public partial class UsersPage
     string urlEditPage = "/dev/EditUser";
 
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
 
     FluentDataGrid<UserDetailResponse> _grid = default!;
     GridItemsProvider<UserDetailResponse> _dataProvider = default!;
@@ -99,8 +100,6 @@ public partial class UsersPage
     int? RoleTint(string role)
         => role.Equals("admin", StringComparison.OrdinalIgnoreCase) ? null : TintIndex(role);
 
-    bool visibleCreateUserModal;
-    CreateUserEditFormData createFormData = new();
     IReadOnlyCollection<RoleSummaryResponse>? rolesForCreate;
     IReadOnlyCollection<UserTypeListItemResponse>? userTypesForCreate;
 
@@ -109,39 +108,51 @@ public partial class UsersPage
         rolesForCreate ??= (await _client.Role.List(new() { Take = 20 })).Items;
         userTypesForCreate ??= (await _client.UserType.List(new() { Take = 20 })).Items;
 
-        createFormData = new()
+        var formData = new CreateUserEditFormData
         {
             Model = new(),
             Roles = rolesForCreate,
             DefaultCreateRole = null,
             UserTypes = userTypesForCreate,
         };
-        createFormData.Model.Type = userTypesForCreate.FirstOrDefault(s => s.TypeName == "default")?.TypeName
-                                    ?? userTypesForCreate.FirstOrDefault()?.TypeName
-                                    ?? "";
+        formData.Model.Type = userTypesForCreate.FirstOrDefault(s => s.TypeName == "default")?.TypeName
+                              ?? userTypesForCreate.FirstOrDefault()?.TypeName
+                              ?? "";
 
-        visibleCreateUserModal = true;
-    }
-
-    bool visibleChangeUserPasswordModal;
-    ChangePasswordModel changeUserPasswordFormData = new();
-
-    private void OnClickChangePassword(UserDetailResponse user)
-    {
-        changeUserPasswordFormData = new()
+        var result = await _dialogService.ShowDialogAsync<CreateUserDialog>(new DialogOptions
         {
-            UserId = user.Id,
-            NewPassword = "",
-        };
-        visibleChangeUserPasswordModal = true;
+            Modal = true,
+            Header = { CloseAction = { Visible = true } },
+            Parameters = { ["Content"] = formData }
+        });
+        if (!result.Cancelled)
+        {
+            await HandleSearchInput();
+        }
     }
 
-    private void OnUserMenuClick(MenuItemEventArgs args, UserDetailResponse user)
+    private async Task OnClickChangePassword(UserDetailResponse user)
+    {
+        await _dialogService.ShowDialogAsync<ChangePasswordDialog>(new DialogOptions
+        {
+            Modal = true,
+            Parameters =
+            {
+                ["Content"] = new ChangePasswordModel
+                {
+                    UserId = user.Id,
+                    NewPassword = "",
+                },
+            },
+        });
+    }
+
+    private async Task OnUserMenuClick(MenuItemEventArgs args, UserDetailResponse user)
     {
         switch (args.Item?.Id)
         {
             case "changepassword":
-                OnClickChangePassword(user);
+                await OnClickChangePassword(user);
                 break;
             case "sendinvitation":
                 SendInvation(user.Id);

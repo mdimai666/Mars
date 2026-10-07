@@ -135,6 +135,10 @@ FAST-токены v4 (`--type-ramp-*`, `--neutral-layer-*`, `--design-unit`) и 
   `FluentNavCategory`, `FluentNavSectionHeader`) — замена удалённым FluentNavMenu/NavGroup/NavLink.
 - **Диалоги**: шим реализован — `Mars.Admin.Framework/Dialogs/` (DialogParameters, IDialogReference,
   DialogServiceCompatExtensions: ShowDialogAsync<T>/ShowDialogAsync(Type)/ShowPanelAsync<T>→ShowDrawerAsync).
+  **2026-10-07: шим УДАЛЁН** — все ~35 call-сайтов мигрированы на нативный v5 API
+  (`ShowDialogAsync<T>(DialogOptions)` → сразу `Task<DialogResult>`, контент —
+  `Parameters["Content"]`, drawer — `ShowDrawerAsync`); `PreventDismissOnOverlayClick`/`PreventScroll`/
+  `TrapFocus` не имеют аналогов в v5 и выброшены (modal по умолчанию без light-dismiss по оверлею).
   Компоненты-диалоги: `[CascadingParameter] IDialogInstance Dialog`, разметка — `FluentDialogBody`
   с TitleTemplate/ChildContent/ActionTemplate; результат v5 `DialogResult` (`.Data`→`.Value` на call-сайтах).
   Инлайн-диалоги: вместо `Hidden` — `@ref` + `ShowAsync()/HideAsync()` (синхронизация с bool-флагом

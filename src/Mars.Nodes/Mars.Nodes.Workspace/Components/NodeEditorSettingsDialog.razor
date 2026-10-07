@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Workspace.Components.SettingsViews
 @using Mars.Contracts.Resources
@@ -80,17 +79,13 @@
 
     public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor, string startMenuName = "")
     {
-        DialogParameters parameters = new()
+        _ = _dialogService.ShowDialogAsync<NodeEditorSettingsDialog>(new DialogOptions
         {
-            Title = AppRes.Settings,
-            ShowDismiss = true,
+            Header = { Title = AppRes.Settings, CloseAction = { Visible = true } },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        _ = _dialogService.ShowDialogAsync<NodeEditorSettingsDialog>(new NodeEditorSettingsDialogModel(startMenuName, editor), parameters);
+            Parameters = { ["Content"] = new NodeEditorSettingsDialogModel(startMenuName, editor) }
+        });
     }
 
     private class SettingsMenuItem : ITreeViewItem

@@ -20,6 +20,9 @@
     `CloudyTag` — API однострочное, композиции без «конструктора страниц».
   - `CloudyGridProvider.cs` — фабрика `GridItemsProvider<T>` для FluentDataGrid: маппит
     skip/take/sort запроса на серверный List-вызов (`ListDataResult<T>`), дефолт take=50.
+  - Модалки: штатный `FluentDialog` через `IDialogService` (нативный v5 API); своего шелла
+    НЕТ — cloudy даёт только компонент заголовка `CloudyDialogHead` (вставляется в
+    `FluentDialogBody.TitleTemplate`) и css-скин.
 - Стили: `src/Mars.Admin/wwwroot/css/`
   - `cloudy.less` — светлая зона: токены `--cld-*` на `.cloudy-layout` + тёмный блок
     `body[data-theme="dark"] .cloudy-layout`; топбар/сайдбар/hero/kpi/acrylic/chip/badge/user-menu.
@@ -32,7 +35,11 @@
     `.cloudy-tint-0..4`/`.cloudy-dot-0..4`, `.cloudy-avatar`, `.cloudy-tag(s)`, `.cloudy-stack`,
     `.cloudy-time`, `.cloudy-row-actions`, `.cloudy-empty`, `.cloudy-chips`, `.cloudy-searchbox`,
     `.cloudy-pager`, `u-hide-1100/900`.
-  - Импорт всех трёх — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
+  - `cloudy-dialog.less` — скин штатного диалога: `fluent-dialog::part(dialog)` (панель/рамка/
+    тень/`max-width`, shadow-диалог жёстко ≤600px), паддинги `fluent-dialog-body::part(title/
+    content/actions)`, `.cloudy-dialog-head(__title)`; токены `--cld-*`. Действует на ВСЕ
+    FluentDialog-и админки (сервис рендерит их в общем провайдере).
+  - Импорт всех четырёх — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
     (см. `ai/CssRefactoringGuide.md`; руками `style.css` не править).
 - Страницы:
   - Шаг 1 (in-place на cloudy): `Pages/Index.razor` (Home), `Pages/PostsViews/ManagePostPage`,
@@ -101,6 +108,24 @@
 5. Колонки и `EmptyContent`/`LoadingContent` — ОБЯЗАТЕЛЬНО явный `<ChildContent>` для колонок
    (RZ9996, та же грабля что у CloudyBrowser). Responsive-скрытие колонок (`u-hide-*`) на
    DataGrid НЕ перенесено — при необходимости менять `GridTemplateColumns` + nth-child по брейкпоинтам.
+
+**Модальное окно (FluentDialog через сервис, 2026-10-07):** своих модалок НЕ делаем — штатный
+сервис-диалог. Компонент диалога = только тело: корень `FluentDialogBody` (`TitleTemplate` →
+`<CloudyDialogHead Title="…"/>`, контент в ЯВНОМ `<ChildContent>` — RZ9996), данные —
+`[Parameter] Content` (класть в `DialogOptions.Parameters["Content"]`), `[CascadingParameter]
+IDialogInstance Dialog`. Показ из страницы (нативный v5 API, шим удалён 2026-10-07):
+`var result = await _dialogService.ShowDialogAsync<TDialog>(new DialogOptions { Modal = true,
+Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = content } })` —
+сразу `DialogResult` (`Cancelled`/`Value`). Сохранение закрывает: `Dialog.CloseAsync(model)`;
+крестик/ESC — встроенные (`Header.CloseAction.Visible`; у v5 НЕТ `PreventDismissOnOverlayClick`/
+`PreventScroll`/`TrapFocus` — modal и так не закрывается кликом по оверлею).
+Кнопку «Cancel» в тело не добавлять — `StandardEditForm1` сам рендерит футер (Save/Delete).
+Инлайн-`FluentDialog` с императивной синхронизацией (`@ref`+`ShowAsync/HideAsync`, `_dialogShown`,
+`OnStateChange`) — прошлый хак, НЕ повторять. Скины панелей/бэкдропа — НЕ css-классами диалога, а
+`cloudy-dialog.less` (грабля: диалоги рендерятся вне `.cloudy-layout` — токены `--cld-*` дублированы
+на хосте `fluent-dialog/fluent-drawer`, синхронизировать с cloudy.less). Мигрированы:
+`CreateUserDialog`, `ChangePasswordDialog` (вызов из UsersPage). Tech-зона: `log-modal` в TechLogsPage
+остаётся своей разметкой (`--ct-*` токены).
 
 **KPI-карточки (паттерн 2026-10-06/07):** серверные метрики — НЕ `ListDetail(Take=1)`-хаками, а через
 реестр `IKpiHandler` (`Mars.Contracts/Common/IKpiHandler.cs`, `KpiResult(Key, Value, Label?)`) +
@@ -179,6 +204,10 @@
 - `DeskDemoPage` из прототипа не переносить.
 - Мега-компонент «конструктор страниц» — вместо него мелкие компонуемые компоненты + CSS-паттерны.
 - Пиксель-перфект по скриншотам прототипа.
+- `CloudyModal`/`CloudyModalHead` — своя модалка (backdrop + панель + крестик, 2026-10-07,
+  отменено в тот же день): велосипед поверх FluentDialog — возня со стеками модалок, нет
+  ESC/focus-trap, ручная синхронизация `Visible`. Замена: штатный сервис-диалог +
+  `CloudyDialogHead` (заголовок) + скин `cloudy-dialog.less` (см. рецепт выше).
 
 ## Статус / следующие шаги
 
@@ -189,5 +218,11 @@
   без обёртки-компонента, flex-fill скролл) — `CloudyGridProvider`, `.cloudy-browser--scroll`,
   `table.cloudy-grid` скин; UsersPage переведена на бесконечную подгрузку (CloudyPager убран
   с неё, компонент жив для пейджинговых страниц). ManagePostView (tech-зона) не тронут.
+- 2026-10-07: KPI-эндпоинты (`IKpiHandler` + `api/Kpi`, пилот UsersPage); модалки — штатный
+  `FluentDialog` через `IDialogService` (шим-вызов `ShowDialogAsync<T>`, `CloudyDialogHead`
+  в TitleTemplate, скин `cloudy-dialog.less`) — CreateUserDialog/ChangePasswordDialog переведены
+  на сервис-диалоги.
 - Дальше: перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
-  responsive-скрытие колонок DataGrid (не перенесено); редактор поста и Nodes — ПОСЛЕДНИЕ шаги.
+  responsive-скрытие колонок DataGrid (не перенесено); остальные диалоги
+  (PasskeysPage, PluginViews, FeedbackViews) — на `CloudyDialogHead`/скин по мере правки страниц;
+  редактор поста и Nodes — ПОСЛЕДНИЕ шаги.

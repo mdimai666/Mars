@@ -4,7 +4,6 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
-using Mars.Admin.Framework.Dialogs;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.Forms;
@@ -94,16 +93,13 @@ public partial class MetaFieldSettingsPanel
     {
         if (Field is not { } field) return;
 
-        DialogParameters parameters = new()
+        var result = await DialogService.ShowDialogAsync<MediaFolderSelectDialog>(new DialogOptions
         {
-            Title = "Папка загрузки",
+            Header = { Title = "Папка загрузки" },
             Width = "500px",
             Modal = true,
-            PreventScroll = true,
-        };
-
-        var dialog = await DialogService.ShowDialogAsync<MediaFolderSelectDialog>("", parameters);
-        var result = await dialog.Result;
+            Parameters = { ["Content"] = "" },
+        });
 
         if (result.Cancelled || result.Value is not string path) return;
 

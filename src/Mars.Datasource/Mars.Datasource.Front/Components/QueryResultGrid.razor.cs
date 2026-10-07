@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Front.Services;
 using Mars.Datasource.Contracts.Catalog;
@@ -79,17 +78,14 @@ public partial class QueryResultGrid
 
     async Task EditLongValueAsync(CellEditRequest request, string value)
     {
-        var dialog = await _dialogService.ShowDialogAsync<CellValueDialog>(
-            new CellValueDialogContent(value, request.Kind == FieldKind.Json ? CodeEditor2.Language.json : "plaintext"),
-            new DialogParameters
-            {
-                Title = $"Значение: {request.Column}",
-                Width = "min(960px, 90vw)",
-                Modal = true,
-                PreventDismissOnOverlayClick = true,
-            });
+        var result = await _dialogService.ShowDialogAsync<CellValueDialog>(new DialogOptions
+        {
+            Header = { Title = $"Значение: {request.Column}" },
+            Width = "min(960px, 90vw)",
+            Modal = true,
+            Parameters = { ["Content"] = new CellValueDialogContent(value, request.Kind == FieldKind.Json ? CodeEditor2.Language.json : "plaintext") }
+        });
 
-        var result = await dialog.Result;
         if (result.Cancelled) return;
 
         ApplyEdit((request.RowIndex, request.Column), result.Value as string);
@@ -160,14 +156,13 @@ public partial class QueryResultGrid
             return;
         }
 
-        var dialog = await _dialogService.ShowDialogAsync<SqlPreviewDialog>(plans, new DialogParameters
+        var result = await _dialogService.ShowDialogAsync<SqlPreviewDialog>(new DialogOptions
         {
-            Title = "Изменение данных",
+            Header = { Title = "Изменение данных" },
             Modal = true,
-            PreventDismissOnOverlayClick = false,
+            Parameters = { ["Content"] = plans }
         });
 
-        var result = await dialog.Result;
         if (result.Cancelled) return;
 
         var affected = 0;

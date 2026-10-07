@@ -1,5 +1,4 @@
 @using Mars.Admin.Framework.Components
-@using Mars.Admin.Framework.Dialogs
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Contracts.Resources
 @using Microsoft.AspNetCore.Components.Forms
@@ -42,18 +41,15 @@
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
-    public static Task<IDialogReference> ShowDialog(IDialogService _dialogService)
+    public static Task<DialogResult> ShowDialog(IDialogService _dialogService)
     {
-        DialogParameters parameters = new()
+        return _dialogService.ShowDialogAsync<ImportNodesDialog>(new DialogOptions
         {
-            ShowDismiss = true,
+            Header = { CloseAction = { Visible = true } },
             Width = "900px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        return _dialogService.ShowDialogAsync<ImportNodesDialog>("", parameters);
+            Parameters = { ["Content"] = "" }
+        });
     }
 
 }

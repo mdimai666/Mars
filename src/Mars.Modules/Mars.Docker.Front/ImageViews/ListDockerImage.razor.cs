@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Components;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Docker.Contracts;
 using Mars.Docker.Front.Services;
@@ -109,12 +108,12 @@ public partial class ListDockerImage
 
     async Task ShowPullDialog()
     {
-        var dialog = await dialogService.ShowDialogAsync<PullImageDialog>("", new DialogParameters
+        var result = await dialogService.ShowDialogAsync<PullImageDialog>(new DialogOptions
         {
-            Title = "Pull image",
+            Header = { Title = "Pull image" },
             Modal = true,
+            Parameters = { ["Content"] = "" }
         });
-        var result = await dialog.Result;
         if (result.Cancelled)
         {
             return;
@@ -128,10 +127,12 @@ public partial class ListDockerImage
 
     async Task DeleteImage(ImageTagEntry entry)
     {
-        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete image <b>{System.Net.WebUtility.HtmlEncode(entry.FullName)}</b>?",
-            new DialogParameters { Title = "Delete image", Modal = true });
-        var result = await dialog.Result;
+        var result = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
+        {
+            Header = { Title = "Delete image" },
+            Modal = true,
+            Parameters = { ["Content"] = (MarkupString)$"Delete image <b>{System.Net.WebUtility.HtmlEncode(entry.FullName)}</b>?" }
+        });
         if (result.Cancelled)
         {
             return;

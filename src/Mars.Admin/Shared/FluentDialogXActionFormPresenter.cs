@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Dialogs;
 using Mars.XActions.Contracts;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -14,14 +13,12 @@ internal class FluentDialogXActionFormPresenter(IDialogService dialogService, IX
     {
         var componentType = formProvider.GetForm(command.Id) ?? typeof(XActionFormDialog);
 
-        var parameters = new DialogParameters
+        var result = await dialogService.ShowDialogAsync(componentType, new DialogOptions
         {
-            Title = command.Label,
+            Header = { Title = command.Label },
             Width = "480px",
-        };
-
-        var dialog = await dialogService.ShowDialogAsync(componentType, command, parameters);
-        var result = await dialog.Result;
+            Parameters = { ["Content"] = command },
+        });
 
         if (result is { Cancelled: false } && result.Value is IReadOnlyDictionary<string, string> values)
             return values;

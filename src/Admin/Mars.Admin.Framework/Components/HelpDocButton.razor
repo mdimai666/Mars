@@ -1,5 +1,4 @@
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Mars.Admin.Framework.Dialogs
 
 <mars-help-doc-button>
     @if (ChildContent is not null)
@@ -30,17 +29,13 @@
 
     private async void OnClick()
     {
-        DialogParameters parameters = new()
+        DialogResult result = await _dialogService.ShowDialogAsync<HelpDocButtonDialog>(new DialogOptions
         {
-            Title = "Help",
+            Header = { Title = "Help" },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<HelpDocButtonDialog>(Url, parameters);
-        DialogResult? result = await dialog.Result;
+            Parameters = { ["Content"] = Url },
+        });
 
         _ = OnClose.InvokeAsync();
     }

@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Core.Exceptions
 @using Mars.Plugin.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -99,15 +98,12 @@
 
     public static async Task<PluginInstallResponse?> ShowAsync(IDialogService dialogService)
     {
-        var dialog = await dialogService.ShowDialogAsync<NugetInstallDialog>("", new DialogParameters()
+        var result = await dialogService.ShowDialogAsync<NugetInstallDialog>(new DialogOptions()
         {
-            PreventDismissOnOverlayClick = false,
-            PreventScroll = true,
             Modal = true,
-            TrapFocus = false,
+            Parameters = { ["Content"] = "" },
         });
 
-        var result = await dialog.Result;
         return result.Cancelled ? null : result.Value as PluginInstallResponse;
     }
 }

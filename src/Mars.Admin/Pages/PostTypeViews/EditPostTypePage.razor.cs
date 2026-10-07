@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Dialogs;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -54,21 +53,19 @@ public partial class EditPostTypePage
         }
 
         // картинки уже есть — выбрать: создать новое поле или взять существующее
-        DialogParameters parameters = new()
+        var result = await _dialogService.ShowDialogAsync<PostImageSelectDialog>(new DialogOptions
         {
-            Title = "Поле картинки поста",
+            Header = { Title = "Поле картинки поста" },
             Width = "500px",
             Modal = true,
-            PreventScroll = true,
-        };
-
-        var dialog = await _dialogService.ShowDialogAsync<PostImageSelectDialog>(
-            new PostImageSelectDialogData
+            Parameters =
             {
-                Options = candidates.Select(s => (s.Key, s.Title)).ToList(),
+                ["Content"] = new PostImageSelectDialogData
+                {
+                    Options = candidates.Select(s => (s.Key, s.Title)).ToList(),
+                },
             },
-            parameters);
-        var result = await dialog.Result;
+        });
 
         if (result.Cancelled || result.Value is not string choice) return;
 

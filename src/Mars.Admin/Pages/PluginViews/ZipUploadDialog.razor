@@ -1,5 +1,4 @@
 @using Mars.Admin.Framework.Components.MediaViews
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Core.Exceptions
 @using Mars.Plugin.Contracts.Options
 @using Mars.Plugin.Contracts.Plugins
@@ -177,18 +176,14 @@
 
     public static async Task<PluginsUploadOperationResultResponse?> ShowAsync(IDialogService dialogService)
     {
-        var dialog = await dialogService.ShowDialogAsync<ZipUploadDialog>("", new DialogParameters()
+        var result = await dialogService.ShowDialogAsync<ZipUploadDialog>(new DialogOptions()
         {
             //Height = "240px",
             //Title = $"Updating the {DialogData.Name} sheet",
-            PreventDismissOnOverlayClick = false,
-            PreventScroll = true,
             Modal = true,
-            TrapFocus = false,
             //Class = "DeletionConfirmationDialog" class not support
+            Parameters = { ["Content"] = "" },
         });
-
-        var result = await dialog.Result;
 
         if (!result.Cancelled)
         {

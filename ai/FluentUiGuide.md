@@ -76,7 +76,9 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 - `FluentDataGrid`: рендерит `table.fluent-data-grid` (не custom element); `ItemSize`
   (виртуализация) в v5 inline-растягивает `th` — глобальный оверрайд `height:auto!important`
   в `fluent-ui.less`; провайдеры обязаны клампить `Count` (`Take=0` → 400 от API).
-- Диалоги: шим `src/Admin/Mars.Admin.Framework/Dialogs/`; инлайн-диалоги — `@ref` +
+- Диалоги: нативный v5 `IDialogService.ShowDialogAsync<T>(DialogOptions)` → сразу
+  `Task<DialogResult>` (шим `Mars.Admin.Framework/Dialogs/` удалён 2026-10-07); контент —
+  `Parameters = { ["Content"] = … }` в `[Parameter] Content` компонента; инлайн-диалоги — `@ref` +
   `ShowAsync()/HideAsync()` в `OnAfterRenderAsync` + `OnStateChange(DialogState.Closed)`
   (паттерн — `AIToolChatModal`, `NodeEditContainer1`); ширина — через
   `::part(dialog)` (`--dialog-width` мёртв).
@@ -131,7 +133,7 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 - **Новое меню**: `FluentMenu` + `Trigger` + `FluentMenuList` внутри (образец —
   `XActionsDropDown` в FW).
 - **Новый диалог**: компонент с `[CascadingParameter] IDialogInstance Dialog`, разметка
-  `FluentDialogBody` (TitleTemplate/ChildContent/ActionTemplate); вызов через шим
-  `DialogServiceCompatExtensions.ShowDialogAsync<T>`.
+  `FluentDialogBody` (TitleTemplate/ChildContent/ActionTemplate); вызов — нативный
+  `IDialogService.ShowDialogAsync<T>(new DialogOptions { … Parameters = { ["Content"] = data } })`.
 - **Проверка UI-правки**: `serve.ps1` → `probe.js` (факт) → `crawl.js` (регрессия) →
   точечные тесты фронта из `ai/TestingGuide.md`.

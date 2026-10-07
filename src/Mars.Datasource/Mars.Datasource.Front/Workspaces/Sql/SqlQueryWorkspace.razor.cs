@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Components;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Datasource.Contracts.Sql;
 using Mars.Datasource.Contracts.Document;
@@ -192,15 +191,13 @@ public partial class SqlQueryWorkspace
             _viewSource?.Object.Name,
             _viewSource is not null);
 
-        var dialog = await _dialogService.ShowDialogAsync<CreateViewDialog>(content, new DialogParameters
+        var result = await _dialogService.ShowDialogAsync<CreateViewDialog>(new DialogOptions
         {
-            Title = _viewSource is null ? "Новая вьюха" : $"Вьюха: {DisplayName(_viewSource)}",
+            Header = { Title = _viewSource is null ? "Новая вьюха" : $"Вьюха: {DisplayName(_viewSource)}" },
             Width = "min(760px, 95vw)",
             Modal = true,
-            PreventDismissOnOverlayClick = true,
+            Parameters = { ["Content"] = content }
         });
-
-        var result = await dialog.Result;
 
         if (result.Cancelled || result.Value is not ViewDdlRequest request) return;
 
@@ -226,17 +223,13 @@ public partial class SqlQueryWorkspace
             return;
         }
 
-        var dialog = await _dialogService.ShowDialogAsync<ViewDefinitionDialog>(
-            new ViewDefinitionDialogContent(DisplayName(entry), response.Sql),
-            new DialogParameters
-            {
-                Title = $"Определение: {DisplayName(entry)}",
-                Width = "min(900px, 95vw)",
-                Modal = true,
-                PreventDismissOnOverlayClick = true,
-            });
-
-        var result = await dialog.Result;
+        var result = await _dialogService.ShowDialogAsync<ViewDefinitionDialog>(new DialogOptions
+        {
+            Header = { Title = $"Определение: {DisplayName(entry)}" },
+            Width = "min(900px, 95vw)",
+            Modal = true,
+            Parameters = { ["Content"] = new ViewDefinitionDialogContent(DisplayName(entry), response.Sql) }
+        });
 
         if (result.Cancelled || result.Value is not string definition || string.IsNullOrWhiteSpace(definition)) return;
 

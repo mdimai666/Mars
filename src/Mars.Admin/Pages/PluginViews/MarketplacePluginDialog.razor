@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Plugin.Contracts.Catalog
 @using Mars.Plugin.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -250,14 +249,10 @@
 
     public static async Task ShowAsync(IDialogService dialogService, CatalogPluginDto plugin)
     {
-        var dialog = await dialogService.ShowDialogAsync<MarketplacePluginDialog>(plugin, new DialogParameters()
+        _ = await dialogService.ShowDialogAsync<MarketplacePluginDialog>(new DialogOptions()
         {
-            PreventDismissOnOverlayClick = false,
-            PreventScroll = true,
             Modal = true,
-            TrapFocus = false,
+            Parameters = { ["Content"] = plugin },
         });
-
-        _ = await dialog.Result;
     }
 }

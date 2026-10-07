@@ -10,7 +10,6 @@ using Mars.Forms.Front;
 using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
-using Mars.Admin.Framework.Dialogs;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
@@ -157,14 +156,6 @@ public partial class MetaValueChildrenList
     {
         if (_childTypeName is null) return;
 
-        DialogParameters parameters = new()
-        {
-            Title = ModelName,
-            Width = "500px",
-            Modal = true,
-            PreventScroll = true
-        };
-
         var data = new MetaValueRelationSelectDialogData
         {
             ModelName = ModelName,
@@ -173,8 +164,13 @@ public partial class MetaValueChildrenList
             SelectedIds = SelectedIds().ToArray(),
         };
 
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
-        DialogResult? result = await dialog.Result;
+        DialogResult result = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(new DialogOptions
+        {
+            Header = { Title = ModelName },
+            Width = "500px",
+            Modal = true,
+            Parameters = { ["Content"] = data },
+        });
 
         if (result.Cancelled || result.Value is not IReadOnlyCollection<Guid> ids) return;
 

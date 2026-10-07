@@ -1,7 +1,6 @@
 @using System.Text.Json
 @using Mars.Admin.Framework
 @using Mars.Admin.Framework.Components
-@using Mars.Admin.Framework.Dialogs
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Contracts.Resources
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
@@ -79,16 +78,13 @@
 
     public static void ShowDialog(IDialogService _dialogService, INodeEditorApi editor)
     {
-        DialogParameters parameters = new()
+        _ = _dialogService.ShowDialogAsync<ExportNodesDialog>(new DialogOptions
         {
-            ShowDismiss = true,
+            Header = { CloseAction = { Visible = true } },
             Width = "900px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        _ = _dialogService.ShowDialogAsync<ExportNodesDialog>(editor, parameters);
+            Parameters = { ["Content"] = editor }
+        });
     }
 
     void OnModeChanged()

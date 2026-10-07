@@ -1,0 +1,67 @@
+//-------------------------------------------------------------
+// CLOUDY DIALOG — скин штатного FluentDialog (показ через IDialogService.ShowDialogAsync)
+// Компонент: CloudyDialogHead (Shared/Cloudy) — заголовок во FluentDialogBody.TitleTemplate
+// Паттерн диалога: ai/CloudyRedesignGuide.md; факты по ::part — ai/FluentV5Reference.md
+// (shadow-dialog жёстко max-width:600px — ширина только через ::part(dialog))
+//-------------------------------------------------------------
+
+// Диалоги рендерятся FluentProviders в корне App.razor — ВНЕ `.cloudy-layout`,
+// поэтому нужные токены дублированы на хосте (синхронизировать с cloudy.less!).
+fluent-dialog,
+fluent-drawer {
+    --cld-surface: #f5f7fc;
+    --cld-line: #e9ebf4;
+    --cld-ink: #262d3a;
+    --cld-muted: #8b93a5;
+    --cld-muted-strong: #79839a;
+}
+
+body[data-theme="dark"] {
+    fluent-dialog,
+    fluent-drawer {
+        --cld-surface: #141824;
+        --cld-line: #1d2637;
+        --cld-ink: #e8eaf6;
+        --cld-muted: #8b93a8;
+        --cld-muted-strong: #8f97b8;
+    }
+}
+
+fluent-dialog::part(dialog) {
+    max-width: min(600px, calc(100vw - 48px));
+    border: 1px solid var(--cld-line);
+    border-radius: 14px;
+    background: var(--cld-surface);
+    box-shadow: 0 24px 64px rgba(13, 18, 32, .35);
+}
+
+fluent-dialog-body {
+    &::part(title) {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--cld-line);
+    }
+
+    &::part(content) {
+        padding: 16px 20px;
+    }
+
+    &::part(actions) {
+        padding: 0 20px 16px;
+    }
+}
+
+.cloudy-dialog-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+
+    &__title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--cld-ink);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

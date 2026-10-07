@@ -1,5 +1,4 @@
 @using Mars.Nodes.Contracts.Nodes
-@using Mars.Admin.Framework.Dialogs
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
@@ -30,14 +29,12 @@
 
     public static void ShowDialog(IDialogService dialogService, NodeDebugFullResponse content)
     {
-        DialogParameters parameters = new()
+        _ = dialogService.ShowDialogAsync<DebugNodeFullObjectDialog>(new DialogOptions
         {
-            Title = "DebugNode full object",
-            ShowDismiss = true,
+            Header = { Title = "DebugNode full object", CloseAction = { Visible = true } },
             Width = "1100px",
             Modal = true,
-        };
-
-        _ = dialogService.ShowDialogAsync<DebugNodeFullObjectDialog>(content, parameters);
+            Parameters = { ["Content"] = content }
+        });
     }
 }

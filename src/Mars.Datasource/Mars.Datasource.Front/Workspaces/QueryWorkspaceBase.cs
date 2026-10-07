@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Components;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Services;
 using Mars.AiChat.Front.Services;
 using Mars.Datasource.Contracts.Sql;
@@ -440,16 +439,12 @@ public abstract partial class QueryWorkspaceBase : ComponentBase
 
     protected async Task<bool> ConfirmChangeAsync(string keyword, string what)
     {
-        var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Запрос <b>{System.Net.WebUtility.HtmlEncode(keyword)}</b> {what}. Выполнить?",
-            new DialogParameters
-            {
-                Title = "Подтверждение запроса",
-                Modal = true,
-                PreventDismissOnOverlayClick = false,
-            });
-
-        var result = await dialog.Result;
+        var result = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
+        {
+            Header = { Title = "Подтверждение запроса" },
+            Modal = true,
+            Parameters = { ["Content"] = (MarkupString)$"Запрос <b>{System.Net.WebUtility.HtmlEncode(keyword)}</b> {what}. Выполнить?" }
+        });
 
         return !result.Cancelled;
     }

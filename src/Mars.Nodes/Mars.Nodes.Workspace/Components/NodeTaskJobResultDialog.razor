@@ -1,4 +1,3 @@
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Nodes.Contracts.NodeTaskJob
 @using Mars.Nodes.Front.Abstractions.Editor.Interfaces
 @using Mars.Nodes.Front.Abstractions.Services
@@ -69,17 +68,13 @@
 
     public static void ShowDialog(IDialogService _dialogService, Guid taskId, INodeEditorApi editor)
     {
-        DialogParameters parameters = new()
+        _ = _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(new DialogOptions
         {
-            Title = "NodeTask Job result",
-            ShowDismiss = true,
+            Header = { Title = "NodeTask Job result", CloseAction = { Visible = true } },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        _ = _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(new NodeTaskJobResultDialogModel(taskId, editor), parameters);
+            Parameters = { ["Content"] = new NodeTaskJobResultDialogModel(taskId, editor) }
+        });
     }
 
 }

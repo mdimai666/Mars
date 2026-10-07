@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Pages.PostsViews.Forms;
 using Mars.Admin.Pages.PostTypeViews;
 using Mars.Forms.Front;
@@ -72,26 +71,27 @@ public partial class EditPostView
     {
         if (postTypeId is not { } typeId || typeId == Guid.Empty) return;
 
-        DialogParameters parameters = new()
+        await dialogService.ShowDialogAsync<PostFormLayoutDialog>(new DialogOptions
         {
-            Title = "Форма редактирования поста",
+            Header = { Title = "Форма редактирования поста" },
             Width = "min(1100px, 94vw)",
             Modal = true,
-            PreventScroll = true,
-        };
-
-        await dialogService.ShowDialogAsync<PostFormLayoutDialog>(new PostFormLayoutDialogData
-        {
-            PostTypeId = typeId,
-            OnSaved = async () =>
+            Parameters =
             {
-                var definition = await client.PostType.GetFormDefinition(typeId);
-                if (definition is null || f?.Model is null) return;
+                ["Content"] = new PostFormLayoutDialogData
+                {
+                    PostTypeId = typeId,
+                    OnSaved = async () =>
+                    {
+                        var definition = await client.PostType.GetFormDefinition(typeId);
+                        if (definition is null || f?.Model is null) return;
 
-                f.Model.Form = definition;
-                StateHasChanged();
+                        f.Model.Form = definition;
+                        StateHasChanged();
+                    },
+                },
             },
-        }, parameters);
+        });
     }
 
     async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)

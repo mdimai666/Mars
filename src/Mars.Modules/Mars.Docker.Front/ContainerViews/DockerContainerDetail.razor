@@ -1,6 +1,5 @@
 @using System.Globalization
 @using Mars.Admin.Framework.Components
-@using Mars.Admin.Framework.Dialogs
 @using Mars.Admin.Framework.Extensions
 @using Mars.Core.Extensions
 @using Mars.Docker.Contracts
@@ -301,10 +300,12 @@
 
     async Task Delete()
     {
-        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(DisplayName)}</b>?",
-            new DialogParameters { Title = "Delete container", Modal = true });
-        var result = await dialog.Result;
+        var result = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
+        {
+            Header = { Title = "Delete container" },
+            Modal = true,
+            Parameters = { ["Content"] = (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(DisplayName)}</b>?" }
+        });
         if (result.Cancelled)
         {
             return;

@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Components;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -12,12 +11,11 @@ public static class DialogExtensions
     {
         var content = (MarkupString)(message ?? AppRes.DeletionConfirmationMessage);
 
-        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(content, new DialogParameters()
+        var result = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
         {
             Modal = true,
+            Parameters = { ["Content"] = content },
         });
-
-        var result = await dialog.Result;
 
         return !result.Cancelled;
     }

@@ -506,7 +506,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 | FluentProgressRing | FluentSpinner (alias ещё жив, «will be removed») |
 | FluentDesignSystemProvider | удалён → IThemeService |
 | FluentToastProvider/DialogProvider/TooltipProvider/MessageBarProvider | один FluentProviders |
-| IDialogService.ShowDialogAsync/DialogParameters (v4-набор) | v5-диалоги; в Mars — шим `Mars.Admin.Framework/Dialogs/` |
+| IDialogService.ShowDialogAsync/DialogParameters (v4-набор) | v5-диалоги: `ShowDialogAsync<T>(DialogOptions)` → `Task<DialogResult>`; шим `Mars.Admin.Framework/Dialogs/` УДАЛЁН (2026-10-07), все вызовы мигрированы на нативный API |
 | FluentDialogHeader/Footer | FluentDialogBody (TitleTemplate/ActionTemplate) |
 | IToastService | INotificationService (в Mars — FluentMessageServiceBridge) |
 | FluentValidationMessage | ЖИВ (generic `<TValue>`) — пункт плана «удалён» был неточен |
@@ -671,10 +671,9 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
     {"re": "--type-ramp-|--accent-fill-|--neutral-(fill|layer|foreground|stroke)-|--design-unit|--neutral-base-color|--control-corner-radius|--base-height-multiplier|--badge-fill-|--dialog-width", "note": "мёртвые v4 CSS-токены/переменные (в .less/.css/inline-Style)"},
     {"re": "::part\\(control\\)", "note": "жив только у fluent-text-input/fluent-textarea; мёртв у dialog(→dialog)/switch(→checked-indicator)/tree-item(→content+positioning-region)/button(→content)"},
     {"re": "\\.fluent-input-label", "note": "v5 рендерит fluent-label без класса → селектор по тегу"},
-    {"re": "\\b(TrapFocus|PreventScroll)\\s*=\\s*\"", "note": "razor-атрибуты FluentDialog мертвы; C#-инициализаторы DialogParameters (без кавычек) — свойства шима Mars, легитимны"}
+    {"re": "\\b(TrapFocus|PreventScroll)\\s*=\\s*\"", "note": "razor-атрибуты FluentDialog мертвы; DialogParameters-шим удалён (2026-10-07) — C#-инициализаторы TrapFocus/PreventScroll/PreventDismissOnOverlayClick больше не легитимны НИГДЕ"}
   ],
   "excludeFiles": [
-    "src/Admin/Mars.Admin.Framework/Dialogs/",
     "tests/Mars.E2E.Tests/",
     "ai/",
     "wwwroot/css/style.css",
@@ -687,7 +686,6 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 
 Легитимные вхождения (не чинить): `Anchor=` у FluentTooltip (ЖИВ); `Visible=` у
 FluentMessageBar/FluentOverlay/FluentSpinner/FluentProgressBar/FluentSkeleton/FluentTab;
-`Autofocus` у входов (FluentInputBase); `TrapFocus`/`PreventScroll` в
-`Mars.Admin.Framework/Dialogs/` (шим DialogParameters); `UseMenuService` у FluentDataGrid;
+`Autofocus` у входов (FluentInputBase); `UseMenuService` у FluentDataGrid;
 `Data=` у FluentDropZone (ЖИВ); закомментированные `@* <FluentTextField … *@` в
 OpenIDClientOptionEditForm.razor и EditPostTypePage.razor (4 шт., вне сборки).

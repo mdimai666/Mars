@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Components;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Contracts.Resources;
@@ -161,12 +160,12 @@ public partial class ListDockerContainer
 
     async Task ShowCreateDialog()
     {
-        var dialog = await dialogService.ShowDialogAsync<CreateContainerDialog>("", new DialogParameters
+        var result = await dialogService.ShowDialogAsync<CreateContainerDialog>(new DialogOptions
         {
-            Title = "Create container",
+            Header = { Title = "Create container" },
             Modal = true,
+            Parameters = { ["Content"] = "" }
         });
-        var result = await dialog.Result;
         if (result.Cancelled)
         {
             return;
@@ -220,10 +219,12 @@ public partial class ListDockerContainer
     async Task DeleteContainer(ContainerListResponse1 container)
     {
         var name = container.Names.FirstOrDefault() ?? container.ID;
-        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(name)}</b>?",
-            new DialogParameters { Title = "Delete container", Modal = true });
-        var result = await dialog.Result;
+        var result = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
+        {
+            Header = { Title = "Delete container" },
+            Modal = true,
+            Parameters = { ["Content"] = (MarkupString)$"Delete container <b>{System.Net.WebUtility.HtmlEncode(name)}</b>?" }
+        });
         if (result.Cancelled)
         {
             return;

@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.AuthProviders;
-using Mars.Admin.Framework.Dialogs;
 using Mars.Admin.Framework.Models;
 using Mars.Admin.Shared.ActionCenter;
 using Mars.Cms.Contracts.NavMenus;
@@ -153,13 +152,11 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
         MenuDrawerVisible = false;
     }
 
-    private IDialogReference? _dialog;
-
     async void OpenMobileMenu()
     {
         if (!_menuDrawerVisible) return;
 
-        DialogParameters parameters = new()
+        DialogOptions options = new()
         {
             //Title = $"Hello {simplePerson.Firstname}",
             Modal = true,
@@ -168,9 +165,10 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
             //SecondaryAction = "Cancel",
 
             Width = "80vw",
+            Alignment = DialogAlignment.Start,
+            Parameters = { ["Content"] = menu_items },
         };
-        _dialog = await _dialogService.ShowPanelAsync<MobileMenu>(menu_items, parameters, DialogAlignment.Start);
-        DialogResult result = await _dialog.Result;
+        DialogResult result = await _dialogService.ShowDrawerAsync<MobileMenu>(options);
         //HandlePanel(result);
     }
 

@@ -175,10 +175,13 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   не создаёт.
 - **`.cloudy-search` ≠ `.cloudy-searchbox`**: первое — кликабельная «поисковая строка» топбара (300px,
   kbd), второе — реальный input списка из `cloudy-list.less`. Не путать/не объединять.
-- **Дебаунс `CloudySearchBox` — без `using` на CTS**: предыдущий `CancellationTokenSource` отменять и
-  диспожить явно в момент замены новым (`previous.Cancel(); previous.Dispose();`). `using var cts = _cts = …`
-  диспожил CTS по завершении дебаунса, а поле продолжало на него указывать — следующий ввод падал
-  `ObjectDisposedException: CancellationTokenSource_Disposed` (баг 2026-10-07, исправлен).
+- **Дебаунс `CloudySearchBox` — через `Debouncer`** (`Mars.Core/Features/Debouncer.cs`, глобальный
+  namespace): компонент создаёт его в `OnInitialized(DebounceMs)` и диспожит (`@implements IDisposable`).
+  НЕ писать инлайн-дебаунс на `CancellationTokenSource`: прежний `using var cts = _cts = …` диспожил
+  CTS по завершении, поле указывало на мёртвый объект — следующий ввод падал
+  `ObjectDisposedException: CancellationTokenSource_Disposed`, а обработчик удаления умирал до
+  очистки фильтра (поиск залипал на последнем значении; баг 2026-10-07). `Debouncer` проверяет
+  `token.IsCancellationRequested` ПОСЛЕ задержки под локом — устаревший текст не выстреливает.
 - **Сортировка списков**: `Sort="FullName"` НЕ работает (FullName `[NotMapped]` у `UserEntity`) —
   использовать маппед-поля (`LastName`, `-CreatedAt`).
 - **`ListDataResult.Empty()` при пустой выборке** → `TotalCount == null`, не 0 (`ToListDataResult` в

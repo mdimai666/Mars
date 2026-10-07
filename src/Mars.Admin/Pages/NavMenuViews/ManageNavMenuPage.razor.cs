@@ -1,5 +1,4 @@
-using System.Collections.ObjectModel;
-using Mars.Admin.Pages.FeedbackViews;
+using Mars.Admin.Shared.Cloudy;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -12,86 +11,42 @@ public partial class ManageNavMenuPage
     string urlEditPage = "/dev/EditNavMenu";
 
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] IDialogService dialogService { get; set; } = default!;
 
-    FluentDataGrid<NavMenuSummaryResponse> table = default!;
+    FluentDataGrid<NavMenuSummaryResponse> _grid = default!;
+    GridItemsProvider<NavMenuSummaryResponse> _dataProvider = default!;
+
     string _searchText = "";
-    ListDataResult<NavMenuSummaryResponse> data = ListDataResult<NavMenuSummaryResponse>.Empty();
+    int? _total;
 
-    GridItemsProvider<NavMenuSummaryResponse> dataProvider = default!;
-    //PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
-
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        dataProvider = new GridItemsProvider<NavMenuSummaryResponse>(
-            async req =>
-            {
-                var sortBy = req.GetSortByProperties();
-                var sortColumn = sortBy.Count == 0
-                                        ? nameof(NavMenuSummaryResponse.CreatedAt)
-                                        : sortBy.First().PropertyName;
-
-                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
-
-                data = await client.NavMenu.ListForAdmin(new()
-                {
-                    //Page = pagination.CurrentPageIndex + 1,
-                    //PageSize = pagination.ItemsPerPage,
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-                });
-
-                var collection = new Collection<NavMenuSummaryResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
+        _dataProvider = CloudyGridProvider.Create<NavMenuSummaryResponse>(LoadNavMenus);
     }
 
-    void HandleSearchInput()
+    async Task<ListDataResult<NavMenuSummaryResponse>> LoadNavMenus(int skip, int take, string? sort)
     {
-        table.RefreshDataAsync();
+        var data = await client.NavMenu.ListForAdmin(new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? $"-{nameof(NavMenuSummaryResponse.CreatedAt)}",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
     }
 
-    async void OnRowClick(FluentDataGridRow<NavMenuSummaryResponse> row)
+    void OnSearchChanged(string text)
     {
-
-        if (row.Item is null) return;
-        return;
-
-        DialogOptions options = new()
-        {
-            Header = { Title = row.Item.Title },
-            //PrimaryActionEnabled = false,
-            //PrimaryAction = "Yes",
-            //Width = "500px",
-            //TrapFocus = _trapFocus,
-            //Modal = _modal,
-        };
-
-        var detail = await client.NavMenu.Get(row.Item.Id);
-
-        if (detail is not null)
-        {
-            options.Parameters["Content"] = detail;
-            DialogResult? result = await dialogService.ShowDialogAsync<ViewFeedbackDialog>(options);
-        }
-        else
-        {
-            _ = _messageService.Error("element not found");
-        }
-
+        _searchText = text;
+        _grid?.RefreshDataAsync();
     }
 
     public async Task Delete(Guid id)
     {
         await client.NavMenu.Delete(id).SmartDelete();
-        _ = table.RefreshDataAsync();
+        _grid?.RefreshDataAsync();
     }
-
 }

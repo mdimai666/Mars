@@ -233,7 +233,11 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   детерминированный фолбэк: `string.GetHashCode()` рандомизирован на процесс, цвета «прыгали»
   при каждой перезагрузке). Чипы-фильтры по Type отклонены (нет фильтра в `ListFeedbackQueryRequest`).
   KPI-метрика фидбеков — «новых за НЕДЕЛЮ» (`feedbacks.newThisWeek`, отсчёт от понедельника;
-  решение пользователя 2026-10-07, не «за месяц» как у users).
+  решение пользователя 2026-10-07, не «за месяц» как у users). ManageNavMenuPage — тоже
+  DataGrid-паттерн, БЕЗ KPI (Title-stack со ссылкой на `/dev/EditNavMenu/<id>` + slug, Tags —
+  `CloudyTag` c `tag.StableTint()`); мёртвый OnRowClick (unreachable-код с ViewFeedbackDialog)
+  удалён. Детерминированный тинт строки — расширение `StableTint()`
+  (`Mars.Admin.Framework/Extensions/StringTintExtensions.cs`), НЕ `string.GetHashCode()`.
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

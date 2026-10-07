@@ -93,19 +93,12 @@ public partial class FeedbackListPage
         await _appjs.DownloadFileFromUrl(url);
     }
 
-    // имена значений FeedbackType (Mars.Cms.Abstractions); GetHashCode у string рандомизирован на процесс — только фиксированный маппинг
+    // имена значений FeedbackType (Mars.Cms.Abstractions)
     static int TintFor(string type) => type switch
     {
         "InfoMessage" => 0,
         "BugReport" => 3,
         "Question" => 1,
-        _ => StableTint(type),
+        _ => type.StableTint(),
     };
-
-    static int StableTint(string s)
-    {
-        var hash = 0;
-        foreach (var c in s) hash = unchecked(hash * 31 + c);
-        return (hash & 0x7FFFFFFF) % 5;
-    }
 }

@@ -1,97 +1,65 @@
 @page "/NavMenu"
-@using System.Linq.Expressions
 @using Mars.Cms.Contracts.NavMenus
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @attribute [Authorize(Roles = "Admin")]
-@inject IStringLocalizer<AppRes> L
 
-<ContentWrapper Title="@AppRes.NavMenus" WrapperClass="vstack">
+<CloudyPageHead Title="@AppRes.NavMenus" Subtitle="Site navigation menus." />
 
-    <div class="hstack">
-        <FluentTextInput @bind-Value=_searchText
-                      @bind-Value:after=HandleSearchInput
-                      Immediate
-                      ImmediateDelay="300"
-                      Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search">
-            <StartTemplate>
-                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
-            </StartTemplate>
-        </FluentTextInput>
-        <div class="ms-auto">
-            <a href="@urlEditPage">
-                <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-            </a>
-        </div>
-    </div>
+<CloudyBrowser Scrollable>
+    <HeadRight>
+        <CloudySearchBox Placeholder="Search menus…" ValueChanged="OnSearchChanged" />
+        <a class="cloudy-btn-primary" href="@urlEditPage">@AppRes.Create</a>
+    </HeadRight>
 
-    <div class="mt-4 vstack flex-fill">
-        <div class="flex-fill" style="height: 534px; overflow:auto;">
-            <FluentDataGrid ItemsProvider="dataProvider"
-                            @ref=table
-                            ItemSize="106"
-                            Virtualize
-                            EmptyContent="DataGrid_EmptyContent"
-                            ShowHover
-                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                            OnRowClick="OnRowClick"
-                            GridTemplateColumns="3fr 1fr 1fr"
-                            Class="data-table--adaptive"
-                            TGridItem="NavMenuSummaryResponse">
-                <TemplateColumn SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f => f.Title))"
-                                Title="@AppRes.Title"
-                                InitialSortDirection="DataGridSortDirection.Ascending"
+    <ChildContent>
+        <FluentDataGrid TGridItem="NavMenuSummaryResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) minmax(0,1.5fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<NavMenuSummaryResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@urlEditPage/@context.Id" title="@context.Title">@context.Title</a>
+                        <span class="cloudy-stack__sub" title="@context.Slug">@context.Slug</span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Tags">
+                    <div class="cloudy-tags">
+                        @foreach (var tag in context.Tags)
+                        {
+                            <CloudyTag Text="@tag" Tint="@tag.StableTint()" />
+                        }
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f => f.CreatedAt))"
                                 IsDefaultSortColumn="true"
-                                Sortable="true">
-                    <div class="col">
-                        <div class="card h-100 list-group-item-action d-card-glow">
-                            <div class="card-body">
-                                <h5 class="card-title">@context.Title</h5>
-                                <div class="text-secondary small">Элементов: 0</div>
-                                <div class="_tags">
-                                    @foreach (var tag in context.Tags)
-                                    {
-                                        <span class="badge bg-light text-dark">@tag</span>
-                                    }
-                                </div>
-                            </div>
-                            <a href="@urlEditPage/@context.Id" class="text-primary stretched-link"></a>
-                        </div>
+                                Align="DataGridCellAlignment.End">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
                     </div>
                 </TemplateColumn>
-                <PropertyColumn Property=@(f => f.CreatedAt)
-                                Title="@AppRes.CreatedAt"
-                                Format="d"
-                                Sortable="true" Align="DataGridCellAlignment.End" />
-                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
-                </TemplateColumn>
-            </FluentDataGrid>
-        </div>
-        <br />
-        <div class="hstack">
-            <TotalResultsFound TotalCount="@data.TotalCount" />
-        </div>
-    </div>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No menus match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
 
-    @*
-            <div class="col">
-                <div class="card h-100 list-group-item-action d-card-glow">
-                    <div class="card-body">
-                        <h5 class="card-title">@context.Title</h5>
-                        <div class="text-secondary small">Элементов: @context.MenuItems.Count</div>
-                         <div class="_tags">
-                            @foreach (var tag in context.Tags)
-                            {
-                                <span class="badge bg-light text-dark">@tag</span>
-                            }
-                        </div> 
-                    </div>
-                    <a href="@urlEditPage/@context.Id" class="text-primary stretched-link"></a>
-                </div>
-            </div>
-    *@
-
-</ContentWrapper>
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

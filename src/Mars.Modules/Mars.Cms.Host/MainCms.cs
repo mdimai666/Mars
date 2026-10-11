@@ -67,6 +67,7 @@ public static class MainCms
         services.AddSingleton<IKpiHandler, PostTypesComponentKpiHandler>();
         services.AddSingleton<IKpiHandler, MetaFieldsTotalKpiHandler>();
         services.AddSingleton<IKpiHandler, MetaValuesTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostCategoryTypesTotalKpiHandler>();
 
         UseIMetaRelationModelProviderHandler(services);
         UseIMetaValueGeneratorHandler(services);

@@ -1,5 +1,6 @@
-using System.Collections.ObjectModel;
+using Mars.Admin.Shared.Cloudy;
 using Mars.Cms.Contracts.PostCategoryTypes;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -9,53 +10,60 @@ namespace Mars.Admin.Pages.PostCategoryTypeViews;
 public partial class ListPostCategoryTypePage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
-    string urlEditPage = "/dev/EditPostCategoryType";
+    string UrlEditPage = "/dev/EditPostCategoryType";
 
-    //table
-    FluentDataGrid<PostCategoryTypeListItemResponse> table = default!;
+    FluentDataGrid<PostCategoryTypeListItemResponse> _grid = default!;
+    GridItemsProvider<PostCategoryTypeListItemResponse> _dataProvider = default!;
+
     string _searchText = "";
-    ListDataResult<PostCategoryTypeListItemResponse> data = ListDataResult<PostCategoryTypeListItemResponse>.Empty();
-    GridItemsProvider<PostCategoryTypeListItemResponse> dataProvider = default!;
+    int? _total;
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        dataProvider = new GridItemsProvider<PostCategoryTypeListItemResponse>(
-            async req =>
-            {
-                var sortBy = req.GetSortByProperties();
-                var sortColumn = sortBy.Count == 0 ? nameof(PostCategoryTypeListItemResponse.Title) : sortBy.First().PropertyName;
-
-                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
-
-                data = await client.PostCategoryType.List(new()
-                {
-                    //Page = pagination.CurrentPageIndex + 1,
-                    //PageSize = pagination.ItemsPerPage,
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-                });
-
-                var collection = new Collection<PostCategoryTypeListItemResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
+        _dataProvider = CloudyGridProvider.Create<PostCategoryTypeListItemResponse>(LoadCategoryTypes);
+        await LoadKpi();
     }
 
-    void HandleSearchInput()
+    async Task<ListDataResult<PostCategoryTypeListItemResponse>> LoadCategoryTypes(int skip, int take, string? sort)
     {
-        table.RefreshDataAsync();
+        var data = await client.PostCategoryType.List(new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? $"-{nameof(PostCategoryTypeListItemResponse.CreatedAt)}",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
+    }
+
+    async Task LoadKpi()
+    {
+        _kpi = await client.Kpi.Get([PostCategoryTypeKpiKeys.Total]);
+    }
+
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
+
+    void RefreshGrid() => _grid?.RefreshDataAsync();
+
+    void OnSearchChanged(string text)
+    {
+        _searchText = text;
+        RefreshGrid();
     }
 
     public async Task Delete(Guid id)
     {
         await client.PostCategoryType.Delete(id).SmartDelete();
-        _ = table.RefreshDataAsync();
+        RefreshGrid();
+        await LoadKpi();
     }
 }

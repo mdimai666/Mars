@@ -1024,6 +1024,15 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Total category types.
+        /// </summary>
+        public static string postcategorytypes_total {
+            get {
+                return ResourceManager.GetString("postcategorytypes.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Post image.
         /// </summary>
         public static string PostImage {

@@ -612,4 +612,7 @@
   <data name="usertypes.total" xml:space="preserve">
     <value>Total user types</value>
   </data>
+  <data name="postcategorytypes.total" xml:space="preserve">
+    <value>Total category types</value>
+  </data>
 </root>

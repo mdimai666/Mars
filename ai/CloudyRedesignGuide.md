@@ -258,6 +258,10 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   `Mars.Identity.Contracts/UserTypes/UserTypeKpiKeys.cs`, хендлер
   `Mars.Identity.Host/Kpi/UserTypesTotalKpiHandler`, инвалидация wildcard
   `entity.UserType/**`), колонки Title-stack/Tags(`StableTint`)/CreatedAt DESC/удаление.
+  ListPostCategoryTypePage — тот же паттерн (2026-10-11): KPI только `postcategorytypes.total`
+  (ключи `Mars.Cms.Contracts/PostCategoryTypes/PostCategoryTypeKpiKeys.cs`, хендлер
+  `Mars.Cms.Host/Kpi/PostCategoryTypesTotalKpiHandler`, инвалидация wildcard
+  `entity.PostCategoryType/**`).
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

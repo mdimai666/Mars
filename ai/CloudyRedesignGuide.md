@@ -254,6 +254,10 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   metaFields — wildcard `entity.PostType/**`; metaValues — `entity.post/**` (новый
   Defaults-хелпер `PostAnyOperation()` без typeName). Чекбокс «Компонентные типы»
   (IncludeComponent) — в HeadLeft.
+  ListUserTypePage — тот же паттерн (2026-10-11): KPI только `usertypes.total` (ключи
+  `Mars.Identity.Contracts/UserTypes/UserTypeKpiKeys.cs`, хендлер
+  `Mars.Identity.Host/Kpi/UserTypesTotalKpiHandler`, инвалидация wildcard
+  `entity.UserType/**`), колонки Title-stack/Tags(`StableTint`)/CreatedAt DESC/удаление.
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

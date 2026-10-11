@@ -83,6 +83,7 @@ public static class MainIdentity
 
         services.AddSingleton<IKpiHandler, UsersTotalKpiHandler>();
         services.AddSingleton<IKpiHandler, UsersNewThisMonthKpiHandler>();
+        services.AddSingleton<IKpiHandler, UserTypesTotalKpiHandler>();
         return services;
     }
 

@@ -1,4 +1,5 @@
-using System.Collections.ObjectModel;
+using Mars.Admin.Shared.Cloudy;
+using Mars.Contracts.Common;
 using Mars.Identity.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -9,53 +10,60 @@ namespace Mars.Admin.Pages.UserTypeViews;
 public partial class ListUserTypePage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
-    string urlEditPage = "/dev/EditUserType";
+    string UrlEditPage = "/dev/EditUserType";
 
-    //table
-    FluentDataGrid<UserTypeListItemResponse> table = default!;
+    FluentDataGrid<UserTypeListItemResponse> _grid = default!;
+    GridItemsProvider<UserTypeListItemResponse> _dataProvider = default!;
+
     string _searchText = "";
-    ListDataResult<UserTypeListItemResponse> data = ListDataResult<UserTypeListItemResponse>.Empty();
-    GridItemsProvider<UserTypeListItemResponse> dataProvider = default!;
+    int? _total;
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        dataProvider = new GridItemsProvider<UserTypeListItemResponse>(
-            async req =>
-            {
-                var sortBy = req.GetSortByProperties();
-                var sortColumn = sortBy.Count == 0 ? nameof(UserTypeListItemResponse.Title) : sortBy.First().PropertyName;
-
-                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
-
-                data = await client.UserType.List(new()
-                {
-                    //Page = pagination.CurrentPageIndex + 1,
-                    //PageSize = pagination.ItemsPerPage,
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-                });
-
-                var collection = new Collection<UserTypeListItemResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
+        _dataProvider = CloudyGridProvider.Create<UserTypeListItemResponse>(LoadUserTypes);
+        await LoadKpi();
     }
 
-    void HandleSearchInput()
+    async Task<ListDataResult<UserTypeListItemResponse>> LoadUserTypes(int skip, int take, string? sort)
     {
-        table.RefreshDataAsync();
+        var data = await client.UserType.List(new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? $"-{nameof(UserTypeListItemResponse.CreatedAt)}",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
+    }
+
+    async Task LoadKpi()
+    {
+        _kpi = await client.Kpi.Get([UserTypeKpiKeys.Total]);
+    }
+
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
+
+    void RefreshGrid() => _grid?.RefreshDataAsync();
+
+    void OnSearchChanged(string text)
+    {
+        _searchText = text;
+        RefreshGrid();
     }
 
     public async Task Delete(Guid id)
     {
         await client.UserType.Delete(id).SmartDelete();
-        _ = table.RefreshDataAsync();
+        RefreshGrid();
+        await LoadKpi();
     }
 }

@@ -609,4 +609,7 @@
   <data name="posttypes.metaValues" xml:space="preserve">
     <value>Мета-значения</value>
   </data>
+  <data name="usertypes.total" xml:space="preserve">
+    <value>Всего типов пользователей</value>
+  </data>
 </root>

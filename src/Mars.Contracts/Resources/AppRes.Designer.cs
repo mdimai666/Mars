@@ -1087,6 +1087,42 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Component types.
+        /// </summary>
+        public static string posttypes_componentTypes {
+            get {
+                return ResourceManager.GetString("posttypes.componentTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meta fields.
+        /// </summary>
+        public static string posttypes_metaFields {
+            get {
+                return ResourceManager.GetString("posttypes.metaFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meta values.
+        /// </summary>
+        public static string posttypes_metaValues {
+            get {
+                return ResourceManager.GetString("posttypes.metaValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total post types.
+        /// </summary>
+        public static string posttypes_total {
+            get {
+                return ResourceManager.GetString("posttypes.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ReportCounter.
         /// </summary>
         public static string ReportCounter {
@@ -1425,6 +1461,15 @@ namespace Mars.Contracts.Resources {
         public static string UserTypes {
             get {
                 return ResourceManager.GetString("UserTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total user types.
+        /// </summary>
+        public static string usertypes_total {
+            get {
+                return ResourceManager.GetString("usertypes.total", resourceCulture);
             }
         }
         

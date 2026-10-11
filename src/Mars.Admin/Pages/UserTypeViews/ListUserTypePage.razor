@@ -1,76 +1,70 @@
 @page "/UserType"
-@using System.Linq.Expressions
 @using Mars.Identity.Contracts.UserTypes
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
-@inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-<ContentWrapper Title="@AppRes.UserTypes">
+@inject IStringLocalizer<AppRes> L
 
-    <div class="hstack">
-        <FluentTextInput @bind-Value=_searchText
-                      @bind-Value:after=HandleSearchInput
-                      Immediate
-                      ImmediateDelay="300"
-                      Appearance="TextInputAppearance.FilledDarker"
-                      AriaLabel="Search">
-            <StartTemplate>
-                <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
-            </StartTemplate>
-        </FluentTextInput>
-        <div class="ms-auto">
-            <a href="@urlEditPage">
-                <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
-            </a>
-        </div>
-    </div>
+<CloudyPageHead Title="@AppRes.UserTypes" Subtitle="User profile types with meta fields." KpiCols="1">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(UserTypeKpiKeys.Total)" Value="@KpiValue(UserTypeKpiKeys.Total)" Icon="bi-person-badge" />
+    </Kpis>
+</CloudyPageHead>
 
-    <div class="mt-4">
-        <div style="height: 534px; overflow:auto;">
-            <FluentDataGrid ItemsProvider="dataProvider"
-                            @ref=table
-                            ItemSize="76"
-                            Virtualize
-                            ResizableColumns
-                            GridTemplateColumns="3fr 2fr 1fr 1fr"
-                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                            Class="data-table--adaptive"
-                            TGridItem="UserTypeListItemResponse">
-                <TemplateColumn SortBy="@(GridSort<UserTypeListItemResponse>.ByDescending(f=>f.Title))"
-                                Title="@AppRes.Title"
-                                InitialSortDirection="DataGridSortDirection.Ascending"
-                                IsDefaultSortColumn="true"
-                                Sortable="true">
+<CloudyBrowser Scrollable>
+    <HeadRight>
+        <CloudySearchBox Placeholder="Search user types…" ValueChanged="OnSearchChanged" />
+        <a class="cloudy-btn-primary" href="@UrlEditPage">@AppRes.Create</a>
+    </HeadRight>
 
-                    <div class="card1 h-100 list-group-item-action d-card-glow position-relative">
-                        <div class="card-body py-1 px-3">
-                            <h5 class="card-title">@context.Title</h5>
-                            <div class="text-secondary small">@context.TypeName</div>
-                        </div>
-                        <a href="@urlEditPage/@context.Id" class="stretched-link"></a>
+    <ChildContent>
+        <FluentDataGrid TGridItem="UserTypeListItemResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) minmax(0,1.5fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<UserTypeListItemResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@UrlEditPage/@context.Id" title="@context.Title">@context.Title</a>
+                        <span class="cloudy-stack__sub" title="@context.TypeName">@context.TypeName</span>
                     </div>
-
                 </TemplateColumn>
-                @* <TemplateColumn Title="@AppRes.MetaFields">
-                    <FluentOverflow TItem="string" Style="width: 100%;" >
-                        @foreach(var tag in context.EnabledFeatures){
-                            <FluentBadge>@tag</FluentBadge>
+                <TemplateColumn Title="@AppRes.Tags">
+                    <div class="cloudy-tags">
+                        @foreach (var tag in context.Tags)
+                        {
+                            <CloudyTag Text="@tag" Tint="@tag.StableTint()" />
                         }
-                    </FluentOverflow>
-                </TemplateColumn> *@
-                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="DataGridCellAlignment.End" />
-                <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                    </div>
                 </TemplateColumn>
-            </FluentDataGrid>
-        </div>
-        <br />
-        <div class="hstack">
-            <TotalResultsFound TotalCount="@data.TotalCount" />
-            <div class="ms-auto">
-            </div>
-        </div>
-    </div>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<UserTypeListItemResponse>.ByDescending(f => f.CreatedAt))"
+                                IsDefaultSortColumn="true"
+                                Align="DataGridCellAlignment.End">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No user types match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
 
-</ContentWrapper>
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

@@ -17,4 +17,14 @@ public static class TimeFormatExtensions
 
         return $"{ts:dd.MM.yy} {time}";
     }
+
+    public static string FormatDate(this DateTimeOffset ts) => ts.LocalDateTime.FormatDate();
+
+    public static string FormatDate(this DateTime ts)
+    {
+        if (ts.Date == DateTime.Today) return $"сегодня";
+        if (ts.Date == DateTime.Today.AddDays(-1)) return $"вчера";
+
+        return $"{ts:dd.MM.yy}";
+    }
 }

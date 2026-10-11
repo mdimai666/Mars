@@ -597,4 +597,16 @@
   <data name="Type" xml:space="preserve">
     <value>Тип</value>
   </data>
+  <data name="posttypes.total" xml:space="preserve">
+    <value>Всего типов записей</value>
+  </data>
+  <data name="posttypes.componentTypes" xml:space="preserve">
+    <value>Компонентные типы</value>
+  </data>
+  <data name="posttypes.metaFields" xml:space="preserve">
+    <value>Мета-поля</value>
+  </data>
+  <data name="posttypes.metaValues" xml:space="preserve">
+    <value>Мета-значения</value>
+  </data>
 </root>

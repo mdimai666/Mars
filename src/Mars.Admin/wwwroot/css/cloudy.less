@@ -486,7 +486,7 @@ body[data-theme="dark"] .cloudy-layout {
 
 .cloudy-kpis {
     --cloudy-kpi-cols: 4;
-    --cloudy-kpi-width: 168px;
+    --cloudy-kpi-width: 180px;
     display: grid;
     grid-template-columns: repeat(var(--cloudy-kpi-cols), minmax(0, var(--cloudy-kpi-width)));
     gap: 16px;
@@ -502,11 +502,18 @@ body[data-theme="dark"] .cloudy-layout {
     padding: 14px 18px;
     min-width: 150px;
 
+    > div {
+        min-width: 0;
+    }
+
     &__label {
         display: block;
         color: var(--cld-muted);
         font-size: 13px;
         margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__value {

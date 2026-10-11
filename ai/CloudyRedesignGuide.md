@@ -72,7 +72,8 @@
 
 **Списочная страница на `.cloudy-list` (статичный список без грида; UsersPage до 2026-10-06):**
 1. `CloudyPageHead` (Title/Subtitle/KpiCols) + `CloudyKpi` (Icon или Tint-точка). Карточка KPI —
-   фиксированной ширины `--cloudy-kpi-width: 168px` (= (720−3×16)/4 из прототипа), колонки
+   фиксированной ширины `--cloudy-kpi-width: 180px` (отклонение от прототипных 168px — решение
+   пользователя 2026-10-07; label — одна строка с ellipsis и `title` при наведении), колонки
    `--cloudy-kpi-cols` (дефолт 4); НЕ растягивать карточки на контейнер (1fr) — при cols<4 разъезжаются.
 2. `CloudyBrowser`: `HeadLeft` = `CloudyChips`, `HeadRight` = `CloudySearchBox` + `.cloudy-btn-primary`;
    `<ChildContent>` ОБЯЗАТЕЛЬНО явный (RZ9996); `Foot` = `TotalResultsFound` + `CloudyPager`.
@@ -245,6 +246,14 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   `CloudyTag` c `tag.StableTint()`); мёртвый OnRowClick (unreachable-код с ViewFeedbackDialog)
   удалён. Детерминированный тинт строки — расширение `StableTint()`
   (`Mars.Admin.Framework/Extensions/StringTintExtensions.cs`), НЕ `string.GetHashCode()`.
+  ListPostTypePage — DataGrid-паттерн + 4 KPI (`posttypes.total/componentTypes/metaFields/
+  metaValues`, ключи `Mars.Cms.Contracts/PostTypes/PostTypeKpiKeys.cs`, хендлеры
+  `Mars.Cms.Host/Kpi/`; все метрики — ТОЛЬКО в рамках PostType, решение пользователя
+  2026-10-11: metaFields считает поля с `PostTypeId != null`, metaValues — только
+  `PostMetaValues`, без UserType/PostCategory-владельцев). Инвалидация: total/component/
+  metaFields — wildcard `entity.PostType/**`; metaValues — `entity.post/**` (новый
+  Defaults-хелпер `PostAnyOperation()` без typeName). Чекбокс «Компонентные типы»
+  (IncludeComponent) — в HeadLeft.
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

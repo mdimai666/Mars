@@ -23,6 +23,11 @@ public static class EventManagerExtension
     public static string PostAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.post/{typeName}/*";
 
     /// <summary>
+    /// <code>entity.post/**</code>
+    /// </summary>
+    public static string PostAnyOperation(this EventManagerDefaults defaults) => $"entity.post/**";
+
+    /// <summary>
     /// <code>Option/{optionClassName}</code>
     /// </summary>
     public static string OptionUpdate(this EventManagerDefaults defaults, string optionClassName) => $"Option.{optionClassName}";

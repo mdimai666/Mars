@@ -294,9 +294,11 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   `fluent-dialog:has(.cloudy-mono-preview)::part(dialog)` (cloudy-dialog.less); текст
   тянется `window.blazor_fetch_text(url, maxChars)` (scripts.js, fetch + truncation);
   oversized-текст — только popover с Download («Too large to preview»). Сортировка как в
-  старом FluentMediaFilesList — чипы Date/Name/Size в `.cloudy-group-head` (поля сущности
+  старом FluentMediaFilesList — чипы Date/Name/Size (поля сущности
   `CreatedAt`/`FileName`/`FileSize`, НЕ поля response-DTO), клик по активному чипу
-  переключает направление (иконка bi-arrow-down/up-short). Вид «All files» (как галерея
+  переключает направление (иконка bi-arrow-down/up-short); расстановка (swap по запросу
+  2026-10-12): чипы сортировки — в HeadLeft рядом с кнопкой вида, хлебные крошки —
+  в `.cloudy-group-head` над плитками (во flat-виде скрыты). Вид «All files» (как галерея
   телефона) — ОДНА иконочная кнопка `.cloudy-icon-btn` в HeadLeft (bi-collection ↔
   bi-folder2-open, без текста, `ToggleView`): flat-вид прячет крошки/папки/New folder,
   `FolderId=null` (=все файлы), при включении сбрасывает сортировку в CreatedAt DESC.

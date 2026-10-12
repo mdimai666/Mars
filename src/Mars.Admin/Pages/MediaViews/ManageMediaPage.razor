@@ -19,19 +19,19 @@
         <button type="button" class="cloudy-icon-btn" title="@(_flatView ? "Folders" : "All files")" @onclick="ToggleView">
             <i class="bi @(_flatView ? "bi-folder2-open" : "bi-collection")"></i>
         </button>
-        @if (!_flatView)
-        {
-            <nav class="cloudy-crumbs">
-                <button type="button" class="cloudy-crumb @(_currentFolderId is null ? "cloudy-crumb--current" : null)"
-                        @onclick="GoToRoot">Media</button>
-                @foreach (var crumb in _breadcrumbs)
-                {
-                    <span class="cloudy-crumbs__sep">/</span>
-                    <button type="button" class="cloudy-crumb @(crumb.Id == _currentFolderId ? "cloudy-crumb--current" : null)"
-                            @onclick="() => OpenFolder(crumb)">@crumb.Name</button>
-                }
-            </nav>
-        }
+        <div class="cloudy-chips">
+            @foreach (var option in SortOptions)
+            {
+                <button type="button" class="cloudy-chip @(_sortField == option.Field ? "active" : null)"
+                        title="Sort by @option.Label" @onclick="() => SetSort(option.Field)">
+                    @option.Label
+                    @if (_sortField == option.Field)
+                    {
+                        <i class="bi @(_sortDesc ? "bi-arrow-down-short" : "bi-arrow-up-short")"></i>
+                    }
+                </button>
+            }
+        </div>
     </HeadLeft>
     <HeadRight>
         <span class="cloudy-count">@(_flatView ? $"{_filesTotal} files" : $"{_folders.Count} folders · {_filesTotal} files")</span>
@@ -66,21 +66,21 @@
 
     <ChildContent>
         <section class="cloudy-browser-group">
-            <div class="cloudy-group-head">
-                <div class="cloudy-chips">
-                    @foreach (var option in SortOptions)
-                    {
-                        <button type="button" class="cloudy-chip @(_sortField == option.Field ? "active" : null)"
-                                title="Sort by @option.Label" @onclick="() => SetSort(option.Field)">
-                            @option.Label
-                            @if (_sortField == option.Field)
-                            {
-                                <i class="bi @(_sortDesc ? "bi-arrow-down-short" : "bi-arrow-up-short")"></i>
-                            }
-                        </button>
-                    }
+            @if (!_flatView)
+            {
+                <div class="cloudy-group-head">
+                    <nav class="cloudy-crumbs">
+                        <button type="button" class="cloudy-crumb @(_currentFolderId is null ? "cloudy-crumb--current" : null)"
+                                @onclick="GoToRoot">Media</button>
+                        @foreach (var crumb in _breadcrumbs)
+                        {
+                            <span class="cloudy-crumbs__sep">/</span>
+                            <button type="button" class="cloudy-crumb @(crumb.Id == _currentFolderId ? "cloudy-crumb--current" : null)"
+                                    @onclick="() => OpenFolder(crumb)">@crumb.Name</button>
+                        }
+                    </nav>
                 </div>
-            </div>
+            }
             @if (_filesLoading && _files.Count == 0 && _folders.Count == 0)
             {
                 <p class="cloudy-empty">Loading…</p>

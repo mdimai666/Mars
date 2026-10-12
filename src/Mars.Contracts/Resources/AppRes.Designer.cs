@@ -772,6 +772,24 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Files.
+        /// </summary>
+        public static string media_files {
+            get {
+                return ResourceManager.GetString("media.files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage used.
+        /// </summary>
+        public static string media_storage {
+            get {
+                return ResourceManager.GetString("media.storage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Meet.
         /// </summary>
         public static string Meet {

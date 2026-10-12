@@ -1,19 +1,154 @@
 @page "/Media"
-@using System.Linq.Expressions
-@using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Core.Extensions
+@using Mars.Media.Contracts.Files
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
-
 @attribute [Authorize(Roles = "Admin")]
-@inject NavigationManager navigationManager
 
-<ContentWrapper Title="@AppRes.Media">
-    <SectionActions>
-        <XActionsDropDown>
-            <FluentMenuItem Label="Настройки медиа" OnClick=@((e) => navigationManager.NavigateTo($"/dev/Settings/Option/Mars+Media+Contracts+Options+MediaOption")) />
-        </XActionsDropDown>
-    </SectionActions>
+@inject IStringLocalizer<AppRes> L
+
+<CloudyPageHead Title="@AppRes.Media" Subtitle="Browse folders and files of your site." KpiCols="2">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(MediaKpiKeys.Files)" Value="@KpiValue(MediaKpiKeys.Files)" Icon="bi-file-earmark-text" />
+        <CloudyKpi Label="@KpiLabel(MediaKpiKeys.Storage)" Value="@StorageValue()" Icon="bi-hdd" />
+    </Kpis>
+</CloudyPageHead>
+
+<CloudyBrowser>
+    <HeadLeft>
+        <button type="button" class="cloudy-icon-btn" title="@(_flatView ? "Folders" : "All files")" @onclick="ToggleView">
+            <i class="bi @(_flatView ? "bi-folder2-open" : "bi-collection")"></i>
+        </button>
+        @if (!_flatView)
+        {
+            <nav class="cloudy-crumbs">
+                <button type="button" class="cloudy-crumb @(_currentFolderId is null ? "cloudy-crumb--current" : null)"
+                        @onclick="GoToRoot">Media</button>
+                @foreach (var crumb in _breadcrumbs)
+                {
+                    <span class="cloudy-crumbs__sep">/</span>
+                    <button type="button" class="cloudy-crumb @(crumb.Id == _currentFolderId ? "cloudy-crumb--current" : null)"
+                            @onclick="() => OpenFolder(crumb)">@crumb.Name</button>
+                }
+            </nav>
+        }
+    </HeadLeft>
+    <HeadRight>
+        <span class="cloudy-count">@(_flatView ? $"{_filesTotal} files" : $"{_folders.Count} folders · {_filesTotal} files")</span>
+        <CloudySearchBox Placeholder="Search files…" ValueChanged="OnSearchChanged" />
+        @if (!_flatView)
+        {
+            <div class="dropdown">
+                <button type="button" class="cloudy-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-plus-lg"></i>
+                    New
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end cloudy-dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="OpenCreateFolderDialog" @onclick:preventDefault>
+                            <i class="bi bi-folder-plus"></i> Folder
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="OpenCreateTextFileDialog" @onclick:preventDefault>
+                            <i class="bi bi-file-earmark-text"></i> Text file
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="TriggerUploadPicker" @onclick:preventDefault>
+                            <i class="bi bi-cloud-arrow-up"></i> Upload files
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </HeadRight>
+
     <ChildContent>
-        <FluentMediaFilesList />
+        <section class="cloudy-browser-group">
+            <div class="cloudy-group-head">
+                <div class="cloudy-chips">
+                    @foreach (var option in SortOptions)
+                    {
+                        <button type="button" class="cloudy-chip @(_sortField == option.Field ? "active" : null)"
+                                title="Sort by @option.Label" @onclick="() => SetSort(option.Field)">
+                            @option.Label
+                            @if (_sortField == option.Field)
+                            {
+                                <i class="bi @(_sortDesc ? "bi-arrow-down-short" : "bi-arrow-up-short")"></i>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+            @if (_filesLoading && _files.Count == 0 && _folders.Count == 0)
+            {
+                <p class="cloudy-empty">Loading…</p>
+            }
+            else
+            {
+                <div class="cloudy-tiles spotlight-group">
+                    @foreach (var folder in _folders)
+                    {
+                        <div class="cloudy-tile cloudy-tile--folder" title="@folder.Path" @onclick="() => OpenFolder(folder)">
+                            <div class="cloudy-tile__actions" @onclick:stopPropagation="true">
+                                <button type="button" class="cloudy-tile__action" title="Rename" @onclick="() => OpenRenameFolderDialog(folder)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="cloudy-tile__action" title="Delete" @onclick="() => DeleteFolder(folder)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <i class="bi bi-folder2 cloudy-tile__icon"></i>
+                            <span class="cloudy-tile__name">@folder.Name</span>
+                            <span class="cloudy-tile__meta">@folder.FilesCount files</span>
+                        </div>
+                    }
+                    @foreach (var file in _files)
+                    {
+                        <MediaFileTile File="file" OnClick="OnFileClick" OnMove="OpenMoveDialog" OnDelete="DeleteFile" />
+                    }
+                    <MediaUploadTile FolderId="@(_flatView ? null : _currentFolderId)" OnFilesUploaded="OnFilesUploaded" />
+                </div>
+                @if (_folders.Count == 0 && _files.Count == 0)
+                {
+                    <p class="cloudy-empty">No files match your search.</p>
+                }
+            }
+        </section>
+
+        <FluentPopover AnchorId="@_propsAnchorId" @bind-Opened="_propsOpen" Width="340px">
+            @if (_propsFile is not null)
+            {
+                <div class="cloudy-file-props">
+                    <div class="cloudy-file-props__name">@_propsFile.Name</div>
+                    <dl>
+                        <dt>Type</dt>
+                        <dd>@_propsFile.Ext.ToUpperInvariant()</dd>
+                        <dt>Size</dt>
+                        <dd>@_propsFile.Size.ToHumanizedSize()</dd>
+                        <dt>Created</dt>
+                        <dd>@_propsFile.CreatedAt.FormatTime()</dd>
+                        <dt>Path</dt>
+                        <dd>@_propsFile.FileVirtualPath</dd>
+                    </dl>
+                    @if (MediaTextPreview.IsOversized(_propsFile))
+                    {
+                        <div class="cloudy-file-props__note">Too large to preview — download only.</div>
+                    }
+                    <div class="cloudy-file-props__actions">
+                        <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px"
+                                      Href="@_propsFile.Url" Target="_blank">
+                            Download
+                        </FluentButton>
+                    </div>
+                </div>
+            }
+        </FluentPopover>
     </ChildContent>
-</ContentWrapper>
+
+    <Foot>
+        <TotalResultsFound TotalCount="_filesTotal" />
+        <CloudyPager Skip="_skip" Total="_filesTotal" PageSize="PageSize" SkipChanged="OnSkipChanged" />
+    </Foot>
+</CloudyBrowser>

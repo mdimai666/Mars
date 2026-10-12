@@ -414,3 +414,334 @@ table.cloudy-grid.fluent-data-grid {
         margin-left: 0;
     }
 }
+
+//------------- медиа: хлебные крошки, группы, плитки папок/файлов -------------
+// Источник: прототип mars-redesign-project CategoriesPage.vue
+.cloudy-crumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    min-width: 0;
+    flex-wrap: wrap;
+
+    &__sep {
+        color: var(--cld-muted);
+    }
+}
+
+.cloudy-crumb {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--cld-muted);
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-primary);
+    }
+
+    &--current {
+        color: var(--cld-ink);
+        font-weight: 600;
+        cursor: default;
+
+        &:hover {
+            color: var(--cld-ink);
+        }
+    }
+}
+
+.cloudy-count {
+    color: var(--cld-muted);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+//------------- иконочная кнопка без текста (напр. переключатель вида Folders/All files) -------------
+.cloudy-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cld-line);
+    border-radius: 9px;
+    background: var(--cld-field);
+    color: var(--cld-icon-ink);
+    font-size: 15px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-primary);
+        border-color: var(--cld-primary);
+    }
+}
+
+.cloudy-browser-group {
+    padding: 24px 28px;
+
+    + .cloudy-browser-group {
+        border-top: 1px solid var(--cld-line);
+    }
+
+    h2 {
+        margin: 0 0 18px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--cld-ink);
+    }
+
+    d-media-upload-zone {
+        display: block;
+        margin-bottom: 18px;
+    }
+}
+
+.cloudy-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 18px;
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.cloudy-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 16px;
+}
+
+.cloudy-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 20px 12px 16px;
+    border-radius: 14px;
+    background: var(--cld-card);
+    border: 1px solid var(--cld-line);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    // имя+размер прижаты вниз, иконка — по центру оставшейся части (папки/загрузка)
+    > .cloudy-tile__icon {
+        margin: auto 0;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px var(--cld-acrylic-shadow);
+
+        .cloudy-tile__actions {
+            opacity: 1;
+        }
+    }
+
+    &--folder .cloudy-tile__icon {
+        color: var(--cld-dev);
+    }
+
+    &--file .cloudy-tile__icon {
+        color: var(--cld-primary);
+    }
+
+    &--image .cloudy-tile__icon {
+        color: var(--green-deep);
+    }
+
+    //------------- плитка загрузки (MediaUploadTile): пунктирная рамка,
+    // прозрачный InputFile на всю плитку (клик = выбор, drop = нативный) -------------
+    &--upload {
+        margin: 0;
+        border-style: dashed;
+        background: transparent;
+
+        .cloudy-tile__icon,
+        .cloudy-tile__name {
+            color: var(--cld-muted);
+        }
+
+        &:hover {
+            border-color: var(--cld-primary);
+
+            .cloudy-tile__icon,
+            .cloudy-tile__name {
+                color: var(--cld-primary);
+            }
+        }
+
+        // файл над плиткой: сплошная рамка + hover-вид
+        &.cloudy-tile--drag {
+            border-style: solid;
+            border-color: var(--cld-primary);
+            background: var(--cld-hover-bg);
+
+            .cloudy-tile__icon,
+            .cloudy-tile__name {
+                color: var(--cld-primary);
+            }
+        }
+    }
+
+    &__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    &__icon {
+        font-size: 34px;
+        line-height: 1;
+    }
+
+    &__thumb {
+        width: 100%;
+        height: 76px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    &__open {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        text-decoration: none;
+
+        // то же для файловых плиток: иконка/превью по центру, имя внизу
+        > .cloudy-tile__icon,
+        > .cloudy-tile__thumb {
+            margin: auto 0;
+        }
+    }
+
+    &__name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--cld-ink-soft);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    &__meta {
+        color: var(--cld-muted);
+        font-size: 13px;
+    }
+
+    &__actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity .15s ease;
+    }
+
+    &__action {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: none;
+        border-radius: 8px;
+        background: var(--cld-field);
+        color: var(--cld-icon-ink);
+        cursor: pointer;
+
+        &:hover {
+            color: var(--cld-primary);
+        }
+    }
+}
+
+//------------- медиа: popover свойств файла -------------
+.cloudy-file-props {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 280px;
+    font-size: 13px;
+
+    &__name {
+        font-weight: 700;
+        color: var(--cld-ink);
+        word-break: break-all;
+    }
+
+    dl {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 4px 12px;
+        margin: 0;
+    }
+
+    dt {
+        color: var(--cld-muted);
+    }
+
+    dd {
+        margin: 0;
+        color: var(--cld-ink);
+        word-break: break-all;
+    }
+
+    &__note {
+        color: var(--cld-muted);
+        font-size: 12.5px;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+//------------- bootstrap-dropdown в cloudy-скине (меню New на странице медиа) -------------
+.cloudy-dropdown-menu {
+    padding: 6px;
+    background: var(--cld-card);
+    border: 1px solid var(--cld-line);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: var(--cld-ink-soft);
+        font-size: 14px;
+
+        &:hover,
+        &:focus {
+            background: var(--cld-hover-bg);
+            color: var(--cld-ink);
+        }
+    }
+}

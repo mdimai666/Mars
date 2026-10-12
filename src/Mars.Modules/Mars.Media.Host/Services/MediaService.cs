@@ -6,6 +6,8 @@ using Mars.Media.Abstractions.Repositories;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.Abstractions.Validators;
@@ -26,6 +28,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
         IValidatorFactory validatorFactory,
+        IEventManager eventManager,
         IMediaFolderService folderService,
         ILogger<MediaService> logger)
         : base(
@@ -33,7 +36,8 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
             optionService,
             fileRepository,
             imageProcessor,
-            validatorFactory)
+            validatorFactory,
+            eventManager)
     {
         _folderService = folderService;
         _logger = logger;
@@ -110,6 +114,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         }
 
         await _fileRepository.CreateMany(fileEntities, _hostingInfo, cancellationToken);
+        _eventManager.TriggerEvent(new ManagerEventPayload(_eventManager.Defaults.MediaFileAdd(), fileEntities.Count));
 
         // привязать к папкам файлы, которые были в базе без папки
         var unassignedFiles = await _fileRepository.ListAll(new ListAllFileQuery { FolderId = Guid.Empty }, _hostingInfo, cancellationToken);

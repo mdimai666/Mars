@@ -1,0 +1,63 @@
+@using Mars.Core.Exceptions
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="@DialogTitle" />
+    </TitleTemplate>
+    <ChildContent>
+        <FluentTextInput @bind-Value="_name" Placeholder="Folder name" Autofocus="true" />
+        @if (_error is not null)
+        {
+            <div class="cloudy-dialog-error">@_error</div>
+        }
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end flex-fill">
+            <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px" OnClick="Submit" Disabled="_busy">
+                @AppRes.Ok
+            </FluentButton>
+        </div>
+    </ActionTemplate>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public string DialogTitle { get; set; } = "";
+    [Parameter] public string FolderName { get; set; } = "";
+    [Parameter] public Func<string, Task>? SubmitAction { get; set; }
+
+    string _name = "";
+    string? _error;
+    bool _busy;
+
+    protected override void OnInitialized() => _name = FolderName;
+
+    async Task Submit()
+    {
+        if (string.IsNullOrWhiteSpace(_name) || _busy) return;
+
+        _busy = true;
+        _error = null;
+        try
+        {
+            if (SubmitAction is not null) await SubmitAction(_name.Trim());
+            await Dialog.CloseAsync(true);
+        }
+        catch (MarsValidationException ex)
+        {
+            _error = ex.Errors is { Count: > 0 }
+                ? string.Join("; ", ex.Errors.Values.SelectMany(x => x))
+                : ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

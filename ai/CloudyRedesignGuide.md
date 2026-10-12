@@ -185,6 +185,11 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   `token.IsCancellationRequested` ПОСЛЕ задержки под локом — устаревший текст не выстреливает.
 - **Сортировка списков**: `Sort="FullName"` НЕ работает (FullName `[NotMapped]` у `UserEntity`) —
   использовать маппед-поля (`LastName`, `-CreatedAt`).
+- **Fire-and-forget `_ = LoadFiles()` в синхронном обработчике** — рендер происходит один раз
+  на возврат void-хендлера (в него успевает попасть только `_filesLoading = true`); континуация
+  задачи меняет состояние БЕЗ re-render — «Loading…» залипает навсегда (баг сортировки
+  ManageMediaPage 2026-10-12). Обработчики событий, грузящие данные, — `async Task` + `await`,
+  loading-флаг снимать в `try/finally`.
 - **`ListDataResult.Empty()` при пустой выборке** → `TotalCount == null`, не 0 (`ToListDataResult` в
   `src/Server/Mars.Data/Extensions/ListDataExtensions.cs`) — счётчики писать через `?? 0`.
 - **Фильтр `Roles`** в `UserRepository.ListAllInternal` — семантика `Any` («имеет хотя бы одну роль»);
@@ -262,6 +267,88 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   (ключи `Mars.Cms.Contracts/PostCategoryTypes/PostCategoryTypeKpiKeys.cs`, хендлер
   `Mars.Cms.Host/Kpi/PostCategoryTypesTotalKpiHandler`, инвалидация wildcard
   `entity.PostCategoryType/**`).
+  ManageMediaPage (`/Media`) — ПЛИТОЧНЫЙ паттерн по прототипу CategoriesPage.vue (2026-10-11):
+  новые паттерны cloudy-list.less — `.cloudy-tiles`/`.cloudy-tile` (плитки папок/файлов,
+  hover-действия rename/delete/move, превью-миниатюры), `.cloudy-crumbs` (хлебные крошки
+  папок), `.cloudy-browser-group` (группы Folders/Files), `.cloudy-count`. KPI `media.files` +
+  `media.storage` (`MediaKpiKeys` в Mars.Media.Contracts/Files, хендлеры `Mars.Media.Host/Kpi/`;
+  storage = SUM FileSize в байтах, фронт хьюманизирует `ToHumanizedSize()`). Медиа-событий
+  НЕ было — добавлены Defaults `MediaFileAdd/MediaFileDelete` (`entity/mediafile/*`) и
+  триггеры в FileService (WriteUpload/Delete/DeleteMany) и MediaService (ScanFilesAndSaveInDB);
+  конструктор FileService теперь с IEventManager (тест FileServiceTests обновлён). Диалоги —
+  MediaFolderNameDialog/MediaMoveFileDialog (сервис-паттерн, страницы Pages/MediaViews).
+  `FluentMediaFilesList` НЕ тронут (его использует ModalMediaSelect). XActions-дропдаун
+  (скан файлов/миниатюры) и ссылка «Настройки медиа» со страницы сняты — команды доступны
+  через ActionCenter (открытый вопрос XActions-меню в cloudy). Файлы — НЕ DataGrid:
+  пейджинг `CloudyPager` (Skip/Take через `client.Media.List`, FolderId: null=все,
+  Guid.Empty=корень).
+  ManageMediaPage — клики по файлам, сортировка, flat-вид (2026-10-12): изображения —
+  spotlight.js (якорь `class="spotlight"` + контейнер плиток `.spotlight-group`, `data-media`/
+  `data-title`; API бандла: клик-делегация на document, группа = closest `.spotlight-group`).
+  НЕ-изображения — popover свойств: ОДИН общий `FluentPopover` с динамическим `AnchorId`
+  (id плитки `media-file-{Guid}`), контент `.cloudy-file-props` (cloudy-list.less); при
+  переключении на другой файл — сначала закрыть, `Task.Delay(50)`, потом открыть (иначе
+  anchored-region не перепривязывается). Текстовые файлы (whitelist расширений в
+  ManageMediaPage.razor.cs + лимит `MaxTextPreviewSize` 512 КБ) — `MediaTextFileDialog`
+  (сервис-паттерн): monospace `pre.cloudy-mono-preview`, широкая панель 920px через
+  `fluent-dialog:has(.cloudy-mono-preview)::part(dialog)` (cloudy-dialog.less); текст
+  тянется `window.blazor_fetch_text(url, maxChars)` (scripts.js, fetch + truncation);
+  oversized-текст — только popover с Download («Too large to preview»). Сортировка как в
+  старом FluentMediaFilesList — чипы Date/Name/Size в `.cloudy-group-head` (поля сущности
+  `CreatedAt`/`FileName`/`FileSize`, НЕ поля response-DTO), клик по активному чипу
+  переключает направление (иконка bi-arrow-down/up-short). Вид «All files» (как галерея
+  телефона) — ОДНА иконочная кнопка `.cloudy-icon-btn` в HeadLeft (bi-collection ↔
+  bi-folder2-open, без текста, `ToggleView`): flat-вид прячет крошки/папки/New folder,
+  `FolderId=null` (=все файлы), при включении сбрасывает сортировку в CreatedAt DESC.
+  Папки и файлы — ОДНА область (заголовки секций Folders/Files убраны по запросу
+  пользователя 2026-10-12): один `.cloudy-browser-group` с одним гридом `.cloudy-tiles` —
+  папки → файлы → плитка загрузки последней. Загрузка — новый `MediaUploadTile`
+  (Pages/MediaViews) вместо `MediaUploadZone` (на странице больше не используется):
+  нативный `InputFile`, растянутый на плитку с opacity:0 (клик = picker, drag&drop =
+  нативный drop на input; НЕ FluentInputFile — см. память про его грабли), по файлу
+  `client.Media.Upload` (лимиты 1000 МБ / 50 шт как у MediaUploadZone, ошибки —
+  IMessageService пофайлово), стиль `.cloudy-tile--upload` (пунктир). Хлебные крошки
+  НЕ локализовать: корень — литерал "Media", имена папок как есть (страница вся
+  англоязычная, `AppRes.Media` в крошке давал разнобой «Медиа» среди English).
+  ManageMediaPage — второй раунд (2026-10-12): страница ОТКРЫВАЕТСЯ В ПАПКЕ ГОДА —
+  `OpenYearFolder` ищет в корне папку `Name == DateTime.Now.Year`, нет — создаёт
+  `CreateFolder(ParentId=null)` (серверный `Create` даёт тот же `Path="Media/{год}"`, что
+  `GetOrCreateByPath` при загрузке); ошибка — молчаливый фолбэк в корень. Загрузка всегда
+  в ТЕКУЩУЮ папку (tile `FolderId=_currentFolderId`; в корне/null — серверный фолбэк
+  Media/{год}). Кнопка «New folder» → bootstrap-dropdown «New» (`data-bs-toggle`, скин
+  `.cloudy-dropdown-menu` в cloudy-list.less): Folder / Text file / Upload files (JS
+  `blazor_click_element('media-upload-input')` кликает скрытый input плитки). Создание
+  текстового файла — `MediaCreateTextFileDialog`: имя (без точки → дописать `.txt`) +
+  `CodeEditor2 Lang=plaintext` (ContainerCssStyle height:100% + обёртка
+  `.cloudy-create-text__editor` 340px — грабля дефолтных 80vh), результат
+  `MediaNewTextFile(Name, Content)` → страница грузит `client.Media.Upload`
+  (MemoryStream, UTF-8 БЕЗ BOM). Drag-состояние плитки загрузки: Blazor
+  `@ondragenter/@ondragleave/@ondrop` на label (input накрывает плитку — события
+  всплывают до label), класс `.cloudy-tile--drag` = сплошная рамка + primary. Кодировки
+  превью: `blazor_fetch_text(url, maxChars, encoding?)` — arrayBuffer,
+  `TextDecoder('utf-8',{fatal:true})` → при ошибке `windows-1251` (детект «простой»,
+  по запросу пользователя), возвращает `{text, encoding}` → `record TextPreviewResult`;
+  в заголовке `MediaTextFileDialog` бейдж `.cloudy-enc-badge` — клик = ре-fetch
+  с форсированной кодировкой (utf-8 ↔ windows-1251; токены бейджа — только 5,
+  продублированных на хосте fluent-dialog). Страница у лимита 500 строк — плитка файла
+  вынесена в `MediaFileTile.razor` (File + EventCallback OnClick/OnMove/OnDelete),
+  текстовые хелперы — в `MediaTextPreview.cs` (whitelist расширений, MaxSize 512 КБ,
+  IsPreviewable/IsOversized).
+  ManageMediaPage — третий раунд (2026-10-12): ОШИБКИ СОХРАНЕНИЯ — ВНУТРИ ДИАЛОГА, при
+  ошибке диалог НЕ закрывается (кейс пользователя: создание json → серверный валидатор
+  `UploadMediaFileValidator`, whitelist расширений `MediaOption.AllowedFileExtensions` →
+  400 → `MarsValidationException` на клиенте; раньше возникал на странице ПОСЛЕ закрытия
+  диалога и выглядел как сырое исключение). Действие переехало в диалог:
+  `MediaCreateTextFileDialog` сам делает `Upload` (`[Parameter] FolderId`),
+  `MediaFolderNameDialog` принимает `[Parameter] Func<string, Task> SubmitAction`
+  (лямбды create/rename со страницы); catch `MarsValidationException` (join Errors) и
+  Exception → инлайн `.cloudy-dialog-error` (cloudy-dialog.less; в токены хоста диалога
+  добавлен `--cld-red-badge` #e5484d/#ff6b70 — синхронно с cloudy.less),
+  `CloseAsync(true)` ТОЛЬКО при успехе, OK-кнопка `Disabled` на время busy; страница
+  проверяет `result.Value is not true` (было — string/MediaNewTextFile; record
+  MediaNewTextFile удалён). Раскладка плиток: имя+размер ПРИЖАТЫ ВНИЗ, иконка/превью —
+  по центру оставшейся части: `margin: auto 0` на прямом иконочном ребёнке `.cloudy-tile`
+  (папки/загрузка) и на icon/thumb внутри `__open` (файлы), `__open` — `flex: 1`.
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

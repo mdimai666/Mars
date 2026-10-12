@@ -14,6 +14,7 @@ fluent-drawer {
     --cld-ink: #262d3a;
     --cld-muted: #8b93a5;
     --cld-muted-strong: #79839a;
+    --cld-red-badge: #e5484d;
 }
 
 body[data-theme="dark"] {
@@ -24,6 +25,7 @@ body[data-theme="dark"] {
         --cld-ink: #e8eaf6;
         --cld-muted: #8b93a8;
         --cld-muted-strong: #8f97b8;
+        --cld-red-badge: #ff6b70;
     }
 }
 
@@ -63,5 +65,70 @@ fluent-dialog-body {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+}
+
+//------------- ошибка сохранения в диалоге (при ошибке диалог НЕ закрывается) -------------
+.cloudy-dialog-error {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(229, 72, 77, .12);
+    color: var(--cld-red-badge);
+    font-size: 13px;
+    word-break: break-word;
+}
+
+//------------- превью текстового файла (MediaTextFileDialog) -------------
+// Широкая панель — как log-modal в TechLogsPage; дефолт скина — 600px.
+fluent-dialog:has(.cloudy-mono-preview)::part(dialog),
+fluent-dialog:has(.cloudy-create-text)::part(dialog) {
+    max-width: min(920px, calc(100vw - 48px));
+}
+
+.cloudy-mono-preview {
+    margin: 0;
+    max-height: min(60vh, 620px);
+    overflow: auto;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--cld-ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+//------------- бейдж кодировки в заголовке (клик = utf-8 ↔ windows-1251) -------------
+// Только токены, продублированные на хосте fluent-dialog (см. заметку вверху файла).
+.cloudy-enc-badge {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    padding: 3px 10px;
+    border: 1px solid var(--cld-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cld-muted);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-ink);
+        border-color: var(--cld-muted-strong);
+    }
+}
+
+//------------- создание текстового файла (MediaCreateTextFileDialog) -------------
+.cloudy-create-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__editor {
+        height: 340px;
+        min-height: 0;
     }
 }

@@ -615,4 +615,10 @@
   <data name="postcategorytypes.total" xml:space="preserve">
     <value>Всего типов категорий</value>
   </data>
+  <data name="media.files" xml:space="preserve">
+    <value>Файлы</value>
+  </data>
+  <data name="media.storage" xml:space="preserve">
+    <value>Занято места</value>
+  </data>
 </root>

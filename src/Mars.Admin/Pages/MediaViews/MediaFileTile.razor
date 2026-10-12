@@ -1,0 +1,43 @@
+@using Mars.Core.Extensions
+@using Mars.Media.Contracts.Files
+
+<div class="cloudy-tile @(File.IsImage || File.IsSvg ? "cloudy-tile--image" : "cloudy-tile--file")"
+     id="media-file-@File.Id" title="@File.Name" @onclick="() => OnClick.InvokeAsync(File)">
+    <div class="cloudy-tile__actions" @onclick:stopPropagation="true">
+        <button type="button" class="cloudy-tile__action" title="Move to folder" @onclick="() => OnMove.InvokeAsync(File)">
+            <i class="bi bi-folder-symlink"></i>
+        </button>
+        <button type="button" class="cloudy-tile__action" title="Delete" @onclick="() => OnDelete.InvokeAsync(File)">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+    @if (File.IsImage || File.IsSvg)
+    {
+        <a class="cloudy-tile__open spotlight" href="@File.Url" data-media="image" data-title="@File.Name">
+            @if (!string.IsNullOrEmpty(File.PreviewIcon))
+            {
+                <img class="cloudy-tile__thumb" src="@File.PreviewIcon" alt="@File.Name" loading="lazy" />
+            }
+            else
+            {
+                <i class="bi bi-file-image cloudy-tile__icon"></i>
+            }
+            <span class="cloudy-tile__name">@File.Name</span>
+        </a>
+    }
+    else
+    {
+        <div class="cloudy-tile__open">
+            <i class="bi @(MediaTextPreview.IsPreviewable(File) ? "bi-filetype-txt" : "bi-file-earmark") cloudy-tile__icon"></i>
+            <span class="cloudy-tile__name">@File.Name</span>
+        </div>
+    }
+    <span class="cloudy-tile__meta">@File.Size.ToHumanizedSize()</span>
+</div>
+
+@code {
+    [Parameter] public FileListItemResponse File { get; set; } = default!;
+    [Parameter] public EventCallback<FileListItemResponse> OnClick { get; set; }
+    [Parameter] public EventCallback<FileListItemResponse> OnMove { get; set; }
+    [Parameter] public EventCallback<FileListItemResponse> OnDelete { get; set; }
+}

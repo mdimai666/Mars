@@ -67,6 +67,38 @@ window.blazor_newTab = function (url) {
     window.open(url, '_blank').focus();
 }
 
+window.blazor_fetch_text = async function (url, maxChars, encoding) {
+    var resp = await fetch(url);
+    if (!resp.ok) {
+        throw new Error('HTTP ' + resp.status);
+    }
+    var buffer = await resp.arrayBuffer();
+    var enc = encoding;
+    var text;
+    if (enc) {
+        text = new TextDecoder(enc).decode(buffer);
+    } else {
+        try {
+            text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+            enc = 'utf-8';
+        } catch (e) {
+            text = new TextDecoder('windows-1251').decode(buffer);
+            enc = 'windows-1251';
+        }
+    }
+    if (maxChars && text.length > maxChars) {
+        text = text.substring(0, maxChars) + '\n…';
+    }
+    return { text: text, encoding: enc };
+}
+
+window.blazor_click_element = function (id) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.click();
+    }
+}
+
 //===========
 
 //console.log('0. CTRL + S');

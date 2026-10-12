@@ -142,4 +142,7 @@ public static class EventManagerExtension
     /// <code>entity.PostCategory/*</code>
     /// </summary>
     public static string PostCategoryAnyOperation(this EventManagerDefaults defaults) => $"entity.PostCategory/*";
+
+    public static string MediaFileAdd(this EventManagerDefaults defaults) => $"entity/mediafile/add";
+    public static string MediaFileDelete(this EventManagerDefaults defaults) => $"entity/mediafile/delete";
 }

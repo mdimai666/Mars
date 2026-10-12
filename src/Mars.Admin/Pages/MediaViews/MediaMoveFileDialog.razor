@@ -1,0 +1,42 @@
+@using Mars.Core.Extensions
+@using Mars.Media.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="Move file" />
+    </TitleTemplate>
+    <ChildContent>
+        <div class="cloudy-stack" style="margin-bottom: 14px;">
+            <span class="cloudy-stack__title" title="@File.Name">@File.Name</span>
+            <span class="cloudy-stack__sub">@File.Size.ToHumanizedSize()</span>
+        </div>
+        <div class="vstack gap-1">
+            <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => Close(Guid.Empty))">
+                Root (Media)
+            </FluentButton>
+            @if (ParentFolder is not null)
+            {
+                <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => Close(ParentFolder.Id))">
+                    .. @ParentFolder.Name
+                </FluentButton>
+            }
+            @foreach (var folder in Folders)
+            {
+                <FluentButton Class="w-100" Appearance="ButtonAppearance.Default" OnClick="@(() => Close(folder.Id))">
+                    @folder.Name
+                </FluentButton>
+            }
+        </div>
+    </ChildContent>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public FileListItemResponse File { get; set; } = default!;
+    [Parameter] public IReadOnlyCollection<FolderResponse> Folders { get; set; } = [];
+    [Parameter] public FolderResponse? ParentFolder { get; set; }
+
+    Task Close(Guid target) => Dialog.CloseAsync(target);
+}

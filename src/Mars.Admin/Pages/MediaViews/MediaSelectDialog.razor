@@ -1,0 +1,46 @@
+@using Mars.Media.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="@(Multi ? "Select files" : "Select file")" />
+    </TitleTemplate>
+    <ChildContent>
+        <div class="cloudy-media-select">
+            <MediaBrowser Mode="@(Multi ? MediaBrowserMode.SelectMulti : MediaBrowserMode.SelectSingle)"
+                          @ref="_browser"
+                          OnFilePicked="PickSingle"
+                          SelectionChanged="OnSelectionChanged" />
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end flex-fill">
+            <FluentButton Style="min-width:100px" OnClick="Cancel">@AppRes.Cancel</FluentButton>
+            @if (Multi)
+            {
+                <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px"
+                              Disabled="@(_selectedCount == 0)" OnClick="ConfirmMulti">
+                    Add selected (@_selectedCount)
+                </FluentButton>
+            }
+        </div>
+    </ActionTemplate>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public bool Multi { get; set; }
+
+    MediaBrowser? _browser;
+    int _selectedCount;
+
+    void OnSelectionChanged(int count) => _selectedCount = count;
+
+    async Task PickSingle(FileListItemResponse file) => await Dialog.CloseAsync(file);
+
+    async Task ConfirmMulti()
+        => await Dialog.CloseAsync(_browser?.GetSelectedFiles() ?? []);
+
+    async Task Cancel() => await Dialog.CancelAsync();
+}

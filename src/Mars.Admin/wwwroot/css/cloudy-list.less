@@ -604,6 +604,34 @@ table.cloudy-grid.fluent-data-grid {
         cursor: pointer;
     }
 
+    //------------- выбор файла (Select*-режимы MediaBrowser) -------------
+    &--selected {
+        border-color: var(--cld-primary);
+        box-shadow: 0 0 0 1px var(--cld-primary);
+    }
+
+    &__check {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--cld-line);
+        border-radius: 50%;
+        background: var(--cld-field);
+        color: transparent;
+        font-size: 13px;
+        pointer-events: none;
+
+        &.on {
+            border-color: var(--cld-primary);
+            background: var(--cld-primary);
+            color: var(--cld-white);
+        }
+    }
+
     &__icon {
         font-size: 34px;
         line-height: 1;

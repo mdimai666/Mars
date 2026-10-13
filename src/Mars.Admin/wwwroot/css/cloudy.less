@@ -6,7 +6,10 @@
 // ниже (ночная версия на языке tech-палитры прототипа).
 //-------------------------------------------------------------
 
-.cloudy-layout {
+// Токены зоны — миксины: вызываются на .cloudy-layout и дублируются на хосты
+// вне лэйаута (fluent-dialog/fluent-drawer в cloudy-dialog.less) — единый
+// источник, рассинхрон невозможен.
+.cloudy-tokens() {
     // палитра (светлая зона прототипа)
     --cld-surface: #f5f7fc;
     --cld-card: #f6f8fc;
@@ -83,6 +86,10 @@
     --violet-dot: #8b93e8;
     --red: #cc5f5f;
     --red-live: #d97070;
+}
+
+.cloudy-layout {
+    .cloudy-tokens();
 
     min-height: 100vh;
     display: flex;
@@ -94,7 +101,7 @@
 }
 
 //------------- тёмная тема: ночная версия на языке tech-палитры прототипа -------------
-body[data-theme="dark"] .cloudy-layout {
+.cloudy-tokens-dark() {
     --cld-surface: #141824;
     --cld-card: #141824;
     --cld-line: #1d2637;
@@ -161,6 +168,10 @@ body[data-theme="dark"] .cloudy-layout {
     --green-deep: #86e0a8;
     --violet-dot: #8375fa;
     --red: #f99a9a;
+}
+
+body[data-theme="dark"] .cloudy-layout {
+    .cloudy-tokens-dark();
 }
 
 //------------- фон: градиент + перспективная сетка -------------

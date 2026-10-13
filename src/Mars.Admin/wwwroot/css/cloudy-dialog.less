@@ -6,26 +6,17 @@
 //-------------------------------------------------------------
 
 // Диалоги рендерятся FluentProviders в корне App.razor — ВНЕ `.cloudy-layout`,
-// поэтому нужные токены дублированы на хосте (синхронизировать с cloudy.less!).
+// поэтому на хосте дублируется ВЕСЬ набор токенов — миксины из cloudy.less
+// (единый источник, рассинхрон невозможен).
 fluent-dialog,
 fluent-drawer {
-    --cld-surface: #f5f7fc;
-    --cld-line: #e9ebf4;
-    --cld-ink: #262d3a;
-    --cld-muted: #8b93a5;
-    --cld-muted-strong: #79839a;
-    --cld-red-badge: #e5484d;
+    .cloudy-tokens();
 }
 
 body[data-theme="dark"] {
     fluent-dialog,
     fluent-drawer {
-        --cld-surface: #141824;
-        --cld-line: #1d2637;
-        --cld-ink: #e8eaf6;
-        --cld-muted: #8b93a8;
-        --cld-muted-strong: #8f97b8;
-        --cld-red-badge: #ff6b70;
+        .cloudy-tokens-dark();
     }
 }
 
@@ -81,8 +72,12 @@ fluent-dialog-body {
 
 //------------- превью текстового файла (MediaTextFileDialog) -------------
 // Широкая панель — как log-modal в TechLogsPage; дефолт скина — 600px.
-fluent-dialog:has(.cloudy-mono-preview)::part(dialog),
-fluent-dialog:has(.cloudy-create-text)::part(dialog) {
+// `[fuib]` в селекторе ОБЯЗАТЕЛЕН: default-fuib.css (adopted-лист, в каскаде ПОСЛЕ
+// документальных) имеет своё правило ширины на fluent-dialog[fuib] и бьёт
+// документальное при равной специфичности (FluentV5Reference факт №10).
+fluent-dialog[fuib]:has(.cloudy-mono-preview)::part(dialog),
+fluent-dialog[fuib]:has(.cloudy-create-text)::part(dialog) {
+    width: min(920px, calc(100vw - 48px));
     max-width: min(920px, calc(100vw - 48px));
 }
 
@@ -99,7 +94,6 @@ fluent-dialog:has(.cloudy-create-text)::part(dialog) {
 }
 
 //------------- бейдж кодировки в заголовке (клик = utf-8 ↔ windows-1251) -------------
-// Только токены, продублированные на хосте fluent-dialog (см. заметку вверху файла).
 .cloudy-enc-badge {
     margin-left: auto;
     display: inline-flex;
@@ -130,5 +124,53 @@ fluent-dialog:has(.cloudy-create-text)::part(dialog) {
     &__editor {
         height: 340px;
         min-height: 0;
+    }
+}
+
+//------------- выбор файла (MediaSelectDialog) -------------
+fluent-dialog[fuib]:has(.cloudy-media-select)::part(dialog) {
+    width: min(1200px, calc(100vw - 48px));
+    max-width: min(1200px, calc(100vw - 48px));
+}
+
+.cloudy-media-select {
+    max-height: min(68vh, 720px);
+    overflow: auto;
+    .cloudy-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+        gap: 12px;
+    }
+
+    .cloudy-tile {
+        gap: 4px;
+        padding: 12px 10px 10px;
+    }
+
+    .cloudy-tile__open {
+        gap: 4px;
+    }
+
+    .cloudy-tile__icon {
+        font-size: 34px;
+    }
+
+    .cloudy-tile__thumb {
+        height: 48px;
+    }
+
+    .cloudy-tile__name {
+        font-size: 13px;
+    }
+
+    .cloudy-tile__meta {
+        font-size: 12px;
+    }
+
+    .cloudy-tile__check {
+        top: 6px;
+        right: 6px;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
     }
 }

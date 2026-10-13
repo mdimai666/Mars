@@ -1,0 +1,124 @@
+@using Mars.Media.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<CloudyBrowser>
+    <HeadLeft>
+        <button type="button" class="cloudy-icon-btn" title="@(_flatView ? "Folders" : "All files")" @onclick="ToggleView">
+            <i class="bi @(_flatView ? "bi-folder2-open" : "bi-collection")"></i>
+        </button>
+        <div class="cloudy-chips">
+            @foreach (var option in SortOptions)
+            {
+                <button type="button" class="cloudy-chip @(_sortField == option.Field ? "active" : null)"
+                        title="Sort by @option.Label" @onclick="() => SetSort(option.Field)">
+                    @option.Label
+                    @if (_sortField == option.Field)
+                    {
+                        <i class="bi @(_sortDesc ? "bi-arrow-down-short" : "bi-arrow-up-short")"></i>
+                    }
+                </button>
+            }
+        </div>
+    </HeadLeft>
+    <HeadRight>
+        <span class="cloudy-count">@(_flatView ? $"{_filesTotal} files" : $"{_folders.Count} folders · {_filesTotal} files")</span>
+        <CloudySearchBox Placeholder="Search files…" ValueChanged="OnSearchChanged" />
+        @if (IsManage && !_flatView)
+        {
+            <div class="dropdown">
+                <button type="button" class="cloudy-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-plus-lg"></i>
+                    New
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end cloudy-dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="OpenCreateFolderDialog" @onclick:preventDefault>
+                            <i class="bi bi-folder-plus"></i> Folder
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="OpenCreateTextFileDialog" @onclick:preventDefault>
+                            <i class="bi bi-file-earmark-text"></i> Text file
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick="TriggerUploadPicker" @onclick:preventDefault>
+                            <i class="bi bi-cloud-arrow-up"></i> Upload files
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </HeadRight>
+
+    <ChildContent>
+        <section class="cloudy-browser-group">
+            @if (!_flatView)
+            {
+                <div class="cloudy-group-head">
+                    <nav class="cloudy-crumbs">
+                        <button type="button" class="cloudy-crumb @(_currentFolderId is null ? "cloudy-crumb--current" : null)"
+                                @onclick="GoToRoot">Media</button>
+                        @foreach (var crumb in _breadcrumbs)
+                        {
+                            <span class="cloudy-crumbs__sep">/</span>
+                            <button type="button" class="cloudy-crumb @(crumb.Id == _currentFolderId ? "cloudy-crumb--current" : null)"
+                                    @onclick="() => OpenFolder(crumb)">@crumb.Name</button>
+                        }
+                    </nav>
+                </div>
+            }
+            @if (_filesLoading && _files.Count == 0 && _folders.Count == 0)
+            {
+                <p class="cloudy-empty">Loading…</p>
+            }
+            else
+            {
+                <div class="cloudy-tiles spotlight-group">
+                    @foreach (var folder in _folders)
+                    {
+                        <div class="cloudy-tile cloudy-tile--folder" title="@folder.Path" @onclick="() => OpenFolder(folder)">
+                            @if (IsManage)
+                            {
+                                <div class="cloudy-tile__actions" @onclick:stopPropagation="true">
+                                    <button type="button" class="cloudy-tile__action" title="Rename" @onclick="() => OpenRenameFolderDialog(folder)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="cloudy-tile__action" title="Delete" @onclick="() => DeleteFolder(folder)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            }
+                            <i class="bi bi-folder2 cloudy-tile__icon"></i>
+                            <span class="cloudy-tile__name">@folder.Name</span>
+                            <span class="cloudy-tile__meta">@folder.FilesCount files</span>
+                        </div>
+                    }
+                    @foreach (var file in _files)
+                    {
+                        <MediaFileTile File="file"
+                                       Selectable="@(!IsManage)"
+                                       MultiSelect="@(Mode == MediaBrowserMode.SelectMulti)"
+                                       Selected="@_selectedIds.Contains(file.Id)"
+                                       OnClick="OnFileClick" OnMove="OpenMoveDialog" OnDelete="DeleteFile" />
+                    }
+                    <MediaUploadTile FolderId="@(_flatView ? null : _currentFolderId)" OnFilesUploaded="OnFilesUploaded" />
+                </div>
+                @if (_folders.Count == 0 && _files.Count == 0)
+                {
+                    <p class="cloudy-empty">No files match your search.</p>
+                }
+            }
+        </section>
+
+        @if (IsManage)
+        {
+            <MediaFilePropsPopover @ref="_propsPopover" />
+        }
+    </ChildContent>
+
+    <Foot>
+        <TotalResultsFound TotalCount="_filesTotal" />
+        <CloudyPager Skip="_skip" Total="_filesTotal" PageSize="PageSize" SkipChanged="OnSkipChanged" />
+    </Foot>
+</CloudyBrowser>

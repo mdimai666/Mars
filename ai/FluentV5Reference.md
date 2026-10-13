@@ -572,7 +572,12 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 10. **Диалоги**: v5 `Hidden`/`TrapFocus`/`PreventScroll`/`@ondialogdismiss` мертвы; инлайн-диалог —
     `@ref` + `ShowAsync()/HideAsync()` (синхронизация с флагом в OnAfterRenderAsync) +
     `OnStateChange(DialogState.Closed)`. Ширина: `--dialog-width` мёртв, у shadow-`dialog`
-    жёсткий `max-width:600px` — ширина через `::part(dialog)`.
+    жёсткий `max-width:600px` — ширина через `::part(dialog)` ОБЕИМИ свойствами `width`+
+    `max-width` И с атрибутом `[fuib]` в селекторе: `fluent-dialog[fuib]:has(...)::part(dialog)`.
+    Без `[fuib]` правило не работает: default-fuib.css (adopted-лист, в каскаде ПОСЛЕ
+    документальных) сам имеет правило ширины на `fluent-dialog[fuib]` и бьёт документальное
+    при равной специфичности (подтверждено фиксом пользователя 2026-10-13 —
+    MediaSelectDialog 1200px стоял на 600px; механизм — как в факте №13).
 11. **IMask/Sortable с CDN + AMD-лоадер monaco** — глобалы не создаются; вендоринг до
     `loader.js` (в Mars сделано: `src/Mars.Admin/wwwroot/js/imask.min.js`, `Sortable.min.js`).
 12. **FluentInputFile**: `OnInputFileChange` отключает встроенную загрузку (память проекта).

@@ -1,0 +1,53 @@
+@using Mars.Admin.Framework.Extensions
+@using Mars.Core.Extensions
+@using Mars.Media.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentPopover AnchorId="@_anchorId" @bind-Opened="_open" Width="340px">
+    @if (_file is not null)
+    {
+        <div class="cloudy-file-props">
+            <div class="cloudy-file-props__name">@_file.Name</div>
+            <dl>
+                <dt>Type</dt>
+                <dd>@_file.Ext.ToUpperInvariant()</dd>
+                <dt>Size</dt>
+                <dd>@_file.Size.ToHumanizedSize()</dd>
+                <dt>Created</dt>
+                <dd>@_file.CreatedAt.FormatTime()</dd>
+                <dt>Path</dt>
+                <dd>@_file.FileVirtualPath</dd>
+            </dl>
+            @if (MediaTextPreview.IsOversized(_file))
+            {
+                <div class="cloudy-file-props__note">Too large to preview — download only.</div>
+            }
+            <div class="cloudy-file-props__actions">
+                <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px"
+                              Href="@_file.Url" Target="_blank">
+                    Download
+                </FluentButton>
+            </div>
+        </div>
+    }
+</FluentPopover>
+
+@code {
+    FileListItemResponse? _file;
+    string _anchorId = "";
+    bool _open;
+
+    public async Task Open(FileListItemResponse file, string anchorId)
+    {
+        if (_open)
+        {
+            _open = false;
+            StateHasChanged();
+            await Task.Delay(50);
+        }
+
+        _file = file;
+        _anchorId = anchorId;
+        _open = true;
+    }
+}

@@ -123,8 +123,10 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
 Кнопку «Cancel» в тело не добавлять — `StandardEditForm1` сам рендерит футер (Save/Delete).
 Инлайн-`FluentDialog` с императивной синхронизацией (`@ref`+`ShowAsync/HideAsync`, `_dialogShown`,
 `OnStateChange`) — прошлый хак, НЕ повторять. Скины панелей/бэкдропа — НЕ css-классами диалога, а
-`cloudy-dialog.less` (грабля: диалоги рендерятся вне `.cloudy-layout` — токены `--cld-*` дублированы
-на хосте `fluent-dialog/fluent-drawer`, синхронизировать с cloudy.less). Мигрированы:
+`cloudy-dialog.less` (грабля: диалоги рендерятся вне `.cloudy-layout` — на хосте
+`fluent-dialog/fluent-drawer` ВЕСЬ набор `--cld-*` публикуется less-миксинами
+`.cloudy-tokens()`/`.cloudy-tokens-dark()` из cloudy.less — единый источник, руками не
+синхронизировать; до 2026-10-12 был ручной дубль 5 токенов). Мигрированы:
 `CreateUserDialog`, `ChangePasswordDialog` (вызов из UsersPage), `ViewFeedbackDialog`
 (FeedbackListPage, read-only тело на FluentStack). Tech-зона: `log-modal` в TechLogsPage
 остаётся своей разметкой (`--ct-*` токены).
@@ -277,7 +279,8 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   триггеры в FileService (WriteUpload/Delete/DeleteMany) и MediaService (ScanFilesAndSaveInDB);
   конструктор FileService теперь с IEventManager (тест FileServiceTests обновлён). Диалоги —
   MediaFolderNameDialog/MediaMoveFileDialog (сервис-паттерн, страницы Pages/MediaViews).
-  `FluentMediaFilesList` НЕ тронут (его использует ModalMediaSelect). XActions-дропдаун
+  `FluentMediaFilesList` не тронут (его использует ModalMediaSelect) — ОБА УДАЛЕНЫ
+  2026-10-12 (вариант 1, см. ниже). XActions-дропдаун
   (скан файлов/миниатюры) и ссылка «Настройки медиа» со страницы сняты — команды доступны
   через ActionCenter (открытый вопрос XActions-меню в cloudy). Файлы — НЕ DataGrid:
   пейджинг `CloudyPager` (Skip/Take через `client.Media.List`, FolderId: null=все,
@@ -351,6 +354,40 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   MediaNewTextFile удалён). Раскладка плиток: имя+размер ПРИЖАТЫ ВНИЗ, иконка/превью —
   по центру оставшейся части: `margin: auto 0` на прямом иконочном ребёнке `.cloudy-tile`
   (папки/загрузка) и на icon/thumb внутри `__open` (файлы), `__open` — `flex: 1`.
+  ModalMediaSelect → cloudy-диалог выбора (вариант 1 «фасад + реализация в приложении»,
+  2026-10-12): ядро браузинга выделено из ManageMediaPage в `MediaBrowser`
+  (Pages/MediaViews; `Mode = Manage | SelectSingle | SelectMulti`, колбэки
+  OnFilePicked/SelectionChanged/OnContentChanged, публичный `GetSelectedFiles()`);
+  страница /Media = CloudyPageHead + KPI + `<MediaBrowser Mode=Manage>` (~40 строк).
+  `MediaSelectDialog` — CloudyDialogHead + браузер в Select-режиме + футер
+  Cancel/«Add selected (N)»; single — клик по плитке закрывает сразу (Cancel —
+  `Dialog.CancelAsync()`, не `CloseAsync(null)` — CS8625); свежая загрузка
+  АВТОВЫБИРАЕТСЯ (single → первый файл, multi → все; ищем в перезагруженном списке
+  по Id — дефолт CreatedAt DESC кладёт новые на первую страницу). Показ — через
+  ФАСАД: сигнатуры `IAppMediaService.OpenSelectMedia/Many` сохранены (~10 call-сайтов в
+  Framework/Nodes.Front/FormEditor/приложении не тронуты), `AppMediaService` вместо
+  static-ссылки на компонент держит static-хендлеры `SelectFileHandler`/
+  `SelectFilesHandler`, которые регистрирует `MediaSelectRegistrar` (App.razor,
+  AuthorizeView — вместо AdminSharedContainer). Framework-чистка: УДАЛЕНЫ
+  ModalMediaSelect, FluentMediaFilesList (razor+cs), AdminSharedContainer; из
+  IAppMediaService убраны ListTable/Delete (единственный потребитель — список).
+  MediaFileTile расширен под выбор: `Selectable` (нет spotlight-якоря и hover-действий,
+  клик = выбор; id плитки не рендерится — popover только в Manage), `MultiSelect`/
+  `Selected` (бейдж-галочка `.cloudy-tile__check`, `.cloudy-tile--selected`); popover
+  свойств вынесен в `MediaFilePropsPopover` (публичный `Open(file, anchorId)` —
+  страница/браузер в лимите ~500 строк). Диалог выбора: ширина min(1200px, 100vw−48px)
+  через `fluent-dialog[fuib]:has(.cloudy-media-select)::part(dialog)` — `[fuib]` в
+  селекторе ОБЯЗАТЕЛЕН (adopted-правило default-fuib.css бьёт документальное при равной
+  специфичности — FluentV5Reference факт №10; фикс пользователя 2026-10-13), тело —
+  max-height 68vh со скроллом; компактные оверрайды плиток в `.cloudy-media-select`
+  (padding/gap меньше, thumb 48px, имя/meta 13/12px, чек 20px; сетка auto-fill
+  minmax(148px) и иконки 34px — как на странице, финальная правка пользователя). Токены
+  cloudy.less — миксины `.cloudy-tokens()`/`.cloudy-tokens-dark()` (вызываются на
+  `.cloudy-layout` И на хостах диалогов — полный набор, грабля «5 токенов» ушла).
+  ПОСЛЕДСТВИЕ: dev-стенд StandNodesApp остался БЕЗ медиа-пикера (мёртвый маунт в
+  Routes.razor убран; хендлеры регистрирует только Mars.Admin → OpenSelectMedia
+  возвращает null); если стенду нужен пикер — перенос медиа-семейства в Framework
+  (отклонённый вариант 2).
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

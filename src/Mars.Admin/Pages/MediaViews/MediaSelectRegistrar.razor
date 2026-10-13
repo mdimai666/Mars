@@ -1,0 +1,28 @@
+@using Mars.Admin.Framework.Services
+@using Mars.Media.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@code {
+    [Inject] IDialogService Dialogs { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        AppMediaService.SelectFileHandler = async () =>
+        {
+            var result = await Dialogs.ShowDialogAsync<MediaSelectDialog>(SelectOptions(false));
+            return result.Value as FileListItemResponse;
+        };
+        AppMediaService.SelectFilesHandler = async () =>
+        {
+            var result = await Dialogs.ShowDialogAsync<MediaSelectDialog>(SelectOptions(true));
+            return result.Value as IReadOnlyCollection<FileListItemResponse> ?? [];
+        };
+    }
+
+    static DialogOptions SelectOptions(bool multi) => new()
+    {
+        Modal = true,
+        Header = { CloseAction = { Visible = true } },
+        Parameters = { ["Multi"] = multi },
+    };
+}

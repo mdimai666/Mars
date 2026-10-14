@@ -74,30 +74,31 @@ pwsh -NoProfile -File test-all.ps1 -List        # list projects that would run (
 ```
 
 Tests are **xUnit v3 + Microsoft Testing Platform**: each test project builds as an MTP
-executable (`OutputType=Exe`) and is run directly. `dotnet test` is **blocked** on the .NET 10
-SDK: the build fails with `error Testing with VSTest target is no longer supported by
-Microsoft.Testing.Platform on .NET 10 SDK and later` (`Microsoft.Testing.Platform.MSBuild.targets`,
-exit 1) — `-p:TestingPlatformDotnetTestSupport=true` does not help. Run the exe instead.
-Single project: build, then run its exe from the bin directory:
+executable (`OutputType=Exe`). Two interchangeable ways to run them:
+
+Canonical — `dotnet test` (MTP mode; enabled repo-wide by `global.json` →
+`"test": { "runner": "Microsoft.Testing.Platform" }`, without it `dotnet test` fails with
+`Testing with VSTest target is no longer supported ... on .NET 10 SDK and later`):
+
+```
+dotnet test tests/Mars.Server.Tests
+dotnet test tests/Mars.Server.Tests --filter "FullyQualifiedName~FileServiceTests"
+```
+
+Fast path — the exe directly (no MSBuild, starts ~5x faster; xUnit in-process runner):
 
 ```
 dotnet build tests/Mars.Server.Tests
-tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe
+tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe -class "Mars.Server.Tests.Files.FileServiceTests"
 ```
 
-The exe is the **xUnit v3 in-process runner**, not a VSTest/MTP CLI: options take a SINGLE
-dash (`-filter`, `-class`, `-method`); `--filter` fails with `unknown option` (exit 3).
-Select tests by class name, never by `FullyQualifiedName`:
-
-```
-Mars.Server.Tests.exe -class "Mars.Server.Tests.Files.FileServiceTests"
-Mars.Server.Tests.exe -filter "/Mars.Server.Tests/Mars.Server.Tests.Files/FileServiceTests"
-Mars.Server.Tests.exe -filterVSTest "FullyQualifiedName~FileServiceTests"   # VSTest syntax, still one dash
-```
-
-A wrong query-filter path **silently runs 0 tests and exits 0** — always check `Total:` in the
-summary is non-zero. `-list classes` prints the class names; `--help` (the only double-dash
-option) prints the full CLI. Do not mix `-filter`, `-class` and `-filterVSTest` in one run.
+The two CLIs are **not** interchangeable. The exe takes single-dash xUnit options (`-class`,
+`-method`, `-filter "/Assembly/Namespace/Class"`, `-list classes`; `--help` is the only
+double-dash one) — `--filter` there fails with `unknown option` (exit 3). `dotnet test` takes
+double-dash MTP options with VSTest filter syntax; xUnit's own options there give
+`Handshake failures` / zero tests (exit 5 or 8), and `-- --help` crashes the SDK host — use the
+exe for help. A wrong filter can exit "successfully" with zero tests, so always check the
+summary count is non-zero.
 
 `test-all.ps1` runs exes with cwd = their `bin\Debug\net10.0`, so fixtures write into the
 bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<timestamp>\`.

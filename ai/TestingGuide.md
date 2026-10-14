@@ -7,16 +7,19 @@
 
 - Сьют — **xUnit v3 + Microsoft Testing Platform**: каждый тест-проект собирается как
   MTP-exe (`OutputType=Exe`) и запускается напрямую из `bin\Debug\net10.0`.
-- `dotnet test` **не использовать**: на .NET 10 SDK сборка падает с
-  `error Testing with VSTest target is no longer supported by Microsoft.Testing.Platform on
-  .NET 10 SDK and later` (`Microsoft.Testing.Platform.MSBuild.targets`, exit 1);
-  `-p:TestingPlatformDotnetTestSupport=true` не помогает (проверено 2026-10-14, SDK 10.0.401).
-- Полный прогон: `pwsh -NoProfile -File test-all.ps1` (`-IncludeE2E` — плюс E2E/DockerImage,
-  `-List` — только список проектов). Скрипт запускает exe с cwd = `bin\Debug\net10.0`
-  (фикстуры пишут в bin, изолированно по проектам); логи — `%TEMP%\mars-test-runs\<timestamp>\`.
-- Один проект: `dotnet build tests/<Проект>` затем `<Проект>.exe` из bin. CLI — парсер
-  **xUnit v3 in-process runner**, не MTP/VSTest: только одинарное тире (`--filter` → `unknown
-  option`, exit 3), полный список — `<exe> --help` (единственная опция с двумя тире).
+- `dotnet test` **работает** в MTP-режиме: opt-in задан в `global.json`
+  (`"test": { "runner": "Microsoft.Testing.Platform" }`) — файл не удалять. Без него на .NET 10 SDK
+  сборка падает с `error Testing with VSTest target is no longer supported by
+  Microsoft.Testing.Platform on .NET 10 SDK and later` (exit 1).
+- Канон точечного прогона: `dotnet test tests/<Проект> --filter "FullyQualifiedName~<Имя>"`
+  (работает и без разделителя `--`, и с ним). Фильтр — VSTest-синтаксис; xUnit-опции в MTP-режиме
+  не принимаются: `--class`, `--treenode-filter` → `Handshake failures` / zero tests (exit 5),
+  query-фильтр `--filter "/asm/ns/class"` → zero tests (exit 8), `-- --help` роняет хост SDK.
+  Справка по опциям — только у exe (`<exe> --help`).
+- Быстрый путь (без MSBuild, старт заметно быстрее): `dotnet build tests/<Проект>` затем
+  `<Проект>.exe` из bin. CLI — парсер **xUnit v3 in-process runner**, не MTP/VSTest: только
+  одинарное тире (`--filter` → `unknown option`, exit 3), полный список — `<exe> --help`
+  (единственная опция с двумя тире).
 - Фильтр тестов — по имени класса, не по `FullyQualifiedName`; надёжнее всего `-class`
   (`"Ns.Class"`, поддерживает `*` по краям), также `-namespace`, `-method`, `-trait`.
   Query-форма — `-filter "/Assembly/Namespace/Class/Method"`; VSTest-синтаксис легален только

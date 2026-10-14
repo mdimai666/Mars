@@ -64,7 +64,8 @@
   (Handlebars root-фронт + Scriban маунт `/sbn`); обязательна при изменениях рендера.
 - `tests/Mars.Server.Tests/TemplateEngines` — контракт фабрик/контрибьюторов Providers.
 - Парсинг стартовых шаблонов — `StarterFrontTemplatesTests` в `Mars.Integration.Tests`.
-- Прогоны: MTP-exe из `bin\Debug\net10.0` (`dotnet test` в репо заблокирован), Docker — `MARS_DOCKER_TESTS=1`.
+- Прогоны: `dotnet test tests/Mars.SiteEngine.Integration.Tests` (MTP, opt-in в `global.json`)
+  или exe из `bin\Debug\net10.0`; Docker — `MARS_DOCKER_TESTS=1`.
 
 ## Грабли
 

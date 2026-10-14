@@ -32,9 +32,14 @@ public class AdminPagesSmokeTests
         login.LayoutType.Should().NotBeNull();
         login.LayoutType!.Name.Should().Be("BlankLayout");
 
+        var techLogs = pages.Single(p => p.Name == "TechLogsPage");
+        techLogs.LayoutType.Should().NotBeNull();
+        techLogs.LayoutType!.Name.Should().Be("CloudyTechLayout");
+
+        // у cloudy-страниц своего @layout нет: default задаёт App.razor (DefaultLayout=CloudyLayout),
+        // а он в LayoutAttribute страницы не попадает — сервис его не видит
         var users = pages.Single(p => p.Name == "UsersPage");
-        users.LayoutType.Should().NotBeNull();
-        users.LayoutType!.Name.Should().Be("AdminLayout");
+        users.LayoutType.Should().BeNull();
     }
 
     [Fact]

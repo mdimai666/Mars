@@ -80,6 +80,20 @@ dotnet build tests/Mars.Server.Tests
 tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe
 ```
 
+The exe is the **xUnit v3 in-process runner**, not a VSTest/MTP CLI: options take a SINGLE
+dash (`-filter`, `-class`, `-method`); `--filter` fails with `unknown option` (exit 3).
+Select tests by class name, never by `FullyQualifiedName`:
+
+```
+Mars.Server.Tests.exe -class "Mars.Server.Tests.Files.FileServiceTests"
+Mars.Server.Tests.exe -filter "/Mars.Server.Tests/Mars.Server.Tests.Files/FileServiceTests"
+Mars.Server.Tests.exe -filterVSTest "FullyQualifiedName~FileServiceTests"   # VSTest syntax, still one dash
+```
+
+A wrong query-filter path **silently runs 0 tests and exits 0** — always check `Total:` in the
+summary is non-zero. `-list classes` prints the class names; `--help` (the only double-dash
+option) prints the full CLI. Do not mix `-filter`, `-class` and `-filterVSTest` in one run.
+
 `test-all.ps1` runs exes with cwd = their `bin\Debug\net10.0`, so fixtures write into the
 bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<timestamp>\`.
 

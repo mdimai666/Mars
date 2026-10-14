@@ -12,8 +12,15 @@
 - Полный прогон: `pwsh -NoProfile -File test-all.ps1` (`-IncludeE2E` — плюс E2E/DockerImage,
   `-List` — только список проектов). Скрипт запускает exe с cwd = `bin\Debug\net10.0`
   (фикстуры пишут в bin, изолированно по проектам); логи — `%TEMP%\mars-test-runs\<timestamp>\`.
-- Один проект: `dotnet build tests/<Проект>` затем `<Проект>.exe` из bin. Фильтр MTP —
-  по пути (`-filter "/Assembly/Namespace/Class/*"`), не по `FullyQualifiedName`; можно несколько.
+- Один проект: `dotnet build tests/<Проект>` затем `<Проект>.exe` из bin. CLI — парсер
+  **xUnit v3 in-process runner**, не MTP/VSTest: только одинарное тире (`--filter` → `unknown
+  option`, exit 3), полный список — `<exe> --help` (единственная опция с двумя тире).
+- Фильтр тестов — по имени класса, не по `FullyQualifiedName`; надёжнее всего `-class`
+  (`"Ns.Class"`, поддерживает `*` по краям), также `-namespace`, `-method`, `-trait`.
+  Query-форма — `-filter "/Assembly/Namespace/Class/Method"`; VSTest-синтаксис легален только
+  через `-filterVSTest "FullyQualifiedName~X"`. Смешивать эти три вида в одном запуске нельзя.
+- **Грабли:** неверный путь в `-filter` не падает — прогон печатает `Total: 0` и выходит с кодом 0
+  (ложный зелёный). Всегда проверять, что `Total:` в сводке ненулевой; имена классов — `-list classes`.
 
 ## Опциональные гейты (переменные окружения)
 

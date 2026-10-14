@@ -5,8 +5,8 @@ Full overview (read on demand, not imported): `ai/ProjectDescription.md`
 ## Quick Summary
 
 Mars is an open-source visual programming platform (inspired by Node-RED and WordPress) built on .NET 10 / Blazor. It combines:
-- **Visual programming** — 55+ node types for flow-based workflows
-- **Content management** — flexible PostTypes with 15 MetaField types
+- **Visual programming** — many node types for flow-based workflows
+- **Content management** — flexible PostTypes with a typed MetaField set
 - **Multi-database** — PostgreSQL, MsSQL, MySQL
 - **Plugin system** — .NET assemblies loaded at runtime
 - **Docker, Scheduler, AI/Semantic Kernel, OpenTelemetry**
@@ -16,9 +16,12 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 - `src/Mars.WebApp` — composition root (main application)
 - `src/Server` — core `Mars.Server` and data `Mars.Data*`
 - `src/Mars.Modules` — platform modules (flat on disk, virtual folders in `Mars.slnx`)
+- `src/Modules` — older standalone module libraries (`MarsEditors`, `MarsCodeEditor2`,
+  `BlazoredHtmlRender`, `EditorJsBlazored`, `Mars.HttpSmartAuthFlow`); new modules go to `src/Mars.Modules`
 - `src/Mars.Nodes` — visual programming engine
 - `src/Admin` — admin panel libraries; `src/Mars.Admin` — admin WASM app
-- `src/Plugin` — plugin system
+- `src/Plugin` — plugin system; `src/Mars.Datasource` — external data source providers
+- `src/Mars.Core`, `src/Mars.Contracts`, `src/Mars.WebApiClient` — shared core, contracts, API client
 - `docs/` — documentation site
 - `ai/` — AI agent context files
 
@@ -71,8 +74,10 @@ pwsh -NoProfile -File test-all.ps1 -List        # list projects that would run (
 ```
 
 Tests are **xUnit v3 + Microsoft Testing Platform**: each test project builds as an MTP
-executable (`OutputType=Exe`) and is run directly. The `dotnet test` MTP driver path is
-blocked by an SDK 10.0.400 incompatibility (exit code 5, "Zero tests ran") — do not use it.
+executable (`OutputType=Exe`) and is run directly. `dotnet test` is **blocked** on the .NET 10
+SDK: the build fails with `error Testing with VSTest target is no longer supported by
+Microsoft.Testing.Platform on .NET 10 SDK and later` (`Microsoft.Testing.Platform.MSBuild.targets`,
+exit 1) — `-p:TestingPlatformDotnetTestSupport=true` does not help. Run the exe instead.
 Single project: build, then run its exe from the bin directory:
 
 ```
@@ -101,7 +106,9 @@ bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<tim
 
 - **Solution**: `Mars.slnx` — everything builds from here
 - **Modules**: `src/Mars.Modules/<ModuleName>/` — each module is a self-contained project
-- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration)
+- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration), plus
+  non-`Mars.*` projects: `ExternalServices.Integration.Tests`, `Test.Mars.MetaModelGenerator`,
+  and shared harnesses `Mars.Test.AppHost` / `Mars.Test.Common` / `ExternalServices.TestContainers`
 
 ## Mars CLI — thin client to a running instance
 
@@ -119,13 +126,15 @@ domain socket (no second startup); otherwise they run in-process.
 ## Release: тег (NuGet-публикация)
 
 - Версия — `<MarsAppVersion>` в `Directory.Build.props`; тег = `v<версия>`.
-- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI, 54 пакета).
+- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI пакует все `src/**`-проекты, объявившие `<PackageId>`).
 - Если версия занята — bump в props, коммит `bump version <версия>`, push, затем скрипт.
 - Агентский запуск: `pwsh -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
 
 ## PS1-скрипты: UTF-8 без BOM, запуск через pwsh
 
-- `.ps1` в репо — UTF-8 **без BOM**; при правке BOM не добавлять.
+- Новые `.ps1` — UTF-8 **без BOM**; при правке существующих BOM не добавлять и не снимать
+  (несколько исторических скриптов, включая `test-all.ps1`, `benchmarks/run-perf.ps1`,
+  `tools/ui/build-css.ps1`, `tools/ui/serve.ps1`, сохранены с BOM — оставить как есть).
 - Запуск и синтакс-проверку ps1 делать только через `pwsh` (PowerShell 7). Windows PowerShell 5.1 (`powershell.exe`) без BOM читает файл как ANSI и ложно падает на кириллице/эмодзи — для ps1 его не использовать.
 
 ## codebase-memory MCP (граф кода)

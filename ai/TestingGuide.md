@@ -7,8 +7,10 @@
 
 - Сьют — **xUnit v3 + Microsoft Testing Platform**: каждый тест-проект собирается как
   MTP-exe (`OutputType=Exe`) и запускается напрямую из `bin\Debug\net10.0`.
-- `dotnet test` **не использовать**: MTP-драйвер заблокирован несовместимостью SDK 10.0.400
-  (exit code 5, "Zero tests ran").
+- `dotnet test` **не использовать**: на .NET 10 SDK сборка падает с
+  `error Testing with VSTest target is no longer supported by Microsoft.Testing.Platform on
+  .NET 10 SDK and later` (`Microsoft.Testing.Platform.MSBuild.targets`, exit 1);
+  `-p:TestingPlatformDotnetTestSupport=true` не помогает (проверено 2026-10-14, SDK 10.0.401).
 - Полный прогон: `pwsh -NoProfile -File test-all.ps1` (`-IncludeE2E` — плюс E2E/DockerImage,
   `-List` — только список проектов). Скрипт запускает exe с cwd = `bin\Debug\net10.0`
   (фикстуры пишут в bin, изолированно по проектам); логи — `%TEMP%\mars-test-runs\<timestamp>\`.

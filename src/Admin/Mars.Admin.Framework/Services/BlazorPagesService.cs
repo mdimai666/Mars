@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -162,7 +162,7 @@ public class BlazorPagesService : IBlazorPagesService
     /// <summary>
     /// Относительный путь к исходнику из namespace: корневое имя сборки остаётся первым
     /// сегментом (папка проекта), остаток namespace превращается в папки.
-    /// <c>Mars.Admin.Pages.Index</c> → <c>Mars.Admin/Pages/Index.razor</c>.
+    /// <c>Mars.Admin.SiteSpace.Pages.Index</c> → <c>Mars.Admin/SiteSpace/Pages/Index.razor</c>.
     /// </summary>
     public static string BuildRelativeSourcePath(Type type)
     {

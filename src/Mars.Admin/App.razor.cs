@@ -1,8 +1,8 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Mars.Admin.Contracts.Options;
 using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Hub;
-using Mars.Admin.Pages.Public;
+using Mars.Admin.Public;
 using Mars.Plugin.Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -56,7 +56,7 @@ public partial class App
 
     private void Interceptor_AfterSend(object sender, HttpClientInterceptorEventArgs e)
     {
-        bool isPublicPage = PageType.Namespace.StartsWith("Mars.Admin.Pages.Public");
+        bool isPublicPage = PageType.Namespace.StartsWith("Mars.Admin.Public");
 
         //!NavigationManager.Path().Equals("Login", StringComparison.OrdinalIgnoreCase)
 

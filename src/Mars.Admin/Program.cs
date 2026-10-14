@@ -1,7 +1,7 @@
-using Flurl.Http;
+﻿using Flurl.Http;
 using Mars.Admin;
-using Mars.Admin.Components;
 using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Shared;
 using Mars.Admin.Startups;
 using Mars.AiChat.Front;
 using Mars.CodeCompletion.Front;
@@ -108,7 +108,7 @@ app.Services.UseMarsAdminFramework()
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
 app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()
-            .Register(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm.CommandId, typeof(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm));
+            .Register(Mars.Admin.SiteSpace.Components.RegenerateGeneratedMetaValuesForm.CommandId, typeof(Mars.Admin.SiteSpace.Components.RegenerateGeneratedMetaValuesForm));
 
 SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 

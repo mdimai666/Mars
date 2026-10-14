@@ -51,7 +51,7 @@ public class BlazorPageInfo
 
     /// <summary>
     /// Путь относительно корня исходников (namespace → папки), например
-    /// <c>Mars.Admin/Pages/Index.razor</c>. Заполняется всегда
+    /// <c>Mars.Admin/SiteSpace/Pages/Index.razor</c>. Заполняется всегда
     /// (работает и в WASM, где Assembly.Location пуст).
     /// </summary>
     public string? SourceRelativePath { get; init; }

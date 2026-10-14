@@ -46,24 +46,40 @@
     `edit-container--flat` (вложенные редакторы без glass/hero).
   - Импорт всех cloudy-файлов — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
     (см. `ai/CssRefactoringGuide.md`; руками `style.css` не править).
-- Страницы:
-  - Шаг 1 (in-place на cloudy): `Pages/Index.razor` (Home), `Pages/PostsViews/ManagePostPage`,
-    `Pages/PostCategoryViews/ManagePostCategoryPage`, `Pages/UserViews/UsersPage` (полностью
-    перестроена по прототипу), `Pages/Settings/SettingsPageWrapper` (даёт cloudy-подложку всем
-    подразделам настроек). Моки: `Pages/DashboardPage`, `Pages/LegionPage` (+ scoped `.razor.css`).
-  - Шаг 2 (tech-зона): `Pages/TechViews/` — моки Automation/Database/Marketplace/Plugins +
-    реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`); `_Imports.razor`
-    задаёт `@layout CloudyTechLayout`. Реальные Builder-страницы (`Builder/`) с 2026-10-14 — в том
-    же лэйауте (`Builder/_Imports.razor`), маршруты унифицированы под `/tech/*`:
+- Пространства страниц (структура 2026-10-14): `src/Mars.Admin/`
+  - `SiteSpace/Pages/` — светлая зона (CloudyLayout): `Index.razor` (Home), моки
+    `DashboardPage`/`LegionPage` (+ scoped `.razor.css`), `PostsViews/ManagePostPage`,
+    `PostCategoryViews/ManagePostCategoryPage`, `UserViews/UsersPage` (перестроена по
+    прототипу), `Settings/SettingsPageWrapper` (cloudy-подложка подразделов настроек),
+    PostType/PostCategoryType/UserType/NavMenu/Media/Feedback/Plugin-домены.
+    `SiteSpace/Components/` — компоненты только этой зоны (ChildPostEditorDrawer,
+    FormBlockEditor, PostStatusesEditor, SystemFieldSettingsPanel,
+    RegenerateGeneratedMetaValuesForm).
+  - `TechSpace/Pages/` — tech-зона: layout задаёт `TechSpace/_Imports.razor`
+    (`@layout CloudyTechLayout`). Моки Automation/Database/Marketplace/Plugins +
+    реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`) +
+    бывшие Builder-домены (AppsViews, ClassModelViews, ComponentsViews,
+    DataSourceViews, DockerViews, FormViews, FrontEditorViews, NodeViews,
+    PlaybookViews, SchedulerViews, StyleDesignerViews, StyleGalleryViews,
+    DevTestPage). Маршруты унифицированы под `/tech/*` (2026-10-14):
     `/builder/`→`/tech` (Overview), `/builder/models(/classmodels)`→`/tech/models(/classmodels)`,
     `/builder/com/list`→`/tech/components`, `/datasource*`→`/tech/datasource*`,
     `/builder/docker`→`/tech/docker`, `/nodered`→`/tech/nodered`, `/Nodes`→`/tech/nodes`,
-    `/forms`→`/tech/forms`, `/front`→`/tech/frontend` (мок TechFrontendPage удалён, реальная
-    FrontsPage заняла маршрут), `/front/editor/{Slug}`→`/tech/frontend/editor/{Slug}`,
+    `/forms`→`/tech/forms`, `/front`→`/tech/frontend` (мок TechFrontendPage удалён,
+    реальная FrontsPage заняла маршрут), `/front/editor/{Slug}`→`/tech/frontend/editor/{Slug}`,
     `/builder/styledesigner|style-gallery|playbooks|scheduler`→`/tech/*`,
-    `/builder/DevTestPage`→`/tech/devtest`. `BuilderLayout`/`BuilderASide`/`BuilderSettingsPage`
-    (дубль /Settings)/бейджи статус-бара/`builderlayout.less` удалены; slug фронта для ИИ
-    парсится из `/tech/frontend/editor/{slug}` (`MarsFrontFilesTools`).
+    `/builder/DevTestPage`→`/tech/devtest`. `BuilderLayout`/`BuilderASide`/
+    `BuilderSettingsPage` (дубль /Settings)/бейджи статус-бара/`builderlayout.less`
+    удалены; slug фронта для ИИ парсится из `/tech/frontend/editor/{slug}`
+    (`MarsFrontFilesTools`).
+  - `Public/` — Login/Register/Logout/Privacy (BlankLayout, вне зон).
+  - `Shared/` — только кросс-зонное: лэйауты + `Cloudy/`, UserBar, ActionCenter,
+    XActionFormDialog, FluentDialogXActionFormPresenter, FrontDemoActionRunner,
+    CodeEditorExtraToolbar, GeneralSectionActions, DataGridSharedViews, DevErrors,
+    MobileMenu, AsideBottomItems, AccessDenied/RedirectToLogin, AdminLayout+AdminHeader
+    (rollback).
+  - В записях статуса до 2026-10-14 пути `Pages/X` — ныне `SiteSpace/Pages/X`,
+    `Pages/TechViews` и `Builder/` — ныне `TechSpace/Pages`.
   - `Shared/UserBar.razor` — аватар + bootstrap-dropdown `.cloudy-user-menu`; пункт переключения темы
     (`DevAdminStyleOption.StylerStyle.Mode` → `Q.Root.Emit("App.SetupTheme")` → `App.razor.cs`
     `SetupThemeAsync` → `IThemeService` → `body[data-theme]`; хелпер `marsIsDarkTheme` в
@@ -199,7 +215,8 @@ side-карточками.
 - Страница-обёртка (`EditPostPage`) — БЕЗ `ContentWrapper`: `flex-fill` div напрямую
   в `cloudy-content`, как ManagePostPage.
 
-**Новая страница в tech-зоне:** положить в `Pages/TechViews/` (layout из `_Imports`), маршрут
+**Новая страница в tech-зоне:** положить в `TechSpace/Pages/` (layout из
+`TechSpace/_Imports.razor`), маршрут
 `@page "/tech/*"` (в URL — `/dev/tech/*`); зона admin-only (guard в лэйауте); цвета — только
 `var(--ct-*)`/прототипные токены зоны.
 
@@ -474,6 +491,19 @@ side-карточками.
   рельс/сайдбары/UserBar/SettingsPage/ActionCenter/FrontSettingsPage/EditPostTypePresentation/
   Docker-модуль/AiChat (парсер slug → `frontend/editor`, SKILL.md, CLI-примеры) + харнесс
   tools/ui (crawl.js, assertions.json).
+- 2026-10-14 (3): реструктуризация Mars.Admin на доменные пространства — `SiteSpace/`
+  (Pages+Components светлой зоны), `TechSpace/` (Pages tech-зоны: моки, TechLogsPage,
+  бывшие Builder-домены; один `_Imports` на пространство), `Public/` (BlankLayout,
+  вне зон), `Shared/` — только кросс-зонное; папки `Pages/`, `Builder/`, `Components/`
+  исчезли. Namespace'ы следуют папкам (`Mars.Admin.SiteSpace.Pages.*`,
+  `Mars.Admin.TechSpace.Pages.*`, `Mars.Admin.Public`); обновлены строковые ссылки:
+  `FrontContextId` в Nodes-примере, `PageType.Namespace.StartsWith("Mars.Admin.Public")`
+  в `App.razor.cs`, FQN в `Program.cs`. `BlazorPagesService.BuildRelativeSourcePath`
+  выводит путь из namespace — изменения не потребовал; ожидание `SourceRelativePath`
+  в `AdminPagesSmokeTests` обновлено. Компоненты разобраны по зонам:
+  FormBlockEditor/PostStatusesEditor/SystemFieldSettingsPanel/ChildPostEditorDrawer/
+  RegenerateGeneratedMetaValuesForm → `SiteSpace/Components`, CodeEditorExtraToolbar
+  (CodeEditor2 используется в обеих зонах) → `Shared`.
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

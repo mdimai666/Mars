@@ -1,0 +1,93 @@
+﻿@page "/EditPostType/Presentation/{ID:guid}"
+
+@using Mars.Admin.SiteSpace.Pages.PostsViews
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Cms.Contracts.PostTypes
+@using Mars.Contracts.Models
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper>
+    <NavbarEditPostType ID="ID" />
+    <StandardEditContainer ID=@ID
+                           TitleText="PostTypePresentation"
+                           TModel=PostTypePresentationEditModel
+                           GetAction="@(()=>PostTypePresentationEditModel.GetAction(_client,ID))"
+                           SaveAction="@((s,create)=>PostTypePresentationEditModel.SaveAction(_client,s))"
+                           AfterSave="AfterSave"
+                           @ref=f CanCreate=false>
+        <ChildContent>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextInput Value=@context.PostType.Title Label="@AppRes.Title"
+                                     Appearance="@TextInputAppearance.FilledDarker"
+                                     ReadOnly
+                                     Style="zoom:1.4" />
+                </div>
+                <div class="">
+                    <FluentTextInput Value=@context.PostType.TypeName Label="TypeName" ReadOnly />
+                </div>
+
+            </div>
+
+            <div class="spacer-2"></div>
+
+            <div class="vstack gap-4">
+
+                <div class="card">
+                    <div class="card-header">
+                        Presentation
+                    </div>
+                    <div class="card-body">
+
+                        <FormItem2 For="() => context.ListViewTemplate">
+                            <div class="hstack">
+                                <FluentTextInput @bind-Value=@context.ListViewTemplate Placeholder="postTypes/<typeName>/listView.hbs" Class="w-50" />
+                                <FluentButton Id="@_listViewMenuId" Appearance="ButtonAppearance.Default">...</FluentButton>
+                                <FluentMenu Trigger="@_listViewMenuId" OnClick="HandleOnMenuListViewTemplateChanged">
+                                    <FluentMenuList>
+                                        <FluentMenuItem Id="open_presentation_template" Disabled="@context.ListViewTemplate.IsNullOrEmpty()">open</FluentMenuItem>
+                                        <FluentMenuItem Id="create_presentation_template">create example</FluentMenuItem>
+                                    </FluentMenuList>
+                                </FluentMenu>
+                            </div>
+                        </FormItem2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Колонки списка постов (админка)
+                    </div>
+                    <div class="card-body">
+                        <PostTypeGridSettingsEditor @bind-Value="context.Grid"
+                                                    EnabledFeatures="context.PostType.EnabledFeatures"
+                                                    MetaFields="_metaFields" />
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Форма редактирования поста
+                    </div>
+                    <div class="card-body">
+                        <FormLayoutEditor Definition="context.FormDefinition"
+                                          ValueChanged="@(layout => context.FormLayout = layout)"
+                                          OnResetRequested="@(() => ResetFormLayoutAsync(context))" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="d-block" style="height:50vh"></div>
+
+        </ChildContent>
+    </StandardEditContainer>
+
+</ContentWrapper>

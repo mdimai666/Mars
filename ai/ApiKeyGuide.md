@@ -31,7 +31,7 @@
   Контракты — `Mars.Identity.Contracts/ApiKeys/`, маппинг — `Mars.Identity.Abstractions/Mappings/ApiKeys/`.
 - Web-клиент: `IApiKeyServiceClient`/`ApiKeyServiceClient` (`src/Mars.WebApiClient`), свойство `ApiKey`
   у `IMarsWebApiClient`.
-- UI: страница `/dev/ApiKeys` — `src/Mars.Admin/Pages/UserViews/ApiKeysPage.razor(.cs)`,
+- UI: страница `/dev/ApiKeys` — `src/Mars.Admin/SiteSpace/Pages/UserViews/ApiKeysPage.razor(.cs)`,
   пункт меню в `src/Mars.Admin/Shared/UserBar.razor`.
 - CLI: подкоманды `user apikey add|list|delete` — `Mars.Identity.Host/CommandLine/UserCommandCli.cs`.
 - Тесты: `tests/Mars.Server.Tests/Utils/ApiKeyFormatTests.cs`,

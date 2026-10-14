@@ -1,4 +1,4 @@
-using Mars.Nodes.Core.Nodes.Connections;
+﻿using Mars.Nodes.Core.Nodes.Connections;
 using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;
@@ -15,7 +15,7 @@ public class ActionCommandNodeCreateButtonInAboutSysPageExample : INodeExample<A
             .AddNext(new ActionCommandNode()
             {
                 Name = "Command example " + nodesCount,
-                FrontContextId = ["Mars.Admin.Pages.Settings.SettingsAboutSystemPage"]
+                FrontContextId = ["Mars.Admin.SiteSpace.Pages.Settings.SettingsAboutSystemPage"]
             }, new InjectNode())
             .AddNext(new TemplateNode { Name = "Clicked message", Template = $"ActionCommandNode {nodesCount} clicked!" })
             .AddNext(new DevAdminConnectionNode()

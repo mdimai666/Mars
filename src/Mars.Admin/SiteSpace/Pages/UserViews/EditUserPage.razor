@@ -1,0 +1,96 @@
+﻿@page "/EditUser/{ID:guid}"
+@* @page "/EditUser" *@
+
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Identity.Contracts.Roles
+@using Mars.Identity.Contracts.Users
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Редактирования профиля")]
+@attribute [DParentPage(typeof(Mars.Admin.SiteSpace.Pages.UserViews.UsersPage))]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper Title="Редактирования профиля">
+
+    <CascadingValue Value="ID">
+        @*<TabsProfile />*@
+    </CascadingValue>
+
+    <StandardEditForm1 TModel="UserEditModel"
+                       GetAction="@(()=>UserEditModel.GetAction(client, ID, UserTypeName))"
+                       Context="model"
+                       SaveAction="@((model,create)=>UserEditModel.SaveAction(client, model, isCreateNew))"
+                       AfterDelete="AfterDelete"
+                       AfterSave="AfterSave"
+                       BeforeSave="OnBeforeSave"
+                       @ref=_editForm1>
+
+        <div class="vstack gap-2">
+            <FluentAvatar Name="@model.FullName"
+                          Image="@model.AvatarUrl"
+                          Color="AvatarColor.Brand"
+                          Size="AvatarSize.Size56" />
+            <div class="spacer-1"></div>
+            <FormItem2 For="@(() => model.UserName)">
+                <FluentTextInput Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
+            </FormItem2>
+            <FormItem2 For="@(() => model.LastName)">
+                <FluentTextInput Name="@nameof(model.LastName)" @bind-Value=@model.LastName />
+            </FormItem2>
+            <FormItem2 For="@(() => model.FirstName)">
+                <FluentTextInput Name="@nameof(model.FirstName)" @bind-Value=@model.FirstName />
+            </FormItem2>
+            <FormItem2 For="@(() => model.MiddleName)">
+                <FluentTextInput Name="@nameof(model.MiddleName)" @bind-Value=@model.MiddleName />
+            </FormItem2>
+            <FormItem2 For="@(() => model.Email)">
+                <FluentTextInput Name="@nameof(model.Email)" TextInputType="TextInputType.Email" @bind-Value=@model.Email />
+            </FormItem2>
+            <FormItem2 For="@(() => model.PhoneNumber)">
+                <FluentTextInput Name="@nameof(model.PhoneNumber)" @bind-Value=@model.PhoneNumber />
+            </FormItem2>
+            <FormItem2 For="@(() => model.Gender)">
+                <FluentRadioGroup @bind-Value=model.Gender>
+                    <FluentRadio TValue=UserGender Value="@UserGender.None">@(L[UserGender.None.ToString()])</FluentRadio>
+                    <FluentRadio TValue=UserGender Value="@UserGender.Male">@(L[UserGender.Male.ToString()])</FluentRadio>
+                    <FluentRadio TValue=UserGender Value="@UserGender.Female">@(L[UserGender.Female.ToString()])</FluentRadio>
+                </FluentRadioGroup>
+            </FormItem2>
+            <FormItem2 For="@(() => model.Roles)">
+                <FluentAutocomplete TOption="RoleSummaryResponse" TValue="RoleSummaryResponse"
+                                    Width="300px"
+                                    Items="@model.AvailRoles"
+                                    Placeholder="Select"
+                                    Multiple
+                                    OptionText="@(f=>f.Name)"
+                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                    @bind-SelectedItems="@model.Roles" />
+            </FormItem2>
+            <FormItem2 For="@(() => model.BirthDate)">
+                <FluentDatePicker @bind-Value="@model.BirthDate" />
+            </FormItem2>
+
+            @if (model.Form is not null)
+            {
+                <MetaValuesForm @ref="metaValueForm"
+                                Definition="model.Form"
+                                MetaValues="model.MetaValues"
+                                MetaFields="model.UserType.MetaFields" />
+            }
+
+            @* <Avatar class="img-fluid" Size="200" Icon="user"></Avatar>
+            <UserAvatar Value="@user.AvatarUrl" Size="200px" /> *@
+
+            @* <div>
+                <Button Size="small" OnClick="OnClickSelectAvatar">Изменить</Button>
+                @if (!string.IsNullOrEmpty(user.AvatarUrl))
+                {
+                    <Button Size="small" Danger OnClick="ClearAvatar">Удалить</Button>
+                }
+            </div> *@
+
+        </div>
+
+    </StandardEditForm1>
+
+</ContentWrapper>

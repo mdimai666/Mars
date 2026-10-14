@@ -140,7 +140,7 @@ Motion:     --mars-duration-{fast,normal,slow} (100/200/400ms), --mars-easing-de
 - **Цвет/тема** — `App.razor.cs` `SetupThemeAsync` → `IThemeService.SetThemeAsync(ThemeSettings)`
   (на старте + по событию `App.SetupTheme` от Save). Персист в localStorage средствами v5.
 - **Геометрия** — через CSS-переменные, **НЕ через Theme-мутацию**: important-мост на html
-  перебил бы Theme-инъекцию. `StylerCssVars.GlobalVars` (`src/Mars.Admin/Builder/StyleDesignerViews/`)
+  перебил бы Theme-инъекцию. `StylerCssVars.GlobalVars` (`src/Mars.Admin/TechSpace/Pages/StyleDesignerViews/`)
   пишет минимум 3 скаляра (`--mars-radius-base`, `--mars-stroke-hairline`, `--mars-shadow-alpha`)
   в `<style>html:root{…}</style>` в `App.razor` (реактивно, без JS-интеропа); производные
   (radius sm/md/lg, тени, fluent `--borderRadius*`/`--shadow*`/`--strokeWidthThin`) считает

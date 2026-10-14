@@ -1,0 +1,88 @@
+﻿@using Mars.Admin.SiteSpace.Pages.PostCategoryViews
+@using Mars.Admin.SiteSpace.Pages.PostsViews.Forms
+@using Mars.Cms.Contracts.PostTypes
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IStringLocalizer<AppRes> L
+@implements IDisposable
+
+<StandardEditContainer ID=@ID
+                       TitleText="@AppRes.Post"
+                       TModel=PostEditModel
+                       GetAction="@(()=>PostEditModel.GetAction(client,ID,PostTypeName))"
+                       SaveAction="SaveWithCallback"
+                       DeleteAction="@(s=>PostEditModel.DeleteAction(client,s))"
+                       BeforeSave="BeforeSave"
+                       BlankModelFromGetAction
+                       NavigateAfterCreate="@NavigateAfterCreate"
+                       HidePublishCard="@HidePublishCard"
+                       HideDatesSection
+                       Class=@($"post-{PostTypeName}{(Flat ? " edit-container--flat" : "")}")
+                       @ref=f CanCreate=false>
+    <SectionSubtitle>
+        @* @if (context.Id == Guid.Empty)
+        {
+            <text>Draft a new post for your site.</text>
+        }
+        else
+        {
+            <text>Editing &laquo;@context.Title&raquo;</text>
+        } *@
+    </SectionSubtitle>
+    <SectionActions>
+        <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
+            <FluentMenuItem Label="@AppRes.PostType" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            <FluentMenuItem Label="Форма типа" OnClick=@((e) => OpenFormLayoutDialog(context.PostType?.Id)) />
+            <FluentMenuItem Label="@AppRes.Categories" OnClick=@((e) => navigationManager.NavigateTo(ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName))) />
+            @if (PostTypeName == "page")
+            {
+                <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug == "index" ? "" : f.Model.Slug)}")) />
+            }
+        </XActionsDropDown>
+    </SectionActions>
+    <ChildContent>
+        @if (context.Form is not null)
+        {
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Main"
+                          TitleResolver="@ResolveTitle" />
+        }
+    </ChildContent>
+    <SectionSidePublish>
+        @if (context.Form is not null)
+        {
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Publish"
+                          TitleResolver="@ResolveTitle" />
+        }
+        <div class="mt-3">
+            <FormItem2 For="@(() => context.PostType.EnabledFeatures)">
+                <div class="hstack gap-1">
+                    @foreach (var feature in context.PostType.EnabledFeatures)
+                    {
+                        <FluentBadge Color="BadgeColor.Informative">@(L[feature])</FluentBadge>
+                    }
+                </div>
+            </FormItem2>
+        </div>
+    </SectionSidePublish>
+    <SectionExtraSidebar>
+        @if (context.Form is not null)
+        {
+            <PostFormZone Context="@FormContextOf(context)" Zone="@SystemFieldsCatalog.Zones.Extra"
+                          TitleResolver="@ResolveTitle" />
+        }
+
+        <div class="card">
+            <div class="card-body">
+                @if (f.Model.Type == "page")
+                {
+                    <a target="_blank" href="@Q.ClientUrlJoin(f.Model.Slug)">Open new Tab</a>
+                }
+                else
+                {
+                    <a target="_blank" href=@Q.ClientUrlJoin($"{f?.Model?.Type}/{ID}")>Open new Tab</a>
+                }
+            </div>
+        </div>
+    </SectionExtraSidebar>
+</StandardEditContainer>

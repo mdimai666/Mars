@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Framework.Services;
 
@@ -69,7 +69,7 @@ public class AdminPagesSmokeTests
         var index = pages.Single(p => p.Name == "Index");
 
         // относительный путь заполнен всегда и указывает на Pages/Index.razor
-        index.SourceRelativePath.Should().Be("Mars.Admin/Pages/Index.razor");
+        index.SourceRelativePath.Should().Be("Mars.Admin/SiteSpace/Pages/Index.razor");
 
         // в Debug внутри репозитория может резолвиться и абсолютный путь
         var resolved = _service.ResolveSourceFilePath(index.PageType);

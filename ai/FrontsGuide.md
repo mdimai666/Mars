@@ -30,7 +30,7 @@
   `Mars.TemplateEngine.Providers.*` и QueryLang — карта проектов и поток рендера в
   `ai/SiteEngineGuide.md`.
 - Админка: страница `/Settings/Front` (список фронтов) и редактор
-  `src/Mars.Admin/Builder/FrontEditorViews/FrontEditorPage.razor` (`/tech/frontend/editor/{Slug}`).
+  `src/Mars.Admin/TechSpace/Pages/FrontEditorViews/FrontEditorPage.razor` (`/tech/frontend/editor/{Slug}`).
 - ИИ-инструменты: `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`.
 - Стартовые шаблоны: `Res/front_templates/<name>` в content root (в репо — `src/Mars.WebApp/Res/front_templates`:
   `default`, `landing`, `scriban` (движок Scriban, `*.sbn`), служебный `admin`).

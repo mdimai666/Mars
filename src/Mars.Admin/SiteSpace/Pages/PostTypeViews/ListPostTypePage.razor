@@ -1,0 +1,91 @@
+﻿@page "/PostType"
+@using Mars.Admin.SiteSpace.Pages.PostCategoryViews
+@using Mars.Cms.Contracts.PostTypes
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IStringLocalizer<AppRes> L
+
+<CloudyPageHead Title="@AppRes.PostTypes" Subtitle="Content types with meta fields and presentations." KpiCols="4">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(PostTypeKpiKeys.Total)" Value="@KpiValue(PostTypeKpiKeys.Total)" Icon="bi-collection" />
+        <CloudyKpi Label="@KpiLabel(PostTypeKpiKeys.ComponentTypes)" Value="@KpiValue(PostTypeKpiKeys.ComponentTypes)" Icon="bi-puzzle" />
+        <CloudyKpi Label="@KpiLabel(PostTypeKpiKeys.MetaFields)" Value="@KpiValue(PostTypeKpiKeys.MetaFields)" Icon="bi-ui-checks" />
+        <CloudyKpi Label="@KpiLabel(PostTypeKpiKeys.MetaValues)" Value="@KpiValue(PostTypeKpiKeys.MetaValues)" Icon="bi-braces" />
+    </Kpis>
+</CloudyPageHead>
+
+<CloudyBrowser Scrollable>
+    <HeadLeft>
+        <FluentCheckbox Value="_includeComponent" ValueChanged="HandleIncludeComponentChanged">
+            @L[PostTypeKpiKeys.ComponentTypes]
+        </FluentCheckbox>
+    </HeadLeft>
+    <HeadRight>
+        <CloudySearchBox Placeholder="Search post types…" ValueChanged="OnSearchChanged" />
+        <a class="cloudy-btn-primary" href="@UrlEditPage">@AppRes.Create</a>
+    </HeadRight>
+
+    <ChildContent>
+        <FluentDataGrid TGridItem="PostTypeListItemResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="76"
+                        GridTemplateColumns="minmax(0,1.6fr) minmax(0,2fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<PostTypeListItemResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@UrlEditPage/@context.Id" title="@context.Title">@context.Title</a>
+                        <span class="cloudy-stack__sub" title="@context.TypeName">@context.TypeName</span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.EnabledFeatures">
+                    <div class="cloudy-tags">
+                        @if (context.Disabled)
+                        {
+                            <CloudyTag Text="@AppRes.Disabled" Tint="3" />
+                        }
+                        @if (context.Visibility == PostTypeVisibility.Component)
+                        {
+                            <CloudyTag Text="@L[PostTypeKpiKeys.ComponentTypes]" Tint="1" />
+                        }
+                        @foreach (var feature in context.EnabledFeatures)
+                        {
+                            <CloudyTag Text="@feature" />
+                        }
+                        @if (context.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+                        {
+                            <FluentAnchorButton Href="@ManagePostCategoryPage.GetPageLink(context.TypeName)" Appearance="ButtonAppearance.Subtle">@AppRes.Categories</FluentAnchorButton>
+                        }
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<PostTypeListItemResponse>.ByDescending(f => f.CreatedAt))"
+                                IsDefaultSortColumn="true"
+                                Align="DataGridCellAlignment.Center">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatDate()</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) IconOnly>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No post types match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
+
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

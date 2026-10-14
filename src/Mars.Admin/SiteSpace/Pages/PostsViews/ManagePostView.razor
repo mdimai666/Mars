@@ -1,0 +1,245 @@
+﻿@using Mars.Admin.SiteSpace.Pages.PostCategoryViews
+@using Mars.Admin.Framework.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Cms.Contracts.MetaFields;
+@using Mars.Cms.Contracts.Posts;
+@using Mars.Cms.Contracts.PostTypes;
+
+@inject IAIToolAppService _aiTool
+
+<d-manage-post-view class="flex-fill d-flex flex-column">
+    @if (!string.IsNullOrEmpty(PostType.Presentation.ListViewTemplate))
+    {
+        var source = PostType.Presentation.ListViewTemplate;
+        <Mars.Admin.Framework.Pages.RemotePageViewer Url=@($"/api/AdminFront/Render?file={Uri.EscapeDataString(source)}") />
+    }
+    else
+    {
+        <div class="hstack gap-1">
+            <FluentTextInput @bind-Value=_searchText
+                          @bind-Value:after=HandleSearchInput
+                          Immediate
+                          ImmediateDelay="300"
+                          Appearance="TextInputAppearance.FilledDarker"
+                          AriaLabel="Search">
+                <StartTemplate>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Search())" />
+                </StartTemplate>
+            </FluentTextInput>
+            <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+            <FluentButton aria-label="filters" Title="Фильтры"
+                          Appearance="@(_filtersVisible ? ButtonAppearance.Primary : ButtonAppearance.Default)"
+                          IconEnd="@(new Icons.Regular.Size16.Filter())"
+                          OnClick="ToggleFilters" />
+            <FluentButton aria-label="grid settings" Title="Настроить колонки"
+                          IconEnd="@(new Icons.Regular.Size16.Settings())"
+                          OnClick="OpenSettingsDialog" />
+            @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+            {
+                <SelectCategoryForFilterDropDown @bind-Value="_filterCategoryId"
+                                                 @bind-Value:after=HandleCategoryFilterChanged
+                                                 PostType="@PostType.TypeName"
+                                                 Style="height:32px;"
+                                                 Width="150px" />
+            }
+            <div class="ms-auto hstack gap-2">
+                <FluentButton OnClick="@(e => _aiTool.Open(text: "покажи список доступных инструментов", scenarioName: "cms_agent"))">
+                    <i class="bi bi-stars"></i>
+                    AI help
+                </FluentButton>
+                <a href="@urlEditPage/@PostType.TypeName">
+                    <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+                </a>
+            </div>
+        </div>
+
+        @if (_filtersVisible)
+        {
+            <ManagePostFiltersPanel @ref="_filtersPanel"
+                                    @key="PostType.TypeName"
+                                    Columns="_filterColumns"
+                                    MetaFields="_metaFields"
+                                    PostStatuses="_postStatuses"
+                                    Changed="Refresh" />
+        }
+
+        <div class="mt-4 flex-fill d-flex flex-column">
+            <div style="height: 534px; overflow:auto; flex: 1 1 auto;">
+                @* v5: DataGrid запоминает ПОРЯДОК РЕГИСТРАЦИИ колонок — рендерим грид только
+                   когда динамические колонки построены, иначе статичная Actions окажется первой *@
+                @if (_gridReady)
+                {
+                <FluentDataGrid ItemsProvider="dataProvider"
+                                @ref=table
+                                @key="_gridVersion"
+                                ItemSize="76"
+                                Virtualize
+                                GridTemplateColumns="@GridTemplateColumns"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                                OverscanCount="10"
+                                Class="data-table--adaptive"
+                                TGridItem="PostListItemResponse">
+                    @foreach (var col in _columns)
+                    {
+                        @* when col.IsSystem — мета-поле с ключом базовой колонки не подменяет её шаблон *@
+                        @switch (col.Key)
+                        {
+                            case SystemFieldsCatalog.Title when col.IsSystem:
+                                <TemplateColumn SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Title))"
+                                                Title="@col.Title"
+                                                Sortable="true"
+                                                IsDefaultSortColumn="@col.IsDefaultSort"
+                                                InitialSortDirection="@col.DefaultSortDirection">
+                                    <div class="position-relative d-block d-lg-none">
+                                        <div class="fs-6">@context.Title</div>
+                                        <div class="hstack gap-4">
+                                            <div class="text-secondary small">@context.CreatedAt.ToString("d")</div>
+                                            @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                                            {
+                                                <FluentOverflow TItem="string" Style="width: 100%;">
+                                                    @foreach (var tag in context.Tags)
+                                                    {
+                                                        <FluentBadge Color="BadgeColor.Informative">@tag</FluentBadge>
+                                                    }
+                                                </FluentOverflow>
+                                            }
+                                        </div>
+                                        <a href="@urlEditPage/@PostType.TypeName/@context.Id" class="stretched-link"></a>
+                                    </div>
+                                    <div class="position-relative d-none d-lg-block">
+                                        <div class="">
+                                            <div class="fs-6">
+                                                <a href="@urlEditPage/@PostType.TypeName/@context.Id">
+                                                    @context.Title
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                                    {
+                                        <div class="mt-1">
+                                            <FluentOverflow TItem="string" Style="width: 100%;">
+                                                @foreach (var tag in context.Tags)
+                                                {
+                                                    <FluentBadge Color="BadgeColor.Informative">@tag</FluentBadge>
+                                                }
+                                            </FluentOverflow>
+                                        </div>
+                                    }
+                                </TemplateColumn>
+                                break;
+
+                            case SystemFieldsCatalog.Categories when col.IsSystem:
+                                <TemplateColumn Title="@col.Title"
+                                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Categories))"
+                                                Sortable="true"
+                                                IsDefaultSortColumn="@col.IsDefaultSort"
+                                                InitialSortDirection="@col.DefaultSortDirection">
+                                    <FluentOverflow TItem="string" Style="width: 100%;">
+                                        @foreach (var cat in context.Categories ?? [])
+                                        {
+                                            <span style="cursor: pointer;" @onclick="@(() => ClickPostItemCategory(cat.Id))">
+                                                <FluentBadge Color="BadgeColor.Informative">@cat.Title</FluentBadge>
+                                            </span>
+                                        }
+                                    </FluentOverflow>
+                                </TemplateColumn>
+                                break;
+
+                            case SystemFieldsCatalog.Status when col.IsSystem:
+                                <TemplateColumn Title="@col.Title"
+                                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Status))"
+                                                Sortable="true"
+                                                IsDefaultSortColumn="@col.IsDefaultSort"
+                                                InitialSortDirection="@col.DefaultSortDirection">
+                                    @context.Status?.Value
+                                </TemplateColumn>
+                                break;
+
+                            case SystemFieldsCatalog.Author when col.IsSystem:
+                                <TemplateColumn Title="@col.Title"
+                                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Author))"
+                                                Sortable="true"
+                                                IsDefaultSortColumn="@col.IsDefaultSort"
+                                                InitialSortDirection="@col.DefaultSortDirection">
+                                    @context.Author.UserName
+                                </TemplateColumn>
+                                break;
+
+                            case SystemFieldsCatalog.CreatedAt when col.IsSystem:
+                                <PropertyColumn Property=@(f => f.CreatedAt)
+                                                Title="@col.Title"
+                                                Format="d"
+                                                IsDefaultSortColumn="@col.IsDefaultSort"
+                                                InitialSortDirection="@col.DefaultSortDirection"
+                                                Sortable="true" Align="DataGridCellAlignment.End" />
+                                break;
+
+                            default:
+                                <TemplateColumn Title="@col.Title" Sortable="false">
+                                    @if (IsImageMetaColumn(col.Key))
+                                    {
+                                        var url = FirstOf(MetaDisplay(context, col.Key));
+                                        @if (!string.IsNullOrEmpty(url))
+                                        {
+                                            <img src="@url" alt="" class="d-manage-post-thumb" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @MetaDisplay(context, col.Key)
+                                    }
+                                </TemplateColumn>
+                                break;
+                        }
+                    }
+                    <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
+                        <div class="hstack">
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </DFluentDeleteButton>
+                        </div>
+                    </TemplateColumn>
+                </FluentDataGrid>
+                }
+            </div>
+            <br />
+            <div class="hstack">
+                <TotalResultsFound TotalCount="@data.TotalCount" />
+                <div class="ms-auto">
+                </div>
+            </div>
+        </div>
+    }
+
+    <FluentDialog @ref="_settingsDialog" aria-label="grid settings dialog"
+                  Modal=true
+                  Style="width: 520px;"
+                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { CancelSettingsDialog(); _settingsDialogShown = false; } })">
+        <FluentDialogBody Class="text-start">
+            <TitleTemplate>
+                <FluentText Size="TextSize.Size500">Колонки списка</FluentText>
+            </TitleTemplate>
+            <ChildContent>
+                <PostTypeGridSettingsEditor @bind-Value="_gridDraft"
+                                            EnabledFeatures="PostType.EnabledFeatures"
+                                            MetaFields="_metaFields" />
+            </ChildContent>
+            <ActionTemplate>
+                <div class="hstack gap-2 justify-content-end">
+                    <FluentButton OnClick="CancelSettingsDialog">@AppRes.Cancel</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="SaveSettingsAsync">@AppRes.Save</FluentButton>
+                </div>
+            </ActionTemplate>
+        </FluentDialogBody>
+    </FluentDialog>
+</d-manage-post-view>
+
+<style>
+    .d-manage-post-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>

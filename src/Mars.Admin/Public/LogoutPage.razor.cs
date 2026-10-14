@@ -1,0 +1,17 @@
+﻿using Mars.Admin.Framework.AuthProviders;
+using Microsoft.AspNetCore.Components;
+
+namespace Mars.Admin.Public;
+
+public partial class LogoutPage
+{
+    [Inject] public IAuthenticationService AuthenticationService { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthenticationService.Logout();
+        // forceLoad: хост-страница должна отрендериться анонимной (cookie снята на сервере)
+        NavigationManager.NavigateTo("/dev/Login", forceLoad: true);
+    }
+}

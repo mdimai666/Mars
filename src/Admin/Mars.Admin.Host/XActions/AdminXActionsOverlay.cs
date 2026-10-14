@@ -1,9 +1,9 @@
-#if !NOADMIN
-using Mars.Admin.Builder.NodeViews;
-using Mars.Admin.Pages.PostsViews;
-using Mars.Admin.Pages.PostTypeViews;
-using Mars.Admin.Pages.Settings;
-using Mars.Admin.Pages.TechViews;
+﻿#if !NOADMIN
+using Mars.Admin.TechSpace.Pages.NodeViews;
+using Mars.Admin.SiteSpace.Pages.PostsViews;
+using Mars.Admin.SiteSpace.Pages.PostTypeViews;
+using Mars.Admin.SiteSpace.Pages.Settings;
+using Mars.Admin.TechSpace.Pages;
 #endif
 using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Builder;

@@ -46,7 +46,7 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 - Auth: `tools/ui/auth.local.json` `{"user","pass"}` (в .gitignore); после первого логина
   скрипты переиспользуют `auth.json` (storageState).
 - **Галерея компонентов**: `/dev/tech/style-gallery`
-  (`src/Mars.Admin/Builder/StyleGalleryViews/`, скрытая dev-страница, в навигации нет) —
+  (`src/Mars.Admin/TechSpace/Pages/StyleGalleryViews/`, скрытая dev-страница, в навигации нет) —
   все используемые Fluent-компоненты во всех вариантах, вкл. регрессионный DataGrid с
   `ItemSize="76"`+Virtualize и оба паттерна диалогов. Секции/варианты несут атрибуты
   `data-gallery-section`/`data-gallery-variant` для assertions. Страница входит в PAGES

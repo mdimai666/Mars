@@ -43,8 +43,6 @@ public class AppAdminSpaHtmlScripts
             //new(@"<link rel=""stylesheet"" href=""https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"" integrity=""sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer"" />", placeInHead: true, order: defaultOrder),
             new(new Uri(@"/mars/vendor/bootstrap-icons/bootstrap-icons.min.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
 
-            //new(new Uri(@"//cdn.quilljs.com/1.3.6/quill.snow.css"), placeInHead: true, order: defaultOrder),
-            new(new Uri(@"/mars/vendor/quilljs/quill.snow.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
             //new(new Uri(@"_content/mdimai666.Mars.Nodes.FormEditor/css/style.css", UriKind.Relative), placeInHead: true ,version:appVersion , order: defaultOrder),
 
             new(new Uri(@"css/style.css", UriKind.Relative), placeInHead: true, version:appVersion, order: defaultOrder),
@@ -59,10 +57,6 @@ public class AppAdminSpaHtmlScripts
             //new(new Uri(@"/mars/vendor/jquery-3.6.3.min.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"/mars/vendor/bootstrap/bootstrap5.bundle.min.js", UriKind.Relative), order: defaultOrder),
             new(@"<script src=""_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js"" type=""module"" async></script>", order: defaultOrder),
-            //new(new Uri(@"https://cdn.quilljs.com/1.3.6/quill.js"), order: defaultOrder),
-            new(new Uri(@"/mars/vendor/quilljs/quill.js", UriKind.Relative), order: defaultOrder),
-            new(new Uri(@"_content/Blazored.TextEditor/quill-blot-formatter.min.js", UriKind.Relative), order: defaultOrder),
-            new(new Uri(@"_content/Blazored.TextEditor/Blazored-BlazorQuill.js", UriKind.Relative), order: defaultOrder),
 
             //new(@"<script src=""https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"" integrity=""sha512-TelkP3PCMJv+viMWynjKcvLsQzx6dJHvIGhfqzFtZKgAjKM1YPqcwzzDEoTc/BHjf43PcPzTQOjuTr4YdE8lNQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer""></script>", order: defaultOrder),
             // IMask глобалом до monaco loader.js: UMD после появления define.amd глобал не создаёт, а FluentUI v5 ждёт window.IMask

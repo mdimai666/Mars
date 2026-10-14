@@ -87,6 +87,7 @@ public static class MainAdminFramework
         services.TryAddScoped<ViewModelService>();
         services.TryAddScoped<AdminJs>();
         services.TryAddScoped<PasskeyJs>();
+        services.TryAddScoped<WysiwygQuillJs>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();

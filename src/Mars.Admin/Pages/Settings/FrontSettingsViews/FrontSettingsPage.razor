@@ -68,7 +68,7 @@
                 <FluentBadge Color="BadgeColor.Informative">специальный фронт админки</FluentBadge>
                 <span class="text-secondary small">data/admin/front · только в админ-панели</span>
                 <div class="ms-auto">
-                    <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
+                    <FluentButton Appearance="ButtonAppearance.Default" OnClick=@(() => nav.NavigateTo("tech/frontend/editor/admin"))>
                         Редактор
                     </FluentButton>
                 </div>
@@ -252,7 +252,7 @@
 
     void OpenEditor(FrontItem front)
     {
-        nav.NavigateTo($"front/editor/{front.Slug}");
+        nav.NavigateTo($"tech/frontend/editor/{front.Slug}");
     }
 
     /// <summary>Стабильный id триггера меню действий фронта (slug уникален в пределах списка)</summary>

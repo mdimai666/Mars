@@ -26,7 +26,7 @@ public abstract partial class QueryWorkspaceBase : IAiChatPageHandler, IDisposab
 
         return JsonSerializer.Serialize(new
         {
-            page = "datasource/query",
+            page = "tech/datasource/query",
             slug = DataSourceConfigSlug,
             source = source?.Title,
             kind = source?.Kind ?? profile?.Kind,

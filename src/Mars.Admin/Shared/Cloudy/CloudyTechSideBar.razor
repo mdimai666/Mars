@@ -1,11 +1,11 @@
 @using Microsoft.AspNetCore.Components.Routing
 
 <nav class="cloudy-tech-rail" aria-label="Разделы админки">
-    <NavLink href="/dev/builder" class="cloudy-tech-rail__item" title="Overview">
+    <NavLink href="/dev/tech" Match="@NavLinkMatch.All" class="cloudy-tech-rail__item" title="Overview">
         <i class="bi bi-house" aria-hidden="true"></i>
         <span>Overview</span>
     </NavLink>
-    <NavLink href="/dev/builder/models" class="cloudy-tech-rail__item" title="Entities">
+    <NavLink href="/dev/tech/models" class="cloudy-tech-rail__item" title="Entities">
         <i class="bi bi-box" aria-hidden="true"></i>
         <span>Entities</span>
     </NavLink>

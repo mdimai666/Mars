@@ -32,7 +32,7 @@ public partial class ListDockerContainer
     [Inject] NavigationManager navigation { get; set; } = default!;
     [Inject] IMessageService messageService { get; set; } = default!;
 
-    const string UrlEditPage = "/dev/builder/docker/ID";
+    const string UrlEditPage = "/dev/tech/docker/ID";
     const int OnceCaptureTimeoutSeconds = 60;
 
     string _searchText = "";

@@ -1,0 +1,72 @@
+@using Mars.Admin.Framework.Hub
+@using Mars.Server.Contracts.Systems
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IDisposable
+
+<div class="cloudy-tech-dock" aria-label="System status">
+    <div class="cloudy-tech-dock__item" data-state="@_hubState" title="Hub: @_hubState">
+        <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+        <div class="cloudy-tech-dock__pop">
+            <div class="cloudy-tech-dock__row">
+                <span>hub</span><b>@_hubState</b>
+            </div>
+        </div>
+    </div>
+    <div class="cloudy-tech-dock__item" title="Memory">
+        <i class="bi bi-memory" aria-hidden="true"></i>
+        <div class="cloudy-tech-dock__pop">
+            <div class="cloudy-tech-dock__row">
+                <span>memory usage</span><b>@_stat.MemoryUsage</b>
+            </div>
+            <div class="cloudy-tech-dock__row">
+                <span>app uptime</span><b>@_stat.AppUptime</b>
+            </div>
+            <div class="cloudy-tech-dock__row">
+                <span>system uptime</span><b>@_stat.SystemUptime</b>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] ClientHub hub { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    HubConnectionState _hubState;
+    SystemMinStatResponse _stat = SystemMinStatResponse.Empty();
+    readonly Action<object> _hubHandler;
+
+    public CloudyTechDock()
+    {
+        _hubHandler = payload => OnHubState((HubConnectionState)payload);
+    }
+
+    protected override void OnInitialized()
+    {
+        Q.Root.On(nameof(HubConnectionState), _hubHandler);
+        _hubState = hub.ws.State;
+        Mars.Core.Extensions.Tools.SetTimeout(() => OnHubState(hub.ws.State), 100);
+        _ = LoadStatAsync();
+    }
+
+    async Task LoadStatAsync()
+    {
+        try
+        {
+            _stat = await client.System.SystemMinStat();
+            StateHasChanged();
+        }
+        catch
+        {
+            // статистика недоступна — popover останется с пустыми значениями
+        }
+    }
+
+    void OnHubState(HubConnectionState state)
+    {
+        _hubState = state;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Q.Root.RemoveEmit(nameof(HubConnectionState), _hubHandler);
+}

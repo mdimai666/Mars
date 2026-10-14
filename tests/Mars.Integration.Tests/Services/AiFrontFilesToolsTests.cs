@@ -38,11 +38,11 @@ public class AiFrontFilesToolsTests : IDisposable
     }
 
     [Theory]
-    [InlineData("/front/editor/default", "default")]
-    [InlineData("/front/editor/my-front", "my-front")]
-    [InlineData("/Front/Editor/Mixed-Case", "Mixed-Case")]
-    [InlineData("/front/editor/", null)]
-    [InlineData("/front/editor", null)]
+    [InlineData("/tech/frontend/editor/default", "default")]
+    [InlineData("/tech/frontend/editor/my-front", "my-front")]
+    [InlineData("/tech/Frontend/Editor/Mixed-Case", "Mixed-Case")]
+    [InlineData("/tech/frontend/editor/", null)]
+    [InlineData("/tech/frontend/editor", null)]
     [InlineData("/EditPost/post/123", null)]
     [InlineData("", null)]
     [InlineData(null, null)]

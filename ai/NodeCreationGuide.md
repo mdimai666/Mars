@@ -330,7 +330,7 @@ public class UpperNodeImpl : INodeImplement<UpperNode>
   `Mars.Nodes.Tests.exe`.
 - Правки css/js под `_content` — поднять `MarsAppVersion` в `Directory.Build.props`
   (cache-busting `?v=`; без bump браузер держит старое).
-- Визуальную проверку в редакторе (`/dev/nodered`) делает пользователь — браузер без команды не открывать.
+- Визуальную проверку в редакторе (`/dev/tech/nodered`) делает пользователь — браузер без команды не открывать.
 
 ## Грабли
 

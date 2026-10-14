@@ -20,12 +20,12 @@ const PAGES = args.pages
       '/dev/Media', '/dev/Users', '/dev/UserType', '/dev/ApiKeys', '/dev/Passkeys',
       '/dev/NavMenu', '/dev/Plugins', '/dev/FeedbackList', '/dev/Settings',
       '/dev/Settings/HostCache', '/dev/Settings/About', '/dev/Settings/Front',
-      '/dev/builder', '/dev/builder/settings', '/dev/builder/models',
-      '/dev/builder/models/classmodels', '/dev/builder/scheduler', '/dev/builder/com/list',
-      '/dev/builder/playbooks', '/dev/builder/docker', '/dev/builder/debug',
-      '/dev/builder/styledesigner', '/dev/builder/style-gallery',
-      '/dev/Nodes', '/dev/nodered', '/dev/forms', '/dev/front',
-      '/dev/datasource', '/dev/datasource/query', '/dev/datasource/config', '/dev/datasource/actions',
+      '/dev/tech', '/dev/tech/models',
+      '/dev/tech/models/classmodels', '/dev/tech/scheduler', '/dev/tech/components',
+      '/dev/tech/playbooks', '/dev/tech/docker', '/dev/tech/devtest',
+      '/dev/tech/styledesigner', '/dev/tech/style-gallery',
+      '/dev/tech/nodes', '/dev/tech/nodered', '/dev/tech/forms', '/dev/tech/frontend',
+      '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
     ];
 
 const IGNORE_CONSOLE = ['favicon', 'blazor.webassembly.js', 'The resource https://'];
@@ -166,10 +166,10 @@ async function runAssertion(page, a) {
 
   // Диалог редактора ноды (NodeEditContainer1): dblclick по ноде, ширина, закрытие по ESC.
   if (!args['skip-nodes']) {
-    const entry = { page: '/dev/nodered#node-dialog', status: 'ok', assertions: [] };
+    const entry = { page: '/dev/tech/nodered#node-dialog', status: 'ok', assertions: [] };
     const errBefore = consoleErrors.length;
     try {
-      await page.goto(`${HOST}/dev/nodered`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await page.goto(`${HOST}/dev/tech/nodered`, { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
       await page.waitForSelector('.red-ui-flow-node__body', { timeout: 30000 });
       await page.waitForTimeout(800);

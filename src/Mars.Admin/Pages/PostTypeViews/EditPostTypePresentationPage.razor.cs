@@ -49,7 +49,7 @@ public partial class EditPostTypePresentationPage
         if (id == "open_presentation_template")
         {
             // шаблон списка живёт в специальном фронте админки (data/admin/front)
-            _navigationManager.NavigateTo("front/editor/admin");
+            _navigationManager.NavigateTo("tech/frontend/editor/admin");
             return;
         }
         else if (id == "create_presentation_template")
@@ -74,7 +74,7 @@ public partial class EditPostTypePresentationPage
                     _ = _messageService.Warning("Не удалось сохранить");
                 }
 
-                _navigationManager.NavigateTo("front/editor/admin");
+                _navigationManager.NavigateTo("tech/frontend/editor/admin");
             }
             return;
         }

@@ -115,7 +115,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   2. `SearchSkills(query)` (до 20 результатов, поиск по имени/описанию/тегам) / `LoadSkill(name)`
      (`SkillsToolset`, `MarsSkillsTools`) — модель сама ищет и подгружает полные инструкции;
   3. `PageSkillRouter` — детерминированный preload полных инструкций по открытой странице:
-     `/front/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
+     `/tech/frontend/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
      `EnableSqlAccess` → `mars-sql`. Агент сразу знает, какими инструментами работать,
      не тратя ходы на discovery.
   Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`.
@@ -136,7 +136,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 ```
 cd src/Mars.WebApp
-dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/editor/landing] [-u userId] [--skills true|false] [--access true|false]
+dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/tech/frontend/editor/landing] [-u userId] [--skills true|false] [--access true|false]
 ```
 
 - создаёт свежий чат, один раз прогоняет `AiChatAgentService.RunChatAsync` и печатает транскрипт
@@ -379,7 +379,7 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 - Экземпляр создаётся на каждый запуск агента в `AiChatAgentService.RunChatAsync` (как `MarsOpenPageTools`),
   и ТОЛЬКО если открыт редактор фронта: slug парсится из PageContext —
-  `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/front/editor/{slug}`).
+  `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/tech/frontend/editor/{slug}`).
 - Правила работы — скилл `mars-front-editor` (структура фронта `_root.hbs`/`pages`/`blocks`/
   `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`); при открытом редакторе
   фронта `PageSkillRouter` preload-ит его инструкции в контекст запуска.

@@ -127,7 +127,7 @@ Motion:     --mars-duration-{fast,normal,slow} (100/200/400ms), --mars-easing-de
 - Не-флипаемые утилиты (`bg-white2`/`bg-black2` инверсии, `ondark_*`) — под обычным
   `body[data-theme="dark"]`.
 
-## Стайлер (StyleDesignerPage, `/builder/styler`)
+## Стайлер (StyleDesignerPage, `/tech/styledesigner`)
 
 Модель `StylerStyle` (`Mars.Admin.Contracts.Options`): `BrandColor`, `HueTorsion` (-0.5..0.5),
 `Vibrancy` (-0.5..0.5), `IsExact`, `Mode` (Light/Dark/System) + геометрические скаляры
@@ -211,7 +211,7 @@ action-center.less      ← Command Palette (весь на v5-токенах)
 spotlight.less          ← Spotlight overlay
 dialogs.less            ← диалоги (::part(dialog))
 a-icons.less / extra-icons.less ← иконки
-builder_classmodels.less / builderlayout.less ← Builder
+builder_classmodels.less ← Builder (tech-зона)
 pages.less / extra2.less / file-uploader.less / kanban.less / MediaTable.less
 slick-slider.less / success-check.less
 loader.less / loader-hex.less / loader-techwork.less

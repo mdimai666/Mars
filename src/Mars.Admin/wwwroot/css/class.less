@@ -39,6 +39,17 @@
     position: relative;
 }
 
+.rotate-n90 {
+    transform: rotate(-90deg);
+}
+
+.pressed-in {
+    // v5: у fluent-button нет shadow-частей — эффект нажатия через filter на host.
+    fluent-button:not([disabled]):active {
+        filter: brightness(0.9);
+    }
+}
+
 .bg() {
     background-repeat: no-repeat;
     background-position: center;

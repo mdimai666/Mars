@@ -12,8 +12,9 @@
 - Лэйауты: `src/Mars.Admin/Shared/Cloudy/`
   - `CloudyLayout.razor` — DefaultLayout всей админки (`App.razor`); светлая зона, классы `.cloudy-*`.
     `AdminLayout` оставлен (rollback / явный `@layout`).
-  - `CloudyTechLayout.razor` — тёмная «тех»-зона `/tech/*` (topbar + рельс); `CloudyTechTopBar`,
-    `CloudyTechSideBar`.
+  - `CloudyTechLayout.razor` — тёмная «тех»-зона `/tech/*` (topbar + рельс), guard `Roles="Admin"`;
+    `CloudyTechTopBar`, `CloudyTechSideBar`, `CloudyTechDock` (фикс-иконки hub/память в левом
+    нижнем углу без фона, popover при наведении — замена статус-бара удалённого BuilderLayout).
   - Паттерн-компоненты списочных страниц (уровень 2): `CloudyPageHead`, `CloudyKpi`, `CloudyBrowser`
     (параметр `Scrollable` — flex-fill тело с внутренним скроллом для DataGrid-страниц),
     `CloudyChips`, `CloudySearchBox` (встроенный дебаунс 300мс), `CloudyPager`, `CloudyAvatar`,
@@ -50,9 +51,19 @@
     `Pages/PostCategoryViews/ManagePostCategoryPage`, `Pages/UserViews/UsersPage` (полностью
     перестроена по прототипу), `Pages/Settings/SettingsPageWrapper` (даёт cloudy-подложку всем
     подразделам настроек). Моки: `Pages/DashboardPage`, `Pages/LegionPage` (+ scoped `.razor.css`).
-  - Шаг 2 (tech-зона): `Pages/TechViews/` — моки Automation/Database/Frontend/Marketplace/Plugins +
+  - Шаг 2 (tech-зона): `Pages/TechViews/` — моки Automation/Database/Marketplace/Plugins +
     реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`); `_Imports.razor`
-    задаёт `@layout CloudyTechLayout`. Реальный Builder и nodered НЕ тронуты.
+    задаёт `@layout CloudyTechLayout`. Реальные Builder-страницы (`Builder/`) с 2026-10-14 — в том
+    же лэйауте (`Builder/_Imports.razor`), маршруты унифицированы под `/tech/*`:
+    `/builder/`→`/tech` (Overview), `/builder/models(/classmodels)`→`/tech/models(/classmodels)`,
+    `/builder/com/list`→`/tech/components`, `/datasource*`→`/tech/datasource*`,
+    `/builder/docker`→`/tech/docker`, `/nodered`→`/tech/nodered`, `/Nodes`→`/tech/nodes`,
+    `/forms`→`/tech/forms`, `/front`→`/tech/frontend` (мок TechFrontendPage удалён, реальная
+    FrontsPage заняла маршрут), `/front/editor/{Slug}`→`/tech/frontend/editor/{Slug}`,
+    `/builder/styledesigner|style-gallery|playbooks|scheduler`→`/tech/*`,
+    `/builder/DevTestPage`→`/tech/devtest`. `BuilderLayout`/`BuilderASide`/`BuilderSettingsPage`
+    (дубль /Settings)/бейджи статус-бара/`builderlayout.less` удалены; slug фронта для ИИ
+    парсится из `/tech/frontend/editor/{slug}` (`MarsFrontFilesTools`).
   - `Shared/UserBar.razor` — аватар + bootstrap-dropdown `.cloudy-user-menu`; пункт переключения темы
     (`DevAdminStyleOption.StylerStyle.Mode` → `Q.Root.Emit("App.SetupTheme")` → `App.razor.cs`
     `SetupThemeAsync` → `IThemeService` → `body[data-theme]`; хелпер `marsIsDarkTheme` в
@@ -189,7 +200,8 @@ side-карточками.
   в `cloudy-content`, как ManagePostPage.
 
 **Новая страница в tech-зоне:** положить в `Pages/TechViews/` (layout из `_Imports`), маршрут
-`/tech/*` или `/dev/tech/*`; цвета — только `var(--ct-*)`/прототипные токены зоны.
+`@page "/tech/*"` (в URL — `/dev/tech/*`); зона admin-only (guard в лэйауте); цвета — только
+`var(--ct-*)`/прототипные токены зоны.
 
 ## Грабли
 
@@ -450,6 +462,18 @@ side-карточками.
   и ChildPostEditorDrawer через `[Parameter] Flat` у EditPostView); `EditPostPage` без
   ContentWrapper. Все остальные edit-страницы шелла получили тот же вид автоматически.
   Поля формы/Title-редактор не тронуты (решение пользователя). Рецепт — §«Edit-страница».
+- 2026-10-14 (2): tech-зона поглотила Builder — `BuilderLayout` удалён (с `BuilderASide`,
+  `HubConnectStatusBadge`, `AppUsageResBadge`, `BuilderSettingsPage`, `builderlayout.less`),
+  Builder-страницы переведены на `CloudyTechLayout` (guard `Roles="Admin"`) и маршруты `/tech/*`
+  (карта — §«Раскладка кода»). Статус-бар заменён на `CloudyTechDock` (иконки hub/память
+  в левом нижнем углу без фона, popover при наведении; данные тянет сам:
+  `client.System.SystemMinStat()` + `Q.Root.On(nameof(HubConnectionState))` с отпиской
+  в Dispose). Мёртвый `d_onPageLoad`-вызов не переносился (функция в scripts.js жива —
+  её зовут CloudyLayout/BlankLayout/AdminLayout). Утилиты `.pressed-in`/`.rotate-n90`
+  переехали из builderlayout.less в class.less. Ссылки на старые маршруты исправлены везде:
+  рельс/сайдбары/UserBar/SettingsPage/ActionCenter/FrontSettingsPage/EditPostTypePresentation/
+  Docker-модуль/AiChat (парсер slug → `frontend/editor`, SKILL.md, CLI-примеры) + харнесс
+  tools/ui (crawl.js, assertions.json).
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);

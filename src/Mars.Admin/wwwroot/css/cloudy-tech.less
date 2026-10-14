@@ -363,3 +363,85 @@ body:not([data-theme="dark"]) .cloudy-tech {
         --cld-menu-danger-bg: var(--ct-danger-bg);
     }
 }
+
+//------------- статус-док: фиксированный левый нижний угол, иконки без фона -------------
+.cloudy-tech-dock {
+    position: fixed;
+    left: 12px;
+    bottom: 10px;
+    // ниже топбара (30) и модалок страниц (60+)
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    &__item {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        color: var(--ct-muted);
+        cursor: default;
+
+        &:hover {
+            color: var(--ct-ink);
+
+            .cloudy-tech-dock__pop {
+                display: block;
+            }
+        }
+
+        &[data-state="Connected"] {
+            color: var(--ct-ok);
+        }
+
+        &[data-state="Disconnected"] {
+            color: var(--ct-danger);
+        }
+
+        &[data-state="Connecting"],
+        &[data-state="Reconnecting"] {
+            color: var(--warn);
+        }
+    }
+
+    &__pop {
+        display: none;
+        position: absolute;
+        left: -6px;
+        bottom: 28px;
+        min-width: 260px;
+        padding: 10px 12px;
+        border: 1px solid var(--ct-line);
+        border-radius: 10px;
+        background: var(--ct-card);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+        color: var(--ct-item-ink);
+        font-size: 13px;
+        line-height: 1.55;
+        white-space: nowrap;
+    }
+
+    &__row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 18px;
+
+        + .cloudy-tech-dock__row {
+            margin-top: 4px;
+        }
+
+        span {
+            color: var(--ct-muted);
+        }
+
+        b {
+            font-weight: 600;
+            color: var(--ct-ink);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+}

@@ -2,7 +2,7 @@
 @using Mars.Admin.Shared.ActionCenter
 @inherits LayoutComponentBase
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized>
         <CascadingValue Value=this>
             <div class="cloudy-tech">
@@ -17,6 +17,8 @@
                         @Body
                     </main>
                 </div>
+
+                <CloudyTechDock />
             </div>
 
             <ActionCenter />
@@ -25,6 +27,13 @@
     <Authorizing>
         <SharedLoader1 />
     </Authorizing>
+    <NotAuthorized>
+        <div class="cloudy-tech">
+            <AccessDenied />
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView>
     <NotAuthorized>
         <RedirectToLogin />
     </NotAuthorized>

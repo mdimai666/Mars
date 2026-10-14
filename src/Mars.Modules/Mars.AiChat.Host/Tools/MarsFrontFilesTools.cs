@@ -9,7 +9,7 @@ namespace Mars.AiChat.Host.Tools;
 /// Инструменты агента для работы с файлами фронта (Handlebars-шаблоны сайта).
 /// Работают через общий <see cref="IFrontFilesService"/> (защита путей наследуется).
 /// Экземпляр создаётся на каждый запуск агента, если открыт редактор фронта —
-/// slug берётся из PageContext (URL страницы /front/editor/{slug}).
+/// slug берётся из PageContext (URL страницы /tech/frontend/editor/{slug}).
 /// </summary>
 public class MarsFrontFilesTools
 {
@@ -29,7 +29,7 @@ public class MarsFrontFilesTools
     }
 
     /// <summary>
-    /// Slug фронта из PageContext страницы редактора (/front/editor/{slug}).
+    /// Slug фронта из PageContext страницы редактора (/tech/frontend/editor/{slug}).
     /// null — открыта другая страница.
     /// </summary>
     public static string? TryParseSlugFromPageContext(string? pageContext)
@@ -39,7 +39,7 @@ public class MarsFrontFilesTools
         var segments = pageContext.Split('/', StringSplitOptions.RemoveEmptyEntries);
         for (var i = 0; i + 2 < segments.Length; i++)
         {
-            if (segments[i].Equals("front", StringComparison.OrdinalIgnoreCase)
+            if (segments[i].Equals("frontend", StringComparison.OrdinalIgnoreCase)
                 && segments[i + 1].Equals("editor", StringComparison.OrdinalIgnoreCase))
             {
                 var slug = Uri.UnescapeDataString(segments[i + 2]);

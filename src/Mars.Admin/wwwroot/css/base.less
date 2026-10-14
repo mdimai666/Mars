@@ -61,6 +61,17 @@ body {
     font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
 }
 
+// default-fuib.css (FluentUI v5, adopted-слой) задаёт body{overflow:hidden} и при равной
+// специфичности adopted бьёт документные правила (FluentV5Reference №10) — body становится
+// нескроллящимся scroll-контейнером и убивает position:sticky во всей админке (левый рельс,
+// сайдбар edit-страниц). Перебиваем специфичностью (0,0,2 > 0,0,1): clip-x сохраняет защиту
+// от горизонтального переполнения, visible-y возвращает sticky к вьюпорту. Диалоговый
+// scroll-lock fuib body:has(.prevent-scroll){overflow:hidden} (0,1,1) остаётся выше и работает.
+html body {
+    overflow-x: clip;
+    overflow-y: visible;
+}
+
 :root {
     /* ═══ Mars Design Tokens ═══
        Алиасы на v5-токены FluentUI: тёмная тема переключается IThemeService,

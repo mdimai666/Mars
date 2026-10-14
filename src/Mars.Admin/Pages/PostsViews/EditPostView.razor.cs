@@ -27,6 +27,9 @@ public partial class EditPostView
 
     [Parameter] public bool HidePublishCard { get; set; }
 
+    /// <summary>Встроенный редактор (single-режим страницы поста, дровер) — без glass-карточек и hero-типографики</summary>
+    [Parameter] public bool Flat { get; set; }
+
     StandardEditContainer<PostEditModel> f = default!;
 
     //==========================================

@@ -294,7 +294,14 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 - Adopted-листы НЕ important → авторский `!important` (мост `html:root` в base.less) перебивает
   и их, и inline-токены на `<html>`.
 - `default-fuib.css` задаёт body (100dvh, overflow:hidden, шрифт, цвет) и `a{text-decoration:underline}`;
-  грузится ПОСЛЕ авторских css в adopted-слое — в Mars перебит `body a` в base.less.
+  грузится ПОСЛЕ авторских css в adopted-слое — в Mars перебиты специфичностью в base.less:
+  `body a` (ссылки) и `html body{overflow-x:clip;overflow-y:visible}` (0,0,2 > 0,0,1).
+  **`body{overflow:hidden}` убивал ВСЕ `position:sticky` админки** (левый рельс CloudyLayout,
+  aside edit-страниц): body становится нескроллящимся scroll-контейнером при скроллящемся окне
+  (исторический JS-Affix в StandardEditContainer был обходом этого). Фикс 2026-10-14, проверен
+  playwright-замером. Диалоговый scroll-lock `body:has(.prevent-scroll){overflow:hidden}` (0,1,1)
+  выше фикса и продолжает работать. Диагностика adopted-правил: `document.styleSheets` их НЕ
+  содержит — обходить `document.adoptedStyleSheets`.
 - Атрибуты-переключатели: `no-fuib-style` (отключить default-fuib), `use-reboot` (включить reboot.css)
   — на body или html; MutationObserver реагирует на лету.
 - IMask и Sortablejs грузятся ЛЕНИВО с CDN unpkg и после onload проверяют глобал

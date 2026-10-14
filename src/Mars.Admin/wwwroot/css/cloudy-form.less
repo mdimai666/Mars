@@ -1,0 +1,252 @@
+//-------------------------------------------------------------
+// CLOUDY FORM — edit-страницы на StandardEditContainer
+// Блок edit-container (BEM, без bootstrap-утилит): базовая
+// раскладка работает в любом лэйауте, cloudy-скин — под
+// .cloudy-layout, модификатор --flat — для вложенных редакторов.
+// Поля формы (Mars.Forms.Front) не стилизуем — FluentUI-дефолты.
+//-------------------------------------------------------------
+
+.edit-container {
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    &__title {
+        margin: 0;
+        font-weight: 700;
+        color: var(--mars-text-primary, inherit);
+    }
+
+    &__subtitle {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: var(--mars-text-secondary, #6c757d);
+    }
+
+    &__tools {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__main {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    &__fields {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__alert {
+        margin-bottom: 16px;
+    }
+
+    // Сайдбар: паттерн левого рельса .cloudy-sidebar — sticky + flex-start + каппинг
+    // высотой вьюпорта со своим скроллом. Без каппа стопка карточек выходит вровень
+    // с основной колонкой — у sticky нет хода (родитель не выше элемента), и он «не липнет».
+    // (JS-Affix внутри sticky убран раньше — он ломал ширину при скролле.)
+    &__aside {
+        width: 300px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 24px;
+        align-self: flex-start;
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        margin-top: 24px;
+    }
+
+    &__aside-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__skeleton {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    &__skeleton-lines {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__skeleton-line {
+        width: 100%;
+    }
+
+    &__skeleton-button {
+        margin-left: auto;
+    }
+
+    &__save-row {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__card {
+        background: var(--mars-bg-surface, #fff);
+        border: 1px solid var(--mars-border, rgba(128, 128, 128, .25));
+        border-radius: 10px;
+    }
+
+    &__card-body {
+        padding: 16px;
+    }
+
+    &__card-title {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &__card-meta {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--mars-text-secondary, #6c757d);
+    }
+
+    &__card-section {
+        margin-top: 16px;
+    }
+
+    &__card-actions {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    @media (min-width: 992px) {
+        &__body {
+            flex-direction: row;
+            align-items: flex-start; // как .cloudy-body: дети не растягиваются — у sticky есть ход
+        }
+
+        &__aside {
+            margin-top: 0;
+        }
+
+        &__aside-inner {
+            margin-left: 16px;
+        }
+    }
+}
+
+//------------- cloudy-скин -------------
+.cloudy-layout .edit-container {
+
+    &__header {
+        margin-bottom: 26px;
+    }
+
+    &__title {
+        font-size: 30px;
+        letter-spacing: -.01em;
+        color: var(--cld-ink);
+    }
+
+    &__subtitle {
+        margin-top: 4px;
+        color: var(--cld-muted-strong);
+        font-size: 16px;
+    }
+
+    &__main {
+        border-radius: 18px;
+        background: var(--cld-acrylic-bg);
+        border: 1px solid var(--cld-acrylic-border);
+        box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
+        backdrop-filter: blur(24px) saturate(160%);
+        padding: 24px 26px;
+    }
+
+    &__aside {
+        width: 320px;
+    }
+
+    &__card {
+        border-radius: 18px;
+        background: var(--cld-acrylic-bg);
+        border: 1px solid var(--cld-acrylic-border);
+        box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
+        backdrop-filter: blur(24px) saturate(160%);
+    }
+
+    &__card-title {
+        font-size: 17px;
+        color: var(--cld-ink-soft);
+    }
+
+    &__card-meta {
+        font-size: 14px;
+        color: var(--cld-muted-strong);
+    }
+
+    // карточки, которые страницы передают в SectionExtraSidebar (там ещё bootstrap .card)
+    &__extra .card {
+        border-radius: 18px;
+        background: var(--cld-acrylic-bg);
+        border: 1px solid var(--cld-acrylic-border);
+        box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
+        backdrop-filter: blur(24px) saturate(160%);
+    }
+}
+
+//------------- --flat: вложенные редакторы (single-режим поста внутри cloudy-acrylic, дровер) -------------
+// Без glass-карточек и hero-типографики — «стекло в стекле» не нужно.
+// Селекторы ниже специфичнее скина (--flat на корне + элемент), порядок в файле не важен.
+.cloudy-layout .edit-container--flat {
+
+    .edit-container__header {
+        margin-bottom: 12px;
+    }
+
+    .edit-container__title {
+        font-size: 20px;
+    }
+
+    .edit-container__subtitle {
+        font-size: 14px;
+    }
+
+    .edit-container__main {
+        border-radius: 0;
+        background: none;
+        border: none;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        padding: 0;
+    }
+
+    .edit-container__card,
+    .edit-container__extra .card {
+        background: var(--cld-card);
+        border: 1px solid var(--cld-line);
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

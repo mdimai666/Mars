@@ -8,15 +8,14 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
-<ContentWrapper>
+<div class="flex-fill d-flex flex-column">
 
     @if (!_singleRedirect)
     {
         <EditPostView ID=@ID PostTypeName=@POSTTYPE />
     }
-    <div class="spacer-2"></div>
 
-</ContentWrapper>
+</div>
 
 @code {
 

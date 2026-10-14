@@ -18,8 +18,18 @@
                        NavigateAfterCreate="@NavigateAfterCreate"
                        HidePublishCard="@HidePublishCard"
                        HideDatesSection
-                       Class=@($"post-{PostTypeName}")
+                       Class=@($"post-{PostTypeName}{(Flat ? " edit-container--flat" : "")}")
                        @ref=f CanCreate=false>
+    <SectionSubtitle>
+        @* @if (context.Id == Guid.Empty)
+        {
+            <text>Draft a new post for your site.</text>
+        }
+        else
+        {
+            <text>Editing &laquo;@context.Title&raquo;</text>
+        } *@
+    </SectionSubtitle>
     <SectionActions>
         <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
             <FluentMenuItem Label="@AppRes.PostType" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />

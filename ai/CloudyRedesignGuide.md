@@ -39,7 +39,11 @@
     тень/`max-width`, shadow-диалог жёстко ≤600px), паддинги `fluent-dialog-body::part(title/
     content/actions)`, `.cloudy-dialog-head(__title)`; токены `--cld-*`. Действует на ВСЕ
     FluentDialog-и админки (сервис рендерит их в общем провайдере).
-  - Импорт всех четырёх — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
+  - `cloudy-form.less` — BEM-блок `edit-container` шелла `StandardEditContainer`: базовая
+    раскладка без bootstrap-утилит (действует в любом лэйауте), cloudy-скин под `.cloudy-layout`
+    (hero-хедер, glass-карточка `__main`, side-карточки `__card`) + модификатор
+    `edit-container--flat` (вложенные редакторы без glass/hero).
+  - Импорт всех cloudy-файлов — в конце `style.less`; компиляция только через `tools/ui/build-css.ps1 -Entry admin`
     (см. `ai/CssRefactoringGuide.md`; руками `style.css` не править).
 - Страницы:
   - Шаг 1 (in-place на cloudy): `Pages/Index.razor` (Home), `Pages/PostsViews/ManagePostPage`,
@@ -157,6 +161,33 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
 - Пересмотреть позже: scope-группы ключей вместо явного списка, роли на отдельные ключи.
 
+**Edit-страница (cloudy-скин StandardEditContainer, 2026-10-14):** шелл
+(`Mars.Admin.Framework/Components/StandardEditContainer.razor`) — BEM-блок `edit-container`
+БЕЗ bootstrap-утилит (`__header/__title/__subtitle/__tools/__body/__main/__fields/__aside/
+__aside-inner/__card(-body/-title/-meta/-section/-actions)/__extra/__save-row/__skeleton*`);
+стили — `cloudy-form.less`: базовая раскладка вне скоупа (работает и в старом AdminLayout)
++ cloudy-скин под `.cloudy-layout`. Все страницы на шелле (пост, PostType, UserType,
+PostCategoryType, NavMenu…) получают cloudy-вид автоматически: hero-хедер (30px + подзаголовок),
+glass-карточка основной колонки `__main` (acrylic-токены), aside `__aside` 320px (sticky) с
+side-карточками.
+- Сайдбар — паттерн `.cloudy-sidebar`: `position: sticky; top: 24px` + `align-self: flex-start`
+  + каппинг `max-height: calc(100vh - 48px)` + собственный `overflow-y: auto` (без каппа у
+  sticky нет хода — грабля в «Граблях»); на `__body` при ≥992px — `align-items: flex-start`.
+  JS-`Affix` из шелла убран; инлайн-стили (width/sticky/max-width) заменены BEM-элементами
+  с дефолтами в less.
+- `SectionSubtitle` (RenderFragment&lt;TModel&gt;) — подзаголовок hero; рендерится с model
+  шелла, поэтому обновляется после загрузки (строковый параметр от страницы-родителя не
+  обновился бы — родитель не ре-рендерится при загрузке модели).
+- Вложенные редакторы — модификатор `edit-container--flat` (без glass/hero; иначе «стекло в
+  стекле»): `[Parameter] Flat` у `EditPostView` добавляет класс в `Class` шелла. Используют:
+  single-режим ManagePostPage (внутри `.cloudy-acrylic`) и `ChildPostEditorDrawer`.
+- Карточки страниц внутри `SectionExtraSidebar` — пока bootstrap `.card`; скин накрывает их
+  селектором `__extra .card` (cloudy-вид без правки страниц).
+- Поля формы (`Mars.Forms.Front`), Title-редактор и кнопки НЕ стилизованы — только обёртка
+  (решение пользователя 2026-10-14); FluentUI-поля флипаются темой сами.
+- Страница-обёртка (`EditPostPage`) — БЕЗ `ContentWrapper`: `flex-fill` div напрямую
+  в `cloudy-content`, как ManagePostPage.
+
 **Новая страница в tech-зоне:** положить в `Pages/TechViews/` (layout из `_Imports`), маршрут
 `/tech/*` или `/dev/tech/*`; цвета — только `var(--ct-*)`/прототипные токены зоны.
 
@@ -198,6 +229,24 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   до 2026-10-06 был баг `All` (пользователь должен иметь ВСЕ указанные роли и никакие другие).
 - **Мёртвый `EUserStatus`**: `UserEntity.Status` никогда не пишется и не маппится в DTO — колонки
   «статус пользователя» в UI не существует; не показывать фейк.
+- **JS-`Affix` внутри `position: sticky`-контейнера** — при скролле сайдбар «прыгает» по ширине:
+  Affix переключает контент в `position: fixed`, содержимое выходит из потока и aside теряет
+  intrinsic-ширину (баг StandardEditContainer; фикс 2026-10-14 — Affix из шелла убран, оставлен
+  только sticky). Не совмещать два механизма прилипания; в `EditNavMenuPage` остался свой
+  отдельный Affix (не в sticky-контейнере).
+- **Sticky-сайдбар «не липнет» = нет хода**: sticky скользит только внутри родителя и только
+  пока родитель выше элемента; высокая стопка карточек (Публикация + Extra) выходит вровень
+  с основной колонкой → ход ≈ 0. Одного `height: fit-content` недостаточно — элемент может
+  быть выше вьюпорта (низ всегда за экраном). Лечение — паттерн `.cloudy-sidebar`: каппинг
+  `max-height: calc(100vh - 48px)` + собственный `overflow-y: auto` + `align-self/align-items:
+  flex-start` (фикс 2026-10-14, `edit-container__aside`).
+- **`default-fuib.css` (adopted) задаёт `body{overflow:hidden}` — убивает ВСЕ sticky админки**:
+  body становится нескроллящимся scroll-контейнером (скроллится окно) — sticky привязан к body
+  и не активируется; левый рельс `.cloudy-sidebar` был мёртв с октября, JS-`Affix` в шелле
+  edit-страниц — обход именно этого. Фикс 2026-10-14: `html body{overflow-x:clip;overflow-y:visible}`
+  в base.less (специфичность 0,0,2 > adopted 0,0,1; диалоговый lock `body:has(.prevent-scroll)`
+  0,1,1 уцелел), проверено playwright-замером (aside/рельс липнут на top:24). Static-раскопки
+  less такого не видят — правила в `document.adoptedStyleSheets` (детали: FluentV5Reference).
 - **Сборка при живом `tools/ui/serve.ps1`** ломает fingerprint-ассеты (404 на .wasm) — сначала
   остановить сервер (детали: память проекта `wasm-fingerprint-stale-server`).
 - После коммита, затрагивающего css/js — bump `MarsAppVersion` в `Directory.Build.props` (cache-busting).
@@ -388,9 +437,22 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
   Routes.razor убран; хендлеры регистрирует только Mars.Admin → OpenSelectMedia
   возвращает null); если стенду нужен пикер — перенос медиа-семейства в Framework
   (отклонённый вариант 2).
+- 2026-10-14: редактор поста — общий cloudy-скин шелла `StandardEditContainer`; раунд 2
+  в тот же день — шелл переписан на BEM-блок `edit-container` без bootstrap-утилит и из
+  сайдбара убран JS-`Affix` (фикс «прыгающей» ширины при скролле); раунд 3 — sticky не
+  лип (нет хода: стопка карточек вровень с колонкой), фикс = паттерн `.cloudy-sidebar`
+  (каппинг `max-height: calc(100vh - 48px)` + свой `overflow-y:auto` + flex-start, top:24px);
+  раунд 4 — корень «не липнет»: `default-fuib.css` (adopted) задаёт `body{overflow:hidden}`
+  и убивает ВСЕ sticky админки (левый рельс тоже), фикс `html body{overflow-x:clip;
+  overflow-y:visible}` в base.less, проверено playwright-замером (aside/рельс липнут top:24;
+  грабли выше). `cloudy-form.less`: базовая раскладка + скин (hero-хедер/`SectionSubtitle`,
+  glass `__main`, aside 320px, `edit-container--flat` для вложенных — single ManagePostPage
+  и ChildPostEditorDrawer через `[Parameter] Flat` у EditPostView); `EditPostPage` без
+  ContentWrapper. Все остальные edit-страницы шелла получили тот же вид автоматически.
+  Поля формы/Title-редактор не тронуты (решение пользователя). Рецепт — §«Edit-страница».
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
   2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
   responsive-скрытие колонок DataGrid (не перенесено); остальные диалоги
   (PasskeysPage, PluginViews) — на `CloudyDialogHead`/скин по мере правки страниц;
-  редактор поста и Nodes — ПОСЛЕДНИЕ шаги.
+  Nodes — ПОСЛЕДНИЙ шаг.

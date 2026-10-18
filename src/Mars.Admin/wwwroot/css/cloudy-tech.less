@@ -337,6 +337,12 @@ body:not([data-theme="dark"]) .cloudy-tech {
             color: var(--ct-active-ink);
         }
     }
+
+    // docker-иконка — svg-фон (extra-icons.less), currentColor не наследует:
+    // в активном пункте меняем на фирменный синий (поведение старого builder-сайдбара)
+    &__item.active .bi-docker-black-stroke::before {
+        background: url('/mars/icons/docker.svg');
+    }
 }
 
 .cloudy-tech-page {

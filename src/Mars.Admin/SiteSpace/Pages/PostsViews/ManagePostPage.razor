@@ -1,74 +1,55 @@
 @page "/Post"
 @page "/Post/{POSTTYPE}"
+@using Mars.Cms.Contracts.PostCategories
+@using Mars.Cms.Contracts.Posts
+@using Mars.Cms.Contracts.PostTypes
 @inject IStringLocalizer<AppRes> L
-@inject Mars.Admin.Framework.Services.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
 
 <div class="flex-fill d-flex flex-column">
-    <header class="cloudy-hero cloudy-hero--split">
-        <div>
-            <h1>@(postType?.Title ?? "…")</h1>
-            <p>Write, edit and publish your articles.</p>
-        </div>
-        @if (!_isSingle)
-        {
-            <div class="d-flex align-items-start">
-                <XActionsDropDown ContextPart="@postType!.TypeName" AlsoShowRootContext="true" />
-            </div>
-        }
-    </header>
-
-    @if (!_isSingle)
+    @if (_isSingle)
     {
-        <div class="cloudy-kpis" style="margin-bottom:26px;">
-            <div class="cloudy-kpi">
-                <div>
-                    <span class="cloudy-kpi__label">Total posts</span>
-                    <strong class="cloudy-kpi__value">@Fmt(_totalCount)</strong>
-                </div>
-                <span class="cloudy-kpi__icon"><i class="bi bi-file-earmark-text"></i></span>
-            </div>
-            <div class="cloudy-kpi">
-                <div>
-                    <span class="cloudy-kpi__label">Categories</span>
-                    <strong class="cloudy-kpi__value">@Fmt(_categoriesCount)</strong>
-                </div>
-                <span class="cloudy-kpi__icon"><i class="bi bi-folder2-open"></i></span>
-            </div>
-            <div class="cloudy-kpi">
-                <div>
-                    <span class="cloudy-kpi__label">Media</span>
-                    <strong class="cloudy-kpi__value">@Fmt(_mediaCount)</strong>
-                </div>
-                <span class="cloudy-kpi__icon"><i class="bi bi-image"></i></span>
-            </div>
-            <div class="cloudy-kpi">
-                <div>
-                    <span class="cloudy-kpi__label">Statuses</span>
-                    <strong class="cloudy-kpi__value">@Fmt(_statusesCount)</strong>
-                </div>
-                <span class="cloudy-kpi__dot cloudy-kpi__dot--green"></span>
-            </div>
-        </div>
+        <CloudyPageHead Title="@(postType?.Title ?? "…")" Subtitle="Write, edit and publish your articles." />
+    }
+    else
+    {
+        <CloudyPageHead Title="@(postType?.Title ?? "…")" Subtitle="Write, edit and publish your articles." KpiCols="@(CategoriesEnabled ? 2 : 1)">
+            <Kpis>
+                <CloudyKpi Label="@KpiLabel(PostKpiKeys.TotalFor(postType!.TypeName))"
+                           Value="@KpiValue(PostKpiKeys.TotalFor(postType!.TypeName))"
+                           Icon="bi-file-earmark-text" />
+                @if (CategoriesEnabled)
+                {
+                    <CloudyKpi Label="@KpiLabel(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                               Value="@KpiValue(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                               Icon="bi-folder2-open" />
+                }
+            </Kpis>
+        </CloudyPageHead>
     }
 
-    <section class="cloudy-acrylic flex-fill d-flex flex-column">
-        <div class="cloudy-acrylic__body flex-fill d-flex flex-column">
-            @if (_isSingle)
-            {
-                @if (_singlePostId != Guid.Empty)
-                {
-                    <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard Flat />
-                }
-            }
-            else
-            {
-                <ManagePostView @ref=_managePostView PostType=@postType />
-            }
+    @* Действия типа поста (XActionsDropDown) пока спрятаны — не определено место в cloudy-схеме.
+    @if (!_isSingle)
+    {
+        <div class="d-flex align-items-start">
+            <XActionsDropDown ContextPart="@postType!.TypeName" AlsoShowRootContext="true" />
         </div>
-    </section>
-</div>
+    }
+    *@
 
-@code {
-    static string Fmt(int? v) => v?.ToString() ?? "—";
-}
+    @if (_isSingle)
+    {
+        @if (_singlePostId != Guid.Empty)
+        {
+            <section class="cloudy-acrylic flex-fill d-flex flex-column">
+                <div class="cloudy-acrylic__body flex-fill d-flex flex-column">
+                    <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard Flat />
+                </div>
+            </section>
+        }
+    }
+    else
+    {
+        <ManagePostView PostType=@postType />
+    }
+</div>

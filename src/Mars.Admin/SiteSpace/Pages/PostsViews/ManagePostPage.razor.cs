@@ -1,7 +1,7 @@
-﻿using Mars.Cms.Contracts.Posts;
+﻿using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
-using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
@@ -10,11 +10,6 @@ namespace Mars.Admin.SiteSpace.Pages.PostsViews;
 public partial class ManagePostPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-
-    ManagePostView _managePostView = default!;
-
-    string urlEditPage => "/dev/EditPost";
-    string query => $"?posttype={POSTTYPE}";
 
     PostTypeAdminPanelItemResponse postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
 
@@ -26,10 +21,9 @@ public partial class ManagePostPage
     bool _isSingle;
     Guid _singlePostId;
 
-    int? _totalCount;
-    int? _categoriesCount;
-    int? _mediaCount;
-    int? _statusesCount;
+    bool CategoriesEnabled => postType.EnabledFeatures.Contains(PostTypeConstants.Features.Category);
+
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -51,26 +45,18 @@ public partial class ManagePostPage
             {
                 await LoadKpi();
             }
-
-            //_managePostView.Refresh();
         }
     }
 
     async Task LoadKpi()
     {
+        var keys = new List<string> { PostKpiKeys.TotalFor(postType.TypeName) };
+        if (CategoriesEnabled)
+            keys.Add(PostCategoryKpiKeys.TotalFor(postType.TypeName));
+
         try
         {
-            var posts = await client.Post.List(postType.TypeName, new ListPostQueryRequest { Take = 1, Sort = "-CreatedAt" });
-            _totalCount = posts.TotalCount;
-
-            var cats = await client.PostCategory.ListForPostType(postType.TypeName, new() { Take = 1, Sort = "-CreatedAt" });
-            _categoriesCount = cats.TotalCount;
-
-            var media = await client.Media.List(new ListFileQueryRequest { Take = 1, Sort = "-CreatedAt" });
-            _mediaCount = media.TotalCount;
-
-            var detail = await client.PostType.Get(postType.Id);
-            _statusesCount = detail?.PostStatusList?.Count;
+            _kpi = await client.Kpi.Get(keys);
         }
         catch
         {
@@ -79,4 +65,9 @@ public partial class ManagePostPage
         StateHasChanged();
     }
 
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
 }

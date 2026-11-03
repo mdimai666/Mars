@@ -39,6 +39,12 @@
         margin-left: auto;
     }
 
+    // полноширинный ряд под тулбаром (панель фильтров); пустой фрагмент схлопывается
+    &__subhead {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
     &__foot {
         display: flex;
         align-items: center;
@@ -56,7 +62,7 @@
     &--scroll {
         display: flex;
         flex-direction: column;
-        height: calc(100vh - var(--cloudy-browser-inset, 520px));
+        height: calc(100vh - var(--cloudy-browser-inset, 320px));
         min-height: 480px;
 
         .cloudy-browser__head,
@@ -124,7 +130,7 @@ table.cloudy-grid.fluent-data-grid {
     th,
     td {
         border-bottom: 1px solid var(--cld-line);
-        padding: 13px 0;
+        /*padding: 13px 0;*/
         background: transparent;
     }
     // боковые поля страницы (как padding 28px у .cloudy-list__row) — крайними ячейками
@@ -478,6 +484,37 @@ table.cloudy-grid.fluent-data-grid {
     &:hover {
         color: var(--cld-primary);
         border-color: var(--cld-primary);
+    }
+
+    &--active {
+        color: var(--cld-primary);
+        border-color: var(--cld-primary);
+        background: var(--cld-primary-soft);
+    }
+}
+
+//------------- панель продвинутых фильтров (ряд под тулбаром browser-панели) -------------
+.cloudy-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+
+    &__col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 150px;
+    }
+
+    &__label {
+        color: var(--cld-muted);
+        font-size: 12.5px;
+    }
+
+    &__row {
+        display: flex;
+        gap: 6px;
     }
 }
 

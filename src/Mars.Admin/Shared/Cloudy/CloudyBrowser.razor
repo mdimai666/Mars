@@ -1,9 +1,13 @@
 <section class="cloudy-browser @Class @(Scrollable ? "cloudy-browser--scroll" : null)">
-    @if (HeadLeft is not null || HeadRight is not null)
+    @if (HeadLeft is not null || HeadRight is not null || SubHeadVisible)
     {
         <header class="cloudy-browser__head">
             <div class="cloudy-browser__head-left">@HeadLeft</div>
             <div class="cloudy-browser__head-right">@HeadRight</div>
+            @if (SubHeadVisible)
+            {
+                <div class="cloudy-browser__subhead">@SubHead</div>
+            }
         </header>
     }
     <div class="cloudy-browser__body">@ChildContent</div>
@@ -19,6 +23,10 @@
     [Parameter] public bool Scrollable { get; set; }
     [Parameter] public RenderFragment? HeadLeft { get; set; }
     [Parameter] public RenderFragment? HeadRight { get; set; }
+    /// <summary>Полноширинный ряд под тулбаром головы (панели фильтров и т.п.).</summary>
+    [Parameter] public RenderFragment? SubHead { get; set; }
+    /// <summary>Рендерить ли ряд SubHead (пустой ряд добавлял бы голову и gap).</summary>
+    [Parameter] public bool SubHeadVisible { get; set; }
     [Parameter] public RenderFragment? Foot { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 }

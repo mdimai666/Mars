@@ -588,6 +588,12 @@
   <data name="users.newThisMonth" xml:space="preserve">
     <value>New this month</value>
   </data>
+  <data name="posts.total" xml:space="preserve">
+    <value>Total posts</value>
+  </data>
+  <data name="postcategories.total" xml:space="preserve">
+    <value>Categories</value>
+  </data>
   <data name="feedbacks.total" xml:space="preserve">
     <value>Total feedbacks</value>
   </data>

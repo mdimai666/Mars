@@ -1,16 +1,20 @@
 @if (!string.IsNullOrEmpty(ImageUrl))
 {
-    <span class="cloudy-avatar cloudy-avatar--img" style="background-image:url('@ImageUrl')"></span>
+    <span class="cloudy-avatar cloudy-avatar--img"
+          title="@Title"
+          style="background-image:url('@ImageUrl')"></span>
 }
 else
 {
-    <span class="cloudy-avatar cloudy-tint-@(Tint % 5)">@Initials()</span>
+    <span class="cloudy-avatar cloudy-tint-@(Tint % 5)"
+          title="@Title">@Initials()</span>
 }
 
 @code {
     [Parameter] public string? Name { get; set; }
     [Parameter] public string? ImageUrl { get; set; }
     [Parameter] public int Tint { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     string Initials()
     {

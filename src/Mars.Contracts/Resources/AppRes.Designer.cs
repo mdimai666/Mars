@@ -1015,6 +1015,15 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string postcategories_total {
+            get {
+                return ResourceManager.GetString("postcategories.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Post category.
         /// </summary>
         public static string PostCategory {
@@ -1065,6 +1074,15 @@ namespace Mars.Contracts.Resources {
         public static string Posts {
             get {
                 return ResourceManager.GetString("Posts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total posts.
+        /// </summary>
+        public static string posts_total {
+            get {
+                return ResourceManager.GetString("posts.total", resourceCulture);
             }
         }
         

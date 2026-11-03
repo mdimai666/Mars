@@ -7,14 +7,14 @@
 @* Панель фильтров колонок грида постов: владеет состоянием фильтров (сессионно),
     применяет сразу при изменении, текстовый/числовой ввод — с debounce. *@
 
-<div class="mt-2 d-flex flex-wrap gap-2 align-items-end">
+<div class="cloudy-filters">
     @foreach (var col in Columns)
     {
         var f = FilterState(col.Key);
         var metaField = col.IsSystem ? null : MetaFieldOf(col);
 
-        <div class="vstack gap-1" style="min-width:150px;">
-            <label class="text-secondary small">@col.Title</label>
+        <div class="cloudy-filters__col">
+            <span class="cloudy-filters__label">@col.Title</span>
 
             @if ((col.IsSystem && col.Key is SystemFieldsCatalog.Title or SystemFieldsCatalog.Author)
                  || metaField is { Type: MetaFieldType.String or MetaFieldType.Text })
@@ -26,14 +26,14 @@
             else if ((col.IsSystem && col.Key == SystemFieldsCatalog.CreatedAt)
                      || metaField is { Type: MetaFieldType.DateTime })
             {
-                <div class="hstack gap-1">
+                <div class="cloudy-filters__row">
                     <FluentDatePicker @bind-Value="f.DateFrom" @bind-Value:after="RaiseNow" Placeholder="от" Style="max-width:140px;" />
                     <FluentDatePicker @bind-Value="f.DateTo" @bind-Value:after="RaiseNow" Placeholder="до" Style="max-width:140px;" />
                 </div>
             }
             else if (metaField is { Type: MetaFieldType.Int or MetaFieldType.Long or MetaFieldType.Float or MetaFieldType.Decimal })
             {
-                <div class="hstack gap-1">
+                <div class="cloudy-filters__row">
                     <FluentNumberInput @bind-Value="f.NumberFrom" @bind-Value:after="OnFilterInputChanged"
                                        Immediate
                                        Placeholder="от" Style="width:80px;" />
@@ -74,9 +74,7 @@
         </div>
     }
 
-    <div class="hstack gap-1">
-        <FluentButton OnClick="ResetFilters">Сбросить</FluentButton>
-    </div>
+    <FluentButton OnClick="ResetFilters">Сбросить</FluentButton>
 </div>
 
 @code {
@@ -102,7 +100,9 @@
     }
 
     readonly Dictionary<string, ColumnFilterState> _columnFilters = new();
-    CancellationTokenSource? _debounceCts;
+    Debouncer _debouncer = default!;
+
+    protected override void OnInitialized() => _debouncer = new Debouncer(300);
 
     ColumnFilterState FilterState(string key)
         => _columnFilters.TryGetValue(key, out var state) ? state : _columnFilters[key] = new ColumnFilterState();
@@ -110,34 +110,20 @@
     MetaFieldDetailResponse? MetaFieldOf(ManagePostView.GridColumn column)
         => MetaFields.FirstOrDefault(f => f.Key == column.Key);
 
-    /// <summary>Мгновенное применение (выбор дат/значений)</summary>
+    /// <summary>Мгновенное применение (выбор дат/значений): ожидающий дебаунс снимается,
+    /// чтобы устаревший ввод не выстрелил повторно</summary>
     void RaiseNow()
     {
-        _debounceCts?.Cancel();
+        var pending = _debouncer;
+        _debouncer = new Debouncer(300);
+        pending.Dispose();
         Changed.InvokeAsync();
     }
 
     /// <summary>Применение с задержкой — для текстового/числового ввода</summary>
     void OnFilterInputChanged()
     {
-        _debounceCts?.Cancel();
-        var cts = new CancellationTokenSource();
-        _debounceCts = cts;
-        _ = DebouncedRaiseAsync(cts.Token);
-    }
-
-    async Task DebouncedRaiseAsync(CancellationToken token)
-    {
-        try
-        {
-            await Task.Delay(300, token);
-            if (!token.IsCancellationRequested)
-                await Changed.InvokeAsync();
-        }
-        catch (TaskCanceledException)
-        {
-            // ввод продолжается — ждём следующую паузу
-        }
+        _debouncer.Debounce(() => _ = Changed.InvokeAsync());
     }
 
     void ResetFilters()
@@ -230,6 +216,6 @@
 
     public void Dispose()
     {
-        _debounceCts?.Cancel();
+        _debouncer?.Dispose();
     }
 }

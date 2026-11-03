@@ -1,8 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using Mars.Admin.Framework.Hub;
+﻿using Mars.Admin.Framework.Hub;
+using Mars.Admin.Shared.Cloudy;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -14,10 +15,10 @@ public partial class ManagePostView : IDisposable
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] ClientHub clientHub { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
+    [Inject] IDialogService dialogService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public PostTypeAdminPanelItemResponse PostType { get; set; } = default!;
-    string previousRequestPostTypeName = "";
 
     string urlEditPage = "/dev/EditPost";
     string GridTemplateColumns = "3fr 2fr 1fr 1fr";
@@ -25,7 +26,7 @@ public partial class ManagePostView : IDisposable
     //table
     FluentDataGrid<PostListItemResponse> table = default!;
     string _searchText = "";
-    ListDataResult<PostListItemResponse> data = ListDataResult<PostListItemResponse>.Empty();
+    int? _total;
     GridItemsProvider<PostListItemResponse> dataProvider = default!;
 
     Guid _filterCategoryId;
@@ -45,10 +46,6 @@ public partial class ManagePostView : IDisposable
     bool _filtersVisible;
     ManagePostFiltersPanel? _filtersPanel;
     List<GridColumn> _filterColumns = [];
-
-    // диалог настройки колонок
-    bool _settingsDialogVisible;
-    PostTypeGridSettings? _gridDraft;
 
     protected override void OnInitialized()
     {
@@ -75,56 +72,39 @@ public partial class ManagePostView : IDisposable
             _gridReady = true;
             Refresh();
         }
-
-        if (previousRequestPostTypeName != PostType.TypeName)
-        {
-            previousRequestPostTypeName = PostType.TypeName;
-        }
     }
 
     void BuildDataProvider()
     {
-        dataProvider = new GridItemsProvider<PostListItemResponse>(
-            async req =>
-            {
-                string sortColumn;
-                bool ascending;
-                var sortBy = req.GetSortByProperties();
-                if (sortBy.Count != 0)
-                {
-                    sortColumn = sortBy.First().PropertyName;
-                    ascending = req.SortColumns.FirstOrDefault()?.Ascending ?? false;
-                }
-                else
-                {
-                    // сортировка по умолчанию из настройки типа; запасная — дата создания
-                    var def = _columns.FirstOrDefault(c => c.IsDefaultSort);
-                    sortColumn = SortProperty(def);
-                    ascending = def?.DefaultSortDirection != DataGridSortDirection.Descending;
-                }
+        dataProvider = CloudyGridProvider.Create<PostListItemResponse>(LoadPosts);
+    }
 
-                var sort = (ascending ? "" : "-") + sortColumn;
+    async Task<ListDataResult<PostListItemResponse>> LoadPosts(int skip, int take, string? sort)
+    {
+        if (sort is null)
+        {
+            // сортировка по умолчанию из настройки типа; запасная — дата создания
+            var def = _columns.FirstOrDefault(c => c.IsDefaultSort);
+            var ascending = def?.DefaultSortDirection != DataGridSortDirection.Descending;
+            sort = (ascending ? "" : "-") + SortProperty(def);
+        }
 
-                data = await client.Post.List(PostType.TypeName, new()
-                {
-                    Skip = req.StartIndex,
-                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
-                    Sort = sort,
-                    Search = _searchText,
-                    IncludeCategory = true,
-                    CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
-                    FilterIncludeDescendantsCategories = false,
-                    MetaFields = _columns.Where(c => !c.IsSystem).Select(c => c.Key).ToArray(),
-                    Filters = _filtersPanel?.BuildGridFilters() ?? [],
-                });
+        var data = await client.Post.List(PostType.TypeName, new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort,
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            IncludeCategory = true,
+            CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
+            FilterIncludeDescendantsCategories = false,
+            MetaFields = _columns.Where(c => !c.IsSystem).Select(c => c.Key).ToArray(),
+            Filters = _filtersPanel?.BuildGridFilters() ?? [],
+        });
 
-                var collection = new Collection<PostListItemResponse>(data.Items.ToList());
-
-                StateHasChanged();
-
-                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-            }
-        );
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
     }
 
     void RebuildColumns()
@@ -186,28 +166,42 @@ public partial class ManagePostView : IDisposable
     static string? FirstOf(string? display)
         => display?.Split(", ").FirstOrDefault();
 
-    void OpenSettingsDialog()
+    static string AuthorName(PostListItemResponse item)
+        => string.IsNullOrWhiteSpace(item.Author.DisplayName) ? item.Author.UserName ?? "" : item.Author.DisplayName;
+
+    static int TintFor(object key) => (key.GetHashCode() & 0x7FFFFFFF) % 5;
+
+    async Task OpenSettingsDialog()
     {
-        _gridDraft = _gridSettings;
-        _settingsDialogVisible = true;
+        var result = await dialogService.ShowDialogAsync<PostGridSettingsDialog>(new DialogOptions
+        {
+            Modal = true,
+            Header = { CloseAction = { Visible = true } },
+            Parameters =
+            {
+                ["Content"] = new PostGridSettingsDialogContent
+                {
+                    Settings = _gridSettings,
+                    EnabledFeatures = PostType.EnabledFeatures,
+                    MetaFields = _metaFields,
+                },
+            },
+        });
+
+        if (result.Cancelled || result.Value is not PostGridSettingsDialogResult saved) return;
+        await SaveSettingsAsync(saved.Settings);
     }
 
-    void CancelSettingsDialog()
-    {
-        _settingsDialogVisible = false;
-    }
-
-    async Task SaveSettingsAsync()
+    async Task SaveSettingsAsync(PostTypeGridSettings? settings)
     {
         await client.PostType.UpdatePresentation(new UpdatePostTypePresentationRequest
         {
             Id = PostType.Id,
             ListViewTemplate = PostType.Presentation.ListViewTemplate ?? "",
-            Grid = _gridDraft,
+            Grid = settings,
         });
 
-        _gridSettings = _gridDraft;
-        _settingsDialogVisible = false;
+        _gridSettings = settings;
 
         RebuildColumns();
         BuildDataProvider();
@@ -218,8 +212,9 @@ public partial class ManagePostView : IDisposable
         _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
     }
 
-    void HandleSearchInput()
+    void OnSearchChanged(string text)
     {
+        _searchText = text;
         table.RefreshDataAsync();
     }
 
@@ -273,37 +268,6 @@ public partial class ManagePostView : IDisposable
         public bool IsDefaultSort { get; set; }
         public DataGridSortDirection DefaultSortDirection { get; set; } = DataGridSortDirection.Descending;
     }
-
-    #region SETTINGS DIALOG
-    // v5: FluentDialog без Hidden — показ/скрытие императивно; bool-флаг остаётся источником правды,
-    // синхронизация после рендера. OnStateChange(Closed) вызывает CancelSettingsDialog при dismiss.
-    FluentDialog _settingsDialog = default!;
-    bool _settingsDialogShown;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        _settingsDialogShown = await SyncDialogAsync(_settingsDialog, _settingsDialogVisible, _settingsDialogShown);
-    }
-
-    static async Task<bool> SyncDialogAsync(FluentDialog? dialog, bool visible, bool shown)
-    {
-        if (dialog is null) return shown;
-
-        if (visible && !shown)
-        {
-            await dialog.ShowAsync();
-            return true;
-        }
-
-        if (!visible && shown)
-        {
-            await dialog.HideAsync();
-            return false;
-        }
-
-        return shown;
-    }
-    #endregion
 
     #region FILTERS
     /// <summary>Показать/скрыть панель фильтров. При скрытии панель разбирается

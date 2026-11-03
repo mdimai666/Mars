@@ -16,7 +16,10 @@
     `CloudyTechTopBar`, `CloudyTechSideBar`, `CloudyTechDock` (фикс-иконки hub/память в левом
     нижнем углу без фона, popover при наведении — замена статус-бара удалённого BuilderLayout).
   - Паттерн-компоненты списочных страниц (уровень 2): `CloudyPageHead`, `CloudyKpi`, `CloudyBrowser`
-    (параметр `Scrollable` — flex-fill тело с внутренним скроллом для DataGrid-страниц),
+    (параметр `Scrollable` — flex-fill тело с внутренним скроллом для DataGrid-страниц;
+    `SubHead` + `SubHeadVisible` — полноширинный ряд под тулбаром головы для панелей
+    фильтров и т.п.; при `SubHeadVisible=false` ряд НЕ рендерится — пустой div добавлял бы
+    лишний gap головы),
     `CloudyChips`, `CloudySearchBox` (встроенный дебаунс 300мс), `CloudyPager`, `CloudyAvatar`,
     `CloudyTag` — API однострочное, композиции без «конструктора страниц».
   - `CloudyGridProvider.cs` — фабрика `GridItemsProvider<T>` для FluentDataGrid: маппит
@@ -137,6 +140,10 @@
    loader'а — `nameof(T.CreatedAt)`; стикер аватара — детерминированный тинт из id
    (`(id.GetHashCode() & 0x7FFFFFFF) % 5`).
 4. Фильтры/поиск/удаление/create → `_grid.RefreshDataAsync()` (не пересоздание провайдера).
+   Панель продвинутых фильтров — в слоте `SubHead` (`SubHeadVisible` = флаг панели), НЕ в
+   `ChildContent`: тело `--scroll` скроллится, и панель уезжала бы вместе с гридом, ломая
+   виртуализацию. Стили панели — `.cloudy-filters(__col/__label/__row)` в cloudy-list.less;
+   debounce текстового ввода — только `Debouncer` (см. граблю про CTS).
 5. Колонки и `EmptyContent`/`LoadingContent` — ОБЯЗАТЕЛЬНО явный `<ChildContent>` для колонок
    (RZ9996, та же грабля что у CloudyBrowser). Responsive-скрытие колонок (`u-hide-*`) на
    DataGrid НЕ перенесено — при необходимости менять `GridTemplateColumns` + nth-child по брейкпоинтам.
@@ -186,6 +193,18 @@ Header = { CloseAction = { Visible = true } }, Parameters = { ["Content"] = cont
 - Фильтр `CreatedFrom` (DateTimeOffset?) для «новых за месяц» проброшен
   `ListUserQueryRequest` → `ListUserQuery` → `ToQuery` (`Mars.Identity.Abstractions/Dto/Users/
   UserRequestExtensions.cs`) → `UserRepository.ListAllInternal`.
+- Параметризованные метрики (2026-11-04): `IParameterizedKpiHandler` (`Mars.Contracts/Common/
+  IKpiHandler.cs`) — ключ запроса вида `{Key}:{parameter}` (напр. `posts.total:blog` — число
+  записей типа). `KpiController` после точного совпадения режет ключ по первому ':' и зовёт
+  `GetAsync(parameter)`; чистый ключ — глобальное значение через базовый `GetAsync`. Результат
+  ОБЯЗАН вернуть полный запрошенный ключ (`KpiResult.Key`), `Label` — стабильный ключ без
+  параметра (resx-перевод). Кэш per-параметр (`kpi:{key}:{parameter}`); инвалидация: у постов
+  тип парсится из топика события (`entity.post/{type}/…`, wildcard-подписка `PostAnyOperation()`
+  в конструкторе), у категорий события глобальные (`entity.PostCategory/add|delete`) — хендлер
+  помнит запрошенные параметры (`ConcurrentDictionary`) и сбрасывает их все. Пилоты:
+  `PostsTotalKpiHandler`/`PostCategoriesTotalKpiHandler` (`Mars.Cms.Host/Kpi/`), ключи —
+  `PostKpiKeys.TotalFor(typeName)`, `PostCategoryKpiKeys.TotalFor(typeName)`
+  (`Mars.Cms.Contracts`); подписи `posts.total`/`postcategories.total` в `AppRes*.resx`.
 - Пересмотреть позже: scope-группы ключей вместо явного списка, роли на отдельные ключи.
 
 **Edit-страница (cloudy-скин StandardEditContainer, 2026-10-14):** шелл
@@ -504,9 +523,29 @@ side-карточками.
   FormBlockEditor/PostStatusesEditor/SystemFieldSettingsPanel/ChildPostEditorDrawer/
   RegenerateGeneratedMetaValuesForm → `SiteSpace/Components`, CodeEditorExtraToolbar
   (CodeEditor2 используется в обеих зонах) → `Shared`.
+- 2026-10-30: ManagePostPage/ManagePostView переведены на DataGrid-паттерн: CloudyPageHead
+  + 2 KPI (Total posts / Categories; Media и Statuses убраны),
+  CloudyBrowser Scrollable (HeadLeft — фильтр-категория, HeadRight — CloudySearchBox +
+  `.cloudy-icon-btn` refresh/фильтры/колонки + Create), грид `cloudy-grid` на
+  CloudyGridProvider, ячейки — паттерн-классы (stack/tags/time/grid-member/row-actions,
+  детерминированные тинты), bootstrap mobile/desktop-дубль Title-ячейки удалён.
+  Кнопка «AI help» удалена, XActionsDropDown в hero закомментирован (место не определено —
+  решение пользователя). Диалог настройки колонок — сервис-диалог `PostGridSettingsDialog`
+  (CloudyDialogHead + PostTypeGridSettingsEditor; результат — wrapper
+  `PostGridSettingsDialogResult`, т.к. null-настройки = «сброс» и неотличимы от отмены);
+  инлайн-FluentDialog + `SyncDialogAsync`-хак удалены. Панель фильтров — в новом слоте
+  `SubHead`/`SubHeadVisible` CloudyBrowser + `.cloudy-filters`-стили; CTS-дебаунс панели
+  заменён на `Debouncer`. Single-режим (EditPostView Flat в `.cloudy-acrylic`) не тронут.
+- 2026-11-04: тулбар ManagePostView — иконочные кнопки (фильтры/колонки/refresh) и
+  фильтр-категория в HeadLeft, в HeadRight только поиск + Create (решение пользователя).
+  KPI ManagePostPage переведены с Take=1-хака на KPI-эндпоинт: параметризованные ключи
+  `posts.total:{typeName}` / `postcategories.total:{typeName}` (`IParameterizedKpiHandler` —
+  расширение реестра, см. рецепт KPI); карточка Categories рендерится только при включённой
+  фиче Category; подписи — из AppRes через `L[Label]` (как UsersPage). Тесты —
+  `GetKpiTests` (Mars.WebApiClient.Integration.Tests, 4 passed).
 - Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
   и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
-  2026-10-07); перенос Posts/Categories на list-паттерны (кандидаты на DataGrid-паттерн);
+  2026-10-07); перенос Categories на list-паттерны (Posts —done 2026-10-30);
   responsive-скрытие колонок DataGrid (не перенесено); остальные диалоги
   (PasskeysPage, PluginViews) — на `CloudyDialogHead`/скин по мере правки страниц;
   Nodes — ПОСЛЕДНИЙ шаг.

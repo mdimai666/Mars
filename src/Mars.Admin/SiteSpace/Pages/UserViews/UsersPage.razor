@@ -50,7 +50,7 @@
                 <div class="cloudy-tags">
                     @foreach (var r in context.Roles.Take(2))
                     {
-                        <CloudyTag Text="@r" Tint="@RoleTint(r)" />
+                        <CloudyTag Text="@r" Tint="@r.StableTint()" />
                     }
                     @if (context.Roles.Count > 2)
                     {

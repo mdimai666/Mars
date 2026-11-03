@@ -92,13 +92,4 @@ public partial class FeedbackListPage
         string url = Q.ServerUrlJoin("api/Feedback/DownloadExcel");
         await _appjs.DownloadFileFromUrl(url);
     }
-
-    // имена значений FeedbackType (Mars.Cms.Abstractions)
-    static int TintFor(string type) => type switch
-    {
-        "InfoMessage" => 0,
-        "BugReport" => 3,
-        "Question" => 1,
-        _ => type.StableTint(),
-    };
 }

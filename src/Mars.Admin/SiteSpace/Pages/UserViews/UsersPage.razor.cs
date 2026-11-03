@@ -90,16 +90,6 @@ public partial class UsersPage
 
     static int TintFor(Guid id) => (id.GetHashCode() & 0x7FFFFFFF) % 5;
 
-    int TintIndex(string role)
-    {
-        var i = _availRoles.Select(r => r.Name).ToList()
-            .FindIndex(n => string.Equals(n, role, StringComparison.OrdinalIgnoreCase));
-        return (i < 0 ? 0 : i) % 5;
-    }
-
-    int? RoleTint(string role)
-        => role.Equals("admin", StringComparison.OrdinalIgnoreCase) ? null : TintIndex(role);
-
     IReadOnlyCollection<RoleSummaryResponse>? rolesForCreate;
     IReadOnlyCollection<UserTypeListItemResponse>? userTypesForCreate;
 

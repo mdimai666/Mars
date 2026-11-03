@@ -169,7 +169,7 @@ public partial class ManagePostView : IDisposable
     static string AuthorName(PostListItemResponse item)
         => string.IsNullOrWhiteSpace(item.Author.DisplayName) ? item.Author.UserName ?? "" : item.Author.DisplayName;
 
-    static int TintFor(object key) => (key.GetHashCode() & 0x7FFFFFFF) % 5;
+    static int TintFor(Guid id) => (id.GetHashCode() & 0x7FFFFFFF) % 5;
 
     async Task OpenSettingsDialog()
     {

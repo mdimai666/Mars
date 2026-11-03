@@ -49,11 +49,11 @@
                     <div class="cloudy-tags">
                         @if (context.Disabled)
                         {
-                            <CloudyTag Text="@AppRes.Disabled" Tint="3" />
+                            <CloudyTag Text="@AppRes.Disabled" Tint="@CloudyTint.Disabled" />
                         }
                         @if (context.Visibility == PostTypeVisibility.Component)
                         {
-                            <CloudyTag Text="@L[PostTypeKpiKeys.ComponentTypes]" Tint="1" />
+                            <CloudyTag Text="@L[PostTypeKpiKeys.ComponentTypes]" Tint="@CloudyTint.ComponentTypes" />
                         }
                         @foreach (var feature in context.EnabledFeatures)
                         {

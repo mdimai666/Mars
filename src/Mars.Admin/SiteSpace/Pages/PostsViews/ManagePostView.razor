@@ -78,7 +78,7 @@ else
                                                 <div class="cloudy-tags">
                                                     @foreach (var tag in context.Tags)
                                                     {
-                                                        <CloudyTag Text="@tag" Tint="@TintFor(tag)" />
+                                                        <CloudyTag Text="@tag" />
                                                     }
                                                 </div>
                                             }
@@ -96,7 +96,7 @@ else
                                             @foreach (var cat in context.Categories ?? [])
                                             {
                                                 <span style="cursor: pointer;" @onclick="@(() => ClickPostItemCategory(cat.Id))">
-                                                    <CloudyTag Text="@cat.Title" Tint="@TintFor(cat.Id)" />
+                                                    <CloudyTag Text="@cat.Title" />
                                                 </span>
                                             }
                                         </div>
@@ -112,7 +112,7 @@ else
                                         @if (context.Status is { } status)
                                         {
                                             <div class="cloudy-tags">
-                                                <CloudyTag Text="@status.Value" Tint="@TintFor(status.Key)" />
+                                                <CloudyTag Text="@status.Value" Tint="@CloudyTint.PostStatus(status.Key)" />
                                             </div>
                                         }
                                     </TemplateColumn>

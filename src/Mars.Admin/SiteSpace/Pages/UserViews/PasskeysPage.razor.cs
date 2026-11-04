@@ -13,6 +13,15 @@ public partial class PasskeysPage
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IMessageService messageService { get; set; } = default!;
     [Inject] PasskeyJs passkeyJs { get; set; } = default!;
+    [Inject] NavigationManager navigationManager { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        // старый маршрут переехал под профиль — редирект сохраняет закладки
+        var path = new Uri(navigationManager.Uri).AbsolutePath.TrimEnd('/');
+        if (path.EndsWith("/Passkeys", StringComparison.OrdinalIgnoreCase) && !path.Contains("/Profile/", StringComparison.OrdinalIgnoreCase))
+            navigationManager.NavigateTo("/dev/Profile/Passkeys", replace: true);
+    }
 
     FluentDataGrid<PasskeySummaryResponse> table = default!;
     GridItemsProvider<PasskeySummaryResponse> dataProvider = default!;

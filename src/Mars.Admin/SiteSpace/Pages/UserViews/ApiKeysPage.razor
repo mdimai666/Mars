@@ -1,27 +1,30 @@
+@page "/Profile/ApiKeys"
 @page "/ApiKeys"
+@using Mars.Admin.Shared.Cloudy
 @using Mars.Identity.Contracts.ApiKeys
 @using Microsoft.FluentUI.AspNetCore.Components
 @attribute [Authorize]
 @attribute [Display(Name = "API-ключи")]
 
-<ContentWrapper Title="API-ключи">
+<ProfileNav />
 
-    <div class="hstack">
-        <FluentText>Ключи для доступа к API через заголовок X-API-Key. Полный ключ показывается только один раз при создании.</FluentText>
-        <div class="ms-auto">
-            <FluentButton Appearance="ButtonAppearance.Primary"
-                          OnClick="OnClickCreate"
-                          IconStart="@(new Icons.Regular.Size16.Key())">Создать ключ</FluentButton>
-        </div>
-    </div>
+<CloudyPageHead Title="API-ключи"
+                Subtitle="Ключи для доступа к API через заголовок X-API-Key. Полный ключ показывается только один раз при создании." />
 
-    <div class="mt-4">
+<CloudyBrowser Scrollable HideActionsButton>
+    <HeadRight>
+        <button type="button" class="cloudy-btn-primary" @onclick="OnClickCreate">Создать ключ</button>
+    </HeadRight>
+
+    <ChildContent>
         <FluentDataGrid ItemsProvider="dataProvider"
                         @ref=table
                         TGridItem="ApiKeySummaryResponse"
                         ShowHover="false"
                         GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                        GridTemplateColumns="2fr 2fr 1fr 1fr auto">
+                        GridTemplateColumns="2fr 2fr 1fr 1fr auto"
+                        Class="cloudy-grid">
+            <ChildContent>
             <PropertyColumn Property="@(f => f.Name)" Title="Название" />
             <PropertyColumn Property="@(f => f.KeyPrefix)" Title="Ключ" />
             <PropertyColumn Property="@(f => f.CreatedAt)" Title="Создан" Format="d" />
@@ -29,71 +32,72 @@
                 @(context.ExpiresAt?.ToString("d") ?? "бессрочно")
             </TemplateColumn>
             <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                <DFluentDeleteButton OnConfirm=@(e => Revoke(context.Id))>
-                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
-                </DFluentDeleteButton>
+                <div class="cloudy-row-actions">
+                    <DFluentDeleteButton OnConfirm=@(e => Revoke(context.Id))>
+                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                    </DFluentDeleteButton>
+                </div>
             </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">Ключей пока нет.</p>
+            </EmptyContent>
         </FluentDataGrid>
-    </div>
+    </ChildContent>
+</CloudyBrowser>
 
-    <FluentDialog @ref="_createDialog" aria-label="Create api key dialog"
-                  Modal="true"
-                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { createVisible = false; _createDialogShown = false; } })">
-        <FluentDialogBody Class="text-start">
-            <TitleTemplate>
-                <div class="hstack">
-                    <FluentText Size="TextSize.Size500">Новый ключ</FluentText>
+<FluentDialog @ref="_createDialog" aria-label="Create api key dialog"
+              Modal="true"
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { createVisible = false; _createDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <CloudyDialogHead Title="Новый ключ" />
+        </TitleTemplate>
+        <ChildContent>
+            <div class="vstack gap-2">
+                <FluentTextInput @bind-Value="newKeyName" Label="Название" AutoComplete="off" />
+                <div class="hstack gap-2">
+                    <FluentButton Appearance="@(IsChipActive(Week) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
+                                  OnClick="@(() => SetExpires(Week))">Неделя</FluentButton>
+                    <FluentButton Appearance="@(IsChipActive(Month) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
+                                  OnClick="@(() => SetExpires(Month))">Месяц</FluentButton>
+                    <FluentButton Appearance="@(IsChipActive(Quarter) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
+                                  OnClick="@(() => SetExpires(Quarter))">3 месяца</FluentButton>
+                    <FluentButton Appearance="@(IsChipActive(Year) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
+                                  OnClick="@(() => SetExpires(Year))">Год</FluentButton>
                 </div>
-            </TitleTemplate>
-            <ChildContent>
-                <div class="vstack gap-2">
-                    <FluentTextInput @bind-Value="newKeyName" Label="Название" AutoComplete="off" />
-                    <div class="hstack gap-2">
-                        <FluentButton Appearance="@(IsChipActive(Week) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
-                                      OnClick="@(() => SetExpires(Week))">Неделя</FluentButton>
-                        <FluentButton Appearance="@(IsChipActive(Month) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
-                                      OnClick="@(() => SetExpires(Month))">Месяц</FluentButton>
-                        <FluentButton Appearance="@(IsChipActive(Quarter) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
-                                      OnClick="@(() => SetExpires(Quarter))">3 месяца</FluentButton>
-                        <FluentButton Appearance="@(IsChipActive(Year) ? ButtonAppearance.Primary : ButtonAppearance.Transparent)"
-                                      OnClick="@(() => SetExpires(Year))">Год</FluentButton>
-                    </div>
-                    <FluentDatePicker @bind-Value="newKeyExpires" Label="Действителен до" />
-                </div>
-            </ChildContent>
-            <ActionTemplate>
-                <div class="hstack gap-2 justify-content-end">
-                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="CreateKey">Создать</FluentButton>
-                    <FluentButton OnClick="@(() => createVisible = false)">Отмена</FluentButton>
-                </div>
-            </ActionTemplate>
-        </FluentDialogBody>
-    </FluentDialog>
+                <FluentDatePicker @bind-Value="newKeyExpires" Label="Действителен до" />
+            </div>
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end">
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="CreateKey">Создать</FluentButton>
+                <FluentButton OnClick="@(() => createVisible = false)">Отмена</FluentButton>
+            </div>
+        </ActionTemplate>
+    </FluentDialogBody>
+</FluentDialog>
 
-    <FluentDialog @ref="_createdKeyDialog" aria-label="Created api key dialog"
-                  Modal="true"
-                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { createdKeyVisible = false; _createdKeyDialogShown = false; } })">
-        <FluentDialogBody Class="text-start">
-            <TitleTemplate>
-                <div class="hstack">
-                    <FluentText Size="TextSize.Size500">Ключ создан</FluentText>
+<FluentDialog @ref="_createdKeyDialog" aria-label="Created api key dialog"
+              Modal="true"
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { createdKeyVisible = false; _createdKeyDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <CloudyDialogHead Title="Ключ создан" />
+        </TitleTemplate>
+        <ChildContent>
+            <div class="vstack gap-2">
+                <FluentText>Сохраните ключ — он показан в последний раз:</FluentText>
+                <div class="hstack gap-2">
+                    <FluentTextInput Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.Copy())" OnClick="CopyCreatedKey" Title="Скопировать" />
                 </div>
-            </TitleTemplate>
-            <ChildContent>
-                <div class="vstack gap-2">
-                    <FluentText>Сохраните ключ — он показан в последний раз:</FluentText>
-                    <div class="hstack gap-2">
-                        <FluentTextInput Value="@createdKey?.Key" Readonly Style="min-width: 420px;" />
-                        <FluentButton IconStart="@(new Icons.Regular.Size16.Copy())" OnClick="CopyCreatedKey" Title="Скопировать" />
-                    </div>
-                </div>
-            </ChildContent>
-            <ActionTemplate>
-                <div class="hstack gap-2 justify-content-end">
-                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => createdKeyVisible = false)">Закрыть</FluentButton>
-                </div>
-            </ActionTemplate>
-        </FluentDialogBody>
-    </FluentDialog>
-
-</ContentWrapper>
+            </div>
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end">
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => createdKeyVisible = false)">Закрыть</FluentButton>
+            </div>
+        </ActionTemplate>
+    </FluentDialogBody>
+</FluentDialog>

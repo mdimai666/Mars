@@ -1,45 +1,48 @@
+@page "/Profile/Passkeys"
 @page "/Passkeys"
+@using Mars.Admin.Shared.Cloudy
 @using Mars.Identity.Contracts.Passkeys
 @using Microsoft.FluentUI.AspNetCore.Components
 @attribute [Authorize]
 @attribute [Display(Name = "Пасскеи")]
 
-<ContentWrapper Title="Пасскеи">
+<ProfileNav />
 
-    <div class="hstack">
-        <FluentText>Пасскеи позволяют входить без пароля — через Windows Hello, Touch ID, Face ID или аппаратный ключ безопасности.</FluentText>
-        <div class="ms-auto">
-            <FluentButton Appearance="ButtonAppearance.Primary"
-                          OnClick="OnClickAdd"
-                          Disabled="@(!_passkeyAvailable || !_passkeysEnabled)"
-                          IconStart="@(new Icons.Regular.Size16.Fingerprint())">Добавить пасскей</FluentButton>
-        </div>
+<CloudyPageHead Title="Пасскеи"
+                Subtitle="Пасскеи позволяют входить без пароля — через Windows Hello, Touch ID, Face ID или аппаратный ключ безопасности." />
+
+@if (!_passkeysEnabled)
+{
+    <div class="mb-3">
+        <FluentMessageBar Intent="@MessageBarIntent.Warning" AllowDismiss="false">
+            Пасскеи отключены администратором.
+        </FluentMessageBar>
     </div>
+}
+else if (!_passkeyAvailable)
+{
+    <div class="mb-3">
+        <FluentMessageBar Intent="@MessageBarIntent.Warning" AllowDismiss="false">
+            Браузер не поддерживает WebAuthn — добавление пасскеев недоступно.
+        </FluentMessageBar>
+    </div>
+}
 
-    @if (!_passkeysEnabled)
-    {
-        <div class="mt-2">
-            <FluentMessageBar Intent="@MessageBarIntent.Warning" AllowDismiss="false">
-                Пасскеи отключены администратором.
-            </FluentMessageBar>
-        </div>
-    }
-    else if (!_passkeyAvailable)
-    {
-        <div class="mt-2">
-            <FluentMessageBar Intent="@MessageBarIntent.Warning" AllowDismiss="false">
-                Браузер не поддерживает WebAuthn — добавление пасскеев недоступно.
-            </FluentMessageBar>
-        </div>
-    }
+<CloudyBrowser Scrollable HideActionsButton>
+    <HeadRight>
+        <button type="button" class="cloudy-btn-primary" @onclick="OnClickAdd"
+                disabled="@(!_passkeyAvailable || !_passkeysEnabled)">Добавить пасскей</button>
+    </HeadRight>
 
-    <div class="mt-4">
+    <ChildContent>
         <FluentDataGrid ItemsProvider="dataProvider"
                         @ref=table
                         TGridItem="PasskeySummaryResponse"
                         ShowHover="false"
                         GenerateHeader="DataGridGeneratedHeaderType.Sticky"
-                        GridTemplateColumns="2fr 1fr 1fr auto">
+                        GridTemplateColumns="2fr 1fr 1fr auto"
+                        Class="cloudy-grid">
+            <ChildContent>
             <TemplateColumn Title="Название">
                 @(string.IsNullOrWhiteSpace(context.Name) ? "— без названия —" : context.Name)
             </TemplateColumn>
@@ -48,8 +51,8 @@
                 @(context.IsBackedUp ? "да" : context.IsBackupEligible ? "возможна" : "нет")
             </TemplateColumn>
             <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
-                <div class="hstack gap-2">
-                    <FluentButton Appearance="ButtonAppearance.Transparent" OnClick=@(() => OnClickRename(context)) Title="Переименовать">
+                <div class="cloudy-row-actions">
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=@(() => OnClickRename(context)) Title="Переименовать">
                         <FluentIcon Value="@(new Icons.Regular.Size16.Edit())" />
                     </FluentButton>
                     <DFluentDeleteButton OnConfirm=@(e => Delete(context.CredentialId))>
@@ -57,54 +60,53 @@
                     </DFluentDeleteButton>
                 </div>
             </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">Пасскеев пока нет.</p>
+            </EmptyContent>
         </FluentDataGrid>
-    </div>
+    </ChildContent>
+</CloudyBrowser>
 
-    <FluentDialog @ref="_addDialog" aria-label="Add passkey dialog"
-                  Modal="true"
-                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { addVisible = false; _addDialogShown = false; } })">
-        <FluentDialogBody Class="text-start">
-            <TitleTemplate>
-                <div class="hstack">
-                    <FluentText Size="TextSize.Size500">Новый пасскей</FluentText>
-                </div>
-            </TitleTemplate>
-            <ChildContent>
-                <div class="vstack gap-2">
-                    <FluentTextInput @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
-                    <FluentText>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentText>
-                </div>
-            </ChildContent>
-            <ActionTemplate>
-                <div class="hstack gap-2 justify-content-end">
-                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="AddPasskey">Добавить</FluentButton>
-                    <FluentButton OnClick="@(() => addVisible = false)">Отмена</FluentButton>
-                </div>
-            </ActionTemplate>
-        </FluentDialogBody>
-    </FluentDialog>
+<FluentDialog @ref="_addDialog" aria-label="Add passkey dialog"
+              Modal="true"
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { addVisible = false; _addDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <CloudyDialogHead Title="Новый пасскей" />
+        </TitleTemplate>
+        <ChildContent>
+            <div class="vstack gap-2">
+                <FluentTextInput @bind-Value="newName" Label="Название (необязательно)" AutoComplete="off" MaxLength="64" />
+                <FluentText>Браузер покажет запрос на создание пасскея (Windows Hello, Touch ID или ключ безопасности).</FluentText>
+            </div>
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end">
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="AddPasskey">Добавить</FluentButton>
+                <FluentButton OnClick="@(() => addVisible = false)">Отмена</FluentButton>
+            </div>
+        </ActionTemplate>
+    </FluentDialogBody>
+</FluentDialog>
 
-    <FluentDialog @ref="_renameDialog" aria-label="Rename passkey dialog"
-                  Modal="true"
-                  OnStateChange="@(e => { if (e.State == DialogState.Closed) { renameVisible = false; _renameDialogShown = false; } })">
-        <FluentDialogBody Class="text-start">
-            <TitleTemplate>
-                <div class="hstack">
-                    <FluentText Size="TextSize.Size500">Переименовать пасскей</FluentText>
-                </div>
-            </TitleTemplate>
-            <ChildContent>
-                <div class="vstack gap-2">
-                    <FluentTextInput @bind-Value="renameValue" Label="Название" AutoComplete="off" MaxLength="64" />
-                </div>
-            </ChildContent>
-            <ActionTemplate>
-                <div class="hstack gap-2 justify-content-end">
-                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RenamePasskey">Сохранить</FluentButton>
-                    <FluentButton OnClick="@(() => renameVisible = false)">Отмена</FluentButton>
-                </div>
-            </ActionTemplate>
-        </FluentDialogBody>
-    </FluentDialog>
-
-</ContentWrapper>
+<FluentDialog @ref="_renameDialog" aria-label="Rename passkey dialog"
+              Modal="true"
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { renameVisible = false; _renameDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <CloudyDialogHead Title="Переименовать пасскей" />
+        </TitleTemplate>
+        <ChildContent>
+            <div class="vstack gap-2">
+                <FluentTextInput @bind-Value="renameValue" Label="Название" AutoComplete="off" MaxLength="64" />
+            </div>
+        </ChildContent>
+        <ActionTemplate>
+            <div class="hstack gap-2 justify-content-end">
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RenamePasskey">Сохранить</FluentButton>
+                <FluentButton OnClick="@(() => renameVisible = false)">Отмена</FluentButton>
+            </div>
+        </ActionTemplate>
+    </FluentDialogBody>
+</FluentDialog>

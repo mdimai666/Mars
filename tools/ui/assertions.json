@@ -42,6 +42,14 @@
       { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
       { "name": "edit container rendered", "selector": ".edit-container", "exists": { "min": 1 } }
     ],
+    "/dev/Profile/ApiKeys": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser .cloudy-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/Profile/Passkeys": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser .cloudy-grid", "exists": { "min": 1 } }
+    ],
     "/dev/Settings": [
       { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
     ],

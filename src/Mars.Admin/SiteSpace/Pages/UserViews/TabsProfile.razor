@@ -1,16 +1,20 @@
 <div class="TabsProfile">
-    <ul class="nav nav-pills nav-justified shadow-none bg-transparent px-0">
-        <li class="nav-item 1px-3">
-            <NavLink class="nav-link" href=@($"/EditUser{q}")>
-                Персональные данные
-            </NavLink>
+    <ul class="nav nav-pills Montserrat __nav-fill mt-2 gap-2 p-1 1small rounded-5"
+        style="--bs-nav-pills-link-active-color: var(--bs-white);--bs-nav-link-color: var(--bs-black);--bs-nav-pills-link-active-bg: var(--bs-primary);">
+        <li class="nav-item">
+            <NavLink href=@($"EditUser/{ID}") class="nav-link rounded-5">EditUser</NavLink>
         </li>
-        @*<li class="nav-item 1px-3">
-            <NavLink class="nav-link" href=@($"/EditUser_Diagnoz{q}")>
-                Мед карта
-            </NavLink>
-        </li>*@
+        @if (ID == Guid.Empty)
+        {
+            <li class="nav-item">
+                <NavLink href=@($"ApiKeys") class="nav-link rounded-5">ApiKeys</NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink href=@($"Passkeys") class="nav-link rounded-5">Passkeys</NavLink>
+            </li>
+        }
     </ul>
+    <div class="spacer-1"></div>
 </div>
 
 <div class="spacer-1"></div>
@@ -20,16 +24,3 @@
 
     string q => ID == Guid.Empty ? "" : $"/{ID}";
 }
-
-<style>
-    .TabsProfile .nav-link {
-        border-radius: 6px;
-        color: black;
-    }
-
-        .TabsProfile .nav-link.active {
-            /*background: #f6f2fa;*/
-            /*color: #7f84df;*/
-            font-weight: 700;
-        }
-</style>

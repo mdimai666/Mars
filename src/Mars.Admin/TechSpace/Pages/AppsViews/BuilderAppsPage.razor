@@ -2,147 +2,65 @@
 
 <ContentWrapper>
     <div class="spacer-3"></div>
-    <section id="apps">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-diagram-2 rotate-n90 fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                NodeRed
-                            </h4>
-                            <p class="">Визуальное программирование</p>
+    <section id="apps" class="vstack gap-3">
+        @foreach (var category in _items)
+        {
+            <div class="">
+                <h2>@category.Title</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    @foreach (var item in category.Items)
+                    {
+                        <div class="col">
+                            <div class="card d-card-glow">
+                                <div class="hstack ms-4">
+                                    <div class="vstack flex-grow-0 my-3">
+                                        <i class="@item.Icon fs-1 color-accent"></i>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="mb-0">
+                                            @item.Title
+                                        </h4>
+                                        <p class="">@item.Subtitle</p>
 
-                            <a href="tech/nodered" class="stretched-link"></a>
+                                        <a href="@item.Url" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-bug fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Логи
-                            </h4>
-                            <p class="">Визуальное программирование</p>
-
-                            <a href="/dev/tech/logs" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-ladder fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                DevPages
-                            </h4>
-                            <p class="">pages on dev</p>
-
-                            <a href="tech/devtest" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-journal-check fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Scheduler
-                            </h4>
-                            <p class="">фоновые задачи</p>
-
-                            <a href="tech/scheduler" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-brilliance fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Style Designer
-                            </h4>
-                            <p class="">fluent design UI edit</p>
-
-                            <a href="tech/styledesigner" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-plugin fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Plugins
-                            </h4>
-                            <p class="">list of plugins</p>
-
-                            <a href="Plugins" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-shop fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Маркетплейс
-                            </h4>
-                            <p class="">каталог плагинов</p>
-
-                            <a href="marketplace" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-file-earmark-code fs-1 color-accent"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Playbooks
-                            </h4>
-                            <p class="">functions coding</p>
-                            <a href="tech/playbooks" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
     </section>
     <div class="row">
         <div class="col">
         </div>
     </div>
 </ContentWrapper>
+
+@code {
+    private record AppMenuItem(string Title, string Url, string Icon, string Subtitle);
+    private record AppMenuCategory(string Title, AppMenuItem[] Items);
+
+    private AppMenuCategory[] _items = [
+        new("Main", [
+            new("NodeRed", "tech/nodered", "bi bi-diagram-2 rotate-n90", "Визуальное программирование"),
+            new("Логи", "tech/logs", "bi bi-bug", "Визуальное программирование"),
+            new("DevPages", "tech/devtest", "bi bi-ladder", "pages on dev"),
+            new("Scheduler", "tech/scheduler", "bi bi-journal-check", "фоновые задачи"),
+            new("Style Designer", "tech/styledesigner", "bi bi-brilliance", "fluent design UI edit"),
+            new("Plugins", "Plugins", "bi bi-plugin", "list of plugins"),
+            new("Маркетплейс", "marketplace", "bi bi-shop", "каталог плагинов"),
+            new("Playbooks", "tech/playbooks", "bi bi-file-earmark-code", "functions coding")
+        ]),
+        new("Users", [
+            new("Пользователи", "Users", "bi bi-people", "управление пользователями"),
+            new("Типы пользователя", "UserType", "bi bi-person-badge", "настройка ролей"),
+        ]),
+        new("Other", [
+            new("Типы категорий", "PostCategoryType", "bi bi-tags", "категории публикаций"),
+            new("Меню навигации", "NavMenu", "bi bi-list-nested", "структура меню")
+        ])
+    ];
+
+}

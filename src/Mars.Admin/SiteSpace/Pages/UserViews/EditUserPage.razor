@@ -1,4 +1,4 @@
-﻿@page "/EditUser/{ID:guid}"
+@page "/EditUser/{ID:guid}"
 @* @page "/EditUser" *@
 
 @using Mars.Admin.Framework.Components.Forms
@@ -13,7 +13,7 @@
 <ContentWrapper Title="Редактирования профиля">
 
     <CascadingValue Value="ID">
-        @*<TabsProfile />*@
+        <TabsProfile />
     </CascadingValue>
 
     <StandardEditForm1 TModel="UserEditModel"

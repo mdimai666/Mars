@@ -1,4 +1,4 @@
-﻿@page "/Users"
+@page "/Users"
 @using Mars.Admin.SiteSpace.Pages.Settings
 @using Mars.Admin.Shared.Cloudy
 @inject IStringLocalizer<AppRes> L
@@ -18,10 +18,10 @@
 
 <CloudyBrowser Scrollable>
     <HeadLeft>
+        <CloudySearchBox Placeholder="Search users…" ValueChanged="OnSearchChanged" />
         <CloudyChips Items="RoleNames" Selected="_roleFilter" SelectedChanged="SetRoleFilter" />
     </HeadLeft>
     <HeadRight>
-        <CloudySearchBox Placeholder="Search users…" ValueChanged="OnSearchChanged" />
         <button type="button" class="cloudy-btn-primary" @onclick="OnClickCreateUser">@AppRes.Create</button>
     </HeadRight>
 

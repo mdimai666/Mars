@@ -8,11 +8,12 @@
 
     @if (_actions is not null && _actions.Any() || ChildContent is not null)
     {
-        <FluentButton id="@buttonId" Appearance="ButtonAppearance.Subtle">
-            Действия
-            <span slot="end">
-                <i class="bi bi-chevron-down"></i>
-            </span>
+        <FluentButton Id="@buttonId"
+                      Appearance="ButtonAppearance.Subtle"
+                      Style="font-size: var(--fontSizeBase300);"
+                      IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
+                      Size="ButtonSize.Large">
+            @AppRes.Actions
         </FluentButton>
 
     }

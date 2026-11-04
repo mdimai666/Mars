@@ -11,8 +11,10 @@
 }
 else
 {
-    <CloudyBrowser Scrollable SubHeadVisible="_filtersVisible">
+    <CloudyBrowser Scrollable SubHeadVisible="_filtersVisible" HideActionsButton="true">
         <HeadLeft>
+            <CloudySearchBox Placeholder="Search posts…" ValueChanged="OnSearchChanged" />
+
             <button type="button" class="cloudy-icon-btn @(_filtersVisible ? "cloudy-icon-btn--active" : null)"
                     title="Фильтры" @onclick="ToggleFilters">
                 <i class="bi bi-funnel"></i>
@@ -32,7 +34,7 @@ else
             }
         </HeadLeft>
         <HeadRight>
-            <CloudySearchBox Placeholder="Search posts…" ValueChanged="OnSearchChanged" />
+            <XActionsDropDown ContextPart="@PostType.TypeName" AlsoShowRootContext="true" />
             <a class="cloudy-btn-primary" href="@urlEditPage/@PostType.TypeName">@AppRes.Create</a>
         </HeadRight>
         <SubHead>

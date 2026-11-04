@@ -1,10 +1,17 @@
 <div class="flex-fill d-flex flex-column">
     <header class="cloudy-hero">
-        <h1>@Title</h1>
-        @if (Subtitle is not null)
-        {
-            <p>@Subtitle</p>
-        }
+        <div class="hstack">
+            <div class="flex-fill">
+                <h1>@Title</h1>
+                @if (Subtitle is not null)
+                {
+                    <p>@Subtitle</p>
+                }
+            </div>
+            <div>
+                <XActionsDropDown />
+            </div>
+        </div>
     </header>
 
     <section class="cloudy-acrylic">
@@ -14,13 +21,7 @@
                     <ASideOptions />
                 </aside>
                 <div class="flex-fill">
-
-                    <div class="float-end position-relative z-1">
-                        <XActionsDropDown ContextPart="wrapper" />
-                    </div>
-
                     @ChildContent
-
                 </div>
             </div>
         </div>

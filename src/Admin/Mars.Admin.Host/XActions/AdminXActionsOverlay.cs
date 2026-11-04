@@ -1,4 +1,4 @@
-﻿#if !NOADMIN
+#if !NOADMIN
 using Mars.Admin.TechSpace.Pages.NodeViews;
 using Mars.Admin.SiteSpace.Pages.PostsViews;
 using Mars.Admin.SiteSpace.Pages.PostTypeViews;
@@ -8,6 +8,9 @@ using Mars.Admin.TechSpace.Pages;
 using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Mars.Admin.SiteSpace.Pages.FeedbackViews;
+using Mars.Admin.SiteSpace.Pages.MediaViews;
+using Mars.Media.Contracts.Options;
 
 namespace Mars.Admin.Host.XActions;
 
@@ -57,6 +60,20 @@ internal static class AdminXActionsOverlay
             .Category("Отладка")
             .FrontContexts(typeof(EditPostPage).FullName + "-page")
             .Link("/{page_slug}"));
+
+        actionManager.Add(a => a
+            .Id("feedback-testbutton")
+            .Label("Test feedback")
+            .FrontContexts(typeof(FeedbackListPage).FullName!)
+            .Link("test")
+            );
+
+        actionManager.Add(a => a
+            .Id("Mars.Media.MediaOption")
+            .Label("Media settings")
+            .FrontContexts(typeof(ManageMediaPage).FullName!)
+            .Link("Settings/Option/" + typeof(MediaOption).FullName!.Replace(".", "+"))
+            );
 #endif
 
         actionManager.RefreshDict();

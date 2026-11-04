@@ -1,4 +1,4 @@
-﻿@page "/PostType"
+@page "/PostType"
 @using Mars.Admin.SiteSpace.Pages.PostCategoryViews
 @using Mars.Cms.Contracts.PostTypes
 @using Microsoft.AspNetCore.Authorization
@@ -18,12 +18,12 @@
 
 <CloudyBrowser Scrollable>
     <HeadLeft>
+        <CloudySearchBox Placeholder="Search post types…" ValueChanged="OnSearchChanged" />
         <FluentCheckbox Value="_includeComponent" ValueChanged="HandleIncludeComponentChanged">
             @L[PostTypeKpiKeys.ComponentTypes]
         </FluentCheckbox>
     </HeadLeft>
     <HeadRight>
-        <CloudySearchBox Placeholder="Search post types…" ValueChanged="OnSearchChanged" />
         <a class="cloudy-btn-primary" href="@UrlEditPage">@AppRes.Create</a>
     </HeadRight>
 

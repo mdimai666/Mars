@@ -1,11 +1,12 @@
 @using Mars.Media.Contracts.Files
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<CloudyBrowser>
+<CloudyBrowser HideActionsButton="true">
     <HeadLeft>
         <button type="button" class="cloudy-icon-btn" title="@(_flatView ? "Folders" : "All files")" @onclick="ToggleView">
             <i class="bi @(_flatView ? "bi-folder2-open" : "bi-collection")"></i>
         </button>
+        <CloudySearchBox Placeholder="Search files…" ValueChanged="OnSearchChanged" />
         <div class="cloudy-chips">
             @foreach (var option in SortOptions)
             {
@@ -22,7 +23,7 @@
     </HeadLeft>
     <HeadRight>
         <span class="cloudy-count">@(_flatView ? $"{_filesTotal} files" : $"{_folders.Count} folders · {_filesTotal} files")</span>
-        <CloudySearchBox Placeholder="Search files…" ValueChanged="OnSearchChanged" />
+        <XActionsDropDown />
         @if (IsManage && !_flatView)
         {
             <div class="dropdown">
@@ -58,12 +59,16 @@
                 <div class="cloudy-group-head">
                     <nav class="cloudy-crumbs">
                         <button type="button" class="cloudy-crumb @(_currentFolderId is null ? "cloudy-crumb--current" : null)"
-                                @onclick="GoToRoot">Media</button>
+                                @onclick="GoToRoot">
+                            Media
+                        </button>
                         @foreach (var crumb in _breadcrumbs)
                         {
                             <span class="cloudy-crumbs__sep">/</span>
                             <button type="button" class="cloudy-crumb @(crumb.Id == _currentFolderId ? "cloudy-crumb--current" : null)"
-                                    @onclick="() => OpenFolder(crumb)">@crumb.Name</button>
+                                    @onclick="() => OpenFolder(crumb)">
+                                @crumb.Name
+                            </button>
                         }
                     </nav>
                 </div>

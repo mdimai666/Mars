@@ -14,8 +14,10 @@
 </CloudyPageHead>
 
 <CloudyBrowser Scrollable>
-    <HeadRight>
+    <HeadLeft>
         <CloudySearchBox Placeholder="Search feedback…" ValueChanged="OnSearchChanged" />
+    </HeadLeft>
+    <HeadRight>
         <button type="button" class="cloudy-btn-primary" @onclick="DownloadExcel">
             <i class="bi bi-table"></i>
             @AppRes.DownloadExcel

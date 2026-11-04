@@ -15,4 +15,7 @@ public interface IAccountServiceClient
 
     /// <summary>Обновление профиля текущего пользователя (whitelist-поля + метаполя).</summary>
     Task<UserDetailResponse> UpdateProfile(UpdateUserProfileRequest request);
+
+    /// <summary>Загрузка аватара (полный 256×256 + миниатюра 64×64 в upload/Users/{id}/). userId — только для админа.</summary>
+    Task<AvatarUploadResponse> UploadAvatar(Stream image, string fileName, Guid? userId = null);
 }

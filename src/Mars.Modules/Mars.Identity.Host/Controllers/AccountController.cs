@@ -150,18 +150,28 @@ public class AccountController : ControllerBase
         return (await _userService.UpdateProfile(userId, request, cancellationToken)).ToResponse();
     }
 
-    [HttpPost("UploadAvatar")]
-    public Task<ActionResult<FileDetailResponse>> UploadAvatar(IFormFile file, CancellationToken cancellationToken)
+    /// <summary>
+    /// Загрузка аватара: пишет полный (256×256) и миниатюру (64×64) в upload/Users/{id}/,
+    /// возвращает их URL. AvatarUrl в профиле сохраняется отдельным обновлением (PUT Profile).
+    /// userId можно передать только администратору (загрузка аватара другого пользователя).
+    /// </summary>
+    [HttpPost("Avatar")]
+    [Authorize]
+    [RequestSizeLimit(10 * 1024 * 1024)]
+    [ProducesResponseType(typeof(AvatarUploadResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<AvatarUploadResponse> UploadAvatar(IFormFile file, [FromQuery] Guid? userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        //Guid userId = Guid.Parse(_userManager.GetUserId(HttpContext.User)!);
-        //UserSummary user = await _userService.Get(userId, cancellationToken);
+        if (file is null || file.Length == 0)
+            throw new UserActionException("Файл пуст");
 
-        //AppShared.Models.FileEntity ava;
+        var currentUserId = _requestContext.User.Id;
+        var targetUserId = userId ?? currentUserId;
+        if (targetUserId != currentUserId && !User.IsInRole("Admin"))
+            throw new UserActionException("Загружать аватар другого пользователя может только администратор");
 
-        //ava = _fileService.WriteAvatar(user, file);
-
-        //return new ResponseUploadFile(ava);
+        await using var stream = file.OpenReadStream();
+        return await _accountsService.UploadAvatar(targetUserId, stream, file.FileName, cancellationToken);
     }
 
     string html_redirect(string link) => html(@$"

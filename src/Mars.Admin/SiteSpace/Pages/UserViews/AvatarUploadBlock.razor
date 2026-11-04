@@ -1,0 +1,53 @@
+@using Mars.Admin.Shared.Cloudy
+@using Microsoft.AspNetCore.Components.Forms
+@inject IMarsWebApiClient client
+@inject Mars.Admin.Framework.Interfaces.IMessageService messageService
+
+@* Загрузка аватара: файл уходит на POST api/Account/Avatar (ресайз 256/64 на сервере),
+   возвращённый URL кладётся в модель и сохраняется вместе с профилем. *@
+
+<div class="hstack gap-2 align-items-center">
+    <CloudyAvatar Name="@Name" ImageUrl="@AvatarUrl" Class="cloudy-avatar--lg" />
+    <div class="vstack gap-1">
+        <label class="cloudy-chip mb-0">
+            Загрузить…
+            <InputFile accept="image/*" OnChange="OnFileSelected" style="display:none" />
+        </label>
+        @if (!string.IsNullOrEmpty(AvatarUrl))
+        {
+            <button type="button" class="cloudy-chip" @onclick="OnRemove">Удалить</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? AvatarUrl { get; set; }
+    [Parameter] public EventCallback<string> AvatarUrlChanged { get; set; }
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Владелец аватара для админской загрузки (null = текущий пользователь)</summary>
+    [Parameter] public Guid? UserId { get; set; }
+
+    const long MaxSize = 10 * 1024 * 1024;
+
+    async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            await using var stream = e.File.OpenReadStream(MaxSize);
+            var result = await client.Account.UploadAvatar(stream, e.File.Name, UserId);
+            AvatarUrl = result.AvatarUrl;
+            await AvatarUrlChanged.InvokeAsync(result.AvatarUrl);
+        }
+        catch (Exception ex)
+        {
+            _ = messageService.Error(ex.Message);
+        }
+    }
+
+    async Task OnRemove()
+    {
+        AvatarUrl = "";
+        await AvatarUrlChanged.InvokeAsync("");
+    }
+}

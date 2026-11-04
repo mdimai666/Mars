@@ -27,6 +27,10 @@
                        HidePublishCard="true">
     <ChildContent>
         <div class="vstack gap-2">
+            <AvatarUploadBlock Name="@context.FullName"
+                               AvatarUrl="@context.AvatarUrl"
+                               AvatarUrlChanged="@(u => context.AvatarUrl = u)" />
+
             <FormItem2 For="@(() => context.FirstName)">
                 <FluentTextInput Name="@nameof(ProfileEditModel.FirstName)" @bind-Value="context.FirstName" />
             </FormItem2>

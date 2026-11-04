@@ -63,6 +63,11 @@ else
                            @ref="_editForm1">
 
             <div class="vstack gap-2">
+                <AvatarUploadBlock Name="@_model.FullName"
+                                   AvatarUrl="@_model.AvatarUrl"
+                                   AvatarUrlChanged="@(u => _model.AvatarUrl = u)"
+                                   UserId="@ID" />
+
                 <FormItem2 For="@(() => _model.UserName)">
                     <FluentTextInput Name="@nameof(UserEditModel.UserName)" @bind-Value="_model.UserName" />
                 </FormItem2>

@@ -38,6 +38,16 @@ internal class AccountServiceClient : BasicServiceClient, IAccountServiceClient
                     .PutJsonAsync(request)
                     .ReceiveJson<UserDetailResponse>();
 
+    public Task<AvatarUploadResponse> UploadAvatar(Stream image, string fileName, Guid? userId = null)
+    {
+        var request = _client.Request($"{_basePath}{_controllerName}", "Avatar");
+        if (userId is not null)
+            request = request.SetQueryParam("userId", userId.Value);
+
+        return request.PostMultipartAsync(mp => mp.AddFile("file", image, fileName))
+                      .ReceiveJson<AvatarUploadResponse>();
+    }
+
     public async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData)
     {
         try

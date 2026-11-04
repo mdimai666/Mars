@@ -1,8 +1,14 @@
+using Mars.Core.Exceptions;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Auth;
 using Mars.Identity.Abstractions.Dto.Profile;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Contracts.Users.UserProfiles;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Contracts;
+using Mars.Media.Contracts.Options;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,11 +16,18 @@ namespace Mars.Identity.Host.Services;
 
 internal class AccountsService : IAccountsService
 {
+    private static readonly HashSet<string> AllowedAvatarExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp",
+    };
+
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
     private readonly IUserTypeRepository _userTypeRepository;
+    private readonly IFileStorage _fileStorage;
+    private readonly IImageProcessor _imageProcessor;
 
     public AccountsService(
         UserManager<UserEntity> userManager,
@@ -22,7 +35,9 @@ internal class AccountsService : IAccountsService
         IHttpContextAccessor httpContextAccessor,
         ITokenService tokenService,
         IUserRepository userRepository,
-        IUserTypeRepository userTypeRepository)
+        IUserTypeRepository userTypeRepository,
+        IFileStorage fileStorage,
+        IImageProcessor imageProcessor)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -30,6 +45,8 @@ internal class AccountsService : IAccountsService
         _tokenService = tokenService;
         _userRepository = userRepository;
         _userTypeRepository = userTypeRepository;
+        _fileStorage = fileStorage;
+        _imageProcessor = imageProcessor;
     }
 
     public async Task<AuthResultDto> Login(AuthCredentialsDto authCredentials, CancellationToken cancellationToken)
@@ -181,6 +198,45 @@ internal class AccountsService : IAccountsService
         var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
 
         return signInResult.Succeeded ? user.Id : null;
+    }
+
+    public async Task<AvatarUploadResponse> UploadAvatar(Guid userId, Stream image, string fileName, CancellationToken cancellationToken)
+    {
+        var ext = Path.GetExtension(fileName);
+        if (!AllowedAvatarExtensions.Contains(ext) || !_imageProcessor.IsSupportImageExt(ext))
+            throw new UserActionException($"Неподдерживаемый формат изображения: {ext}");
+
+        var dir = $"Users/{userId}";
+        if (!_fileStorage.DirectoryExists(dir))
+            _fileStorage.CreateDirectory(dir);
+
+        // имя файла стабильное — версией в query сбрасываем кэш браузера
+        var version = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        await WriteResizedAsync(image, $"{dir}/avatar.webp", 256, cancellationToken);
+        image.Position = 0;
+        await WriteResizedAsync(image, $"{dir}/avatar-64.webp", 64, cancellationToken);
+
+        return new AvatarUploadResponse(
+            $"/upload/{dir}/avatar.webp?v={version}",
+            $"/upload/{dir}/avatar-64.webp?v={version}");
+    }
+
+    async Task WriteResizedAsync(Stream input, string filePath, int size, CancellationToken cancellationToken)
+    {
+        input.Position = 0;
+        var config = new ImageConverConfig
+        {
+            Width = size,
+            Height = size,
+            Compression = ImagePreviewSizeConfig.EncoderCompression.Lossy,
+            ResizeMode = ImagePreviewSizeConfig.CropScaleMode.Crop,
+        };
+
+        using var output = new MemoryStream();
+        _imageProcessor.ProcessImage(input, output, config);
+        output.Position = 0;
+        await _fileStorage.WriteAsync(filePath, output, cancellationToken);
     }
 
 }

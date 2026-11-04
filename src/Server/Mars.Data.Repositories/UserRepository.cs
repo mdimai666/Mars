@@ -122,9 +122,7 @@ internal class UserRepository : IUserRepository, IDisposable
                                                 .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                 ?? throw new NotFoundException();
 
-        entity.UpdateEntity(query);
-        // rename должен обновлять normalized-имя, иначе FindByNameAsync (логин по имени) ищет старое
-        entity.NormalizedUserName = _lookupNormalizer.NormalizeName(entity.UserName);
+        entity.UpdateEntity(query, _lookupNormalizer);
 
         MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
 
@@ -436,7 +434,7 @@ internal class UserRepository : IUserRepository, IDisposable
             var userTypesId = (await _marsDbContext.UserTypes.FirstAsync()).Id; //TODO: установить в настройках
 
             // провайдеры (Keycloak/Microsoft) отдают preferred_username почтой — режем до local-part
-            var prefererUserName = UserMapping.EmailLocalPart(query.PreferredUserName ?? query.Email);
+            var prefererUserName = UserMapping.EmailLocalPart(query.PreferredUserName ?? query.Email)!;
             var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(prefererUserName)
                                     || await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
 

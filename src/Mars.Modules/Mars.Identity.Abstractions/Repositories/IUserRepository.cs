@@ -29,7 +29,6 @@ public interface IUserRepository : IDisposable
     Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken);
     Task<UserActionResult> SetPassword(SetUserPasswordByIdQuery query, CancellationToken cancellationToken);
     Task<UserProfileDto?> UserProfile(Guid id, CancellationToken cancellationToken);
-    Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken);
     Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);

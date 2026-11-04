@@ -14,6 +14,7 @@ using Mars.Identity.Abstractions.Mappings.UserTypes;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Notifications.Abstractions;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Managers;
@@ -237,66 +238,50 @@ internal class UserService : IUserService
         return createQuery;
     }
 
-    public async Task<UserProfileInfoDto?> UserProfileInfo(Guid id, CancellationToken cancellationToken)
+    public async Task<UserProfileEditViewModel> GetProfileEditModel(Guid userId, CancellationToken cancellationToken)
     {
-        var userDetail = await _userRepository.GetDetail(id, cancellationToken);
-        if (userDetail is null) return null;
+        var user = await _userRepository.GetUserEditDetail(userId, cancellationToken) ?? throw new NotFoundException();
 
-        int commentCount = 0;
+        if (user.MetaValues.Count != user.UserTypeDetail.MetaFields.Count)
+        {
+            user = user with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(user.MetaValues, user.UserTypeDetail.MetaFields) };
+        }
 
-        return userDetail.ToProfile(commentCount);
+        return new()
+        {
+            User = user.ToResponse(),
+            UserType = user.UserTypeDetail.ToResponse(),
+            Form = MetaFieldsFormBuilder.Build(
+                MetaFieldsFormBuilder.UserOwnerModel(user.UserTypeDetail.TypeName),
+                user.UserTypeDetail.MetaFields),
+        };
     }
 
-    public Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken)
+    public async Task<UserDetail> UpdateProfile(Guid userId, UpdateUserProfileRequest request, CancellationToken cancellationToken)
     {
-        return _userRepository.UserEditProfileGet(id, cancellationToken);
-    }
+        var current = await _userRepository.GetDetail(userId, cancellationToken) ?? throw new NotFoundException();
 
-    //public async Task<UserEditProfileDto>> UserEditProfileForAdminGet(Guid id)
-    //{
-    //    return new UserEditProfileDto();
-    //}
+        // whitelist: защищённые поля подставляются из текущего пользователя, а не из запроса
+        var updateRequest = new UpdateUserRequest
+        {
+            Id = userId,
+            UserName = current.UserName,
+            Email = current.Email,
+            Roles = current.Roles,
+            Type = current.Type,
 
-    public Task<UserActionResult<UserEditProfileDto>> UserEditProfileUpdate(UserEditProfileDto profile, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-        //var ef = GetEFContext();
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            MiddleName = request.MiddleName,
+            PhoneNumber = request.PhoneNumber,
+            BirthDate = request.BirthDate,
+            Gender = request.Gender,
+            AvatarUrl = request.AvatarUrl,
+            MetaValues = request.MetaValues,
+        };
 
-        //var user = ef.Users.Include(s => s.MetaValues).ThenInclude(s => s.MetaField).FirstOrDefault(s => s.Id == profile.Id);
-
-        //user.FirstName = profile.FirstName;
-        //user.LastName = profile.LastName;
-        //user.MiddleName = profile.MiddleName;
-        //user.Email = profile.Email;
-        //user.PhoneNumber = profile.Phone;
-        //user.Gender = profile.Gender;
-
-        //user.BirthDate = profile.BirthDate;
-        //user.AvatarUrl = profile.AvatarUrl;
-
-        //user.About = profile.About;
-
-        //var metaFields = UserMetaFields(ef);
-
-        //await UpdateUserMetaValues(ef, user.Id, user.MetaValues, profile.MetaValues, metaFields);
-
-        //ef.SaveChanges();
-
-        //UserManager<User> um = _serviceProvider.GetRequiredService<UserManager<User>>();
-        //await um.UpdateSecurityStampAsync(user.CopyViaJsonConversion<User>()).ConfigureAwait(false);
-
-        //user = ef.Users.Include(s => s.MetaValues).ThenInclude(s => s.MetaField).FirstOrDefault(s => s.Id == profile.Id);
-        //user.MetaValues = MetaField.GetValuesBlank(user.MetaValues, metaFields);
-
-        //user.MetaFields = metaFields;
-
-        //return new UserActionResult<UserEditProfileDto>
-        //{
-        //    Ok = true,
-        //    Data = new UserEditProfileDto(user),
-        //    Message = "Успешно сохранено"
-        //};
-
+        var query = await EnrichQuery(updateRequest, cancellationToken);
+        return await Update(query, cancellationToken);
     }
 
     public Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)

@@ -1,4 +1,6 @@
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.Users.UserProfiles;
 
 namespace Mars.WebApiClient.Interfaces;
 
@@ -8,4 +10,9 @@ public interface IAccountServiceClient
     Task Logout();
     Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData);
 
+    /// <summary>Модель редактирования профиля текущего пользователя (метаполя + форма).</summary>
+    Task<UserProfileEditViewModel> GetProfileEditModel();
+
+    /// <summary>Обновление профиля текущего пользователя (whitelist-поля + метаполя).</summary>
+    Task<UserDetailResponse> UpdateProfile(UpdateUserProfileRequest request);
 }

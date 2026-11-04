@@ -380,24 +380,6 @@ internal class UserRepository : IUserRepository, IDisposable
         return user;
     }
 
-    public async Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        ThrowIfDisposed();
-
-        var user = await _marsDbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-
-        //MetaFieldService metaFieldService = _serviceProvider.GetRequiredService<MetaFieldService>();
-        //var user = Get(id, s => s.MetaValues).Result;
-        //var ef = GetEFContext();
-        //var metaFields = UserMetaFields(ef);
-        //user.MetaValues = metaFieldService.GetValuesBlank(user.MetaValues, metaFields);
-        //user.MetaFields = metaFields;
-        //return new UserEditProfileDto(user);
-
-        return user?.ToEditProfile();
-    }
-
     public async Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

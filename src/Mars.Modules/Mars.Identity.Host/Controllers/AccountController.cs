@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Data.Entities;
@@ -6,9 +7,11 @@ using Mars.Identity.Abstractions.Dto.Auth;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Accounts;
 using Mars.Identity.Abstractions.Mappings.UserProfiles;
+using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Contracts.Options;
+using Mars.Identity.Contracts.Users;
 using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
@@ -122,6 +125,29 @@ public class AccountController : ControllerBase
     {
         var userId = _requestContext.User.Id;
         return (await _accountsService.GetProfile(userId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+    }
+
+    [HttpGet("Profile/EditModel")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserProfileEditViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<UserProfileEditViewModel> ProfileEditModel(CancellationToken cancellationToken)
+    {
+        var userId = _requestContext.User.Id;
+        return await _userService.GetProfileEditModel(userId, cancellationToken);
+    }
+
+    [HttpPut("Profile")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDetailResponse))]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<UserDetailResponse> UpdateProfile([FromBody] UpdateUserProfileRequest request, CancellationToken cancellationToken)
+    {
+        var userId = _requestContext.User.Id;
+        return (await _userService.UpdateProfile(userId, request, cancellationToken)).ToResponse();
     }
 
     [HttpPost("UploadAvatar")]

@@ -3,6 +3,7 @@ using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
 using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.Users.UserProfiles;
 
 namespace Mars.Identity.Abstractions.Services;
 
@@ -22,11 +23,16 @@ public interface IUserService
     Task<UserDetail> Update(UpdateUserQuery query, CancellationToken cancellationToken);
     Task<UserSummary> Delete(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserSummary>> DeleteMany(DeleteManyUserQuery query, CancellationToken cancellationToken);
-    Task<UserProfileInfoDto?> UserProfileInfo(Guid id, CancellationToken cancellationToken);
-    Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken);
-    //Task<UserEditProfileDto> UserEditProfileForAdminGet(Guid id);
-    Task<UserActionResult<UserEditProfileDto>> UserEditProfileUpdate(UserEditProfileDto profile, CancellationToken cancellationToken);
-    //Task<UserActionResult<UserEditProfileDto>> UserEditProfileForAdminUpdate(UserEditProfileForAdminDto profile);
+
+    /// <summary>Модель редактирования собственного профиля (без списка доступных ролей).</summary>
+    Task<UserProfileEditViewModel> GetProfileEditModel(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Обновление собственного профиля: защищённые поля (UserName, Email, Roles, Type)
+    /// берутся из текущего пользователя, а не из запроса.
+    /// </summary>
+    Task<UserDetail> UpdateProfile(Guid userId, UpdateUserProfileRequest request, CancellationToken cancellationToken);
+
     Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken);
     Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken);
     Task<UserActionResult> SetPassword(SetUserPasswordByIdQuery query, CancellationToken cancellationToken);

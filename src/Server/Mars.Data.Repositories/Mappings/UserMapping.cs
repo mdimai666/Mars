@@ -90,24 +90,6 @@ internal static class UserMapping
             About = "",
         };
 
-    public static UserEditProfileDto ToEditProfile(this UserEntity entity)
-        => new()
-        {
-            Id = entity.Id,
-            FirstName = entity.FirstName,
-            LastName = entity.LastName,
-            MiddleName = entity.MiddleName,
-            Email = entity.Email,
-            Username = entity.UserName ?? "xxxx",
-            About = "",
-            AvatarUrl = "",
-            BirthDate = entity.BirthDate?.Date,
-            Gender = entity.Gender.ToMap(),
-            Phone = entity.PhoneNumber,
-            Type = entity.UserType.TypeName,
-            MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
-        };
-
     public static Mars.Identity.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
         => (Mars.Identity.Contracts.Users.UserGender)gender;
     public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Identity.Contracts.Users.UserGender gender)

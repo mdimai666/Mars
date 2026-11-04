@@ -27,7 +27,12 @@ internal class RequestContext : IRequestContext
         _init = true;
         if (_httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == false) return (_user, _roles);
 
-        var user = _userRepository.GetAuthorizedUserInformation(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        // Резолв по Id из claim, а не по username: после переименования в старом JWT/cookie
+        // остаётся прежнее имя, и поиск по нему потерял бы авторизацию до истечения токена.
+        var idClaim = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = Guid.TryParse(idClaim, out var userId)
+            ? _userRepository.GetAuthorizedUserInformation(userId, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult()
+            : _userRepository.GetAuthorizedUserInformation(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (user is not null)
         {

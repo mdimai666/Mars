@@ -2,8 +2,10 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Core.Utils;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
+using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Contracts.Users;
 using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
@@ -168,6 +170,72 @@ public sealed class UpdateUserTests : ApplicationTests
         result.Should().NotBeNull();
         result.Errors.Should().ContainKey(nameof(UpdateUserRequest.UserName));
         result.Errors[nameof(UpdateUserRequest.UserName)].Should().ContainMatch("*can only contain letters*");
+    }
+
+    [IntegrationFact]
+    public async Task UpdateUser_Rename_NewNameWorksForLogin()
+    {
+        //Arrange
+        _ = nameof(UserController.Update);
+        var client = AppFixture.GetClient();
+        var ef = AppFixture.MarsDbContext();
+        var roleName = ef.Roles.AsNoTracking().First().Name!;
+        var password = Password.Generate(10, 4);
+
+        var createRequest = _fixture.Create<CreateUserRequest>() with
+        {
+            Type = UserTypeEntity.DefaultTypeName,
+            Roles = [roleName],
+            Password = password,
+            MetaValues = [],
+        };
+        var created = await client.Request(_apiUrl).PostJsonAsync(createRequest).CatchUserActionError().ReceiveJson<UserDetailResponse>();
+        created.Should().NotBeNull();
+
+        var newName = "renamed" + Guid.NewGuid().ToString("N")[..8];
+        var updateRequest = new UpdateUserRequest
+        {
+            Id = created.Id,
+            UserName = newName,
+            FirstName = created.FirstName,
+            LastName = created.LastName,
+            MiddleName = created.MiddleName,
+            Email = created.Email,
+            Roles = [roleName],
+            PhoneNumber = created.PhoneNumber,
+            BirthDate = created.BirthDate,
+            Gender = created.Gender,
+            AvatarUrl = created.AvatarUrl,
+            Type = created.Type,
+            MetaValues = [],
+        };
+
+        //Act
+        var updated = await client.Request(_apiUrl).PutJsonAsync(updateRequest).CatchUserActionError().ReceiveJson<UserDetailResponse>();
+
+        //Assert — rename сохраняется вместе с NormalizedUserName
+        updated.UserName.Should().Be(newName);
+        ef.ChangeTracker.Clear();
+        var entity = ef.Users.AsNoTracking().First(s => s.Id == created.Id);
+        entity.NormalizedUserName.Should().Be(newName.ToUpper());
+
+        // вход: новое имя — успешно, старое — нет, почта — успешно
+        var anon = AppFixture.GetClient(true);
+
+        var loginNew = await anon.Request("/api/Account", "Login")
+            .PostJsonAsync(new AuthCredentialsRequest { Login = newName, Password = password })
+            .ReceiveJson<AuthResultResponse>();
+        loginNew.IsAuthSuccessful.Should().BeTrue();
+
+        var loginOld = await anon.Request("/api/Account", "Login")
+            .AllowAnyHttpStatus()
+            .PostJsonAsync(new AuthCredentialsRequest { Login = createRequest.UserName, Password = password });
+        loginOld.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+
+        var loginEmail = await anon.Request("/api/Account", "Login")
+            .PostJsonAsync(new AuthCredentialsRequest { Login = createRequest.Email!, Password = password })
+            .ReceiveJson<AuthResultResponse>();
+        loginEmail.IsAuthSuccessful.Should().BeTrue();
     }
 
 }

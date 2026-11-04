@@ -123,6 +123,8 @@ internal class UserRepository : IUserRepository, IDisposable
                                                 ?? throw new NotFoundException();
 
         entity.UpdateEntity(query);
+        // rename должен обновлять normalized-имя, иначе FindByNameAsync (логин по имени) ищет старое
+        entity.NormalizedUserName = _lookupNormalizer.NormalizeName(entity.UserName);
 
         MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
 

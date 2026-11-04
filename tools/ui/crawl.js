@@ -18,6 +18,7 @@ const PAGES = args.pages
   : [
       '/dev', '/dev/Post', '/dev/PostType', '/dev/PostCategory', '/dev/PostCategoryType',
       '/dev/Media', '/dev/Users', '/dev/UserType', '/dev/ApiKeys', '/dev/Passkeys',
+      '/dev/Profile', '/dev/Profile/Edit',
       '/dev/NavMenu', '/dev/Plugins', '/dev/FeedbackList', '/dev/Settings',
       '/dev/Settings/HostCache', '/dev/Settings/About', '/dev/Settings/Front',
       '/dev/tech', '/dev/tech/models',

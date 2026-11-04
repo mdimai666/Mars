@@ -1,0 +1,99 @@
+@page "/Profile"
+
+@using Mars.Identity.Contracts.Users
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize]
+@attribute [Display(Name = "Профиль")]
+@inject IStringLocalizer<AppRes> L
+
+<ProfileNav />
+
+@if (_model is null)
+{
+    <p class="cloudy-empty">Загрузка…</p>
+}
+else
+{
+    <header class="cloudy-hero cloudy-hero--split">
+        <div class="cloudy-profile-hero">
+            <CloudyAvatar Name="@_model.FullName" ImageUrl="@_model.AvatarUrl" Class="cloudy-avatar--lg" />
+            <div>
+                <h1>@_model.FullName</h1>
+                <div class="cloudy-profile-hero__sub">@@@_model.UserName</div>
+                <div class="cloudy-tags">
+                    @foreach (var role in _model.Roles)
+                    {
+                        <CloudyTag Text="@role" Tint="@role.StableTint()" />
+                    }
+                </div>
+            </div>
+        </div>
+        <a class="cloudy-btn-primary" href="/dev/Profile/Edit">Редактировать</a>
+    </header>
+
+    <div class="cloudy-profile-cards">
+        <section class="cloudy-card">
+            <h2>Личные данные</h2>
+            <dl class="cloudy-deflist">
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.FirstName)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.FirstName)</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.LastName)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.LastName)</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.MiddleName)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.MiddleName)</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.Gender)]</dt>
+                <dd class="cloudy-deflist__value">@L[_model.Gender.ToString()]</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.BirthDate)]</dt>
+                <dd class="cloudy-deflist__value">@(_model.BirthDate?.ToString("d") ?? "—")</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.Phone)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.PhoneNumber)</dd>
+            </dl>
+        </section>
+
+        <section class="cloudy-card">
+            <h2>Аккаунт</h2>
+            <dl class="cloudy-deflist">
+                <dt class="cloudy-deflist__term">Логин</dt>
+                <dd class="cloudy-deflist__value">@_model.UserName</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.Email)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.Email)</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.Roles)]</dt>
+                <dd class="cloudy-deflist__value">
+                    <div class="cloudy-tags">
+                        @foreach (var role in _model.Roles)
+                        {
+                            <CloudyTag Text="@role" Tint="@role.StableTint()" />
+                        }
+                    </div>
+                </dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.UserType)]</dt>
+                <dd class="cloudy-deflist__value">@Value(_model.UserType.Title)</dd>
+
+                <dt class="cloudy-deflist__term">@L[nameof(AppRes.CreationDate)]</dt>
+                <dd class="cloudy-deflist__value">@_model.CreatedAt.LocalDateTime.ToString("g")</dd>
+            </dl>
+        </section>
+
+        @if (MetaRows.Any())
+        {
+            <section class="cloudy-card">
+                <h2>@L[nameof(AppRes.MetaFields)]</h2>
+                <dl class="cloudy-deflist">
+                    @foreach (var row in MetaRows)
+                    {
+                        <dt class="cloudy-deflist__term">@row.Field.Title</dt>
+                        <dd class="cloudy-deflist__value">@row.Text</dd>
+                    }
+                </dl>
+            </section>
+        }
+    </div>
+}

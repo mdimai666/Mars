@@ -1,0 +1,62 @@
+@page "/Profile/Edit"
+
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Identity.Contracts.Users
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize]
+@attribute [Display(Name = "Редактирование профиля")]
+@inject IStringLocalizer<AppRes> L
+@inject Mars.WebApiClient.Interfaces.IMarsWebApiClient client
+
+<ProfileNav />
+
+<header class="cloudy-hero">
+    <h1>Профиль</h1>
+    <p>Личные данные и метаполя. Логин, почта и роли меняет только администратор.</p>
+</header>
+
+<StandardEditContainer TModel="ProfileEditModel"
+                       GetAction="@(() => ProfileEditModel.GetAction(client))"
+                       SaveAction="@((model, isNew) => ProfileEditModel.SaveAction(client, model, isNew))"
+                       BeforeSave="OnBeforeSave"
+                       AfterSave="OnAfterSave"
+                       BlankModelFromGetAction
+                       NavigateAfterCreate="false"
+                       CanCreate="false"
+                       CanDelete="false"
+                       HidePublishCard="true">
+    <ChildContent>
+        <div class="vstack gap-2">
+            <FormItem2 For="@(() => context.FirstName)">
+                <FluentTextInput Name="@nameof(ProfileEditModel.FirstName)" @bind-Value="context.FirstName" />
+            </FormItem2>
+            <FormItem2 For="@(() => context.LastName)">
+                <FluentTextInput Name="@nameof(ProfileEditModel.LastName)" @bind-Value="context.LastName" />
+            </FormItem2>
+            <FormItem2 For="@(() => context.MiddleName)">
+                <FluentTextInput Name="@nameof(ProfileEditModel.MiddleName)" @bind-Value="context.MiddleName" />
+            </FormItem2>
+            <FormItem2 For="@(() => context.PhoneNumber)">
+                <FluentTextInput Name="@nameof(ProfileEditModel.PhoneNumber)" @bind-Value="context.PhoneNumber" />
+            </FormItem2>
+            <FormItem2 For="@(() => context.Gender)">
+                <FluentRadioGroup @bind-Value="context.Gender">
+                    <FluentRadio TValue="UserGender" Value="@UserGender.None">@L[UserGender.None.ToString()]</FluentRadio>
+                    <FluentRadio TValue="UserGender" Value="@UserGender.Male">@L[UserGender.Male.ToString()]</FluentRadio>
+                    <FluentRadio TValue="UserGender" Value="@UserGender.Female">@L[UserGender.Female.ToString()]</FluentRadio>
+                </FluentRadioGroup>
+            </FormItem2>
+            <FormItem2 For="@(() => context.BirthDate)">
+                <FluentDatePicker @bind-Value="context.BirthDate" />
+            </FormItem2>
+
+            @if (context.Form is not null)
+            {
+                <MetaValuesForm @ref="_metaValueForm"
+                                Definition="context.Form"
+                                MetaValues="context.MetaValues"
+                                MetaFields="context.UserType.MetaFields" />
+            }
+        </div>
+    </ChildContent>
+</StandardEditContainer>

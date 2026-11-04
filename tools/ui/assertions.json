@@ -33,6 +33,15 @@
     "/dev/Users": [
       { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
     ],
+    "/dev/Profile": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "profile hero rendered", "selector": ".cloudy-profile-hero", "exists": { "min": 1 } },
+      { "name": "profile cards rendered", "selector": ".cloudy-profile-cards .cloudy-card", "exists": { "min": 2 } }
+    ],
+    "/dev/Profile/Edit": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "edit container rendered", "selector": ".edit-container", "exists": { "min": 1 } }
+    ],
     "/dev/Settings": [
       { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
     ],

@@ -27,9 +27,26 @@ public class UpdateUserQueryValidator : AbstractValidator<UpdateUserQuery>
             .SetValidator(new UserPhoneValidator())
             .When(x => x.PhoneNumber != null);
 
+        // Формат и блэклист проверяются только при фактической смене имени:
+        // легаси-пользователи (username = почта из старого сида, «admin») иначе не могли бы
+        // сохранить ни одно обновление профиля.
         RuleFor(x => x.UserName)
-            .SetValidator(new UserNameRuleValidator())
-            .SetValidator(new UsernameBlacklistValidator());
+            .MustAsync(async (query, userName, context, cancellationToken) =>
+            {
+                var current = await userRepository.GetDetail(query.Id, cancellationToken);
+                if (current is not null && string.Equals(current.UserName, userName, StringComparison.Ordinal))
+                    return true;
+
+                var format = await new UserNameRuleValidator().ValidateAsync(userName, cancellationToken);
+                var blacklist = await new UsernameBlacklistValidator().ValidateAsync(userName, cancellationToken);
+
+                foreach (var error in format.Errors)
+                    context.AddFailure(nameof(UpdateUserQuery.UserName), error.ErrorMessage);
+                foreach (var error in blacklist.Errors)
+                    context.AddFailure(nameof(UpdateUserQuery.UserName), error.ErrorMessage);
+
+                return format.IsValid && blacklist.IsValid;
+            });
 
         RuleFor(x => x.UserName)
             .MustAsync(async (ctx, x, ct) => !await userRepository.UsernameIsAlreadyTakenByAnotherUser(x, ctx.Id, ct))

@@ -433,8 +433,9 @@ internal class UserRepository : IUserRepository, IDisposable
         {
             var userTypesId = (await _marsDbContext.UserTypes.FirstAsync()).Id; //TODO: установить в настройках
 
-            var prefererUserName = query.PreferredUserName;
-            var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(query.PreferredUserName)
+            // провайдеры (Keycloak/Microsoft) отдают preferred_username почтой — режем до local-part
+            var prefererUserName = UserMapping.EmailLocalPart(query.PreferredUserName ?? query.Email);
+            var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(prefererUserName)
                                     || await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
 
             if (thisUserNameBusy) // TODO: пересмотреть

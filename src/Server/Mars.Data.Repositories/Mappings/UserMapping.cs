@@ -95,12 +95,16 @@ internal static class UserMapping
     public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Identity.Contracts.Users.UserGender gender)
         => (Mars.Data.OwnedTypes.Users.UserGender)gender;
 
+    /// <summary>Local-part почты — username-fallback: полное письмо не проходит валидацию username ('@' запрещён).</summary>
+    public static string? EmailLocalPart(string? email)
+        => email?.Split('@', 2)[0];
+
     public static UserEntity ToEntity(this CreateUserQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
         => new()
         {
             Id = query.Id ?? Guid.Empty,
-            UserName = query.UserName ?? query.Email,
-            NormalizedUserName = lookupNormalizer.NormalizeName(query.UserName ?? query.Email),
+            UserName = query.UserName ?? EmailLocalPart(query.Email),
+            NormalizedUserName = lookupNormalizer.NormalizeName(query.UserName ?? EmailLocalPart(query.Email)),
 
             Email = query.Email,
             NormalizedEmail = lookupNormalizer.NormalizeEmail(query.Email),
@@ -168,8 +172,8 @@ internal static class UserMapping
         => new()
         {
             //Id = query.Id ?? Guid.Empty,
-            UserName = query.PreferredUserName ?? query.Email,
-            NormalizedUserName = lookupNormalizer.NormalizeName(query.PreferredUserName ?? query.Email),
+            UserName = query.PreferredUserName ?? EmailLocalPart(query.Email),
+            NormalizedUserName = lookupNormalizer.NormalizeName(query.PreferredUserName ?? EmailLocalPart(query.Email)),
 
             Email = query.Email,
             NormalizedEmail = lookupNormalizer.NormalizeEmail(query.Email),

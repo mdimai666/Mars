@@ -137,4 +137,37 @@ public sealed class UpdateUserTests : ApplicationTests
         });
     }
 
+    [IntegrationFact]
+    public async Task UpdateUser_ChangeUserNameToInvalid_ValidateError()
+    {
+        //Arrange — смена имени на неформатное (почта/пробелы) валидируется строго
+        _ = nameof(UserController.Update);
+        var client = AppFixture.GetClient();
+        var ef = AppFixture.MarsDbContext();
+
+        var createdUser = _fixture.Create<UserEntity>();
+        createdUser.MetaValues = [];
+        createdUser.UserTypeId = ef.UserTypes.First(s => s.TypeName == UserTypeEntity.DefaultTypeName).Id;
+        ef.Users.Add(createdUser);
+        ef.SaveChanges();
+        var roleName = ef.Roles.AsNoTracking().First().Name!;
+
+        var request = _fixture.Create<UpdateUserRequest>() with
+        {
+            Id = createdUser.Id,
+            Type = UserTypeEntity.DefaultTypeName,
+            MetaValues = [],
+            Roles = [roleName],
+            UserName = "some@mail.localhost",
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PutJsonAsync(request).ReceiveValidationError();
+
+        //Assert
+        result.Should().NotBeNull();
+        result.Errors.Should().ContainKey(nameof(UpdateUserRequest.UserName));
+        result.Errors[nameof(UpdateUserRequest.UserName)].Should().ContainMatch("*can only contain letters*");
+    }
+
 }

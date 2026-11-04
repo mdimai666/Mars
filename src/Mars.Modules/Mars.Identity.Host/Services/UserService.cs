@@ -106,7 +106,6 @@ internal class UserService : IUserService
     public async Task<UserDetail> Update(UpdateUserQuery query, CancellationToken cancellationToken)
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
-        //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
         await _userRepository.Update(query, cancellationToken);
         var updated = (await GetDetail(query.Id, cancellationToken))!;

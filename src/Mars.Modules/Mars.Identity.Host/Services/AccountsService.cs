@@ -107,9 +107,13 @@ internal class AccountsService : IAccountsService
 
     public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationQuery userData, CancellationToken cancellationToken)
     {
+        // username — local-part почты; при коллизии FindPrefererUserName добавляет цифровой суффикс
+        var userName = await FindPrefererUserName(userData.Email.Split('@', 2)[0])
+                       ?? Guid.NewGuid().ToString("N");
+
         var user = new UserEntity
         {
-            UserName = userData.Email,
+            UserName = userName,
             Email = userData.Email,
             EmailConfirmed = true,
             LockoutEnabled = true,

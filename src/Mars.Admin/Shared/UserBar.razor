@@ -36,13 +36,6 @@ else
         </a>
         <div class="dropdown-menu dropdown-menu-end cloudy-user-menu">
             <a class="cloudy-user-menu__item" href="/dev/Profile">Профиль</a>
-            <a class="cloudy-user-menu__item" href="/dev/Profile/ApiKeys">API-ключи</a>
-            <a class="cloudy-user-menu__item" href="/dev/Profile/Passkeys">Пасскеи</a>
-
-            @if (Q.User.IsAdmin)
-            {
-                <a class="cloudy-user-menu__item" href="/dev/tech">Builder</a>
-            }
 
             <a class="cloudy-user-menu__item" href="#" @onclick="ToggleTheme" @onclick:preventDefault>
                 @(isDark ? "Светлая тема" : "Тёмная тема")

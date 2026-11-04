@@ -123,6 +123,30 @@ public sealed class UserProfileEditTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task UpdateProfile_LegacyEmailUserName_Succeeds()
+    {
+        //Arrange — легаси-пользователь с username = почта (старый сид мастера):
+        //валидатор не должен блокировать сохранение профиля, пока имя не меняют
+        _ = nameof(AccountController.UpdateProfile);
+        var createdUser = CreateUserWithRole(out var role, userName: "legacy@mail.localhost");
+        var client = AppFixture.GetClientForUser(createdUser.Id);
+
+        var request = CreateValidRequest();
+
+        //Act
+        var result = await client.Request(_apiUrl, "Profile")
+                                    .PutJsonAsync(request)
+                                    .CatchUserActionError()
+                                    .ReceiveJson<UserDetailResponse>();
+
+        //Assert
+        result.FirstName.Should().Be(request.FirstName);
+        result.LastName.Should().Be(request.LastName);
+        result.UserName.Should().Be("legacy@mail.localhost");
+        result.Roles.Should().BeEquivalentTo([role.Name]);
+    }
+
+    [IntegrationFact]
     public async Task UpdateProfile_InvalidModelRequest_ValidateError()
     {
         //Arrange
@@ -140,6 +164,26 @@ public sealed class UserProfileEditTests : ApplicationTests
         {
             [nameof(UpdateUserProfileRequest.FirstName)] = ["*обязательно*"],
         });
+    }
+
+    UserEntity CreateUserWithRole(out RoleEntity role, string? userName = null)
+    {
+        var ef = AppFixture.MarsDbContext();
+
+        var userType = ef.UserTypes.First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
+        role = ef.Roles.AsNoTracking().First();
+        var createdUser = _fixture.Create<UserEntity>();
+        createdUser.MetaValues = [];
+        createdUser.UserTypeId = userType.Id;
+        if (userName is not null)
+        {
+            createdUser.UserName = userName;
+            createdUser.NormalizedUserName = userName.ToUpper();
+        }
+        ef.Users.Add(createdUser);
+        ef.UserRoles.Add(new UserRoleEntity { UserId = createdUser.Id, RoleId = role.Id });
+        ef.SaveChanges();
+        return createdUser;
     }
 
     static UpdateUserProfileRequest CreateValidRequest()

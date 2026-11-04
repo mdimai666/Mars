@@ -276,6 +276,7 @@ internal class UserService : IUserService
             BirthDate = request.BirthDate,
             Gender = request.Gender,
             AvatarUrl = request.AvatarUrl,
+            About = request.About,
             MetaValues = request.MetaValues,
         };
 

@@ -32,5 +32,8 @@ public record UpdateUserProfileRequest
 
     public required string? AvatarUrl { get; init; }
 
+    [Display(Name = "Обо мне")]
+    public required string? About { get; init; }
+
     public required IReadOnlyCollection<UpdateMetaValueRequest> MetaValues { get; init; }
 }

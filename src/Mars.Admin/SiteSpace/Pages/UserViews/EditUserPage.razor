@@ -101,6 +101,9 @@ else
                 <FormItem2 For="@(() => _model.BirthDate)">
                     <FluentDatePicker @bind-Value="_model.BirthDate" />
                 </FormItem2>
+                <FormItem2 For="@(() => _model.About)">
+                    <FluentTextArea Name="@nameof(UserEditModel.About)" Rows="4" Class="w-100" @bind-Value="_model.About" />
+                </FormItem2>
 
                 @if (_model.Form is not null)
                 {
@@ -136,6 +139,9 @@ else
 
                     <dt class="cloudy-deflist__term">@L[nameof(AppRes.Phone)]</dt>
                     <dd class="cloudy-deflist__value">@Value(_model.PhoneNumber)</dd>
+
+                    <dt class="cloudy-deflist__term">Обо мне</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.About)</dd>
                 </dl>
             </section>
 

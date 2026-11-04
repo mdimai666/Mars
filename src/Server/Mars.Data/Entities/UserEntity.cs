@@ -46,6 +46,10 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
 
     public string? AvatarUrl { get; set; }
 
+    [PersonalData]
+    [Comment("О себе")]
+    public string? About { get; set; }
+
     //-------------Relations-----------
 
     public virtual ICollection<PostEntity>? Posts { get; set; }

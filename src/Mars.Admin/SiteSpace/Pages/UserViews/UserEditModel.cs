@@ -57,6 +57,9 @@ public class UserEditModel
 
     public string AvatarUrl { get; set; } = "";
 
+    [Display(Name = "Обо мне")]
+    public string About { get; set; } = "";
+
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
 
     /// <summary>Дерево формы метаполей владельца (общий слой Mars.Forms)</summary>
@@ -116,6 +119,7 @@ public class UserEditModel
             Gender = Gender,
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
             AvatarUrl = AvatarUrl.AsNullIfEmpty(),
+            About = About.AsNullIfEmpty(),
 
             Password = password,
             Type = Type,
@@ -137,6 +141,7 @@ public class UserEditModel
             Gender = Gender,
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
             AvatarUrl = AvatarUrl.AsNullIfEmpty(),
+            About = About.AsNullIfEmpty(),
 
             Type = Type,
             MetaValues = MetaValues.Select(s => s.ToUpdateRequest()).ToList(),
@@ -165,6 +170,7 @@ public class UserEditModel
                 Gender = response.Gender,
                 PhoneNumber = response.Phone ?? "",
                 AvatarUrl = response.AvatarUrl ?? "",
+                About = response.About ?? "",
 
                 Type = response.Type ?? "",
                 MetaValues = response.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),

@@ -35,6 +35,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
@@ -56,6 +57,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDetailDto(),
@@ -86,8 +88,8 @@ internal static class UserMapping
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
 
-            AvatarUrl = "",
-            About = "",
+            AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
         };
 
     public static Mars.Identity.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
@@ -119,6 +121,7 @@ internal static class UserMapping
             BirthDate = query.BirthDate,
             Gender = ParseGender(query.Gender),
             AvatarUrl = query.AvatarUrl,
+            About = query.About,
 
             UserTypeId = userTypeId,
             MetaValues = query.MetaValues.ToEntity<UserMetaValueEntity>(),
@@ -137,6 +140,7 @@ internal static class UserMapping
         entity.BirthDate = query.BirthDate;
         entity.Gender = UserMapping.ParseGender(query.Gender);
         entity.AvatarUrl = query.AvatarUrl;
+        entity.About = query.About;
 
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;

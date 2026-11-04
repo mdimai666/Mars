@@ -114,6 +114,7 @@ public sealed class UserProfileEditTests : ApplicationTests
         result.BirthDate.Should().Be(request.BirthDate);
         result.Gender.Should().Be(request.Gender);
         result.AvatarUrl.Should().Be(request.AvatarUrl);
+        result.About.Should().Be(request.About);
 
         // защищённые поля остаются от текущего пользователя
         result.UserName.Should().Be(userNameBefore);
@@ -196,6 +197,7 @@ public sealed class UserProfileEditTests : ApplicationTests
             BirthDate = new DateTime(1990, 5, 15),
             Gender = UserGender.Female,
             AvatarUrl = null,
+            About = "Расскажу о себе",
             MetaValues = [],
         };
 }

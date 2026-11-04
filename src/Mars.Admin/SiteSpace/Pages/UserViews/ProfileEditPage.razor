@@ -49,6 +49,9 @@
             <FormItem2 For="@(() => context.BirthDate)">
                 <FluentDatePicker @bind-Value="context.BirthDate" />
             </FormItem2>
+            <FormItem2 For="@(() => context.About)">
+                <FluentTextArea Name="@nameof(ProfileEditModel.About)" Rows="4" Class="w-100" @bind-Value="context.About" />
+            </FormItem2>
 
             @if (context.Form is not null)
             {

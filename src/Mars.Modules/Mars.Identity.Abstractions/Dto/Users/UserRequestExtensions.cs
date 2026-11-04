@@ -21,6 +21,7 @@ public static class UserRequestExtensions
             Gender = request.Gender,
             PhoneNumber = request.PhoneNumber,
             AvatarUrl = null,
+            About = request.About,
 
             Type = request.Type,
             MetaValues = request.MetaValues.ToQuery(metaFields)
@@ -41,6 +42,7 @@ public static class UserRequestExtensions
             Gender = request.Gender,
             PhoneNumber = request.PhoneNumber,
             AvatarUrl = request.AvatarUrl,
+            About = request.About,
 
             Type = request.Type,
             MetaValues = request.MetaValues.ToQuery(metaFields)

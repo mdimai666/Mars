@@ -50,6 +50,9 @@ public class ProfileEditModel : IHasId
 
     public string AvatarUrl { get; set; } = "";
 
+    [Display(Name = "Обо мне")]
+    public string About { get; set; } = "";
+
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
     //----- Метаполя -----
@@ -81,6 +84,7 @@ public class ProfileEditModel : IHasId
             BirthDate = BirthDate,
             Gender = Gender,
             AvatarUrl = AvatarUrl.AsNullIfEmpty(),
+            About = About.AsNullIfEmpty(),
             MetaValues = MetaValues.Select(s => s.ToUpdateRequest()).ToList(),
         };
 
@@ -103,6 +107,7 @@ public class ProfileEditModel : IHasId
             BirthDate = user.BirthDate,
             Gender = user.Gender,
             AvatarUrl = user.AvatarUrl ?? "",
+            About = user.About ?? "",
 
             MetaValues = user.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),
             Form = vm.Form,

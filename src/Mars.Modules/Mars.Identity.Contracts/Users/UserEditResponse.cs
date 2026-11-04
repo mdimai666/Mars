@@ -26,8 +26,8 @@ public class UserEditResponse
     [Display(Name = "Отчество")]
     public required string? MiddleName { get; set; }
 
-    //[Display(Name = "Обо мне")]
-    //public required string? About { get; set; }
+    [Display(Name = "Обо мне")]
+    public string? About { get; set; }
 
     //[Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [EmailAddress(ErrorMessageResourceName = nameof(AppRes.v_email), ErrorMessageResourceType = typeof(AppRes))]

@@ -38,6 +38,9 @@ public record CreateUserRequest
     public required UserGender Gender { get; init; }
     public required string? AvatarUrl { get; init; }
 
+    [Display(Name = "Обо мне")]
+    public string? About { get; init; }
+
     public required string Type { get; init; }
     public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
 }
@@ -71,6 +74,9 @@ public record UpdateUserRequest
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
     public required string? AvatarUrl { get; init; }
+
+    [Display(Name = "Обо мне")]
+    public string? About { get; init; }
 
     [StringLength(1000, MinimumLength = 3)]
     [Required]

@@ -20,7 +20,7 @@ namespace Mars.Data.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -1322,6 +1322,11 @@ namespace Mars.Data.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("About")
+                        .HasColumnType("text")
+                        .HasColumnName("about")
+                        .HasComment("О себе");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer")

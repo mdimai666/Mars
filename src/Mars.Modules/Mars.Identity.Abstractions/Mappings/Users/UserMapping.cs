@@ -33,6 +33,7 @@ public static class UserMapping
             CreatedAt = entity.CreatedAt,
             ModifiedAt = entity.ModifiedAt,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
@@ -86,6 +87,7 @@ public static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Roles = entity.Roles,
             Type = entity.Type,

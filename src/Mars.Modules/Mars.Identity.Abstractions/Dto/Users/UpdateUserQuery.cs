@@ -20,6 +20,7 @@ public record UpdateUserQuery
     public UserGender Gender { get; init; }
     public string? PhoneNumber { get; init; }
     public required string? AvatarUrl { get; init; }
+    public string? About { get; init; }
 
     public required string Type { get; init; }
     public required IReadOnlyCollection<ModifyMetaValueDetailQuery> MetaValues { get; init; }

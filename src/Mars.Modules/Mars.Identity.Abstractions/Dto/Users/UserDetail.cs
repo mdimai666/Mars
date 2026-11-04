@@ -21,6 +21,9 @@ public record UserDetail : UserSummary
     public required string UserName { get; init; }
 
     [PersonalData]
+    public string? About { get; init; }
+
+    [PersonalData]
     public required DateTime? BirthDate { get; init; }
 
     public required UserGender Gender { get; init; }

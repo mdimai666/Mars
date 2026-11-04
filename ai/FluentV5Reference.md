@@ -443,7 +443,10 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   `Height`, `Width`.
 - **FluentMultiSplitter**: `Orientation`, `BarSize` (default 8px), `Width`, `Height`,
   `OnCollapse/OnExpand/OnResize`. **FluentMultiSplitterPane**: `Size`, `Min`, `Max`, `Collapsed`,
-  `Collapsible`, `Resizable`.
+  `Collapsible`, `Resizable`. Грабля (замер 2026-11-05): рендерится ОБЫЧНЫМИ div'ами
+  `.fluent-multi-splitter(-pane/-bar)` без custom elements; пейн без `Size` получает
+  `flex-basis:100%` и раздавливает соседей в ноль — `Size` задавать КАЖДОМУ пейну
+  (так «пропал» DebugConsole в NodeEditor1 до редизайна).
 - **FluentLabel**: `Required` (звёздочка), `Size`, `Weight`, `Disabled`, `Tooltip`, `ChildContent`.
   ✝ `Typo`, `Color` МЕРТВЫ (молча уходят в AdditionalAttributes) → FluentText.
 - **FluentSlider<TValue>**: `Min`, `Max`, `Step` (default 1), `Size`, `Orientation`, `Width`,

@@ -658,7 +658,7 @@ public partial class ActionCenter : IDisposable
 
             case PinnedCommand.OpenNodesEditor:
                 Service.Close();
-                NavigationManager.NavigateTo("/dev/tech/nodered");
+                NavigationManager.NavigateTo("/dev/tech/automation");
                 break;
         }
     }

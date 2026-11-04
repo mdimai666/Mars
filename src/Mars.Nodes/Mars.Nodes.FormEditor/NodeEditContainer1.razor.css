@@ -1,3 +1,119 @@
+/* инлайн-панель редактирования ноды (правая панель NodeEditor1).
+   Фон светлый намеренно: поля NodeForm и bootstrap-части рассчитаны на светлую тему,
+   их темизация — отдельный этап редизайна. */
+
+.node-edit-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    background: #fff;
+    color: #212529;
+}
+
+.nep-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    flex: none;
+    border-bottom: 1px solid rgba(120, 130, 160, .25);
+}
+
+.nep-title {
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nep-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+}
+
+.nep-close {
+    border: none;
+    background: transparent;
+    color: #6b7488;
+    padding: 6px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.nep-close:hover {
+    color: #232a38;
+    background: rgba(120, 130, 160, .14);
+}
+
+.nep-tabs {
+    display: flex;
+    gap: 18px;
+    padding: 0 12px;
+    flex: none;
+    border-bottom: 1px solid rgba(120, 130, 160, .25);
+}
+
+.nep-tabs button {
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 9px 2px;
+    color: #6b7488;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nep-tabs button:hover {
+    color: #232a38;
+}
+
+.nep-tabs button.active {
+    color: #232a38;
+}
+
+.nep-tabs button.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ct-accent, #6954f9);
+}
+
+.nep-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.nep-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.nep-form--hidden {
+    display: none;
+}
+
+.nep-json {
+    height: calc(100% - 46px);
+    min-height: 280px;
+}
+
 ::deep .FluentMarkdown h1 {
     font-size: 24px;
 }

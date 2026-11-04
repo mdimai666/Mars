@@ -1,20 +1,20 @@
-@page "/tech/nodered"
+@page "/tech/automation"
 @implements IDisposable
 @using Mars.Nodes.Workspace
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@if (Busy)
-{
-    <div class="p-5 main-fill xcenter">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+<PageTitle>Automation</PageTitle>
 
-    </div>
-}
-else
-{
-    if (_nodes is null)
+<div class="automation-editor-host">
+    @if (Busy)
+    {
+        <div class="p-5 main-fill xcenter">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_nodes is null)
     {
         <h1>is null</h1>
     }
@@ -36,4 +36,4 @@ else
             </SectionActions>
         </NodeEditor1>
     }
-}
+</div>

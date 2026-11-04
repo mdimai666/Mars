@@ -479,6 +479,175 @@ g.red-ui-flow-link-ghost path.red-ui-flow-link-line {
     --red-ui-node-border-placeholder: #aaa;
     --red-ui-node-link-port-background: #eee;
     --red-ui-node-port-label-color: #888;
+
+    /* cloudy-ready chrome: в tech-зоне админки токены --ct-* публикует CloudyTechLayout,
+       вне её (devstand) — светлые фолбэки */
+    --ne-line: var(--ct-line, rgba(120, 130, 160, .28));
+    --ne-panel: var(--ct-panel, rgba(255, 255, 255, .92));
+    --ne-bar: var(--ct-bar, rgba(245, 246, 250, .92));
+    --ne-card: var(--ct-card, #fff);
+    --ne-ink: var(--ct-ink, #232a38);
+    --ne-muted: var(--ct-muted, #6b7488);
+    --ne-accent: var(--ct-accent, #6954f9);
+    --ne-accent-soft: var(--ct-accent-soft, rgba(105, 84, 249, .12));
+    --ne-grid: var(--tech-grid-line, rgba(120, 130, 160, .14));
+}
+
+/* --- композиция редактора: тулбар сверху, канвас + постоянная правая панель, плавающая палитра --- */
+
+.ne-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.ne-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: none;
+    min-height: 52px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--ne-line);
+    border-radius: 14px;
+    background: var(--ne-bar);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+}
+
+.ne-toolbar__left,
+.ne-toolbar__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.ne-palette-toggles {
+    display: flex;
+    gap: 6px;
+}
+
+.ne-chip {
+    border: 1px solid var(--ne-line);
+    border-radius: 10px;
+    background: var(--ne-card);
+    color: var(--ne-ink);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ne-chip:hover {
+    border-color: var(--ne-accent);
+}
+
+.ne-chip--active {
+    border-color: var(--ne-accent);
+    background: var(--ne-accent-soft);
+    color: var(--ne-accent);
+}
+
+.ne-toolbar__sep {
+    width: 1px;
+    height: 22px;
+    flex: none;
+    background: var(--ne-line);
+    margin: 0 4px;
+}
+
+.ne-body {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.ne-canvas {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--ne-line);
+    border-radius: 14px;
+    overflow: hidden;
+    /* прозрачное стекло как в прототипе (cloudy-tech токены); сетка — на svg внутри, скроллится с контентом */
+    background-color: var(--tech-canvas, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+}
+
+.ne-canvas #red-ui-workspace-chart {
+    bottom: 0;
+}
+
+/* фон самого svg (5000x5000) скроллится вместе с нодами — сетка «едет» с полотном */
+.ne-canvas #red-ui-workspace-chart > svg {
+    background-image:
+        linear-gradient(var(--ne-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--ne-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+
+/* плавающая палитра (ситуативная, открывается чипами тулбара) */
+
+.ne-palette {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    width: 220px;
+    max-height: min(560px, calc(100% - 20px));
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border: 1px solid var(--ne-line);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+    overflow: hidden;
+    user-select: none;
+}
+
+.ne-palette--hidden {
+    display: none;
+}
+
+.ne-palette__scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: auto;
+}
+
+/* правая панель: консоль/INPUT либо форма ноды */
+
+.ne-side {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--ne-line);
+    border-radius: 14px;
+    background: var(--ne-panel);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    overflow: hidden;
+}
+
+.ne-side__console {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* консоль не размонтируется (копит сообщения), пока панель занята формой ноды */
+.ne-side--editing .ne-side__console {
+    display: none;
 }
 
 .node-input-viewer {

@@ -25,7 +25,7 @@ const PAGES = args.pages
       '/dev/tech/models/classmodels', '/dev/tech/scheduler', '/dev/tech/components',
       '/dev/tech/playbooks', '/dev/tech/docker', '/dev/tech/devtest',
       '/dev/tech/styledesigner', '/dev/tech/style-gallery',
-      '/dev/tech/nodes', '/dev/tech/nodered', '/dev/tech/forms', '/dev/tech/frontend',
+      '/dev/tech/nodes', '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
       '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
     ];
 
@@ -165,46 +165,44 @@ async function runAssertion(page, a) {
     report.push(entry);
   }
 
-  // Диалог редактора ноды (NodeEditContainer1): dblclick по ноде, ширина, закрытие по ESC.
+  // Инлайн-панель редактора ноды (NodeEditContainer1 в правой панели NodeEditor1):
+  // dblclick по ноде открывает .node-edit-panel, крестик закрывает, консоль возвращается.
   if (!args['skip-nodes']) {
-    const entry = { page: '/dev/tech/nodered#node-dialog', status: 'ok', assertions: [] };
+    const entry = { page: '/dev/tech/automation#node-panel', status: 'ok', assertions: [] };
     const errBefore = consoleErrors.length;
     try {
-      await page.goto(`${HOST}/dev/tech/nodered`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await page.goto(`${HOST}/dev/tech/automation`, { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
       await page.waitForSelector('.red-ui-flow-node__body', { timeout: 30000 });
       await page.waitForTimeout(800);
       await page.locator('.red-ui-flow-node__body').first().dblclick();
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(1200);
       const info = await page.evaluate(() => {
-        const host = document.querySelector('fluent-dialog.NodeEditDialog');
-        if (!host) return { visible: false };
-        const inner = host.shadowRoot ? host.shadowRoot.querySelector('dialog') : null;
-        const el = inner || host;
-        const r = el.getBoundingClientRect();
-        return { visible: r.height > 0 && (inner ? inner.open !== false : true), box: { width: Math.round(r.width), height: Math.round(r.height), bottom: Math.round(r.bottom) } };
+        const side = document.querySelector('.ne-side');
+        const panel = document.querySelector('.ne-side .node-edit-panel');
+        if (!panel) return { visible: false, editingClass: side ? side.classList.contains('ne-side--editing') : false };
+        const r = panel.getBoundingClientRect();
+        return { visible: r.height > 0, box: { width: Math.round(r.width), height: Math.round(r.height) }, editingClass: side ? side.classList.contains('ne-side--editing') : false };
       });
-      entry.dialog = info;
-      if (!info.visible) { entry.status = 'DIALOG_NOT_OPEN'; failed++; }
-      else if (info.box.width < 1200) { entry.assertions.push({ name: 'node dialog wide', ok: false, detail: `width=${info.box.width} < 1200` }); failed++; }
-      else entry.assertions.push({ name: 'node dialog wide', ok: true, detail: `width=${info.box.width}` });
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(1500);
-      entry.closedAfterEsc = await page.evaluate(() => {
-        const host = document.querySelector('fluent-dialog.NodeEditDialog');
-        if (!host) return true;
-        const inner = host.shadowRoot ? host.shadowRoot.querySelector('dialog') : null;
-        if (inner && inner.open !== undefined) return !inner.open;
-        return inner ? inner.getBoundingClientRect().height === 0 : host.getBoundingClientRect().height === 0;
+      entry.panel = info;
+      if (!info.visible || !info.editingClass) { entry.status = 'NODE_PANEL_NOT_OPEN'; failed++; }
+      else if (info.box.width < 300) { entry.assertions.push({ name: 'node panel width', ok: false, detail: `width=${info.box.width} < 300` }); failed++; }
+      else entry.assertions.push({ name: 'node panel width', ok: true, detail: `width=${info.box.width}` });
+      await page.locator('.node-edit-panel .nep-close').click();
+      await page.waitForTimeout(800);
+      entry.closedAfterX = await page.evaluate(() => {
+        const panel = document.querySelector('.ne-side .node-edit-panel');
+        const consoleVisible = document.querySelector('.ne-side .DebugMessagesConsole');
+        return !panel && !!consoleVisible;
       });
-      if (!entry.closedAfterEsc) failed++;
+      if (!entry.closedAfterX) failed++;
       entry.consoleErrors = consoleErrors.slice(errBefore).map((e) => `${e.type}: ${e.text}`);
     } catch (e) {
-      entry.status = 'NODE_DIALOG_ERROR';
+      entry.status = 'NODE_PANEL_ERROR';
       entry.error = String(e).slice(0, 300);
       failed++;
     }
-    console.log('node dialog:', entry.status, JSON.stringify(entry.dialog || {}), 'esc-closed:', entry.closedAfterEsc);
+    console.log('node panel:', entry.status, JSON.stringify(entry.panel || {}), 'closed-after-x:', entry.closedAfterX);
     report.push(entry);
   }
 

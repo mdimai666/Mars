@@ -118,6 +118,20 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     #region MenuTabs
     string activeMasterTab = "tabs";
 
+    /// <summary>Плавающая левая панель ситуативна: открывается чипом табов в тулбаре, повторный клик по тому же табу закрывает.</summary>
+    bool _paletteVisible;
+
+    void TogglePalette(string tabKey)
+    {
+        if (_paletteVisible && activeMasterTab == tabKey)
+            _paletteVisible = false;
+        else
+        {
+            activeMasterTab = tabKey;
+            _paletteVisible = true;
+        }
+    }
+
     class MasterTab
     {
         public string label;
@@ -136,7 +150,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     IReadOnlyCollection<NodeExampleInfo> _examplesList = [];
     IReadOnlyCollection<NodeExampleInfo> _currentPaletteNodeExamples = [];
-    Orientation? _editorSpaceOrientation;
 
     protected override void OnInitialized()
     {
@@ -158,15 +171,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _examplesList = _nodesLocator.CreateExamplesList();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         EnsureDefaultFlow();
-
-        if (_editorSpaceOrientation is null)
-        {
-            var viewPort = await _js.GetViewportMetricsAsync();
-            _editorSpaceOrientation = viewPort.Orientation == ScreenOrientationType.PortraitPrimary ? Orientation.Vertical : Orientation.Horizontal;
-        }
     }
 
     public async ValueTask DisposeAsync()
@@ -237,9 +244,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public void AddDebugMessage(string text) => AddDebugMessage(DebugMessage.ConsoleMessage(text));
     public void AddDebugMessage(DebugMessage msg) => _debugMessagesConsole.AddMessage(msg);
 
-    internal void ToggleConsolePosition()
+    /// <summary>Правая панель занята формой ноды — консоль скрыта (но остаётся в DOM и копит сообщения).</summary>
+    bool _isEditingNode;
+
+    void OnNodeEditingChanged(bool editing)
     {
-        _editorSpaceOrientation = _editorSpaceOrientation == Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
+        _isEditingNode = editing;
+        StateHasChanged();
     }
     #endregion
 
@@ -335,7 +346,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         await Task.Delay(10);
         appendNewConfigNodeEvent.ConfigNodeSetter(instance);
         EditNode = instance;
-        nodeEditContainer1.StartEditNode(instance);
+        nodeEditContainer1.StartEditNodeStacked(instance);
         RefreshDebugSnapshots();
         StateHasChanged();
     }
@@ -349,7 +360,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             return;
         }
         EditNode = node;
-        nodeEditContainer1.StartEditNode(node);
+        nodeEditContainer1.StartEditNodeStacked(node);
         RefreshDebugSnapshots();
     }
 
@@ -595,10 +606,21 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     async Task OpenPaletteContextMenuAsync(MouseEventArgs e)
     {
-        await UpdatePaletteOffsetAsync();
-        await _paletteNodeContextMenu.OpenMenuAsync("nodes-palette-sidebar",
-                                                    (int)(e.ClientX - _paletteOffsetX),
-                                                    (int)(e.ClientY - _paletteOffsetY));
+        if (_paletteVisible)
+        {
+            await UpdatePaletteOffsetAsync();
+            await _paletteNodeContextMenu.OpenMenuAsync("nodes-palette-sidebar",
+                                                        (int)(e.ClientX - _paletteOffsetX),
+                                                        (int)(e.ClientY - _paletteOffsetY));
+        }
+        else
+        {
+            // палитра скрыта (вызов из QuickNodeAddMenu) — якорим меню к канвасу
+            await _nodeWorkspace1.RefreshContainerOffsetAsync();
+            await _paletteNodeContextMenu.OpenMenuAsync("red-ui-workspace-chart",
+                                                        (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX),
+                                                        (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY));
+        }
     }
 
     async Task UpdatePaletteOffsetAsync()

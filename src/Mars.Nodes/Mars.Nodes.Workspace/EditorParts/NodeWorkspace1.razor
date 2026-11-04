@@ -16,14 +16,6 @@
          xmlns="http://www.w3.org/2000/svg">
 
         <defs>
-            <pattern id="img1" patternUnits="userSpaceOnUse" width="20" height="20">
-                <image href="_content/Mars.Nodes.Workspace/bg-red.svg"
-                       x="0"
-                       y="0"
-                       width="20"
-                       height="20" />
-            </pattern>
-
             <filter id="dropshadow" height="140%">
                 <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
                 <feOffset dx="2" dy="2" result="offsetblur" />
@@ -54,8 +46,8 @@
         </defs>
 
         <g class="red-ui-workspace-chart-event-layer" transform="scale(1)">
-            <!-- background -->
-            <rect fill="url(#img1)"
+            <!-- background: прозрачный, но ловит события; сетка — CSS-фон самого svg (скроллится с контентом) -->
+            <rect fill="transparent"
                   @oncontextmenu:preventDefault="true"
                   width="5000"
                   height="5000"></rect>

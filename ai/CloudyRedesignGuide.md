@@ -59,8 +59,10 @@
     FormBlockEditor, PostStatusesEditor, SystemFieldSettingsPanel,
     RegenerateGeneratedMetaValuesForm).
   - `TechSpace/Pages/` — tech-зона: layout задаёт `TechSpace/_Imports.razor`
-    (`@layout CloudyTechLayout`). Моки Automation/Database/Marketplace/Plugins +
+    (`@layout CloudyTechLayout`). Моки Database/Marketplace/Plugins +
     реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`) +
+    реальная `AutomationPage` (`/dev/tech/automation` — нод-редактор `NodeEditor1`;
+    2026-11-05: заменила мок TechAutomationPage, `NodeRedPage` `/tech/nodered` удалена) +
     бывшие Builder-домены (AppsViews, ClassModelViews, ComponentsViews,
     DataSourceViews, DockerViews, FormViews, FrontEditorViews, NodeViews,
     PlaybookViews, SchedulerViews, StyleDesignerViews, StyleGalleryViews,

@@ -42,7 +42,7 @@ internal static class AdminXActionsOverlay
             .Label("Логи")
             .Category("Разработка")
             .Link("tech/logs")
-            .FrontContexts(typeof(SettingsPage).FullName!, typeof(NodeRedPage).FullName!));
+            .FrontContexts(typeof(SettingsPage).FullName!, typeof(AutomationPage).FullName!));
 
 #if DEBUG
         actionManager.AddFrontContexts("mars.debug.dummy", typeof(SettingsPage).FullName!);

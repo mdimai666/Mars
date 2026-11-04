@@ -10,115 +10,77 @@
 @using Mars.Contracts.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill use-fluent-typo">
+<div class="NodeEditor1 red-ui-editor ne-shell use-fluent-typo">
     <CascadingValue Value="this">
-        <div class="border-bottom shadow-sm flex-shrink-0" style="height:40px;">
-            <div class="d-flex justify-content-between p-1 align-items-center">
-                <div class="d-flex fs-5">
+        <div class="ne-toolbar">
+            <div class="ne-toolbar__left">
+                <FluentButton Appearance="ButtonAppearance.Subtle"
+                              IconStart="@(new Icons.Regular.Size24.Settings())"
+                              Title="@AppRes.Settings"
+                              OnClick="OnSettingsButtonClick" />
 
-                    <div class="master-menu d-flex align-items-center">
-                        <FluentButton Appearance="ButtonAppearance.Subtle" IconStart="@(new Icons.Regular.Size24.Settings())" OnClick="OnSettingsButtonClick" />
-                        <div class="btn-group btn-group-sm ms-3" role="group">
-                            @foreach (var _tab in masterTabs)
-                            {
-                                var tab = _tab;
-                                <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
-                                       autocomplete="off" checked="@(tab.key == activeMasterTab)">
-                                <label class="btn btn-light rounded-5" for=@($"mtab-{tab.key}")
-                                       @onclick=@(e => activeMasterTab = tab.key)>@tab.label</label>
-                            }
-
-                        </div>
-                    </div>
-                    <div class="vr mx-3"></div>
-                    <div class="btn-group" role="group" aria-label="Basic outlined example">
-                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons16R.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="ButtonAppearance.Subtle"></FluentButton>
-                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons16R.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="ButtonAppearance.Subtle"></FluentButton>
-                    </div>
-                </div>
-
-                <div class="gap-2">
-                    <span>[@SelectContextString]</span>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 me-2">
-                    <FluentTooltip Anchor="debug-mode-switch">
-                        <b>DEBUG MODE</b><br />
-                        Stores the last message every node sent further (10 min, one per node output).<br />
-                        Values appear in field hints and in the INPUT panel.<br />
-                        Turns itself off after 30 minutes.
-                    </FluentTooltip>
-                    <FluentSwitch Id="debug-mode-switch"
-                                  Value="DebugMode"
-                                  ValueChanged="OnDebugModeSwitchChanged"
-                                  Label="DEBUG">
-                    </FluentSwitch>
-                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="OnJobListHistoryButtonClick" Title="task history">
-                        <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Default))" />
-                    </FluentButton>
-                    <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
-                                  IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Default))"
-                                  Class="btn-terminate-all-tasks"
-                                  Title="terminate all task"
-                                  Appearance="ButtonAppearance.Subtle">
-                        <FluentBadge Color="BadgeColor.Informative" title="running tasks count">
-                            @runningTaskCountDisplayText
-                        </FluentBadge>
-                    </FluentButton>
-
-                    @if (SectionActions is not null)
+                <div class="ne-palette-toggles">
+                    @foreach (var _tab in masterTabs)
                     {
-                        @SectionActions
+                        var tab = _tab;
+                        <button type="button"
+                                class="ne-chip @(_paletteVisible && activeMasterTab == tab.key ? "ne-chip--active" : null)"
+                                @onclick="() => TogglePalette(tab.key)">
+                            @tab.label
+                        </button>
                     }
-
-                    <FluentButton OnClick="@(_actionManager.ExecuteAction<DeployNodesAction>)"
-                                  IconEnd="@(new Icons16R.SaveMultiple())"
-                                  Title="Deploy nodes"
-                                  Appearance="ButtonAppearance.Primary">
-                        Deploy
-                    </FluentButton>
                 </div>
+
+                <span class="ne-toolbar__sep"></span>
+
+                <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons16R.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="ButtonAppearance.Subtle"></FluentButton>
+                <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons16R.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="ButtonAppearance.Subtle"></FluentButton>
+            </div>
+
+            <div class="ne-toolbar__right">
+                <FluentTooltip Anchor="debug-mode-switch">
+                    <b>DEBUG MODE</b><br />
+                    Stores the last message every node sent further (10 min, one per node output).<br />
+                    Values appear in field hints and in the INPUT panel.<br />
+                    Turns itself off after 30 minutes.
+                </FluentTooltip>
+                <FluentSwitch Id="debug-mode-switch"
+                              Value="DebugMode"
+                              ValueChanged="OnDebugModeSwitchChanged"
+                              Label="DEBUG">
+                </FluentSwitch>
+                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="OnJobListHistoryButtonClick" Title="task history">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Default))" />
+                </FluentButton>
+                <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
+                              IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Default))"
+                              Class="btn-terminate-all-tasks"
+                              Title="terminate all task"
+                              Appearance="ButtonAppearance.Subtle">
+                    <FluentBadge Color="BadgeColor.Informative" title="running tasks count">
+                        @runningTaskCountDisplayText
+                    </FluentBadge>
+                </FluentButton>
+
+                @if (SectionActions is not null)
+                {
+                    @SectionActions
+                }
+
+                <FluentButton OnClick="@(_actionManager.ExecuteAction<DeployNodesAction>)"
+                              IconEnd="@(new Icons16R.SaveMultiple())"
+                              Title="Deploy nodes"
+                              Appearance="ButtonAppearance.Primary">
+                    Deploy
+                </FluentButton>
             </div>
         </div>
-        <main class="d-flex no-gutters g-0 flex-fill w-100" style="min-height:0">
-            <div @ref="_paletteSidebarRef" id="nodes-palette-sidebar" class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
-                <div class="bg-white custom-scroll1" style="overflow-y:scroll;overflow-x:hidden;scroll-behavior: auto;width:190px;max-height:500px">
-                    @if (activeMasterTab == "nodes")
-                    {
-                        <PaletteSidebar Palette="Palette"
-                                        VarNodes="varNodes"
-                                        OnNodeMouseDown="OnMouseDownPaletteNode"
-                                        OnNodeContextMenu="OnPaletteNodeContextMenu"
-                                        OnEditVarNode="StartEditNode"
-                                        OnAddVarNode="OnClickAddVarNode" />
-                    }
-                    else if (activeMasterTab == "tabs")
-                    {
-                        <FlowsTabList Flows="flows" ActiveFlow="ActiveFlow"
-                                      OnSelectFlow="ChangeFlow" OnEditFlow="StartEditNode" OnAddFlow="ClickAddFlow" />
-                    }
-                    else if (activeMasterTab == "configs")
-                    {
-                        <ConfigsTabList ConfigNodes="AllNodes.Values.OfType<ConfigNode>()" OnEditNode="StartEditNode" />
-                    }
-                    <FluentMenu @ref="_paletteNodeContextMenu">
-                        <FluentMenuList>
-                            <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
-                                <MenuItems>
-                                    @foreach (var _example in _currentPaletteNodeExamples)
-                                    {
-                                        var example = _example;
-                                        <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
-                                    }
-                                </MenuItems>
-                            </FluentMenuItem>
-                        </FluentMenuList>
-                    </FluentMenu>
-                </div>
-            </div>
-            <FluentMultiSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6px" Class="w-100 h-100">
-                <FluentMultiSplitterPane Min="15%">
-                    <div class="h-100 w-100" style="position:relative">
+
+        <main class="ne-body">
+            <FluentMultiSplitter Orientation="Orientation.Horizontal" BarSize="6px" Class="w-100 h-100">
+                @* Size обязателен на первом пейне: без него flex-basis:100% раздавит соседнюю панель в ноль *@
+                <FluentMultiSplitterPane Size="70%" Min="15%">
+                    <div class="ne-canvas">
                         <NodeWorkspace1 @ref=_nodeWorkspace1
                                         Style=""
                                         Class="h-100"
@@ -163,23 +125,64 @@
                                 </FluentMenuList>
                             </FluentMenu>
                         </NodeWorkspace1>
+
+                        <div @ref="_paletteSidebarRef" id="nodes-palette-sidebar"
+                             class="ne-palette @(_paletteVisible ? null : "ne-palette--hidden")">
+                            <div class="ne-palette__scroll custom-scroll1">
+                                @if (activeMasterTab == "nodes")
+                                {
+                                    <PaletteSidebar Palette="Palette"
+                                                    VarNodes="varNodes"
+                                                    OnNodeMouseDown="OnMouseDownPaletteNode"
+                                                    OnNodeContextMenu="OnPaletteNodeContextMenu"
+                                                    OnEditVarNode="StartEditNode"
+                                                    OnAddVarNode="OnClickAddVarNode" />
+                                }
+                                else if (activeMasterTab == "tabs")
+                                {
+                                    <FlowsTabList Flows="flows" ActiveFlow="ActiveFlow"
+                                                  OnSelectFlow="ChangeFlow" OnEditFlow="StartEditNode" OnAddFlow="ClickAddFlow" />
+                                }
+                                else if (activeMasterTab == "configs")
+                                {
+                                    <ConfigsTabList ConfigNodes="AllNodes.Values.OfType<ConfigNode>()" OnEditNode="StartEditNode" />
+                                }
+                            </div>
+                        </div>
+
+                        <FluentMenu @ref="_paletteNodeContextMenu">
+                            <FluentMenuList>
+                                <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
+                                    <MenuItems>
+                                        @foreach (var _example in _currentPaletteNodeExamples)
+                                        {
+                                            var example = _example;
+                                            <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
+                                        }
+                                    </MenuItems>
+                                </FluentMenuItem>
+                            </FluentMenuList>
+                        </FluentMenu>
                     </div>
                 </FluentMultiSplitterPane>
-                <FluentMultiSplitterPane Size="20%" Min="200px">
-                    <div class="console-panel d-flex flex-column" style="height: 100%; min-height: 0;">
-                        @if (DebugMode)
-                        {
-                            <NodeInputViewer Node="_selectedNode" Nodes="AllNodes" />
-                        }
-                        <DebugMessagesConsole @ref="_debugMessagesConsole" />
+                <FluentMultiSplitterPane Size="30%" Min="320px">
+                    <div class="ne-side @(_isEditingNode ? "ne-side--editing" : null)">
+                        <div class="ne-side__console">
+                            @if (DebugMode)
+                            {
+                                <NodeInputViewer Node="_selectedNode" Nodes="AllNodes" />
+                            }
+                            <DebugMessagesConsole @ref="_debugMessagesConsole" />
+                        </div>
+                        <NodeEditContainer1 @ref=nodeEditContainer1
+                                            EditingChanged="OnNodeEditingChanged"
+                                            OnSave="OnEditFormSaveNodeClick"
+                                            OnDelete="DeleteNode"
+                                            OnClickEditConfigNode=OnClickEditConfigNode
+                                            OnClickNewConfigNode=OnClickNewConfigNode />
                     </div>
                 </FluentMultiSplitterPane>
             </FluentMultiSplitter>
-            <NodeEditContainer1 @ref=nodeEditContainer1
-                                OnSave="OnEditFormSaveNodeClick"
-                                OnDelete="DeleteNode"
-                                OnClickEditConfigNode=OnClickEditConfigNode
-                                OnClickNewConfigNode=OnClickNewConfigNode />
         </main>
     </CascadingValue>
 </div>

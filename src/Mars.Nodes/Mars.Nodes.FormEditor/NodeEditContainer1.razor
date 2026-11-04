@@ -3,33 +3,23 @@
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<d-node-edit-container class="NodeEditContainer1">
-
-    <FluentDialog aria-label="Edit node dialog"
-                  @ref=_dialog
-                  Modal=true
-                  Class="NodeEditDialog"
-                  OnStateChange="OnDialogStateChange">
-        <div class="hstack justify-content-between">
-            <div class="__left-title">
-                @if(_node is UnknownNode unknownNode)
+@if (_visible && _node is not null)
+{
+    <div class="NodeEditContainer1 node-edit-panel">
+        <header class="nep-head">
+            <div class="nep-title">
+                @if (_node is UnknownNode unknownNode)
                 {
-                    <h3>(UnknownNode)@unknownNode.UnrecognizedType</h3>
+                    <span>(UnknownNode)@unknownNode.UnrecognizedType</span>
                 }
                 else
                 {
-                    <h3>@_node?.TypeId</h3>
+                    <span>@_node?.TypeId</span>
                 }
             </div>
 
-            <div class="__right d-flex gap-3">
-
+            <div class="nep-actions">
                 <DFluentDeleteButton OnConfirm="FormDeleteClick" />
-
-                <FluentButton OnClick="FormCloseClick"
-                              Appearance="ButtonAppearance.Default">
-                    @AppRes.Cancel
-                </FluentButton>
 
                 <FluentButton OnClick="FormSaveClick"
                               Loading=@saveLoading
@@ -37,64 +27,55 @@
                     @AppRes.Save
                 </FluentButton>
 
+                <button type="button" class="nep-close" title="@AppRes.Cancel" @onclick="FormCloseClick">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-        </div>
-        @if (_node != null)
-        {
-            <CascadingValue Value="this">
-                <div class="row flex-fill">
-                    <div class="col-md-6">
-                        <div class="float-end">
-                            @if (isEditJsonMode)
-                            {
-                                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CancelJsonEditMode">
-                                    Отмена
-                                </FluentButton>
-                            }
-                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ToggleEditMode">
-                                <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Default" />
-                            </FluentButton>
-                        </div>
+        </header>
+
+        <nav class="nep-tabs">
+            <button type="button" class="@(_mode == NepMode.Form ? "active" : null)" @onclick="() => SetModeAsync(NepMode.Form)">Form</button>
+            <button type="button" class="@(_mode == NepMode.Docs ? "active" : null)" @onclick="() => SetModeAsync(NepMode.Docs)">Docs</button>
+        </nav>
+
+        <CascadingValue Value="this">
+            <div class="nep-body">
+                @if (_mode == NepMode.Form)
+                {
+                    <div class="nep-toolbar">
                         @if (isEditJsonMode)
                         {
-                            @* <h6>Edit: @typeof(TModel).Name</h6> *@
-                            <div class="clearfix"></div>
-
-                            <MarsCodeEditor2.CodeEditor2 @ref=codeEditor
-                                                         Lang=@CodeEditor2.Language.json
-                                                         OnSave="OnSaveFromCodeEditor"
-                                                         ContainerCssStyle="height:50vh"
-                                                         Value=@GetModelAsJson() />
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CancelJsonEditMode">
+                                @AppRes.Cancel
+                            </FluentButton>
                         }
-                        else
-                        {
-                            <NodeFormEditor1 @ref=nodeFormEditor1 @bind-Node=_node OnValidSubmit=OnValidSubmit />
+                        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ToggleEditMode" Title="JSON">
+                            <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Default" />
+                        </FluentButton>
+                    </div>
+                }
 
-                        }
-                    </div>
-                    <div class="col-md-6" style="height:calc(70vh - 80px); overflow:auto;">
-                        @* <FluentMarkdownSection FromAsset="./_content/mdimai666.Mars.Nodes.FormEditor/docs/VariableSetNode/VariableSetNode.ru.md" /> *@
-                        <DocViewer For="() => _node.GetType()" />
-                    </div>
+                @* форма всегда в DOM (скрыта в JSON/Docs) — EditContext и валидация живут
+                   при сохранении из любого режима, как раньше *@
+                <div class="nep-form @(_mode == NepMode.Form && !isEditJsonMode ? null : "nep-form--hidden")">
+                    <NodeFormEditor1 @ref=nodeFormEditor1 @bind-Node=_node OnValidSubmit=OnValidSubmit />
                 </div>
-            </CascadingValue>
-        }
-    </FluentDialog>
-</d-node-edit-container>
 
-<style>
-    .fluent-dialog-main {
-        /*bootstrap offcanvas overlow*/
-        z-index: 1050 !important;
-    }
-
-    fluent-dialog.NodeEditDialog::part(dialog) {
-        /* v5: --dialog-width мёртв, max-width 600px из shadow-стилей —
-           ширина и прижатие к низу задаются здесь */
-        width: min(1600px, 100vw);
-        max-width: min(1600px, 100vw);
-        margin-top: auto;
-        margin-bottom: 0 !important;
-        border-radius: 0;
-    }
-</style>
+                @if (_mode == NepMode.Docs)
+                {
+                    <DocViewer For="() => _node!.GetType()" />
+                }
+                else if (isEditJsonMode)
+                {
+                    <div class="nep-json">
+                        <MarsCodeEditor2.CodeEditor2 @ref=codeEditor
+                                                     Lang=@CodeEditor2.Language.json
+                                                     OnSave="OnSaveFromCodeEditor"
+                                                     ContainerCssStyle="height:100%"
+                                                     Value=@GetModelAsJson() />
+                    </div>
+                }
+            </div>
+        </CascadingValue>
+    </div>
+}

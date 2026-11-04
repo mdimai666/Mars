@@ -1,4 +1,4 @@
-﻿using Mars.Admin.Framework.Hub;
+using Mars.Admin.Framework.Hub;
 using Mars.Core.Models;
 using Mars.Nodes.Contracts.Nodes;
 using Mars.Nodes.Core;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.TechSpace.Pages.NodeViews;
 
-public partial class NodeRedPage
+public partial class AutomationPage
 {
     [Inject] INodeServiceClient service { get; set; } = default!;
 
@@ -71,7 +71,7 @@ public partial class NodeRedPage
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
     {
-        var node = _nodes.TryGetValue(nodeId, out var n) ? n : null;
+        var node = _nodes?.TryGetValue(nodeId, out var n) == true ? n : null;
         if (node is not null)
         {
             node.enable_status = string.IsNullOrEmpty(nodeStatus.Text) == false;
@@ -133,12 +133,11 @@ public partial class NodeRedPage
 
         if (res.Ok)
         {
-            foreach (var node in _nodes.Values) node.changed = false;
+            foreach (var node in _nodes!.Values) node.changed = false;
         }
 
         _editor1!.AddDebugMessage(new DebugMessage
         {
-            // Topic = (res.Ok ? "OK" : "FAIL"),
             Message = res.Message,
             Level = res.Ok ? MessageIntent.Info : MessageIntent.Error
         });
@@ -147,7 +146,6 @@ public partial class NodeRedPage
     async void OnInjectClick(string nodeId)
     {
         bool useWs = true;
-        //Console.WriteLine($">Click Inject:{nodeId}");
 
         if (useWs)
         {

@@ -1,7 +1,7 @@
 @page "/EditUser/{ID:guid}"
-@* @page "/EditUser" *@
 
 @using Mars.Admin.Framework.Components.Forms
+@using Mars.Admin.Shared.Cloudy
 @using Mars.Identity.Contracts.Roles
 @using Mars.Identity.Contracts.Users
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -10,87 +10,169 @@
 @attribute [DParentPage(typeof(Mars.Admin.SiteSpace.Pages.UserViews.UsersPage))]
 @inject IStringLocalizer<AppRes> L
 
-<ContentWrapper Title="Редактирования профиля">
-
-    <CascadingValue Value="ID">
-        <TabsProfile />
-    </CascadingValue>
-
-    <StandardEditForm1 TModel="UserEditModel"
-                       GetAction="@(()=>UserEditModel.GetAction(client, ID, UserTypeName))"
-                       Context="model"
-                       SaveAction="@((model,create)=>UserEditModel.SaveAction(client, model, isCreateNew))"
-                       AfterDelete="AfterDelete"
-                       AfterSave="AfterSave"
-                       BeforeSave="OnBeforeSave"
-                       @ref=_editForm1>
-
-        <div class="vstack gap-2">
-            <FluentAvatar Name="@model.FullName"
-                          Image="@model.AvatarUrl"
-                          Color="AvatarColor.Brand"
-                          Size="AvatarSize.Size56" />
-            <div class="spacer-1"></div>
-            <FormItem2 For="@(() => model.UserName)">
-                <FluentTextInput Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
-            </FormItem2>
-            <FormItem2 For="@(() => model.LastName)">
-                <FluentTextInput Name="@nameof(model.LastName)" @bind-Value=@model.LastName />
-            </FormItem2>
-            <FormItem2 For="@(() => model.FirstName)">
-                <FluentTextInput Name="@nameof(model.FirstName)" @bind-Value=@model.FirstName />
-            </FormItem2>
-            <FormItem2 For="@(() => model.MiddleName)">
-                <FluentTextInput Name="@nameof(model.MiddleName)" @bind-Value=@model.MiddleName />
-            </FormItem2>
-            <FormItem2 For="@(() => model.Email)">
-                <FluentTextInput Name="@nameof(model.Email)" TextInputType="TextInputType.Email" @bind-Value=@model.Email />
-            </FormItem2>
-            <FormItem2 For="@(() => model.PhoneNumber)">
-                <FluentTextInput Name="@nameof(model.PhoneNumber)" @bind-Value=@model.PhoneNumber />
-            </FormItem2>
-            <FormItem2 For="@(() => model.Gender)">
-                <FluentRadioGroup @bind-Value=model.Gender>
-                    <FluentRadio TValue=UserGender Value="@UserGender.None">@(L[UserGender.None.ToString()])</FluentRadio>
-                    <FluentRadio TValue=UserGender Value="@UserGender.Male">@(L[UserGender.Male.ToString()])</FluentRadio>
-                    <FluentRadio TValue=UserGender Value="@UserGender.Female">@(L[UserGender.Female.ToString()])</FluentRadio>
-                </FluentRadioGroup>
-            </FormItem2>
-            <FormItem2 For="@(() => model.Roles)">
-                <FluentAutocomplete TOption="RoleSummaryResponse" TValue="RoleSummaryResponse"
-                                    Width="300px"
-                                    Items="@model.AvailRoles"
-                                    Placeholder="Select"
-                                    Multiple
-                                    OptionText="@(f=>f.Name)"
-                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                    @bind-SelectedItems="@model.Roles" />
-            </FormItem2>
-            <FormItem2 For="@(() => model.BirthDate)">
-                <FluentDatePicker @bind-Value="@model.BirthDate" />
-            </FormItem2>
-
-            @if (model.Form is not null)
-            {
-                <MetaValuesForm @ref="metaValueForm"
-                                Definition="model.Form"
-                                MetaValues="model.MetaValues"
-                                MetaFields="model.UserType.MetaFields" />
-            }
-
-            @* <Avatar class="img-fluid" Size="200" Icon="user"></Avatar>
-            <UserAvatar Value="@user.AvatarUrl" Size="200px" /> *@
-
-            @* <div>
-                <Button Size="small" OnClick="OnClickSelectAvatar">Изменить</Button>
-                @if (!string.IsNullOrEmpty(user.AvatarUrl))
-                {
-                    <Button Size="small" Danger OnClick="ClearAvatar">Удалить</Button>
-                }
-            </div> *@
-
+@if (_model is null)
+{
+    <p class="cloudy-empty">Загрузка…</p>
+}
+else
+{
+    <header class="cloudy-hero cloudy-hero--split">
+        <div class="cloudy-profile-hero">
+            <CloudyAvatar Name="@_model.FullName" ImageUrl="@_model.AvatarUrl" Class="cloudy-avatar--lg" />
+            <div>
+                <h1>@_model.FullName</h1>
+                <div class="cloudy-profile-hero__sub">@@@_model.UserName · @_model.UserType.Title</div>
+                <div class="cloudy-tags">
+                    @foreach (var role in _model.Roles.Select(s => s.Name))
+                    {
+                        <CloudyTag Text="@role" Tint="@role.StableTint()" />
+                    }
+                </div>
+            </div>
         </div>
+        <div class="cloudy-hero-actions">
+            @if (_editing)
+            {
+                <button type="button" class="cloudy-chip" @onclick="CancelEdit">Отмена</button>
+            }
+            else
+            {
+                <button type="button" class="cloudy-btn-primary" @onclick="StartEdit">Редактировать</button>
+                <FluentButton Id="@($"useractions-{ID}")" Appearance="ButtonAppearance.Subtle"
+                              IconStart="@(new Icons.Regular.Size20.MoreHorizontal())"
+                              aria-label="More actions" />
+                <FluentMenu Trigger="@($"useractions-{ID}")" OnClick="OnMenuClick">
+                    <FluentMenuList>
+                        <FluentMenuItem Id="changepassword">@AppRes.ChangePassword</FluentMenuItem>
+                        <FluentMenuItem Id="sendinvitation">send invation</FluentMenuItem>
+                    </FluentMenuList>
+                </FluentMenu>
+            }
+        </div>
+    </header>
 
-    </StandardEditForm1>
+    @if (_editing)
+    {
+        <StandardEditForm1 TModel="UserEditModel"
+                           Class="cloudy-card"
+                           GetAction="@(() => Task.FromResult(_model))"
+                           SaveAction="@((model, create) => UserEditModel.SaveAction(client, model, isCreateNew))"
+                           AfterDelete="AfterDelete"
+                           AfterSave="AfterSave"
+                           BeforeSave="OnBeforeSave"
+                           @ref="_editForm1">
 
-</ContentWrapper>
+            <div class="vstack gap-2">
+                <FormItem2 For="@(() => _model.UserName)">
+                    <FluentTextInput Name="@nameof(UserEditModel.UserName)" @bind-Value="_model.UserName" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.FirstName)">
+                    <FluentTextInput Name="@nameof(UserEditModel.FirstName)" @bind-Value="_model.FirstName" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.LastName)">
+                    <FluentTextInput Name="@nameof(UserEditModel.LastName)" @bind-Value="_model.LastName" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.MiddleName)">
+                    <FluentTextInput Name="@nameof(UserEditModel.MiddleName)" @bind-Value="_model.MiddleName" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.Email)">
+                    <FluentTextInput Name="@nameof(UserEditModel.Email)" TextInputType="TextInputType.Email" @bind-Value="_model.Email" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.PhoneNumber)">
+                    <FluentTextInput Name="@nameof(UserEditModel.PhoneNumber)" @bind-Value="_model.PhoneNumber" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.Gender)">
+                    <FluentRadioGroup @bind-Value="_model.Gender">
+                        <FluentRadio TValue=UserGender Value="@UserGender.None">@(L[UserGender.None.ToString()])</FluentRadio>
+                        <FluentRadio TValue=UserGender Value="@UserGender.Male">@(L[UserGender.Male.ToString()])</FluentRadio>
+                        <FluentRadio TValue=UserGender Value="@UserGender.Female">@(L[UserGender.Female.ToString()])</FluentRadio>
+                    </FluentRadioGroup>
+                </FormItem2>
+                <FormItem2 For="@(() => _model.Roles)">
+                    <FluentAutocomplete TOption="RoleSummaryResponse" TValue="RoleSummaryResponse"
+                                        Width="300px"
+                                        Items="_model.AvailRoles"
+                                        Placeholder="Select"
+                                        Multiple
+                                        OptionText="@(f => f.Name)"
+                                        IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                        @bind-SelectedItems="_model.Roles" />
+                </FormItem2>
+                <FormItem2 For="@(() => _model.BirthDate)">
+                    <FluentDatePicker @bind-Value="_model.BirthDate" />
+                </FormItem2>
+
+                @if (_model.Form is not null)
+                {
+                    <MetaValuesForm @ref="_metaValueForm"
+                                    Definition="_model.Form"
+                                    MetaValues="_model.MetaValues"
+                                    MetaFields="_model.UserType.MetaFields" />
+                }
+            </div>
+
+        </StandardEditForm1>
+    }
+    else
+    {
+        <div class="cloudy-profile-cards">
+            <section class="cloudy-card">
+                <h2>Личные данные</h2>
+                <dl class="cloudy-deflist">
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.FirstName)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.FirstName)</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.LastName)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.LastName)</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.MiddleName)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.MiddleName)</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.Gender)]</dt>
+                    <dd class="cloudy-deflist__value">@L[_model.Gender.ToString()]</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.BirthDate)]</dt>
+                    <dd class="cloudy-deflist__value">@(_model.BirthDate?.ToString("d") ?? "—")</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.Phone)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.PhoneNumber)</dd>
+                </dl>
+            </section>
+
+            <section class="cloudy-card">
+                <h2>Доступ</h2>
+                <dl class="cloudy-deflist">
+                    <dt class="cloudy-deflist__term">Логин</dt>
+                    <dd class="cloudy-deflist__value">@_model.UserName</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.Email)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.Email)</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.Roles)]</dt>
+                    <dd class="cloudy-deflist__value">
+                        <div class="cloudy-tags">
+                            @foreach (var role in _model.Roles.Select(s => s.Name))
+                            {
+                                <CloudyTag Text="@role" Tint="@role.StableTint()" />
+                            }
+                        </div>
+                    </dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.UserType)]</dt>
+                    <dd class="cloudy-deflist__value">@Value(_model.UserType.Title)</dd>
+
+                    <dt class="cloudy-deflist__term">@L[nameof(AppRes.CreationDate)]</dt>
+                    <dd class="cloudy-deflist__value">@_model.CreatedAt.LocalDateTime.ToString("g")</dd>
+                </dl>
+            </section>
+
+            @if (MetaValuesDefList.HasVisibleValues(_model.MetaValues))
+            {
+                <section class="cloudy-card">
+                    <h2>@L[nameof(AppRes.MetaFields)]</h2>
+                    <MetaValuesDefList MetaValues="_model.MetaValues" />
+                </section>
+            }
+        </div>
+    }
+}

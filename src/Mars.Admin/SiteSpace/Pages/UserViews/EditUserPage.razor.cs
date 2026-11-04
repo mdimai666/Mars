@@ -1,8 +1,9 @@
 ﻿using Mars.Admin.Framework.Components.Forms;
-using Mars.Admin.Framework.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
+using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
 namespace Mars.Admin.SiteSpace.Pages.UserViews;
 
@@ -15,56 +16,80 @@ public partial class EditUserPage
     [Inject] IMessageService messageService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
+    [Inject] IDialogService dialogService { get; set; } = default!;
 
     StandardEditForm1<UserEditModel> _editForm1 = default!;
-    MetaValuesForm? metaValueForm;
+    MetaValuesForm? _metaValueForm;
+
+    UserEditModel? _model;
+    bool _editing;
+
     bool isCreateNew => ID == Guid.Empty;
 
-    Task OnBeforeSave(UserEditModel model)
-        => metaValueForm is null ? Task.CompletedTask : metaValueForm.CommitAllAsync();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_model is null || _model.Id != ID)
+            await LoadModel();
+    }
 
-    void AfterSave(UserEditModel model)
+    async Task LoadModel()
+    {
+        _model = await UserEditModel.GetAction(client, ID, UserTypeName);
+    }
+
+    void StartEdit() => _editing = true;
+
+    async Task CancelEdit()
+    {
+        _editing = false;
+        await LoadModel();
+    }
+
+    static string Value(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s;
+
+    Task OnBeforeSave(UserEditModel model)
+        => _metaValueForm is null ? Task.CompletedTask : _metaValueForm.CommitAllAsync();
+
+    async Task AfterSave(UserEditModel model)
     {
         if (isCreateNew)
         {
             navigationManager.NavigateTo($"/dev/Users/{model.Id}");
             _ = messageService.Success(AppRes.SavedSuccessfully);
-
+            return;
         }
+
+        _editing = false;
+        await LoadModel();
     }
 
     void AfterDelete()
     {
         navigationManager.NavigateTo("/dev/Users");
         _ = messageService.Success(AppRes.DeletedSuccessfully);
-
     }
 
-    void UpdateUserRoles()
+    async Task OnMenuClick(MenuItemEventArgs args)
     {
-        //await client.User.UpdateUserRoles(model.Id, UpdUserRoles).SmartActionResult();
+        switch (args.Item?.Id)
+        {
+            case "changepassword":
+                await dialogService.ShowDialogAsync<ChangePasswordDialog>(new DialogOptions
+                {
+                    Modal = true,
+                    Parameters =
+                    {
+                        ["Content"] = new ChangePasswordModel
+                        {
+                            UserId = ID,
+                            NewPassword = "",
+                        },
+                    },
+                });
+                break;
+            case "sendinvitation":
+                _ = client.User.SendInvation(ID).SmartActionResult();
+                break;
+        }
     }
-
-    void OnClickSelectAvatar()
-    {
-        //var file = await mediaService.OpenSelectMedia();
-
-        //if (file is not null)
-        //{
-        //    //Console.WriteLine("avatar file: " + file.FileUrlRelative);
-        //    if (!Q.HostingInfo.UrlIsImage(file.UrlRelative))
-        //    {
-        //        _ = messageService.Error("Надо выбрать картинку");
-        //        return;
-        //    }
-        //    model.AvatarUrl = file.FileUrlRelative;
-        //    StateHasChanged();
-        //}
-    }
-
-    void ClearAvatar()
-    {
-        //model.AvatarUrl = "";
-    }
-
 }

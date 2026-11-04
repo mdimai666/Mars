@@ -82,17 +82,11 @@ else
             </dl>
         </section>
 
-        @if (MetaRows.Any())
+        @if (HasMeta)
         {
             <section class="cloudy-card">
                 <h2>@L[nameof(AppRes.MetaFields)]</h2>
-                <dl class="cloudy-deflist">
-                    @foreach (var row in MetaRows)
-                    {
-                        <dt class="cloudy-deflist__term">@row.Field.Title</dt>
-                        <dd class="cloudy-deflist__value">@row.Text</dd>
-                    }
-                </dl>
+                <MetaValuesDefList MetaValues="_model.MetaValues" />
             </section>
         }
     </div>

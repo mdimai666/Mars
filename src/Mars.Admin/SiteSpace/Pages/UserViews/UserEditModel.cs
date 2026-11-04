@@ -17,6 +17,9 @@ public class UserEditModel
 {
     public Guid Id { get; set; }
 
+    [Display(Name = nameof(AppRes.CreationDate), ResourceType = typeof(AppRes))]
+    public DateTimeOffset CreatedAt { get; init; }
+
     [MinLength(3)]
     [SlugString(true)]
     public string UserName { get; set; } = "";
@@ -150,6 +153,7 @@ public class UserEditModel
             => new()
             {
                 Id = response.Id,
+                CreatedAt = response.CreatedAt,
                 UserName = response.UserName,
                 FirstName = response.FirstName,
                 LastName = response.LastName,

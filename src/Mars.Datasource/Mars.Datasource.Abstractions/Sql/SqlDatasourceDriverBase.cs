@@ -174,7 +174,7 @@ public abstract class SqlDatasourceDriverBase : IDatasourceDriver
 
         var metas = await ReadColumnsAsync(connection, tableName);
 
-        return metas.ToDictionary(meta => meta.ColumnName, QDatabaseStructureBuilder.ToColumn);
+        return metas.DistinctBy(meta => meta.ColumnName).ToDictionary(meta => meta.ColumnName, QDatabaseStructureBuilder.ToColumn);
     }
 
     public async Task<string?> ViewDefinition(string schemaName, string tableName)

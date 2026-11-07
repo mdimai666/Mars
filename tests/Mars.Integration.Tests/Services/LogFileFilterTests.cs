@@ -16,6 +16,11 @@ public class LogFileFilterTests : IDisposable
     static string Entry(string ts, string level, string message = "message")
         => $"{ts}\t{level}\t[Test.Logger]\t[EventId]\t{message}";
 
+    // ParseTimestamp приводит время записи к LocalDateTime машины, поэтому записи
+    // у границ дня нужно строить в локальной таймзоне — иначе тест зависит от таймзоны.
+    static string LocalEntry(DateTime local, string level, string message = "message")
+        => Entry(new DateTimeOffset(local), level, message);
+
     void WriteLogFile(string day, params string[] lines)
     {
         Directory.CreateDirectory(dir);
@@ -73,9 +78,9 @@ public class LogFileFilterTests : IDisposable
     public void FilterLines_ByUntil_DropsNewerEntries()
     {
         var log = string.Join('\n',
-            Entry("2026-08-10T09:00:00.0000000+09:00", "WARN", "day10"),
-            Entry("2026-08-11T23:59:59.0000000+09:00", "WARN", "day11-late"),
-            Entry("2026-08-12T00:00:01.0000000+09:00", "WARN", "day12"));
+            LocalEntry(new DateTime(2026, 8, 10, 9, 0, 0), "WARN", "day10"),
+            LocalEntry(new DateTime(2026, 8, 11, 23, 59, 59), "WARN", "day11-late"),
+            LocalEntry(new DateTime(2026, 8, 12, 0, 0, 1), "WARN", "day12"));
 
         using var reader = new StringReader(log);
         var until = new DateTime(2026, 8, 11).AddDays(1).AddTicks(-1);

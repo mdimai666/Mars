@@ -1,4 +1,4 @@
-﻿@page "/PostCategory"
+@page "/PostCategory"
 @page "/PostCategory/{POSTTYPE}"
 @using Mars.Admin.SiteSpace.Pages.PostTypeViews
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -19,7 +19,7 @@
             <p>@postType?.Title</p>
         </div>
         <div class="d-flex align-items-start">
-            <XActionsDropDown ContextPart="@postType.TypeName" />
+            <XActionsDropDown ContextPart="@postType?.TypeName" />
         </div>
     </header>
 

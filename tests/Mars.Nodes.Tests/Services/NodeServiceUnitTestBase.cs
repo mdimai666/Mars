@@ -72,12 +72,12 @@ public class NodeServiceUnitTestBase
         _nodesLocator = new NodesLocator();
         _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
         _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
-        _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
+        _nodesLocator.RegisterAssembly(typeof(ExcelNode).Assembly);
         _jsonSerializerOptions = _nodesLocator.CreateJsonSerializerOptions();
         _nodeImplementFactory = Substitute.ForPartsOf<NodeImplementFactory>();
         _nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
         _nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
-        _nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
+        _nodeImplementFactory.RegisterAssembly(typeof(ExcelNodeImplement).Assembly);
 
         // dependies
         _hub = Substitute.For<IHubContext<ChatHub>>();

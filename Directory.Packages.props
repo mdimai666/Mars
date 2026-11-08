@@ -7,8 +7,8 @@
     <PackageVersion Include="BlazorMonaco" Version="3.5.0" />
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="ClosedXML" Version="0.102.2" />
-    <PackageVersion Include="ClosedXML.Report" Version="0.2.9" />
+    <PackageVersion Include="ClosedXML" Version="0.105.1" />
+    <PackageVersion Include="ClosedXML.Report" Version="0.2.12" />
     <PackageVersion Include="CronExpressionDescriptor" Version="2.51.0" />
     <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
     <PackageVersion Include="DynamicExpresso.Core" Version="2.19.6" />
@@ -115,11 +115,10 @@
     <PackageVersion Include="Scriban" Version="7.5.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.3.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.14" />
-    <!-- Пины транзитивных версий: без них подтягиваются уязвимые 4.5.0 (dotless.Core) и 1.3.8 (ClosedXML.Report) -->
-    <PackageVersion Include="System.Drawing.Common" Version="10.0.14" />
-    <PackageVersion Include="System.IO.Packaging" Version="10.0.14" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.4" />
+    <!-- Пин: NuGet.Protocol и Microsoft.Data.SqlClient тянут уязвимые 8.0.1/9.0.18 (CVE-2026-70162, CVE-2026-84008) -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
     <PackageVersion Include="Testcontainers" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.MySql" Version="4.16.0" />
@@ -127,7 +126,6 @@
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.1" />
     <PackageVersion Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
-    <PackageVersion Include="dotless.Core" Version="1.6.7" />
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.43" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
       <!--Причина: не ваш код, а подтверждённая регрессия xunit.v3 4.0.2 (issue xunit/xunit#3655). Фреймворк ради поддержки default interface

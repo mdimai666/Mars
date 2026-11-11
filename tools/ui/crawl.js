@@ -26,6 +26,7 @@ const PAGES = args.pages
       '/dev/tech/playbooks', '/dev/tech/docker', '/dev/tech/devtest',
       '/dev/tech/styledesigner', '/dev/tech/style-gallery',
       '/dev/tech/nodes', '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
+      '/dev/tech/frontend/editor/admin',
       '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
     ];
 
@@ -140,7 +141,7 @@ async function runAssertion(page, a) {
     try {
       await page.goto(`${HOST}${p}`, { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
-      await page.waitForSelector('.admin-layout, fluent-nav', { timeout: 60000 }).catch(() => {});
+      await page.waitForSelector('.admin-layout, .cloudy-layout, .cloudy-tech, fluent-nav', { timeout: 60000 }).catch(() => {});
       await page.waitForTimeout(1200);
       const blazorErr = await page.$('#blazor-error-ui');
       if (blazorErr && (await blazorErr.isVisible().catch(() => false))) entry.status = 'BLAZOR_ERROR_UI';

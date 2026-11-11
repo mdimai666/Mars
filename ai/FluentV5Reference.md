@@ -379,6 +379,12 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   `CloseOnScroll`, `PersistOnItemClick`, `Height`, `RenderWhen`, `OnClick` (MenuItemEventArgs),
   `OnCheckedChanged`, `OpenedChanged`; методы `OpenMenuAsync()`, `OpenMenuAsync(targetId,x,y)`.
   ✝ `UseMenuService`, `Anchor`, `@bind-Open` МЕРТВЫ; дети — ОБЯЗАТЕЛЬНО через `FluentMenuList`.
+  **Позиционирование `OpenMenuAsync(targetId,x,y)`** (Menu.OpenMenu в lib.module.js, проверено
+  2026-11-12): popup ставится в `(anchor.left + x, anchor.BOTTOM + y)` — от **нижнего** края
+  якоря, не верхнего. Чтобы меню открылось в курсоре: `x = clientX - anchor.left`,
+  `y = clientY - anchor.bottom` (см. `FrontEditorPage.GetTreePanelOffsetAsync`). Если считать
+  `y` от `anchor.top`, меню уезжает вниз на высоту якоря. Образец рабочего контекстного меню —
+  `NodeEditor1.OpenWorkspaceContextMenuAsync`.
 - **FluentMenuList**: `ChildContent`, `OnClick`, `OnCheckedChanged` — обёртка-контейнер пунктов.
 - **FluentMenuItem**: `Role` (menuitem/menuitemcheckbox/menuitemradio), `Checked`(+Changed),
   `Disabled`, `IconStart/IconEnd/IconSubmenu/IconIndicator`, `Label`, `MenuItems` (подменю),

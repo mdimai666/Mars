@@ -1,123 +1,117 @@
 @page "/tech/frontend"
-@using Mars.SiteEngine.Contracts.Options;
+@using Mars.SiteEngine.Contracts.Options
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.FluentUI.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Фронты")]
 @inject IMarsWebApiClient client
-@inject NavigationManager nav
 
-<ContentWrapper Title="Фронты">
-    <SectionActions>
-        <FluentLink Href="Settings/Front" IconStart="@(new Icons.Regular.Size20.Settings())">
-            Настройки фронтов
-        </FluentLink>
-    </SectionActions>
-    <ChildContent>
+<PageTitle>Фронты</PageTitle>
 
-        <p class="text-secondary">
-            Фронт — это папка с файлами (шаблоны, стили, скрипты), из которых движок рендера собирает страницы сайта.
-            У каждого фронта свой движок и точка маунта (URL). Откройте карточку, чтобы редактировать файлы
-            в редакторе с живым предпросмотром.
-        </p>
+<div class="fronts-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Фронты</h1>
+            <p>
+                Фронт — это папка с файлами (шаблоны, стили, скрипты), из которых движок рендера собирает
+                страницы сайта. У каждого фронта свой движок и точка маунта (URL). Откройте карточку,
+                чтобы редактировать файлы в редакторе с живым предпросмотром.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a class="ghost-btn" href="Settings/Front">
+                <i class="bi bi-gear"></i>
+                Настройки фронтов
+            </a>
+        </div>
+    </header>
 
-        @if (loadFailed)
-        {
-            <div class="alert alert-warning">Не удалось загрузить список фронтов</div>
-        }
-        else if (option is null)
-        {
-            <SkeletonContent />
-        }
-        else
-        {
-            <section>
-                <div class="hstack gap-2 align-items-center">
-                    <h5 class="mb-0">Специальные</h5>
-                    <hr class="flex-grow-1 my-0" />
-                </div>
+    @if (loadFailed)
+    {
+        <div class="fronts-error">
+            <i class="bi bi-exclamation-triangle"></i>
+            Не удалось загрузить список фронтов
+        </div>
+    }
+    else if (option is null)
+    {
+        <div class="fronts-loading">Loading…</div>
+    }
+    else
+    {
+        <section class="fronts-section">
+            <header class="section-head">
+                <h2>Специальные</h2>
+                <span class="count">1</span>
+                <span class="line"></span>
+            </header>
 
-                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-1">
-
-                    <div class="col">
-                        <div class="card d-card-glow">
-                            <div class="hstack ms-4">
-                                <div class="vstack flex-grow-0 my-3">
-                                    <i class="bi bi-window-desktop fs-1"></i>
-                                </div>
-                                <div class="card-body">
-                                    <h4 class="mb-0">
-                                        admin
-                                    </h4>
-                                    <span class="badge text-bg-info align-middle">фронт админки</span>
-                                    <p class="mb-1">Специальный фронт админ-панели, не роутится публично</p>
-                                    <p class="text-secondary mb-0">handlebars · data/admin/front</p>
-                                    <a href="tech/frontend/editor/admin" class="stretched-link"></a>
-                                </div>
-                            </div>
+            <div class="fronts-grid">
+                <a class="front-card" href="tech/frontend/editor/admin">
+                    <div class="front-top">
+                        <span class="front-icon tint-purple"><i class="bi bi-window-desktop"></i></span>
+                        <div class="front-id">
+                            <span class="front-name">admin</span>
+                            <span class="front-sub">фронт админки</span>
                         </div>
+                        <span class="front-badge special">спец</span>
                     </div>
-
-                </div>
-            </section>
-
-            <section class="mt-4">
-                <div class="hstack gap-2 align-items-center">
-                    <h5 class="mb-0">Публичные фронты</h5>
-                    <hr class="flex-grow-1 my-0" />
-                </div>
-
-                @if (option.Fronts.Count == 0)
-                {
-                    <div class="mt-3">
-                        <SharedContentNoRecords />
+                    <p class="front-desc">Специальный фронт админ-панели, не роутится публично</p>
+                    <div class="front-meta">
+                        <span class="meta-chip"><i class="bi bi-code-slash"></i> handlebars</span>
+                        <span class="meta-chip"><i class="bi bi-folder2"></i> data/admin/front</span>
                     </div>
-                }
-                else
-                {
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-1">
+                    <span class="front-cta">Открыть редактор <i class="bi bi-arrow-right"></i></span>
+                </a>
+            </div>
+        </section>
 
-                        @foreach (var front in option.Fronts)
-                        {
-                            <div class="col">
-                                <div class="card d-card-glow">
-                                    <div class="hstack ms-4">
-                                        <div class="vstack flex-grow-0 my-3">
-                                            <i class="bi bi-window-desktop fs-1"></i>
-                                        </div>
-                                        <div class="card-body">
-                                            <h4 class="mb-0">
-                                                @front.Slug
-                                                @if (!front.Enabled)
-                                                {
-                                                    <span class="badge text-bg-warning align-middle">выключен</span>
-                                                }
-                                            </h4>
-                                            <p class="mb-1">@(string.IsNullOrWhiteSpace(front.Title) ? "Фронт сайта" : front.Title)</p>
-                                            <p class="text-secondary mb-0">
-                                                @front.EngineId
-                                                @if (!string.IsNullOrEmpty(front.Url))
-                                                {
-                                                    @($" · {front.Url}")
-                                                }
-                                            </p>
-                                            <p class="text-secondary small mb-0">
-                                                <i class="bi bi-folder2 me-1"></i>@FrontPath(front)
-                                            </p>
-                                            <a href="tech/frontend/editor/@front.Slug" class="stretched-link"></a>
-                                        </div>
-                                    </div>
+        <section class="fronts-section">
+            <header class="section-head">
+                <h2>Публичные фронты</h2>
+                <span class="count">@option.Fronts.Count</span>
+                <span class="line"></span>
+            </header>
+
+            @if (option.Fronts.Count == 0)
+            {
+                <div class="fronts-empty">Публичных фронтов пока нет — добавьте их в настройках фронтов.</div>
+            }
+            else
+            {
+                <div class="fronts-grid">
+                    @foreach (var front in option.Fronts)
+                    {
+                        <a class="front-card" href="tech/frontend/editor/@front.Slug">
+                            <div class="front-top">
+                                <span class="front-icon tint-blue"><i class="bi bi-window-desktop"></i></span>
+                                <div class="front-id">
+                                    <span class="front-name">@front.Slug</span>
+                                    <span class="front-sub">@(string.IsNullOrWhiteSpace(front.Title) ? "Фронт сайта" : front.Title)</span>
                                 </div>
+                                @if (!front.Enabled)
+                                {
+                                    <span class="front-badge off">выключен</span>
+                                }
                             </div>
-                        }
-
-                    </div>
-                }
-            </section>
-        }
-
-    </ChildContent>
-</ContentWrapper>
+                            <div class="front-meta">
+                                <span class="meta-chip"><i class="bi bi-code-slash"></i> @front.EngineId</span>
+                                @if (!string.IsNullOrEmpty(front.Url))
+                                {
+                                    <span class="meta-chip"><i class="bi bi-link-45deg"></i> @front.Url</span>
+                                }
+                            </div>
+                            <div class="front-path" title="@FrontPath(front)">
+                                <i class="bi bi-folder2"></i>
+                                <span>@FrontPath(front)</span>
+                            </div>
+                            <span class="front-cta">Открыть редактор <i class="bi bi-arrow-right"></i></span>
+                        </a>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>
 
 @code {
     FrontsOption? option;

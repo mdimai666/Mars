@@ -1,0 +1,591 @@
+.fe-page {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------- тулбар ---------------- */
+
+.fe-toolbar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+}
+
+.tb-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fe-id {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.fe-id__label {
+    color: var(--ct-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.fe-id__slug {
+    color: var(--ct-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.fe-id__url {
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.segment {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--ct-card);
+}
+
+.seg-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    padding: 6px 10px;
+    color: var(--ct-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.seg-btn:hover {
+    color: var(--ct-ink);
+}
+
+.seg-btn.active {
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+}
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ct-muted);
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+    color: var(--ct-ink);
+    background: var(--ct-hover-bg);
+}
+
+.icon-btn:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+.ghost-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    padding: 7px 13px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.ghost-btn:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+/* ---------------- тело: файлы | код | сцена ---------------- */
+
+.fe-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: 16px;
+}
+
+/* режим «Превью»: панели остаются в DOM (Monaco и дерево не пересоздаются) */
+.fe-hidden {
+    display: none !important;
+}
+
+.files-panel,
+.editor-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    overflow: hidden;
+}
+
+.files-panel {
+    width: 264px;
+    flex: none;
+}
+
+.editor-panel {
+    flex: 1.15 1 0;
+    min-width: 0;
+}
+
+.panel-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.panel-head h2 {
+    margin: 0;
+    color: var(--ct-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.head-note {
+    margin-left: auto;
+    color: var(--ct-muted);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11.5px;
+}
+
+/* ---------------- панель файлов ---------------- */
+
+.files-create {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.files-create__path {
+    width: 100%;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--ct-line);
+    border-radius: 9px;
+    background: var(--ct-bg);
+    color: var(--ct-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color .15s ease;
+}
+
+.files-create__path:focus {
+    border-color: var(--ct-accent);
+}
+
+.files-create__path::placeholder {
+    color: var(--ct-muted);
+}
+
+.files-create__btns {
+    display: flex;
+    gap: 6px;
+}
+
+.mini-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 30px;
+    border: 1px solid var(--ct-line);
+    border-radius: 9px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.mini-btn:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.files-tree {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 6px;
+    scrollbar-width: thin;
+
+    /* FluentTreeView (appearance subtle) читает Fluent-токены из окружения;
+       ремапим их локально на палитру tech-зоны — работает в обеих темах */
+    --colorSubtleBackground: transparent;
+    --colorSubtleBackgroundHover: var(--ct-hover-bg);
+    --colorSubtleBackgroundPressed: var(--ct-accent-soft);
+    --colorSubtleBackgroundSelected: var(--ct-accent-soft);
+    --colorNeutralForeground2: var(--ct-item-ink);
+    --colorNeutralForeground2Hover: var(--ct-ink);
+    --colorNeutralForeground2Pressed: var(--ct-ink);
+    --colorNeutralForeground2Selected: var(--ct-active-ink);
+    --colorNeutralForeground2BrandSelected: var(--ct-active-ink);
+    --colorBrandForeground1: var(--ct-accent-bright);
+    --colorBrandForeground2: var(--ct-accent-bright);
+    --colorNeutralStroke1: var(--ct-line);
+    --colorNeutralStrokeAccessible: var(--ct-muted);
+    --colorStrokeFocus1: var(--ct-bg);
+    --colorStrokeFocus2: var(--ct-accent-bright);
+    --tree-item-height: 30px;
+}
+
+.files-tree ::deep fluent-tree-item::part(positioning-region) {
+    border-radius: 8px;
+    padding-inline-end: 6px;
+}
+
+.files-tree ::deep fluent-tree-item::part(content) {
+    flex: 1;
+    min-width: 0;
+}
+
+.tree-note {
+    padding: 16px 10px;
+    color: var(--ct-muted);
+    font-size: 12.5px;
+    text-align: center;
+}
+
+.tree-note.error {
+    color: var(--tint-red);
+}
+
+.tree-item-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    padding-right: 2px;
+}
+
+.tree-item-icon {
+    flex: none;
+    color: var(--ct-muted);
+    font-size: 13px;
+}
+
+.tree-item-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12.5px;
+}
+
+.tree-hover-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ct-muted);
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .12s ease, background .12s ease, color .12s ease;
+}
+
+.tree-item-content:hover .tree-hover-btn {
+    opacity: 1;
+}
+
+.tree-hover-btn:hover {
+    color: var(--ct-active-ink);
+    background: var(--ct-accent-soft);
+}
+
+.tree-rename {
+    flex: 1;
+    min-width: 0;
+    height: 24px;
+    padding: 0 6px;
+    border: 1px solid var(--ct-accent);
+    border-radius: 6px;
+    background: var(--ct-bg);
+    color: var(--ct-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    outline: none;
+}
+
+/* ---------------- панель кода ---------------- */
+
+.editor-file {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: var(--ct-item-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.editor-file i {
+    flex: none;
+    color: var(--ct-muted);
+}
+
+.editor-file__path {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+.editor-lang {
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.editor-hint {
+    flex: none;
+    color: var(--ct-muted);
+    font-size: 11.5px;
+}
+
+.editor-body {
+    flex: 1;
+    min-height: 0;
+}
+
+.editor-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--ct-muted);
+}
+
+.editor-empty i {
+    font-size: 34px;
+    opacity: .5;
+}
+
+.editor-empty p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* ---------------- сцена с «браузером» ---------------- */
+
+.stage {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    padding: 20px;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background-color: var(--tech-canvas);
+    background-image:
+        linear-gradient(var(--tech-grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--tech-grid-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.browser {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--ct-card);
+    box-shadow: 0 24px 60px rgba(4, 8, 20, .35);
+    transition: max-width .35s ease;
+}
+
+.browser.tablet {
+    max-width: 768px;
+}
+
+.browser.mobile {
+    max-width: 390px;
+}
+
+.browser-bar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: var(--ct-card);
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.tl {
+    width: 10px;
+    height: 10px;
+    flex: none;
+    border-radius: 50%;
+}
+
+.tl.red {
+    background: var(--mac-red);
+}
+
+.tl.yellow {
+    background: var(--mac-amber);
+}
+
+.tl.green {
+    background: var(--mac-green);
+}
+
+.browser-nav {
+    display: flex;
+    gap: 2px;
+    margin-left: 6px;
+}
+
+.browser-nav .icon-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+}
+
+.browser-address {
+    flex: 1;
+    min-width: 60px;
+    height: 28px;
+    padding: 0 12px;
+    border: 1px solid var(--ct-line);
+    border-radius: 999px;
+    background: var(--ct-bg);
+    color: var(--ct-item-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color .15s ease;
+}
+
+.browser-address:focus {
+    border-color: var(--ct-accent);
+}
+
+.browser-size {
+    flex: none;
+    color: var(--ct-muted);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.browser-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    background: #fff;
+}
+
+/* ---------------- узкие экраны: блоки столбиком ---------------- */
+
+@media (max-width: 1100px) {
+    .fe-page {
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .fe-body {
+        flex-direction: column;
+    }
+
+    .files-panel {
+        width: 100%;
+        max-height: 280px;
+    }
+
+    .editor-panel {
+        flex: none;
+        height: 360px;
+    }
+
+    .stage {
+        flex: none;
+        height: 520px;
+    }
+}

@@ -19,7 +19,7 @@ const limit = parseInt(args.limit || '3', 10);
   const { page } = await newPage(browser, HOST);
   await page.goto(`${HOST}${PAGE_PATH}`, { waitUntil: 'domcontentloaded', timeout: 90000 });
   await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
-  await page.waitForSelector('.admin-layout, fluent-nav', { timeout: 60000 }).catch(() => {});
+  await page.waitForSelector('.admin-layout, .cloudy-layout, .cloudy-tech, fluent-nav', { timeout: 60000 }).catch(() => {});
   if (args.wait) await page.waitForSelector(String(args.wait), { timeout: 120000 });
   await page.waitForTimeout(1500);
   const out = [];

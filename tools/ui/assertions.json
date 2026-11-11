@@ -71,7 +71,17 @@
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
     ],
     "/dev/tech/frontend": [
-      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "fronts hero rendered", "selector": ".fronts-page .hero h1", "exists": { "min": 1 } },
+      { "name": "front cards rendered", "selector": ".fronts-grid .front-card", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/frontend/editor/admin": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "editor toolbar rendered", "selector": ".fe-page .fe-toolbar", "exists": { "min": 1 } },
+      { "name": "device switch rendered", "selector": ".fe-toolbar .segment .seg-btn", "exists": { "min": 5 } },
+      { "name": "files panel rendered", "selector": ".fe-page .files-panel", "exists": { "min": 1 } },
+      { "name": "browser preview rendered", "selector": ".fe-page .browser .browser-frame", "exists": { "min": 1 } },
+      { "name": "browser address bar rendered", "selector": ".fe-page .browser-bar .browser-address", "exists": { "min": 1 } }
     ],
     "/dev/tech/plugins": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }

@@ -21,134 +21,192 @@
 @inject IDialogService dialogService
 @inject IJSRuntime jsRuntime
 
-<div class="FrontEditorPage d-flex flex-column flex-fill" style="height: calc(100vh - 32px);">
+<PageTitle>Редактор фронта</PageTitle>
 
-    <div class="hstack gap-2 p-2 border-bottom flex-wrap">
-        <FluentButton Appearance="ButtonAppearance.Subtle" OnClick=@(() => nav.NavigateTo("Settings/Front"))>
-            <FluentIcon Value=@(new Icons.Regular.Size24.ArrowLeft()) />
-        </FluentButton>
-        <span class="fw-semibold">Фронт: @Slug</span>
-        @if (frontItem is not null)
-        {
-            <span class="text-secondary small">@(string.IsNullOrEmpty(frontItem.Url) ? "/" : frontItem.Url)</span>
-        }
+<div class="fe-page">
 
-        <div class="ms-auto hstack gap-2">
-            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="ToggleFullPreview">
-                @(fullPreview ? "Редактор" : "Предпросмотр на всю страницу")
-            </FluentButton>
+    <header class="fe-toolbar">
+        <div class="tb-group">
+            <button class="icon-btn" type="button" title="К списку фронтов" @onclick="@(() => nav.NavigateTo("tech/frontend"))">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="fe-id">
+                <span class="fe-id__label">Фронт</span>
+                <strong class="fe-id__slug">@Slug</strong>
+                @if (frontItem is not null)
+                {
+                    <span class="fe-id__url">@(string.IsNullOrEmpty(frontItem.Url) ? "/" : frontItem.Url)</span>
+                }
+            </div>
         </div>
-    </div>
 
-    <div class="d-flex flex-fill" style="min-height:0;">
-
-        @if (!fullPreview)
-        {
-            <div id="front-editor-tree-panel" class="front-editor-tree border-end d-flex flex-column" style="width:300px; min-width:240px;">
-
-                <div class="p-2 border-bottom gap-1">
-                    <input class="form-control form-control-sm" placeholder="pages/new_page.hbs" @bind="newPath" autocomplete="off" />
-                    <div class="hstack gap-1">
-                        <FluentButton Appearance="ButtonAppearance.Default" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: false))>+ файл</FluentButton>
-                        <FluentButton Appearance="ButtonAppearance.Default" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: true))>+ папка</FluentButton>
-                        <FluentButton Appearance="ButtonAppearance.Default" Title="Обновить список файлов"
-                                      OnClick="LoadTree" IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" />
-                    </div>
-                </div>
-
-                <div class="overflow-auto flex-fill p-1" @onclick="CloseNodeMenu">
-                    @if (treeBusy)
-                    {
-                        <SkeletonContent />
-                    }
-                    else if (treeLoadFailed)
-                    {
-                        <div class="alert alert-warning m-2">Не удалось загрузить файлы фронта</div>
-                    }
-                    else if (treeItems is not null)
-                    {
-                        <FluentTreeView Items="treeItems"
-                                        SelectedItem="selectedTreeItem"
-                                        SelectedItemChanged="OnTreeSelected">
-                            <ItemTemplate>
-                                @{
-                                    var item = (FrontTreeItem)context;
-                                    var node = item.Node;
-                                }
-                                <div class="tree-item-content"
-                                     @onclick="@(() => OnNodeClicked(node))"
-                                     @oncontextmenu="e => OpenNodeMenu(node, e)" @oncontextmenu:preventDefault>
-                                    <FluentIcon Value=@((Icon)(node.IsDirectory ? new Icons.Regular.Size16.Folder() : new Icons.Regular.Size16.Document())) />
-                                    @if (renamingPath == node.Path)
-                                    {
-                                        <input class="form-control form-control-sm" @bind="renameValue"
-                                               @onkeydown="OnRenameKeyDown" @onclick:stopPropagation @oncontextmenu:stopPropagation />
-                                    }
-                                    else
-                                    {
-                                        <span class="text-truncate">@node.Name</span>
-                                        <span class="ms-auto"></span>
-                                        @if (IsPage(node))
-                                        {
-                                            <FluentButton Class="tree-hover-btn" Appearance="ButtonAppearance.Subtle"
-                                                          Title="Открыть в предпросмотре"
-                                                          StopPropagation="true"
-                                                          OnClick=@(() => OpenNodeInPreview(node))>
-                                                <FluentIcon Value=@(new Icons.Regular.Size16.Play()) />
-                                            </FluentButton>
-                                        }
-                                    }
-                                </div>
-                            </ItemTemplate>
-                        </FluentTreeView>
-                    }
-                </div>
-
-                <FluentMenu @ref="nodeMenu" OpenedChanged="OnNodeMenuOpenedChanged">
-                    <FluentMenuList>
-                        @if (menuNode is not null && IsPage(menuNode))
-                        {
-                            <FluentMenuItem Label="Открыть в предпросмотре" OnClick="MenuOpenInPreview" />
-                        }
-                        <FluentMenuItem Label="Переименовать" OnClick="MenuRename" />
-                        <FluentMenuItem Label="Удалить" OnClick="MenuDelete" />
-                    </FluentMenuList>
-                </FluentMenu>
+        <div class="tb-group">
+            <div class="segment" role="group" aria-label="Ширина предпросмотра">
+                @foreach (var d in devices)
+                {
+                    <button class="seg-btn @(device == d.Id ? "active" : null)" type="button" title="@d.Label"
+                            aria-pressed="@(device == d.Id ? "true" : "false")" @onclick="() => SetDevice(d.Id)">
+                        <i class="bi @d.Icon"></i>
+                    </button>
+                }
             </div>
 
-            <div class="flex-fill d-flex flex-column" style="min-width:0;">
-                @if (selectedFile is not null)
+            <div class="segment" role="group" aria-label="Режим просмотра">
+                <button class="seg-btn labeled @(!fullPreview ? "active" : null)" type="button" @onclick="() => SetView(false)">
+                    <i class="bi bi-layout-split"></i>
+                    Код + превью
+                </button>
+                <button class="seg-btn labeled @(fullPreview ? "active" : null)" type="button" @onclick="() => SetView(true)">
+                    <i class="bi bi-eye"></i>
+                    Превью
+                </button>
+            </div>
+
+            <a class="ghost-btn" href="@previewSrc" target="_blank" rel="noopener">
+                <i class="bi bi-box-arrow-up-right"></i>
+                Открыть сайт
+            </a>
+        </div>
+    </header>
+
+    <div class="fe-body">
+
+        @* панели скрываются классом, а не @if: Monaco и дерево остаются живыми,
+           несохранённые правки и undo-стек переживают переключение вида *@
+        <aside class="files-panel @(fullPreview ? "fe-hidden" : null)" id="front-editor-tree-panel">
+            <header class="panel-head">
+                <h2>Файлы</h2>
+                <span class="head-note">@Slug</span>
+            </header>
+
+            <div class="files-create">
+                <input class="files-create__path" placeholder="pages/new_page.hbs" @bind="newPath"
+                       autocomplete="off" spellcheck="false" aria-label="Путь нового файла" />
+                <div class="files-create__btns">
+                    <button class="mini-btn" type="button" @onclick="@(() => CreateNew(isFolder: false))">
+                        <i class="bi bi-file-earmark-plus"></i> файл
+                    </button>
+                    <button class="mini-btn" type="button" @onclick="@(() => CreateNew(isFolder: true))">
+                        <i class="bi bi-folder-plus"></i> папка
+                    </button>
+                    <button class="icon-btn" type="button" title="Обновить список файлов" @onclick="LoadTree">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="files-tree" @onclick="CloseNodeMenu">
+                @if (treeBusy)
                 {
-                    <div class="px-2 py-1 border-bottom text-secondary small text-truncate">@selectedFile</div>
+                    <div class="tree-note">Loading…</div>
+                }
+                else if (treeLoadFailed)
+                {
+                    <div class="tree-note error">Не удалось загрузить файлы фронта</div>
+                }
+                else if (treeItems is not null)
+                {
+                    <FluentTreeView Items="treeItems"
+                                    SelectedItem="selectedTreeItem"
+                                    SelectedItemChanged="OnTreeSelected">
+                        <ItemTemplate>
+                            @{
+                                var item = (FrontTreeItem)context;
+                                var node = item.Node;
+                            }
+                            <div class="tree-item-content"
+                                 @onclick="@(() => OnNodeClicked(node))"
+                                 @oncontextmenu="e => OpenNodeMenu(node, e)" @oncontextmenu:preventDefault>
+                                <i class="bi @(node.IsDirectory ? "bi-folder" : "bi-file-earmark") tree-item-icon"></i>
+                                @if (renamingPath == node.Path)
+                                {
+                                    <input class="tree-rename" @bind="renameValue" @bind:event="oninput"
+                                           @onkeydown="OnRenameKeyDown" @onclick:stopPropagation @oncontextmenu:stopPropagation />
+                                }
+                                else
+                                {
+                                    <span class="tree-item-name">@node.Name</span>
+                                    @if (IsPage(node))
+                                    {
+                                        <button class="tree-hover-btn" type="button" title="Открыть в предпросмотре"
+                                                @onclick="@(() => OpenNodeInPreview(node))" @onclick:stopPropagation>
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </ItemTemplate>
+                    </FluentTreeView>
+                }
+            </div>
+
+            <FluentMenu @ref="nodeMenu" OpenedChanged="OnNodeMenuOpenedChanged">
+                <FluentMenuList>
+                    @if (menuNode is not null && IsPage(menuNode))
+                    {
+                        <FluentMenuItem Label="Открыть в предпросмотре" OnClick="MenuOpenInPreview" />
+                    }
+                    <FluentMenuItem Label="Переименовать" OnClick="MenuRename" />
+                    <FluentMenuItem Label="Удалить" OnClick="MenuDelete" />
+                </FluentMenuList>
+            </FluentMenu>
+        </aside>
+
+        <section class="editor-panel @(fullPreview ? "fe-hidden" : null)">
+            @if (selectedFile is not null)
+            {
+                <header class="panel-head editor-head">
+                    <span class="editor-file">
+                        <i class="bi bi-file-earmark-code"></i>
+                        <span class="editor-file__path" title="@selectedFile">@selectedFile</span>
+                    </span>
+                    <span class="editor-lang">@editorLang</span>
+                    <span class="editor-hint">Ctrl+S — сохранить</span>
+                </header>
+                <div class="editor-body">
                     <CodeEditor2 @ref=editor
                                  Lang=@editorLang
                                  OnSave="OnEditorSave"
                                  ContainerCssStyle="height:100%;border:none;overflow:hidden;" />
-                }
-                else
-                {
-                    <div class="flex-fill d-flex align-items-center justify-content-center text-secondary">
-                        Выберите файл в дереве слева
-                    </div>
-                }
-            </div>
-        }
+                </div>
+            }
+            else
+            {
+                <div class="editor-empty">
+                    <i class="bi bi-file-earmark-code"></i>
+                    <p>Выберите файл в дереве слева</p>
+                </div>
+            }
+        </section>
 
-        <div class="border-start d-flex flex-column" style="flex:@(fullPreview ? "1" : "0 0 42%"); min-width:0;">
-            <div class="px-2 py-1 border-bottom hstack gap-1 align-items-center">
-                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Назад" Disabled="!CanGoBack" OnClick="NavBack"
-                              IconStart="@(new Icons.Regular.Size16.ArrowLeft())" />
-                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Вперёд" Disabled="!CanGoForward" OnClick="NavForward"
-                              IconStart="@(new Icons.Regular.Size16.ArrowRight())" />
-                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Обновить" OnClick="ReloadPreview"
-                              IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" />
-                <input class="form-control form-control-sm preview-address" @bind="addressInput"
-                       @onkeydown="OnAddressKeyDown" autocomplete="off" spellcheck="false" />
-                <a href="@previewSrc" target="_blank" class="text-secondary" title="Открыть в новой вкладке">
-                    <FluentIcon Value=@(new Icons.Regular.Size16.Open()) />
-                </a>
+        <div class="stage">
+            <div class="browser @device">
+                <div class="browser-bar">
+                    <span class="tl red"></span>
+                    <span class="tl yellow"></span>
+                    <span class="tl green"></span>
+                    <div class="browser-nav">
+                        <button class="icon-btn" type="button" title="Назад" disabled="@(!CanGoBack)" @onclick="NavBack">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <button class="icon-btn" type="button" title="Вперёд" disabled="@(!CanGoForward)" @onclick="NavForward">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                        <button class="icon-btn" type="button" title="Обновить" @onclick="ReloadPreview">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                    @* oninput, не onchange: Enter (keydown) случается раньше change —
+                       иначе навигация читала бы устаревшее значение адреса *@
+                    <input class="browser-address" @bind="addressInput" @bind:event="oninput" @onkeydown="OnAddressKeyDown"
+                           autocomplete="off" spellcheck="false" aria-label="Адрес предпросмотра" />
+                    <span class="browser-size" title="Ширина области предпросмотра">@DeviceWidthLabel</span>
+                    <a class="icon-btn" href="@previewSrc" target="_blank" rel="noopener" title="Открыть в новой вкладке">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
+                <iframe class="browser-frame" @key=reloadCounter src="@previewSrc" title="Предпросмотр фронта"></iframe>
             </div>
-            <iframe @key=reloadCounter src="@previewSrc" style="flex:1;width:100%;border:0;"></iframe>
         </div>
 
     </div>
@@ -188,6 +246,29 @@
 
     bool fullPreview;
     int reloadCounter;
+
+    // «устройство» предпросмотра: браузер сужается до типичных viewport'ов
+    sealed record DeviceDef(string Id, string Icon, string Label);
+
+    readonly DeviceDef[] devices =
+    [
+        new("desktop", "bi-display", "Десктоп"),
+        new("tablet", "bi-tablet", "Планшет · 768px"),
+        new("mobile", "bi-phone", "Мобильный · 390px"),
+    ];
+
+    string device = "desktop";
+
+    string DeviceWidthLabel => device switch
+    {
+        "tablet" => "768px",
+        "mobile" => "390px",
+        _ => "auto",
+    };
+
+    void SetDevice(string id) => device = id;
+
+    void SetView(bool full) => fullPreview = full;
 
     // предпросмотр: адрес + история навигации
     string previewBase = "";
@@ -279,11 +360,6 @@
         {
             // файл мог быть удалён/переименован извне — дерево подтянется следующим reload
         }
-    }
-
-    void ToggleFullPreview()
-    {
-        fullPreview = !fullPreview;
     }
 
     #region Предпросмотр: адрес и навигация
@@ -480,20 +556,21 @@
         menuNode = node;
         StateHasChanged();
 
-        // v5: OpenAsync(w,h,x,y) больше нет — меню якорится к элементу по id,
-        // поэтому координаты курсора переводим в систему координат панели дерева.
-        var (left, top) = await GetTreePanelOffsetAsync();
-        await nodeMenu.OpenMenuAsync(TreePanelId, (int)(e.ClientX - left), (int)(e.ClientY - top));
+        // v5: OpenMenuAsync(targetId,x,y) ставит popup в (anchor.left + x, anchor.BOTTOM + y)
+        // (см. Menu.OpenMenu в lib.module.js) — поэтому смещение считаем от нижнего края
+        // панели, иначе меню уезжает вниз на высоту панели.
+        var (left, bottom) = await GetTreePanelOffsetAsync();
+        await nodeMenu.OpenMenuAsync(TreePanelId, (int)(e.ClientX - left), (int)(e.ClientY - bottom));
     }
 
-    async Task<(double Left, double Top)> GetTreePanelOffsetAsync()
+    async Task<(double Left, double Bottom)> GetTreePanelOffsetAsync()
     {
         try
         {
             var json = await jsRuntime.InvokeAsync<string>("eval",
-                $"JSON.stringify(document.getElementById('{TreePanelId}')?.getBoundingClientRect() ?? {{left:0,top:0}})");
+                $"JSON.stringify(document.getElementById('{TreePanelId}')?.getBoundingClientRect() ?? {{left:0,bottom:0}})");
             using var doc = JsonDocument.Parse(json);
-            return (doc.RootElement.GetProperty("left").GetDouble(), doc.RootElement.GetProperty("top").GetDouble());
+            return (doc.RootElement.GetProperty("left").GetDouble(), doc.RootElement.GetProperty("bottom").GetDouble());
         }
         catch
         {
@@ -725,26 +802,3 @@
         public Func<TreeViewItemExpandedEventArgs, Task>? OnExpandedAsync { get; set; }
     }
 }
-
-<style>
-    .FrontEditorPage .tree-item-content {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        width: 100%;
-        padding-right: 4px;
-    }
-
-    .FrontEditorPage .tree-item-content .tree-hover-btn {
-        opacity: 0;
-    }
-
-    .FrontEditorPage .tree-item-content:hover .tree-hover-btn {
-        opacity: 1;
-    }
-
-    .FrontEditorPage .preview-address {
-        flex: 1;
-        min-width: 80px;
-    }
-</style>

@@ -30,6 +30,9 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 **Конвенция: агент работает БЕЗ скриншотов** — assertions и computed-замеры; `--shots`
 только по просьбе пользователя.
 
+- **Какая страница за URL/где её исходник** — `Mars.exe pages find --url <url>` /
+  `pages show <Name> --code` (маршруты, роли, layout, пути, код; гайд `ai/CliPagesGuide.md`).
+  Не искать страницу grep-ом по всему репо.
 - `serve.ps1` — старт сервера: `pwsh -NoProfile -File tools/ui/serve.ps1 [-Port 5005]`.
   Порт задаётся env `Urls` (`--urls`/ASPNETCORE_URLS перебивает CliSocketServer).
 - `probe.js` — точечный замер computed-стилей/боксов/CSS-переменных элемента.

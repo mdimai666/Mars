@@ -118,10 +118,13 @@ for the current directory, commands execute directly inside that live process ov
 domain socket (no second startup); otherwise they run in-process.
 
 - `Mars.exe status` — is the instance alive (pid, version, uptime); exit 1 if not.
+- `Mars.exe pages list|show|find|layouts` — Blazor pages for dev agents: routes, roles, layout,
+  source file paths and code (`--code`, `--json`). Read-only. Guide: `ai/CliPagesGuide.md`.
 - The command set is not fixed — discover it via `-h` and the sources
   (`src/Mars.Modules/Mars.CommandLine`, `src/Mars.WebApp/CommandLine`, CommandCli classes in modules).
 - Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
 - Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
+  Root flags go BEFORE the command (`Mars.exe --quiet pages list`), after a subcommand they fail to parse.
 - In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
 
 ## Release: тег (NuGet-публикация)

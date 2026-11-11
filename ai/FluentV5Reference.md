@@ -1,22 +1,69 @@
-# FluentV5Reference — дистиллят фактов о FluentUI Blazor 5.0.0
+# FluentV5Reference — дистиллят фактов о FluentUI Blazor 5.0.1
 
 Справочник для агентов: факты о пакете, снятые напрямую, чтобы НЕ раскапывать nuget/GitHub/MCP
-повторно. MCP-доки `fluentui-blazor` описывают dev-ветку и ДВАЖДЫ разошлись со stable 5.0.0 —
+повторно. MCP-доки `fluentui-blazor` описывают dev-ветку и ДВАЖДЫ разошлись со stable 5.0.x —
 источник истины только фактический пакет.
 
 **Пути пакета (локальный nuget-кэш):**
-- Components: `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components\5.0.0\`
+- Components: `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components\5.0.1\`
   - JS-бандл (minified, ~458 КБ): `staticwebassets\Microsoft.FluentUI.AspNetCore.Components.lib.module.js`
   - CSS: `staticwebassets\css\reboot.css`, `staticwebassets\css\default-fuib.css`,
-    scoped-бандл `staticwebassets\Microsoft.FluentUI.AspNetCore.Components.bundle.scp.css` (~172 КБ)
+    scoped-бандл `staticwebassets\Microsoft.FluentUI.AspNetCore.Components.bundle.scp.css` (~174 КБ)
   - XML-доки: `lib\net10.0\Microsoft.FluentUI.AspNetCore.Components.xml` (~1.8 МБ; TFM: net8.0/9.0/10.0/11.0)
-  - точечные JS: `staticwebassets\Components\{DataGrid,DateTime,Grid,InputFile,Nav,PullToRefresh,Tooltip,TreeView}\*.razor.js`
-- Icons: `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components.icons\5.0.0\lib\net8.0\` —
+  - точечные JS: `staticwebassets\Components\{DataGrid,DateTime,Drag,Grid,InputFile,Nav,PullToRefresh,Tooltip,TreeView}\*.razor.js`
+- Icons: `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components.icons\5.0.1\lib\net8.0\` —
   ОДИН TFM (net8.0), 5 сборок: `Icons.dll` (5 КБ, база), `Icons.Regular.dll` (10.2 МБ),
   `Icons.Filled.dll` (8.6 МБ), `Icons.Color.dll` (3.5 МБ), `Icons.Light.dll` (0.2 МБ).
 
-Дата снятия фактов: 2026-10-01. Нарратив миграции — в `ai/FluentV5MigrationPlan.md`,
-CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGuide.md`.
+Дата снятия фактов: 2026-10-01 (5.0.0), пересверено под 5.0.1 — 2026-11-12. Нарратив миграции —
+в `ai/FluentV5MigrationPlan.md`, CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGuide.md`.
+
+---
+
+## 0. Дельта 5.0.1 (от 5.0.0) — сверено диффом пакета 2026-11-12
+
+Патч-релиз, но с новым API. **Значения CSS-токенов и рампы НЕ изменились** (байт-в-байт те же
+hex), `::part`-карта и набор тегов не изменились. Менялись: DLL/XML API, точечные JS, CSS-бандл.
+
+**Новое API / возможности:**
+- **Touch-drag-and-drop**: новый JS `Components/Drag/FluentDragContainer.razor.js` (long-press
+  ~200ms, ghost-клон, auto-scroll у краёв, вибрация). `FluentDragContainer<T>.TouchDragDelay`
+  (int, ms; <=0 → default 200). Зоны: атрибуты `[data-droppable]`, `[data-draggable="true"]`,
+  `[data-container-id]`, `[data-touch-dragging]`, `[data-no-drag]` (исключить интерактив).
+  JSInvokable-колбэки `TouchDragStart/Enter/Over/Leave/Drop/EndAsync`. Сами компоненты
+  `FluentDragContainer`/`FluentDropZone`/`FluentDragEventArgs` существовали и в 5.0.0 (native
+  HTML5 drag) — 5.0.1 добавил именно touch. CSS-бандл получил `[data-draggable]`/`[data-touch-dragging]`.
+- **FluentTreeView three-state selection**: параметр `CheckState`, класс
+  `TreeViewThreeStateSelection` (Items/SelectedItems/HasCheckState/IsRecursive,
+  CalculateSelectedItems/GetCheckState/UpdateParentSelection), новое значение enum
+  `TreeSelectionMode.MultipleRecursive` (рекурсивный выбор детей + indeterminate у родителей).
+  JS `FluentTreeView.razor.js` получил `UpdateCheckStates(id)` (синхронизация checked/indeterminate
+  из атрибутов, WeakSet controlled-чекбоксов).
+- **FluentGridItem.Order{Xs,Sm,Md,Lg,Xl,Xxl}** — responsive order (CSS order по брейкпоинтам).
+- **FluentTabs.SetActiveTabAsync(FluentTab)** — программная активация вкладки.
+- **FluentDataGrid<T>.ReorderColumnFromDragAsync(sourceId, targetId, bool)** — reorder колонок
+  drag-ом. Плюс фикс в `FluentDataGrid.razor.js`: offset'ы закреплённых колонок теперь считаются
+  селекторами `:scope > thead > tr > [col-index]` / `:scope > tbody > tr:not([row-state='detail-content'])`
+  — detail-строки больше не ломают pinned-колонки.
+- **FluentPullToRefresh.DragDistance / DragThreshold** — настройка pull-to-refresh.
+- **Required-валидация переработана** (FluentInputBase и наследники Select/Autocomplete/Listbox):
+  `IsUserInteractionDisabled`, `ValidationFieldExpression`, `HasExplicitValueExpression`,
+  `IsRequiredMessageConditionMet`/`SetRequiredErrorMessage`; новый ресурс
+  `LanguageResource.FluentInputBase_RequiredMessage`. Если required-поведение форм «поехало»
+  после бампа — смотреть сюда.
+- **JSRuntimeExtensions.TryInvokeFluentVoidAsync / TryInvokeFluentAsync<T>** — безопасные
+  обёртки JS-интеропа (глотают ошибку отсутствующего модуля).
+
+**Не изменилось (проверено):** наборы иконок во всех 4 сборках идентичны (0 added/0 removed;
+хэш DLL сдвинулся только из-за version-метаданных, размеры те же). Позиционирование
+`FluentMenu.OpenMenuAsync` — то же (от нижнего края якоря, см. §4). Токены/рампы — те же значения.
+
+**Грабля минифицированных имён:** идентификаторы в `lib.module.js` — **per-build**, в 5.0.1
+часть переименована: серая рампа `b`→`f`, white-альфа `Ne`→`Ce`, light-генератор `cp`→`up`,
+dark-генератор `dp`→`pp`, themeChanged `ku`→`wu`; при этом `Wi` (бренд-рампа), `M` (#ffffff),
+`rt` (black-альфа) совпали. **Не полагаться на имена — искать по значению/структуре**
+(hex рампы, `colorNeutralForeground1:`, `themeChanged`). Таблицы ниже используют `b[N]` как
+обозначение «индекс N серой рампы» (значение стабильно), а не как имя переменной бандла.
 
 ---
 
@@ -26,19 +73,20 @@ CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGu
 
 - Токены генерируются в рантайме JS: полный набор пишется **inline на `<html>`**
   (`style.setProperty`) и/или в `document.adoptedStyleSheets` (`:root`, без important).
-  Функции бандла: светлая нейтраль — `cp(brandRamp)`, тёмная — `dp(brandRamp)`, полный набор —
-  `bo(...)` (шрифты+геометрия+тени), дефолт — `xn = bo(Wi)`, где `Wi` — рампа Microsoft-синего
-  (primary **#0f6cbd**).
+  Функции бандла (минифицированные имена **per-build**, в 5.0.1 часть переименована — см. §0):
+  светлая нейтраль — `up(brandRamp)` (в 5.0.0 `cp`), тёмная — `pp(brandRamp)` (в 5.0.0 `dp`),
+  полный набор — шрифты+геометрия+тени, дефолт — полный набор от `Wi`, где `Wi` — рампа
+  Microsoft-синего (primary **#0f6cbd**). Искать по `colorNeutralForeground1:` / hex рампы, не по имени.
 - Статический compat-лист (`:root`) инжектируется через `applyStyles()` в adoptedStyleSheets —
   мост `--success/--warning/...` и spacing-фолбэки (см. ниже).
 - `default-fuib.css` грузится ВСЕГДА (fetch → adoptedStyleSheets), отключается атрибутом
   `no-fuib-style` на body/html. `reboot.css` — ОПЦИОНАЛЕН, только при атрибуте `use-reboot`
   на body/html. **В Mars `use-reboot` нигде не установлен** (grep) — подчёркивания ссылок
   даёт `default-fuib.css` (`a { text-decoration: underline }`), не reboot (уточнение плана).
-- Тёмная тема: `body[data-theme="dark"]` + CustomEvent `themeChanged` (функция `ku` в бандле);
-  в light атрибут снимается. Нейтраль/бренд токены регенерируются (индексы другой рампы).
+- Тёмная тема: `body[data-theme="dark"]` + CustomEvent `themeChanged` (функция `wu` в бандле 5.0.1,
+  в 5.0.0 `ku`); в light атрибут снимается. Нейтраль/бренд токены регенерируются (индексы другой рампы).
 
-### Серая рампа `b` (источник нейтральных значений, бандл)
+### Серая рампа (источник нейтральных значений; переменная бандла: 5.0.0 `b`, 5.0.1 `f`)
 
 `2:#050505 4:#0a0a0a 6:#0f0f0f 8:#141414 10:#1a1a1a 12:#1f1f1f 14:#242424 16:#292929
 18:#2e2e2e 20:#333333 22:#383838 24:#3d3d3d 26:#424242 28:#474747 30:#4d4d4d 32:#525252
@@ -46,10 +94,10 @@ CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGu
 50:#808080 52:#858585 54:#8a8a8a 56:#8f8f8f 58:#949494 60:#999999 62:#9e9e9e 64:#a3a3a3
 66:#a8a8a8 68:#adadad 70:#b3b3b3 72:#b8b8b8 74:#bdbdbd 76:#c2c2c2 78:#c7c7c7 80:#cccccc
 82:#d1d1d1 84:#d6d6d6 86:#dbdbdb 88:#e0e0e0 90:#e6e6e6 92:#ebebeb 94:#f0f0f0 96:#f5f5f5
-98:#fafafa 99:#fcfcfc`; `M = #ffffff`; альфа-рампы: `Ne` = rgba(255,255,255,.05..0.9),
-`rt` = rgba(0,0,0,.05..0.9).
+98:#fafafa 99:#fcfcfc`; `M = #ffffff`; альфа-рампы: white = rgba(255,255,255,.05..0.9)
+(5.0.0 `Ne`, 5.0.1 `Ce`), black = rgba(0,0,0,.05..0.9) (`rt` в обеих).
 
-### --colorNeutral* (ключевые; light → dark; индекс в рампе `b`)
+### --colorNeutral* (ключевые; light → dark; `b[N]` = индекс N серой рампы, значение стабильно)
 
 | Токен | Light | Dark |
 |---|---|---|
@@ -72,8 +120,8 @@ CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGu
 | colorBackgroundOverlay | rt[40] rgba(0,0,0,.4) | — |
 | colorScrollbarOverlay | rt[50] | — |
 
-Полный набор (~300 токенов) — функции `cp`/`dp` в бандле; здесь только потребляемые Mars
-(алиасы --mars-* в `base.less`).
+Полный набор (~300 токенов) — light/dark-генераторы в бандле (5.0.0 `cp`/`dp`, 5.0.1 `up`/`pp`);
+здесь только потребляемые Mars (алиасы --mars-* в `base.less`).
 
 ### --colorBrand* (дефолтная рампа Wi; при кастомной теме рампа перегенерируется из BrandColor)
 
@@ -190,7 +238,7 @@ red.tint20 #dc5e62, GreenForegroundInverted=green.tint20, YellowForegroundInvert
 Так как все они `var(--colorStatus*/Palette*)`, important-оверрайды Mars-моста подхватываются
 автоматически. Там же `body:has(.prevent-scroll){overflow:hidden}`.
 
-### МЁРТВЫЕ токены v4 (в 5.0.0 не определены нигде в пакете)
+### МЁРТВЫЕ токены v4 (в 5.0.x не определены нигде в пакете)
 
 `--type-ramp-*`, `--accent-fill-*`, `--neutral-fill-*`, `--neutral-layer-*`,
 `--neutral-foreground-*`, `--neutral-stroke-*` (включая `--neutral-fill-stealth-rest`),
@@ -200,7 +248,7 @@ red.tint20 #dc5e62, GreenForegroundInverted=green.tint20, YellowForegroundInvert
 
 ---
 
-## 2. Карта `::part` (по шаблонам бандла lib.module.js, 5.0.0)
+## 2. Карта `::part` (по шаблонам бандла lib.module.js, 5.0.1; в 5.0.1 не изменилась)
 
 | Компонент (host-тег) | parts | Примечание |
 |---|---|---|
@@ -235,7 +283,7 @@ DataGrid/SortableList/Grid/Stack — НЕ shadow DOM (см. раздел 3), `::
 ## 3. Rendering-факты (host-теги, DOM, селекторы)
 
 Host-теги: подтверждённые в репо (E2E/CSS/обходы) помечены ✓, остальные — строки из сборки
-DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-проверки.
+DLL (5.0.1) / css-бандла, т.е. надёжно, но без DOM-проверки.
 
 | Компонент | Рендерит |
 |---|---|
@@ -245,13 +293,13 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 | FluentTextArea | `<fluent-textarea>` (без дефиса перед area!) |
 | FluentText | `<fluent-text>` (селекторы default-fuib.css: `fluent-text[weight] > *`, `fluent-text[size] > *`) |
 | FluentIcon | НЕ custom element — инлайн `<svg>`; `fluent-icon` тега в DLL нет |
-| FluentSelect | `<fluent-dropdown>` (тега `fluent-select` в 5.0.0 нет) |
+| FluentSelect | `<fluent-dropdown>` (тега `fluent-select` в 5.0.x нет) |
 | FluentListbox | `<fluent-listbox>` |
 | FluentOption ✓ | `<fluent-option>` |
 | FluentCheckbox / Switch / Radio / RadioGroup | `<fluent-checkbox>` / `<fluent-switch>` / `<fluent-radio>` / `<fluent-radio-group>` |
 | FluentBadge ✓ | `<fluent-badge>` + класс `.fluent-badge`; **всегда пишет атрибут `color`** (дефолт Brand → `color="brand"`); цвета в bundle.scp.css по селектору `.fluent-badge[color=...]` |
 | FluentMenu / MenuList / MenuItem ✓ | `<fluent-menu>` / `<fluent-menu-list>` / `<fluent-menu-item>`; внутри каждого `fluent-menu` в DOM должен быть `fluent-menu-list` (см. грабли) |
-| FluentMenuButton | `<fluent-menu-button>` (жив в 5.0.0, переработан; Mars заменил на Button+Menu) |
+| FluentMenuButton | `<fluent-menu-button>` (жив в 5.0.x, переработан; Mars заменил на Button+Menu) |
 | FluentDialog / DialogBody / Drawer ✓ | `<fluent-dialog>` / `<fluent-dialog-body>` / `<fluent-drawer>` (+`fluent-drawer-body`, `fluent-dialog-provider`) |
 | FluentDataGrid ✓ | **НЕ custom element** — `<div class="fluent-data-grid">`, внутри обычная HTML-таблица; классы `.fluent-data-grid*` (87 правил в bundle.scp.css) |
 | FluentMessageBar ✓ | `<fluent-message-bar>` (+`fluent-message-bar-provider`, `fluent-message-box`) |
@@ -316,7 +364,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 
 ---
 
-## 4. Параметры/события используемых Mars компонентов (по XML-докам 5.0.0)
+## 4. Параметры/события используемых Mars компонентов (по XML-докам 5.0.1)
 
 Общая база входов `FluentInputBase<T>` (наследуется TextInput/NumberInput/TextArea/Select и др.):
 `Value`(@bind), `ValueExpression`, `Disabled`, `ReadOnly`, `Required`, `Name`, `Id`, `AriaLabel`,
@@ -407,6 +455,8 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   `SaveStateInUrl`/`SaveStatePrefix`, `AutoFocus`, `IsFixed`. ✝ `ColumnOptionsLabels`→
   `ColumnOptionsMenuSettings`, `ColumnResizeLabels`→`ColumnResizeMenuSettings`; у
   GridItemsProviderRequest ✝ `SortByColumn/SortByAscending` → `SortColumns`; `Align`→DataGridCellAlignment (Start/Center/End); `GenerateHeaderOption`→`DataGridGeneratedHeaderType`.
+  5.0.1: метод **`ReorderColumnFromDragAsync(sourceId, targetId, bool)`**; фикс pinned-колонок
+  с detail-строками в `FluentDataGrid.razor.js` (селекторы `:scope > thead/tbody`, см. §0).
 - **FluentMessageBar**: `Intent` (MessageBarIntent: Success/Warning/Error/Info/Custom; v4
   `MessageIntent` МЕРТВ), `Layout`, `Shape`, `Animation`, `AriaLive`, `Icon`, `Title`,
   **`Visible` (ЖИВ)**, `AllowDismiss`, `ActionsTemplate`, `TimeStamp`, `MessageBarInstance`.
@@ -419,7 +469,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   ✝ `Orientation=` МЕРТВ.
 - **FluentSpinner**: `Size` (SpinnerSize: Medium/Tiny/ExtraSmall/Small/Large/ExtraLarge/Huge),
   `Visible`, `AppearanceInverted`, `Stroke`, `Tooltip`. ✝ `Width=` МЕРТВ.
-  `FluentProgressRing` в 5.0.0 ещё существует как alias FluentSpinner («will be removed in a future release»).
+  `FluentProgressRing` в 5.0.1 ещё существует как alias FluentSpinner («will be removed in a future release»).
 - **FluentSortableList<T>**: `Items`(+Changed), `ItemTemplate`, `OnUpdate/OnRemove/OnAdd`,
   `Group`, `Clone`, `Drop`, `Sort`, `Handle`, `ItemFilter`, `Fallback`, `AriaLabel`.
   ✝ `ListItemHeight`, `ListItemFilteredColor`, `ListBorderWidth` МЕРТВЫ →
@@ -431,10 +481,12 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   `Height`, `Wrap`, `Reversed`, `HorizontalGap`/`VerticalGap` (**string** — числа без px
   компилируются, но ломают отступы; v4 int? МЕРТВ).
 - **FluentDropZone<T>**: **`Data` (ЖИВ, Object)**, `Container`, `Item`, `Droppable`, `Draggable`,
-  `StopPropagation`, `OnDragStart/End/Enter/Over/Leave`, `OnDropEnd`, `IsOver`.
+  `StopPropagation`, `OnDragStart/End/Enter/Over/Leave`, `OnDropEnd`, `IsOver`. 5.0.1: touch-drag
+  (StartDrag/EndDrag/DragEnter/DragOver/DragLeave/DropAsync, `Refresh`, data-атрибуты — см. §0).
 - **FluentDragContainer<T>**: `OnDragStart/End/Enter/Over/Leave`, `OnDropEnd`, `StartedZone`.
+  5.0.1: **`TouchDragDelay`** (int ms, long-press для touch-drag; <=0 → 200) + JS touch-хендлер (§0).
 - **FluentCard**: `Appearance`, `Shadow`, `Width`, `Height`, `Role`, `OnClick`, `ChildContent`.
-- **FluentValidationMessage<TValue>** (ЖИВ в 5.0.0, generic!): `For`, `Field`, `Icon`.
+- **FluentValidationMessage<TValue>** (ЖИВ в 5.0.1, generic!): `For`, `Field`, `Icon`.
 - **FluentValidationSummary**: `UseErrorTextColor`, `EditContext`.
 - **FluentOverflow<T>**: `Items`, `ItemTemplate`, `ItemText`, `OverflowTemplate`, `MoreTemplate`,
   `MaxRenderedItems`, `Orientation`, `Selector`, `VisibleOnLoad`, `UseTooltipService`,
@@ -446,7 +498,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
   `IconStart`, `IconColor`, `Disabled`, `Visible`, `DeferredLoading`, `LoadingTemplate`, `Tooltip`.
 - **FluentTabs**: `ActiveTabId`(+Changed), `ActiveTab`(+Changed), `Appearance`, `Size`,
   `Orientation`, `Disabled`, `Overflow`, `MoreTemplate`, `OverflowTemplate`, `MoreButtonLabel`,
-  `Height`, `Width`.
+  `Height`, `Width`. 5.0.1: метод **`SetActiveTabAsync(FluentTab)`** (программная активация).
 - **FluentMultiSplitter**: `Orientation`, `BarSize` (default 8px), `Width`, `Height`,
   `OnCollapse/OnExpand/OnResize`. **FluentMultiSplitterPane**: `Size`, `Min`, `Max`, `Collapsed`,
   `Collapsible`, `Resizable`. Грабля (замер 2026-11-05): рендерится ОБЫЧНЫМИ div'ами
@@ -478,6 +530,8 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 - **FluentTreeView**: `Items`, `ItemTemplate`, `LazyLoadItems`, `Size`, `Appearance`,
   `SelectionMode`, `HideSelection`, `SelectedId`(+Changed), `SelectedItem`(+Changed),
   `SelectedItems`(+Changed), `MultipleSelectionVisibility`, `OnExpandedChanged`, `OnSelectedChanged`.
+  5.0.1: **`CheckState`** + `TreeSelectionMode.MultipleRecursive` (three-state чекбоксы, рекурсивный
+  выбор, indeterminate у родителей; класс `TreeViewThreeStateSelection`, JS `UpdateCheckStates` — §0).
   (У TreeViewItem в 5.0.0 появились `IconStart/IconEnd/IconAside`; XML-доков у класса нет вообще.)
 - **FluentAvatar**: `Image`, `Initials`, `Name`, `Icon`, `Color` (AvatarColor: Neutral/Colorful/
   Anchor/Beige/.../Brand/...), `Shape`, `Size`, `Active`, `ActiveAppearance`, `Slot`, `OnClick`,
@@ -496,6 +550,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 - **FluentGrid**: `Spacing` (int 0..10, «multiple of 4px»; **default 0 — в v4 был 3**, молчаливое
   визуальное изменение), `Justify`, `AdaptiveRendering`, `OnBreakpointEnter`, `CurrentSize`(get).
   **FluentGridItem**: `Xs/Sm/Md/Lg/Xl/Xxl`, `Justify`, `Gap`, `HiddenWhen`, `AdaptiveRendering`.
+  5.0.1: **`OrderXs/OrderSm/OrderMd/OrderLg/OrderXl/OrderXxl`** (responsive CSS order).
 - **FluentOverlay**: `Visible` (**ЖИВ**)+Changed, `FullScreen`, `Interactive`, `BackgroundColor`
   (default `var(--colorBackgroundOverlay)`), `Opacity` (default 40%), `CloseMode`.
 - **FluentProgressBar**: `Value`, `Min`, `Max`, `Visible` (ЖИВ), `Width`, `Shape`, `State`
@@ -503,7 +558,7 @@ DLL (5.0.0) / css-бандла, т.е. надёжно, но без DOM-пров�
 
 ---
 
-## 5. v4 → v5: удалённое/переименованное (сверено с пакетом 5.0.0)
+## 5. v4 → v5: удалённое/переименованное (сверено с пакетом 5.0.0, актуально для 5.0.1)
 
 ### Компоненты (проверено: 0 вхождений в XML-доках = удалены)
 

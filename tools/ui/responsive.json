@@ -1,0 +1,20 @@
+{
+  "all": { "controls": [], "iframes": [] },
+  "pages": {
+    "/dev": { "controls": [".cloudy-sidebar", ".cloudy-stats"] },
+    "/dev/Post": { "controls": [".cloudy-browser", ".fluent-data-grid"] },
+    "/dev/Post/*": { "controls": [".cloudy-browser", ".fluent-data-grid"] },
+    "/dev/Users": { "controls": [".cloudy-browser"] },
+    "/dev/Profile": { "controls": [".cloudy-subnav", ".cloudy-profile-hero"] },
+    "/dev/Settings": { "controls": [".cloudy-acrylic"] },
+    "/dev/tech": { "controls": [".cloudy-tech-rail"] },
+    "/dev/tech/*": { "controls": [".cloudy-tech-rail"] },
+    "/dev/tech/automation": { "controls": [".ne-toolbar", ".ne-side .DebugMessagesConsole"] },
+    "/dev/tech/frontend": { "controls": [".fronts-page .hero h1", ".fronts-grid .front-card"] },
+    "/dev/tech/frontend/editor/admin": {
+      "controls": [".fe-toolbar", ".files-panel .files-create__path", ".browser-bar .browser-address"],
+      "iframes": [".browser-frame"]
+    },
+    "/dev/tech/style-gallery": { "controls": ["[data-gallery-section]", ".fluent-data-grid"] }
+  }
+}

@@ -300,6 +300,16 @@
     min-width: 0;
 }
 
+/* нулевой якорь Trigger контекстного меню: цель для возврата фокуса при ESC */
+.fe-menu-anchor {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+}
+
 .tree-note {
     padding: 16px 10px;
     color: var(--ct-muted);

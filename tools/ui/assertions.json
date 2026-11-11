@@ -13,15 +13,16 @@
       { "name": "cloudy recent posts rendered", "selector": ".cloudy-recent", "exists": { "min": 1 } }
     ],
     "/dev/Post": [
-      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 }, "optional": true },
-      { "name": "data-grid header compact", "selector": ".fluent-data-grid th", "box": { "maxHeight": 40 } },
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid header compact (design 57px: padding 12+12 + line 20)", "selector": "table.cloudy-grid.fluent-data-grid th", "box": { "maxHeight": 60 } },
       { "name": "actions column is last", "selector": ".fluent-data-grid th:last-child", "text": { "contains": "Действия" } },
       { "name": "icon-only row button square", "selector": ".fluent-data-grid td fluent-button:has(> svg:only-child)", "box": { "maxWidth": 48 }, "optional": true }
     ],
     "/dev/Post/*": [
-      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 }, "optional": true },
-      { "name": "data-grid header compact", "selector": ".fluent-data-grid th", "box": { "maxHeight": 40 } },
-      { "name": "actions column is last", "selector": ".fluent-data-grid th:last-child", "text": { "contains": "Действия" } },
+      { "name": "cloudy acrylic shell (single post types)", "selector": ".cloudy-acrylic", "exists": { "min": 1 }, "optional": true },
+      { "name": "cloudy browser rendered (list post types)", "selector": ".cloudy-browser", "exists": { "min": 1 }, "optional": true },
+      { "name": "cloudy-grid header compact (design 57px: padding 12+12 + line 20)", "selector": "table.cloudy-grid.fluent-data-grid th", "box": { "maxHeight": 60 }, "optional": true },
+      { "name": "actions column is last", "selector": ".fluent-data-grid th:last-child", "text": { "contains": "Действия" }, "optional": true },
       { "name": "icon-only row button square", "selector": ".fluent-data-grid td fluent-button:has(> svg:only-child)", "box": { "maxWidth": 48 }, "optional": true }
     ],
     "/dev/PostCategory": [
@@ -31,7 +32,7 @@
       { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
     ],
     "/dev/Users": [
-      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } }
     ],
     "/dev/Profile": [
       { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
@@ -78,9 +79,12 @@
     "/dev/tech/frontend/editor/admin": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
       { "name": "editor toolbar rendered", "selector": ".fe-page .fe-toolbar", "exists": { "min": 1 } },
+      { "name": "editor toolbar within viewport", "selector": ".fe-page .fe-toolbar", "box": { "withinViewport": true } },
       { "name": "device switch rendered", "selector": ".fe-toolbar .segment .seg-btn", "exists": { "min": 5 } },
       { "name": "files panel rendered", "selector": ".fe-page .files-panel", "exists": { "min": 1 } },
+      { "name": "files panel does not overlap editor/stage", "selector": ".fe-page .files-panel", "box": { "noOverlap": [".editor-panel", ".stage"] } },
       { "name": "browser preview rendered", "selector": ".fe-page .browser .browser-frame", "exists": { "min": 1 } },
+      { "name": "preview iframe non-zero", "selector": ".fe-page .browser .browser-frame", "box": { "minWidth": 100, "minHeight": 100 } },
       { "name": "browser address bar rendered", "selector": ".fe-page .browser-bar .browser-address", "exists": { "min": 1 } }
     ],
     "/dev/tech/plugins": [

@@ -35,12 +35,29 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
   Не искать страницу grep-ом по всему репо.
 - `serve.ps1` — старт сервера: `pwsh -NoProfile -File tools/ui/serve.ps1 [-Port 5005]`.
   Порт задаётся env `Urls` (`--urls`/ASPNETCORE_URLS перебивает CliSocketServer).
+  **`-Watch` — режим `dotnet watch --no-hot-reload`**: любая правка C#/razor/css →
+  авто-пересборка+перезапуск (ручной цикл «стоп→сборка→старт» не нужен; watch сам
+  останавливает приложение перед сборкой — занятости сборок нет). Грабля WASM
+  (проверено 2026-11-12): hot reload deltas доходят только до живого браузера —
+  свежая загрузка (харнесс) берёт старые сборки; scoped `.razor.css` referenced-проекта
+  watch не применяет вовсе (`bundle.scp.css not found`). Поэтому auto-rebuild, а не
+  deltas; `-HotReload` — opt-in для живого браузера.
+  **Грабля watch (опыт пользователя):** watch может молча не заметить правку — ждать
+  реакции в логе (`File changed`/`Exited`) ≤10 секунд; нет реакции → watch не работает,
+  перезапустить его (или ручной цикл). Сама пересборка WASM после реакции — ~40–60 с.
 - `probe.js` — точечный замер computed-стилей/боксов/CSS-переменных элемента.
   Стандартный первый шаг для «почему это выглядит не так»:
   `node probe.js --page /dev/Post --sel ".fluent-data-grid th" [--vars --filter mars]`.
 - `crawl.js` — обход 35 страниц админки: консоль-ошибки + DOM-assertions
-  (`assertions.json`), диалог ноды (dblclick/ESC). Exit 1 при падениях.
+  (`assertions.json`), диалог ноды (dblclick/ESC), контекстное меню дерева front editor
+  (right-click/ESC). Exit 1 при падениях. В `box`-assertions есть геометрия:
+  `withinViewport` (бокс целиком в viewport — ловит уехавшие попапы) и `noOverlap`
+  (нет пересечения с другими селекторами).
   **Починил UI — добавь assertion** в `assertions.json` (это регрессионная сетка).
+- `responsive.js` — прогон страниц по viewport'ам `[1600,1200,900,768,390]`:
+  горизонтальный overflow, досягаемость ключевых контролов (scrollIntoView + hit-test),
+  ненулевой iframe. Контролы — `responsive.json` (glob-ключи как в assertions.json;
+  `minWidth` для контролов, скрытых на брейкпоинтах). При правках раскладки — прогонять.
 - `tokens.js` — снапшот всех CSS-переменных темы с `<html>` (inline/computed/adopted).
 - `diff.js` — pixel-diff двух папок скриншотов: v4-база (`2026\Mars` master-копия,
   порт 5003) ↔ v5 (5005). Числовой отчёт, агент картинки не смотрит.
@@ -58,14 +75,17 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 
 ## Типовой цикл правки стилей
 
+0. Сервер: `serve.ps1 -Watch` — auto-rebuild убирает ручные перезапуски при правках
+   C#/razor/scoped-css. Правки `.less` watch не компилирует — шаг 3 по-прежнему нужен.
 1. `probe.js` — замер факта: какой токен/правило/inline виноваты (inline на элементе =
    компонент пишет сам — CSS перебивается только `!important`).
 2. Правка ТОЛЬКО `.less` (какой файл за что — `CssRefactoringGuide.md` §«Структура»).
 3. Компиляция: `pwsh -NoProfile -File tools/ui/build-css.ps1` (lessc 4.1.3 + BOM, оба входа:
    Mars.Admin и FormEditor); `-Check` — детектор рассинхрона less↔style.css (ничего не пишет).
    Обычно компилирует пользователь — скрипт для визуального цикла без него.
-4. `probe.js` / `crawl.js` — перемер. Новые wwwroot-ФАЙЛЫ попадают в отдачу только после
-   пересборки; правки существующего `style.css` подхватываются на лету.
+4. `probe.js` / `crawl.js` — перемер; при правках раскладки — `responsive.js`. Новые
+   wwwroot-ФАЙЛЫ попадают в отдачу только после пересборки; правки существующего
+   `style.css` подхватываются на лету.
 5. После коммита css/js — bump `MarsAppVersion` в `Directory.Build.props` (cache-busting).
 
 ## Инварианты вёрстки v5
@@ -138,5 +158,5 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 - **Новый диалог**: компонент с `[CascadingParameter] IDialogInstance Dialog`, разметка
   `FluentDialogBody` (TitleTemplate/ChildContent/ActionTemplate); вызов — нативный
   `IDialogService.ShowDialogAsync<T>(new DialogOptions { … Parameters = { ["Content"] = data } })`.
-- **Проверка UI-правки**: `serve.ps1` → `probe.js` (факт) → `crawl.js` (регрессия) →
-  точечные тесты фронта из `ai/TestingGuide.md`.
+- **Проверка UI-правки**: `serve.ps1 -Watch` → `probe.js` (факт) → `crawl.js` (регрессия)
+  → `responsive.js` (раскладка по viewport'ам) → точечные тесты фронта из `ai/TestingGuide.md`.

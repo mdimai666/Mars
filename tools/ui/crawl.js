@@ -1,7 +1,9 @@
 // Обход страниц админки: консоль-ошибки + DOM-assertions из assertions.json.
 // Скриншоты НЕ снимаются по умолчанию (только --shots, для пользователя).
 // Запуск: node crawl.js [--host http://localhost:5005] [--pages /dev,/dev/Post]
-//                      [--shots] [--out out] [--skip-nodes] [--no-assert]
+//                      [--shots] [--out out] [--skip-nodes] [--skip-front-menu] [--no-assert]
+// box-assertions: min/max-размеры + геометрия — withinViewport (бокс целиком в
+// viewport, допуск 1px) и noOverlap (нет пересечения с другими селекторами).
 // Exit code: 1 если есть упавшие assertions / console-ошибки / навигационные сбои.
 const fs = require('fs');
 const path = require('path');
@@ -58,7 +60,8 @@ async function runAssertion(page, a) {
     if (a.exists) {
       const n = await page.locator(a.selector).count();
       const min = a.exists.min ?? 1;
-      return n >= min ? ok(`count=${n}`) : fail(`${a.selector}: count=${n} < ${min}`);
+      if (n >= min) return ok(`count=${n}`);
+      return a.optional ? ok(`count=${n} (optional)`) : fail(`${a.selector}: count=${n} < ${min}`);
     }
     if (a.each) {
       const loc = page.locator(a.each);
@@ -110,6 +113,34 @@ async function runAssertion(page, a) {
         const val = Math.round(dim);
         if (k.startsWith('max') && val > v) return fail(`${a.selector} ${k}: ${val} > ${v}`);
         if (k.startsWith('min') && val < v) return fail(`${a.selector} ${k}: ${val} < ${v}`);
+      }
+      if (a.box.withinViewport) {
+        const vp = page.viewportSize();
+        const box = { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) };
+        if (b.x < -1 || b.y < -1 || b.x + b.width > vp.width + 1 || b.y + b.height > vp.height + 1) {
+          return fail(`${a.selector} outside viewport: box=${JSON.stringify(box)} viewport=${vp.width}x${vp.height}`);
+        }
+      }
+      if (a.box.noOverlap) {
+        for (const otherSel of [].concat(a.box.noOverlap)) {
+          const others = page.locator(otherSel);
+          const m = Math.min(await others.count(), 50);
+          for (let i = 0; i < m; i++) {
+            const o = others.nth(i);
+            const handle = await o.elementHandle();
+            if (!handle) continue;
+            // сам элемент и его предки/потомки пересекаются тривиально — пропускаем
+            const related = await el.evaluate((e, other) => e === other || e.contains(other) || other.contains(e), handle);
+            if (related) continue;
+            const ob = await o.boundingBox();
+            if (!ob) continue;
+            const ix = Math.min(b.x + b.width, ob.x + ob.width) - Math.max(b.x, ob.x);
+            const iy = Math.min(b.y + b.height, ob.y + ob.height) - Math.max(b.y, ob.y);
+            if (ix > 1 && iy > 1) {
+              return fail(`${a.selector} overlaps ${otherSel}[${i}] by ${Math.round(ix)}x${Math.round(iy)}px`);
+            }
+          }
+        }
       }
       return ok(a.selector);
     }
@@ -183,12 +214,19 @@ async function runAssertion(page, a) {
         const panel = document.querySelector('.ne-side .node-edit-panel');
         if (!panel) return { visible: false, editingClass: side ? side.classList.contains('ne-side--editing') : false };
         const r = panel.getBoundingClientRect();
-        return { visible: r.height > 0, box: { width: Math.round(r.width), height: Math.round(r.height) }, editingClass: side ? side.classList.contains('ne-side--editing') : false };
+        return { visible: r.height > 0, box: { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) }, editingClass: side ? side.classList.contains('ne-side--editing') : false };
       });
       entry.panel = info;
       if (!info.visible || !info.editingClass) { entry.status = 'NODE_PANEL_NOT_OPEN'; failed++; }
       else if (info.box.width < 300) { entry.assertions.push({ name: 'node panel width', ok: false, detail: `width=${info.box.width} < 300` }); failed++; }
       else entry.assertions.push({ name: 'node panel width', ok: true, detail: `width=${info.box.width}` });
+      if (info.visible) {
+        const vp = page.viewportSize();
+        const b = info.box;
+        const inside = b.x >= -1 && b.y >= -1 && b.x + b.width <= vp.width + 1 && b.y + b.height <= vp.height + 1;
+        entry.assertions.push({ name: 'node panel within viewport', ok: inside, detail: `box=${JSON.stringify(b)} viewport=${vp.width}x${vp.height}` });
+        if (!inside) failed++;
+      }
       await page.locator('.node-edit-panel .nep-close').click();
       await page.waitForTimeout(800);
       entry.closedAfterX = await page.evaluate(() => {
@@ -204,6 +242,56 @@ async function runAssertion(page, a) {
       failed++;
     }
     console.log('node panel:', entry.status, JSON.stringify(entry.panel || {}), 'closed-after-x:', entry.closedAfterX);
+    report.push(entry);
+  }
+
+  // Контекстное меню дерева файлов front editor (регрессия позиционирования
+  // OpenMenuAsync: меню открывается в курсоре и целиком помещается в viewport;
+  // баг-образец — меню уезжало на top=1252 при viewport 1000px).
+  if (!args['skip-front-menu']) {
+    const entry = { page: '/dev/tech/frontend/editor/admin#tree-context-menu', status: 'ok', assertions: [] };
+    const errBefore = consoleErrors.length;
+    try {
+      await page.goto(`${HOST}/dev/tech/frontend/editor/admin`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+      await page.waitForSelector('.tree-item-content', { timeout: 60000 });
+      await page.waitForTimeout(800);
+      const item = page.locator('.tree-item-content').last();
+      await item.scrollIntoViewIfNeeded();
+      await item.click({ button: 'right' });
+      await page.waitForTimeout(1000);
+      const info = await page.evaluate(() => {
+        // открытый popup FluentMenu: slotted fluent-menu-list с ненулевым боксом
+        const lists = [...document.querySelectorAll('.files-panel fluent-menu fluent-menu-list')];
+        const open = lists.map((l) => ({ l, r: l.getBoundingClientRect() })).find((x) => x.r.width > 0 && x.r.height > 0);
+        if (!open) return { visible: false };
+        const r = open.r;
+        return { visible: true, box: { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) } };
+      });
+      entry.menu = info;
+      const vp = page.viewportSize();
+      if (!info.visible) { entry.status = 'MENU_NOT_OPEN'; failed++; }
+      else {
+        const b = info.box;
+        const inside = b.x >= -1 && b.y >= -1 && b.x + b.width <= vp.width + 1 && b.y + b.height <= vp.height + 1;
+        entry.assertions.push({ name: 'context menu within viewport', ok: inside, detail: `box=${JSON.stringify(b)} viewport=${vp.width}x${vp.height}` });
+        if (!inside) failed++;
+      }
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(600);
+      entry.closedAfterEsc = await page.evaluate(() => {
+        const lists = [...document.querySelectorAll('.files-panel fluent-menu fluent-menu-list')];
+        return !lists.some((l) => { const r = l.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
+      });
+      if (!entry.closedAfterEsc) failed++;
+      entry.consoleErrors = consoleErrors.slice(errBefore).map((e) => `${e.type}: ${e.text}`);
+      if (entry.consoleErrors.length) failed += entry.consoleErrors.length;
+    } catch (e) {
+      entry.status = 'FRONT_MENU_ERROR';
+      entry.error = String(e).slice(0, 300);
+      failed++;
+    }
+    console.log('front tree menu:', entry.status, JSON.stringify(entry.menu || {}), 'closed-after-esc:', entry.closedAfterEsc);
     report.push(entry);
   }
 

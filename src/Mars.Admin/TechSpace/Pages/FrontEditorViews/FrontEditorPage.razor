@@ -140,7 +140,12 @@
                 }
             </div>
 
-            <FluentMenu @ref="nodeMenu" OpenedChanged="OnNodeMenuOpenedChanged">
+            @* Trigger обязателен: при закрытии по ESC библиотека зовёт focusTrigger()
+               без null-guard (lib.module.js), и меню, открытое через OpenMenuAsync без
+               Trigger, падает с TypeError. Якорь — отдельный нулевой элемент, а не сама
+               панель: Trigger на панели открывал бы меню по любому левому клику в дереве. *@
+            <button id="@TreeMenuAnchorId" class="fe-menu-anchor" type="button" tabindex="-1" aria-hidden="true"></button>
+            <FluentMenu @ref="nodeMenu" Trigger="@TreeMenuAnchorId" OpenedChanged="OnNodeMenuOpenedChanged">
                 <FluentMenuList>
                     @if (menuNode is not null && IsPage(menuNode))
                     {
@@ -550,6 +555,7 @@
     #region Контекстное меню
 
     const string TreePanelId = "front-editor-tree-panel";
+    const string TreeMenuAnchorId = "front-editor-tree-menu-anchor";
 
     async Task OpenNodeMenu(FFrontTreeNodeResponse node, MouseEventArgs e)
     {

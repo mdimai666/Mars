@@ -433,6 +433,13 @@ DLL (5.0.1) / css-бандла, т.е. надёжно, но без DOM-пров�
   `y = clientY - anchor.bottom` (см. `FrontEditorPage.GetTreePanelOffsetAsync`). Если считать
   `y` от `anchor.top`, меню уезжает вниз на высоту якоря. Образец рабочего контекстного меню —
   `NodeEditor1.OpenWorkspaceContextMenuAsync`.
+  **Грабля ESC (проверено 2026-11-12):** при закрытии меню библиотека зовёт `focusTrigger()` →
+  `this._trigger.focus()` БЕЗ null-guard; меню, открытое через `OpenMenuAsync` без `Trigger`,
+  кидает `TypeError: Cannot read properties of undefined (reading 'focus')` (само меню закрывается).
+  Лечение: `Trigger` на нулевой якорный button (образец — `FrontEditorPage`:
+  `#front-editor-tree-menu-anchor` + `.fe-menu-anchor` в scoped css). Trigger на саму панель
+  НЕ годится: меню начнёт открываться по любому левому клику в ней (Trigger = click-to-open).
+  Та же грабля есть у меню `NodeEditor1` (открываются без Trigger).
 - **FluentMenuList**: `ChildContent`, `OnClick`, `OnCheckedChanged` — обёртка-контейнер пунктов.
 - **FluentMenuItem**: `Role` (menuitem/menuitemcheckbox/menuitemradio), `Checked`(+Changed),
   `Disabled`, `IconStart/IconEnd/IconSubmenu/IconIndicator`, `Label`, `MenuItems` (подменю),

@@ -1,0 +1,170 @@
+@page "/tech/plugins"
+@attribute [Authorize(Roles = "Admin")]
+@using Mars.Plugin.Contracts.Plugins
+@using Mars.Admin.SiteSpace.Pages.PluginViews
+
+<PageTitle>Plugins</PageTitle>
+
+<div class="plugins-page">
+    <header class="plugins-page__hero">
+        <div class="plugins-page__hero-text">
+            <h1 class="plugins-page__title">Plugins</h1>
+            <p class="plugins-page__subtitle">Extend Mars with .NET assemblies and frontend modules. Changes apply after server restart.</p>
+        </div>
+        <div class="plugins-page__actions">
+            <a class="plugins-page__action plugins-page__action--ghost" href="/dev/marketplace">
+                <i class="bi bi-search"></i>
+                Browse marketplace
+            </a>
+            <button class="plugins-page__action plugins-page__action--ghost" type="button" @onclick="OnClickInstallFromNuget">
+                <i class="bi bi-box-seam"></i>
+                Install from NuGet
+            </button>
+            <button class="plugins-page__action plugins-page__action--primary" type="button" @onclick="OnClickUploadFromZipFile">
+                <i class="bi bi-box-arrow-up"></i>
+                Upload ZIP
+            </button>
+        </div>
+    </header>
+
+    @if (loadFailed)
+    {
+        <div class="plugins-page__error">
+            <i class="bi bi-exclamation-triangle"></i>
+            Не удалось загрузить список плагинов
+        </div>
+    }
+    else if (plugins is null)
+    {
+        <div class="plugins-page__loading">Loading…</div>
+    }
+    else
+    {
+        <section class="plugins-page__panel">
+            <header class="plugins-page__panel-head">
+                <div class="plugins-page__chips">
+                    @foreach (var chip in Filters)
+                    {
+                        <button class="plugin-chip @(_filter == chip.Id ? "plugin-chip--active" : null) @(chip.Available ? null : "plugin-chip--disabled")"
+                                type="button" disabled="@(!chip.Available)"
+                                title="@(chip.Available ? null : "Появится после подключения маркетплейса")"
+                                @onclick="() => _filter = chip.Id">
+                            @chip.Label
+                        </button>
+                    }
+                </div>
+                <label class="plugins-page__search">
+                    <i class="bi bi-search plugins-page__search-icon"></i>
+                    <input class="plugins-page__search-input" type="text" placeholder="Search plugins..." @bind="_query" @bind:event="oninput" />
+                </label>
+            </header>
+
+            @if (Filtered().Any())
+            {
+                <div class="plugins-page__grid">
+                    @foreach (var plugin in Filtered())
+                    {
+                        <article class="plugin-card @(plugin.PendingDelete ? "plugin-card--pending-delete" : null)">
+                            <header class="plugin-card__top">
+                                @if (plugin.PackageIconUrl is not null && plugin.Enabled && !iconFailed.Contains(plugin.PackageId))
+                                {
+                                    <span class="plugin-card__icon plugin-card__icon--img">
+                                        <img src="@plugin.PackageIconUrl" alt="" @onerror="() => iconFailed.Add(plugin.PackageId)" />
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="plugin-card__icon">@Initial(plugin)</span>
+                                }
+                                <div class="plugin-card__id">
+                                    <span class="plugin-card__name" title="@plugin.Title">@plugin.Title</span>
+                                    <span class="plugin-card__version">@plugin.Version</span>
+                                </div>
+                                <span class="plugin-card__source">@SourceLabel(plugin)</span>
+                            </header>
+
+                            <p class="plugin-card__desc" title="@plugin.Description">@(string.IsNullOrWhiteSpace(plugin.Description) ? plugin.PackageId : plugin.Description)</p>
+
+                            @if (plugin.PendingDelete || HasPendingRestart(plugin) || plugin.PackageTags.Length > 0)
+                            {
+                                <div class="plugin-card__tags">
+                                    @if (plugin.PendingDelete)
+                                    {
+                                        <CloudyTag Text="Will be removed on restart" Tint="CloudyTint.PluginAttention" />
+                                    }
+                                    @if (HasPendingRestart(plugin))
+                                    {
+                                        <CloudyTag Text="Restart required" Tint="CloudyTint.PluginAttention" />
+                                    }
+                                    @foreach (var tag in plugin.PackageTags)
+                                    {
+                                        <CloudyTag Text="@tag" />
+                                    }
+                                </div>
+                            }
+
+                            <div class="plugin-card__meta">
+                                <span class="plugin-card__author" title="@plugin.PackageId">@AuthorLine(plugin)</span>
+                                @if (plugin.RepositoryUrl is not null)
+                                {
+                                    <a class="plugin-card__repo" href="@plugin.RepositoryUrl" target="_blank" title="@plugin.RepositoryUrl">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                }
+                            </div>
+
+                            <footer class="plugin-card__foot">
+                                @if (plugin.Locked)
+                                {
+                                    <CloudyTag Text="Locked (config)" Tint="CloudyTint.PluginAttention" />
+                                }
+                                else
+                                {
+                                    <button class="plugin-switch @(DisplayEnabled(plugin) ? "plugin-switch--on" : null) @(HasPendingRestart(plugin) ? "plugin-switch--pending" : null)"
+                                            type="button" role="switch"
+                                            disabled="@ActionsDisabled(plugin)"
+                                            title="@(HasPendingRestart(plugin) ? "Изменения применятся после рестарта" : null)"
+                                            aria-checked="@(DisplayEnabled(plugin) ? "true" : "false")" aria-label="Toggle @plugin.Title"
+                                            @onclick="() => ToggleEnabled(plugin)">
+                                        <span class="plugin-switch__knob"></span>
+                                    </button>
+                                    <span class="plugin-card__state @(DisplayEnabled(plugin) ? "plugin-card__state--on" : null)">
+                                        @(DisplayEnabled(plugin) ? "Enabled" : "Disabled")
+                                    </span>
+                                }
+                                @if (!plugin.Locked && HasUpdate(plugin))
+                                {
+                                    <button class="plugin-card__update" type="button" disabled="@ActionsDisabled(plugin)" @onclick="() => Update(plugin)">
+                                        Update to @LatestVersion(plugin)
+                                    </button>
+                                }
+                                else if (!plugin.Locked && plugin.Source == PluginSource.NuGet)
+                                {
+                                    <button class="plugin-card__update plugin-card__update--plain" type="button" disabled="@ActionsDisabled(plugin)" @onclick="() => Update(plugin)">
+                                        Update
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="plugin-card__updated">@InstalledLabel(plugin)</span>
+                                }
+                                @if (!plugin.Locked)
+                                {
+                                    <button class="plugin-card__delete" type="button" disabled="@ActionsDisabled(plugin)"
+                                            title="Uninstall" aria-label="Uninstall @plugin.Title"
+                                            @onclick="() => Delete(plugin)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                            </footer>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="plugins-page__empty">@(plugins.Count == 0 ? "No plugins installed yet — upload a ZIP or install from NuGet." : "No plugins match your search.")</p>
+            }
+        </section>
+    }
+</div>

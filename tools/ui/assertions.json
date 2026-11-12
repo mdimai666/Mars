@@ -88,7 +88,12 @@
       { "name": "browser address bar rendered", "selector": ".fe-page .browser-bar .browser-address", "exists": { "min": 1 } }
     ],
     "/dev/tech/plugins": [
-      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "plugins hero rendered", "selector": ".plugins-page__title", "exists": { "min": 1 } },
+      { "name": "plugins panel rendered", "selector": ".plugins-page__panel", "exists": { "min": 1 } },
+      { "name": "filter chips rendered", "selector": ".plugins-page__chips .plugin-chip", "exists": { "min": 6 } },
+      { "name": "plugins search rendered", "selector": ".plugins-page__search-input", "exists": { "min": 1 } },
+      { "name": "plugin cards rendered", "selector": ".plugins-page__grid .plugin-card", "exists": { "min": 1 } }
     ],
     "/dev/tech/marketplace": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }

@@ -21,14 +21,14 @@ const PAGES = args.pages
       '/dev', '/dev/Post', '/dev/PostType', '/dev/PostCategory', '/dev/PostCategoryType',
       '/dev/Media', '/dev/Users', '/dev/UserType',
       '/dev/Profile', '/dev/Profile/Edit', '/dev/Profile/ApiKeys', '/dev/Profile/Passkeys',
-      '/dev/NavMenu', '/dev/Plugins', '/dev/FeedbackList', '/dev/Settings',
+      '/dev/NavMenu', '/dev/FeedbackList', '/dev/Settings',
       '/dev/Settings/HostCache', '/dev/Settings/About', '/dev/Settings/Front',
       '/dev/tech', '/dev/tech/models',
       '/dev/tech/models/classmodels', '/dev/tech/scheduler', '/dev/tech/components',
       '/dev/tech/playbooks', '/dev/tech/docker', '/dev/tech/devtest',
       '/dev/tech/styledesigner', '/dev/tech/style-gallery',
       '/dev/tech/nodes', '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
-      '/dev/tech/frontend/editor/admin',
+      '/dev/tech/frontend/editor/admin', '/dev/tech/plugins',
       '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
     ];
 

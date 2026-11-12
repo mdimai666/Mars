@@ -49,7 +49,7 @@ public static class DevMenuFactory
             //    Item("user-types", AppRes.UserTypes, d + "UserType", parentId: ManageId),
             //    Item("post-category-types", AppRes.PostCategoryTypes, d + "PostCategoryType", parentId: ManageId),
             Divider("divider-3"),
-            Item("plugins", AppRes.Plugins, d + "Plugins", roles: adminRoles),
+            Item("plugins", AppRes.Plugins, d + "tech/plugins", roles: adminRoles),
             Item("settings", "Настройки", d + "Settings", roles: adminRoles),
         ];
 

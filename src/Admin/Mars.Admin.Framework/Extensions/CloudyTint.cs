@@ -28,4 +28,7 @@ public static class CloudyTint
 
     public const int Disabled = 3;
     public const int ComponentTypes = 1;
+
+    /// <summary>Плагин требует внимания: Locked (config) или PendingDelete — оранжевый.</summary>
+    public const int PluginAttention = 3;
 }

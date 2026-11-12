@@ -141,3 +141,9 @@ else {
     Write-Host "⚠️  Завершено с ошибками ($($failures.Count)): $($failures -join ', ')" -ForegroundColor Red
 }
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+
+# Валидация фида после паковки: устанавливаемы ли kit-наборы (read-only отчёт).
+& (Join-Path $root "check-local-nugets.ps1") -OutDir $outDir
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "⚠️  Фид содержит проблемы — kit-наборы могут не установиться (отчёт выше)" -ForegroundColor Red
+}

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>mdimai666.Mars.CodeCompletion.Host</PackageId>
         <Product>Mars.CodeCompletion.Host</Product>
         <Description>Mars server-side C# code completion (Roslyn Workspaces) for Monaco editors.</Description>
     </PropertyGroup>

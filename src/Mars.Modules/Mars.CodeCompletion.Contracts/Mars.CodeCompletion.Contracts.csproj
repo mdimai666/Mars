@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>mdimai666.Mars.CodeCompletion.Contracts</PackageId>
         <Product>Mars.CodeCompletion.Contracts</Product>
         <Description>Mars code completion wire contracts: requests and results DTOs.</Description>
     </PropertyGroup>

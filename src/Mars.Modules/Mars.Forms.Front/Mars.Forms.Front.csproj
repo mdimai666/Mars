@@ -1,6 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
+        <PackageId>mdimai666.Mars.Forms.Front</PackageId>
+        <Description>Mars form engine front: form renderer and FluentUI field editors.</Description>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
     </PropertyGroup>
 

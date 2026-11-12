@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
+        <PackageId>mdimai666.Mars.CodeCompletion.Front</PackageId>
         <Product>Mars.CodeCompletion.Front</Product>
         <Description>Mars Monaco editor IntelliSense front wiring: BlazorMonaco providers bridge.</Description>
     </PropertyGroup>

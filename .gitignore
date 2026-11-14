@@ -19,6 +19,9 @@ tools/ui/auth.local.json
 tools/ui/diff/
 tools/ui/sweep-report.json
 
+# Playwright MCP scratch (snapshots, console logs)
+.playwright-mcp/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

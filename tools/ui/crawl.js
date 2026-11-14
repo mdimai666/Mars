@@ -1,7 +1,7 @@
 // Обход страниц админки: консоль-ошибки + DOM-assertions из assertions.json.
 // Скриншоты НЕ снимаются по умолчанию (только --shots, для пользователя).
 // Запуск: node crawl.js [--host http://localhost:5005] [--pages /dev,/dev/Post]
-//                      [--shots] [--out out] [--skip-nodes] [--skip-front-menu] [--no-assert]
+//                      [--shots] [--out out] [--skip-nodes] [--skip-front-menu] [--skip-navmenu] [--no-assert]
 // box-assertions: min/max-размеры + геометрия — withinViewport (бокс целиком в
 // viewport, допуск 1px) и noOverlap (нет пересечения с другими селекторами).
 // Exit code: 1 если есть упавшие assertions / console-ошибки / навигационные сбои.
@@ -32,7 +32,8 @@ const PAGES = args.pages
       '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
     ];
 
-const IGNORE_CONSOLE = ['favicon', 'blazor.webassembly.js', 'The resource https://'];
+// 'HotReload.BrowserTools' — 404 конфига browser-tools при serve.ps1 -Watch (артефакт watch, не продукта).
+const IGNORE_CONSOLE = ['favicon', 'blazor.webassembly.js', 'The resource https://', 'HotReload.BrowserTools'];
 
 function loadAssertions() {
   const f = path.join(__dirname, 'assertions.json');
@@ -157,8 +158,12 @@ async function runAssertion(page, a) {
 
   const consoleErrors = [];
   page.on('console', (m) => {
-    if ((m.type() === 'error' || m.type() === 'warning') && !IGNORE_CONSOLE.some((x) => m.text().includes(x))) {
-      consoleErrors.push({ url: page.url(), type: m.type(), text: m.text().slice(0, 300) });
+    if (m.type() !== 'error' && m.type() !== 'warning') return;
+    // у resource-ошибок URL живёт в location, а не в text — иначе ignore-лист не работает
+    const loc = m.location()?.url || '';
+    const text = `${m.text()}${loc ? ` @ ${loc}` : ''}`;
+    if (!IGNORE_CONSOLE.some((x) => text.includes(x))) {
+      consoleErrors.push({ url: page.url(), type: m.type(), text: text.slice(0, 300) });
     }
   });
   page.on('pageerror', (e) => consoleErrors.push({ url: page.url(), type: 'pageerror', text: String(e).slice(0, 300) }));
@@ -292,6 +297,71 @@ async function runAssertion(page, a) {
       failed++;
     }
     console.log('front tree menu:', entry.status, JSON.stringify(entry.menu || {}), 'closed-after-esc:', entry.closedAfterEsc);
+    report.push(entry);
+  }
+
+  // Дерево структуры меню навигации (регрессия «комка текста»: строки не
+  // перекрываются, выбор открывает панель свойств, меню пункта в viewport и
+  // закрывается Escape, drag&drop не ломает геометрию). Данные не сохраняются.
+  if (!args['skip-navmenu']) {
+    const entry = { page: '/dev/NavMenu#tree', status: 'ok', assertions: [] };
+    const errBefore = consoleErrors.length;
+    const rowGeo = () => page.evaluate(() => {
+      const rows = [...document.querySelectorAll('.nmt-row')].map((r) => r.getBoundingClientRect());
+      let overlap = 0;
+      for (let i = 0; i < rows.length; i++)
+        for (let j = i + 1; j < rows.length; j++) {
+          const a = rows[i], b = rows[j];
+          const ix = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          const iy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+          if (ix > 1 && iy > 1) overlap++;
+        }
+      return { count: rows.length, overlap, minH: rows.length ? Math.round(Math.min(...rows.map((r) => r.height))) : 0 };
+    });
+    try {
+      await page.goto(`${HOST}/dev/NavMenu`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await page.waitForSelector('a[href*="/EditNavMenu/"]', { timeout: 60000 });
+      const href = await page.locator('a[href*="/EditNavMenu/"]').first().getAttribute('href');
+      await page.goto(`${HOST}${href}`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await page.waitForSelector('.nmt-row', { timeout: 60000 });
+      await page.waitForTimeout(800);
+
+      const geo = await rowGeo();
+      entry.tree = geo;
+      const push = (name, ok, detail) => { entry.assertions.push({ name, ok, detail }); if (!ok) failed++; };
+      push('tree rows rendered', geo.count > 0, `count=${geo.count}`);
+      push('tree rows do not overlap', geo.overlap === 0, `overlap=${geo.overlap}`);
+      push('tree rows not collapsed', geo.minH >= 32, `minHeight=${geo.minH}`);
+
+      await page.locator('.nmt-row').first().click();
+      await page.waitForSelector('.nmt-props__form', { timeout: 10000 });
+      push('selection opens props form', true, 'ok');
+
+      await page.locator('.nmt-row').first().hover();
+      await page.locator('.nmt-row__tools .nmt__iconbtn').first().click();
+      await page.waitForSelector('.nmt-menu', { timeout: 10000 });
+      await page.waitForTimeout(300);
+      const mb = await page.locator('.nmt-menu').boundingBox();
+      const vp = page.viewportSize();
+      const inside = mb && mb.x >= -1 && mb.y >= -1 && mb.x + mb.width <= vp.width + 1 && mb.y + mb.height <= vp.height + 1;
+      push('row menu within viewport', !!inside, `box=${JSON.stringify(mb && { x: Math.round(mb.x), y: Math.round(mb.y), w: Math.round(mb.width), h: Math.round(mb.height) })}`);
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(500);
+      push('row menu closes on Escape', (await page.locator('.nmt-menu').count()) === 0, 'closed');
+
+      const before = await page.locator('.nmt-row').count();
+      await page.locator('.nmt-row').nth(1).dragTo(page.locator('.nmt-row').first());
+      await page.waitForTimeout(800);
+      const after = await rowGeo();
+      push('drag&drop keeps rows intact', after.count === before && after.overlap === 0, `before=${before} after=${after.count} overlap=${after.overlap}`);
+      entry.consoleErrors = consoleErrors.slice(errBefore).map((e) => `${e.type}: ${e.text}`);
+      if (entry.consoleErrors.length) failed += entry.consoleErrors.length;
+    } catch (e) {
+      entry.status = 'NAVMENU_TREE_ERROR';
+      entry.error = String(e).slice(0, 300);
+      failed++;
+    }
+    console.log('navmenu tree:', entry.status, JSON.stringify(entry.tree || {}), entry.assertions.filter((a) => !a.ok).map((a) => `${a.name} (${a.detail})`).join('; '));
     report.push(entry);
   }
 

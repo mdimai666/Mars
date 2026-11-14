@@ -1,0 +1,158 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NavMenuItem = Mars.Admin.SiteSpace.Pages.NavMenuViews.EditNavMenuPage.NavMenuItem
+
+<div class="nmt">
+    <div class="nmt__head">
+        <span class="nmt__title">Структура</span>
+        <span class="nmt__count">@_totalCount</span>
+        <div class="nmt__head-tools">
+            <button type="button" class="nmt__iconbtn" title="Развернуть всё" @onclick="ExpandAll">
+                <FluentIcon Value="@ExpandAllIcon" />
+            </button>
+            <button type="button" class="nmt__iconbtn" title="Свернуть всё" @onclick="CollapseAll">
+                <FluentIcon Value="@CollapseAllIcon" />
+            </button>
+        </div>
+    </div>
+
+    <div class="nmt__body" role="tree" aria-label="Структура меню">
+        @if (_rows.Count == 0)
+        {
+            <div class="nmt__empty">
+                <span>Меню пустое — добавьте первый пункт.</span>
+            </div>
+        }
+        @foreach (var row in _rows)
+        {
+            var item = row.Item;
+            <div class="@RowClass(row)" role="treeitem" aria-selected="@(SelectedItem == item ? "true" : "false")"
+                 tabindex="0" draggable="true"
+                 @ondragstart="e => StartDrag(item, e)" @ondragend="EndDrag"
+                 @onclick="() => Select(item)" @onkeydown="e => OnRowKey(e, item)">
+
+                @for (var i = 0; i < row.Depth; i++)
+                {
+                    <span class="nmt-row__guide" aria-hidden="true"></span>
+                }
+
+                <span class="nmt-row__grip" aria-hidden="true">
+                    <FluentIcon Value="@GripIcon" />
+                </span>
+
+                @if (row.HasChildren)
+                {
+                    <button type="button" class="nmt-row__twisty @(IsCollapsed(item) ? "" : "nmt-row__twisty--open")"
+                            aria-expanded="@(IsCollapsed(item) ? "false" : "true")"
+                            @onclick:stopPropagation="true" @onclick="() => ToggleCollapse(item)">
+                        <FluentIcon Value="@ChevronIcon" />
+                    </button>
+                }
+                else
+                {
+                    <span class="nmt-row__twisty nmt-row__twisty--leaf"></span>
+                }
+
+                <span class="nmt-row__icon" aria-hidden="true">
+                    @if (!item.IsDivider && !item.IsHeader && item.Icon is { Length: > 0 })
+                    {
+                        @if (item.IsFontIcon)
+                        {
+                            <i class="@item.Icon"></i>
+                        }
+                        else
+                        {
+                            <img src="@item.Icon" alt="" />
+                        }
+                    }
+                    else
+                    {
+                        <FluentIcon Value="@KindIcon(row)" />
+                    }
+                </span>
+
+                <div class="nmt-row__main">
+                    <div class="nmt-row__titleline">
+                        <span class="nmt-row__title">@TitleText(item)</span>
+                        @if (item.IsSystem)
+                        {
+                            <CloudyTag Text="system" Muted="true" />
+                        }
+                        @if (item.Disabled)
+                        {
+                            <CloudyTag Text="отключён" Tint="@CloudyTint.Disabled" />
+                        }
+                        @if (item.RolesInverse && item.Roles.Count > 0)
+                        {
+                            <span class="nmt-row__inverse" title="Не для ролей">≠</span>
+                        }
+                        @foreach (var role in item.Roles)
+                        {
+                            <CloudyTag Text="@role" />
+                        }
+                    </div>
+                    @if (!item.IsDivider && !item.IsHeader && !string.IsNullOrWhiteSpace(item.Url))
+                    {
+                        <div class="nmt-row__url">
+                            @item.Url
+                            @if (item.OpenInNewTab)
+                            {
+                                <span title="Открывать в новой вкладке">↗</span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="nmt-row__tools">
+                    <button type="button" class="nmt__iconbtn" title="Действия"
+                            @onclick:stopPropagation="true" @onclick="() => ToggleMenu(item)">
+                        <FluentIcon Value="@KebabIcon" />
+                    </button>
+                </div>
+
+                @if (_menuItem == item)
+                {
+                    <div class="nmt-menu" @onclick:stopPropagation="true">
+                        <button type="button" class="nmt-menu__item" @onclick="() => MenuCopy(item)">
+                            <FluentIcon Value="@CopyIcon" /> Копировать
+                        </button>
+                        <button type="button" class="nmt-menu__item" @onclick="() => MenuAddChild(item)">
+                            <FluentIcon Value="@AddIcon" /> Добавить дочерний
+                        </button>
+                        @if (item.IsSystem)
+                        {
+                            <button type="button" class="nmt-menu__item" @onclick="() => MenuToggle(item)">
+                                <FluentIcon Value="@(item.Disabled ? EyeIcon : EyeOffIcon)" />
+                                @(item.Disabled ? "Включить" : "Отключить")
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="nmt-menu__item nmt-menu__item--danger" @onclick="() => MenuDelete(item)">
+                                <FluentIcon Value="@DeleteIcon" /> Удалить
+                            </button>
+                        }
+                    </div>
+                }
+
+                @if (_dragItem is not null && CanDrop(item))
+                {
+                    <div class="nmt-row__drop nmt-row__drop--before"
+                         @ondragover:preventDefault="true" @ondragenter="() => SetDrop(item, DropZone.Before)"
+                         @ondrop="() => Drop(item, DropZone.Before)"></div>
+                    <div class="nmt-row__drop nmt-row__drop--inside"
+                         @ondragover:preventDefault="true" @ondragenter="() => SetDrop(item, DropZone.Inside)"
+                         @ondrop="() => Drop(item, DropZone.Inside)"></div>
+                    <div class="nmt-row__drop nmt-row__drop--after"
+                         @ondragover:preventDefault="true" @ondragenter="() => SetDrop(item, DropZone.After)"
+                         @ondrop="() => Drop(item, DropZone.After)"></div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="nmt__foot">
+        <button type="button" class="nmt__add" @onclick="() => OnAdd.InvokeAsync()">
+            <FluentIcon Value="@AddIcon" /> Новый пункт
+        </button>
+    </div>
+</div>

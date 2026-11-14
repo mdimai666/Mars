@@ -34,6 +34,12 @@
     "/dev/Users": [
       { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } }
     ],
+    "/dev/EditNavMenu/*": [
+      { "name": "navmenu tree rendered", "selector": ".nmt", "exists": { "min": 1 } },
+      { "name": "navmenu rows rendered", "selector": ".nmt-row", "exists": { "min": 1 } },
+      { "name": "navmenu rows not collapsed/overlapping", "selector": ".nmt-row", "box": { "minHeight": 32, "noOverlap": [".nmt-row", ".nmt-props"] } },
+      { "name": "navmenu props panel rendered", "selector": ".nmt-props", "exists": { "min": 1 } }
+    ],
     "/dev/Profile": [
       { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
       { "name": "profile hero rendered", "selector": ".cloudy-profile-hero", "exists": { "min": 1 } },

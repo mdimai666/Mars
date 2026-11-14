@@ -18,9 +18,7 @@ public partial class EditNavMenuPage
     [Parameter] public Guid ID { get; set; }
     StandardEditContainer<NavMenu> f = default!;
 
-    NavMenuItem? _selMenu => _selNode?.Node;
-
-    DTreeNode<NavMenuItem>? _selNode;
+    NavMenuItem? _selMenu;
     IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
     NavMenu? _loadedMenu;
@@ -52,12 +50,6 @@ public partial class EditNavMenuPage
         _importDialogShown = await SyncDialogAsync(_importDialog, visibleImportModal, _importDialogShown);
     }
 
-    void OnClickItem(DTreeNode<NavMenuItem> node)
-    {
-        if (_selNode == node) _selNode = null;
-        else _selNode = node;
-    }
-
     void OnToggleMenuItem(NavMenuItem item)
     {
         item.Disabled = !item.Disabled;
@@ -73,7 +65,7 @@ public partial class EditNavMenuPage
             return;
         }
 
-        if (_selMenu == item) _selNode = null;
+        if (_selMenu == item) _selMenu = null;
 
         var toDelete = new List<NavMenuItem> { item };
         CollectChildren(item, toDelete);
@@ -121,7 +113,7 @@ public partial class EditNavMenuPage
         _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
     }
 
-    void DropdownMenu_Copy(NavMenuItem item)
+    void CopyMenuItem(NavMenuItem item)
     {
         var copy = NavMenuItem.Copy(item);
         var list = f.Model.MenuItems.ToList();
@@ -136,6 +128,17 @@ public partial class EditNavMenuPage
         list.Add(new()
         {
             Title = $"Меню ({list.Count})"
+        });
+        f.Model.MenuItems = list;
+    }
+
+    void AddChildMenuItem(NavMenuItem parent)
+    {
+        var list = f.Model.MenuItems.ToList();
+        list.Add(new()
+        {
+            Title = $"Меню ({list.Count})",
+            ParentId = parent.Id
         });
         f.Model.MenuItems = list;
     }

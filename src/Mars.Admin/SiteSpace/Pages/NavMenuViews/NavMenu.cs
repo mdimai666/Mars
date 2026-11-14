@@ -10,7 +10,7 @@ namespace Mars.Admin.SiteSpace.Pages.NavMenuViews;
 
 public partial class EditNavMenuPage
 {
-    internal class NavMenu : IBasicEntity
+    public class NavMenu : IBasicEntity
     {
         [Display(Name = nameof(AppRes.Id), ResourceType = typeof(AppRes))]
         public Guid Id { get; set; }

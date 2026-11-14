@@ -5,6 +5,7 @@
     "/dev/Post": { "controls": [".cloudy-browser", ".fluent-data-grid"] },
     "/dev/Post/*": { "controls": [".cloudy-browser", ".fluent-data-grid"] },
     "/dev/Users": { "controls": [".cloudy-browser"] },
+    "/dev/EditNavMenu/*": { "controls": [".nmt", ".nmt__add", ".nmt-props"] },
     "/dev/Profile": { "controls": [".cloudy-subnav", ".cloudy-profile-hero"] },
     "/dev/Settings": { "controls": [".cloudy-acrylic"] },
     "/dev/tech": { "controls": [".cloudy-tech-rail"] },

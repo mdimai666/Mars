@@ -711,6 +711,14 @@ DLL (5.0.1) / css-бандла, т.е. надёжно, но без DOM-пров�
     Фрагменты: `ChildContent/RowDetails/EmptyContent/LoadingContent/ErrorContent` —
     при использовании именованных колонки ОБЯЗАТЕЛЬНО заворачивать в явный `<ChildContent>`
     (RZ9996). Базовые th/td: `border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2)`.
+23. **Иконки — отдельный пакет `Microsoft.FluentUI.AspNetCore.Components.Icons`**
+    (dll'ы Regular/Filled/Light/Color), набор имён ОТЛИЧАЕТСЯ между версиями: в 5.0.1 нет
+    `Size16.Minus`/`Size16.TextHeader2` (есть `Subtract`/`TextBold`), `ReOrderDotsVertical`
+    есть. БД иконок fluent-ui MCP новее пакета репо — имена проверять по метаданным
+    пакета (TypeDef nested-типы `Size16` в Icons.Regular.dll), а не по MCP/докам сайта.
+24. **JS-isolation в WASM: относительный specifier `"import"` резолвится от `_framework`**,
+    не от base href (`"js/x.js"` → `Failed to resolve module specifier`). Передавать
+    абсолютный URL: `Nav.BaseUri + "js/x.js"` (паттерн NavMenuTree, 2026-11-14).
 
 ---
 

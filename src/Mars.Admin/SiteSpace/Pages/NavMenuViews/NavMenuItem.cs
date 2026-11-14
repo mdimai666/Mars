@@ -6,7 +6,7 @@ namespace Mars.Admin.SiteSpace.Pages.NavMenuViews;
 
 public partial class EditNavMenuPage
 {
-    internal class NavMenuItem
+    public class NavMenuItem
     {
         [Display(Name = "#")]
         public Guid Id { get; set; } = Guid.NewGuid();

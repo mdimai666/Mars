@@ -608,6 +608,15 @@ namespace Mars.Contracts.Resources {
                 return ResourceManager.GetString("feedbacks.total", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unread feedbacks.
+        /// </summary>
+        public static string feedbacks_unread {
+            get {
+                return ResourceManager.GetString("feedbacks.unread", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Female.

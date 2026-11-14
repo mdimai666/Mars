@@ -17,6 +17,11 @@ public interface IFeedbackServiceClient
     /// <exception cref="UserActionException"></exception>
     Task<Guid> Create(CreateFeedbackRequest request);
     Task<FeedbackDetailResponse> Update(UpdateFeedbackRequest request);
+
+    /// <summary>
+    /// Помечает обращение прочитанным (идемпотентно), возвращает обновлённое обращение.
+    /// </summary>
+    Task<FeedbackDetailResponse> MarkRead(Guid id);
     Task<ListDataResult<FeedbackSummaryResponse>> List(ListFeedbackQueryRequest filter);
     Task<PagingResult<FeedbackSummaryResponse>> ListTable(TableFeedbackQueryRequest filter);
     Task Delete(Guid id);

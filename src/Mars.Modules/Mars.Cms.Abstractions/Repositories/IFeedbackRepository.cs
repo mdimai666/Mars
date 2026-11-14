@@ -13,6 +13,12 @@ public interface IFeedbackRepository : IDisposable
     /// <exception cref="NotFoundException"/>
     Task Update(UpdateFeedbackQuery query, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Помечает обращение прочитанным. Возвращает true, если статус изменился.
+    /// </summary>
+    /// <exception cref="NotFoundException"/>
+    Task<bool> MarkRead(Guid id, CancellationToken cancellationToken);
+
     /// <exception cref="NotFoundException"/>
     Task Delete(Guid id, CancellationToken cancellationToken);
 

@@ -67,6 +67,11 @@ namespace Mars.Data.PostgreSQL.Migrations
                         .HasColumnName("filled_username")
                         .HasComment("Заполненное имя");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_read")
+                        .HasComment("Прочитано");
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("modified_at")

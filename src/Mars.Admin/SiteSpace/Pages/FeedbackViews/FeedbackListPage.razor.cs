@@ -14,10 +14,13 @@ public partial class FeedbackListPage
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] AdminJs _appjs { get; set; } = default!;
 
+    static readonly string[] ReadFilterOptions = ["Unread"];
+
     FluentDataGrid<FeedbackSummaryResponse> _grid = default!;
     GridItemsProvider<FeedbackSummaryResponse> _dataProvider = default!;
 
     string _searchText = "";
+    string? _readFilter;
     int? _total;
     IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
 
@@ -35,6 +38,7 @@ public partial class FeedbackListPage
             Take = take,
             Sort = sort ?? $"-{nameof(FeedbackSummaryResponse.CreatedAt)}",
             Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            IsRead = _readFilter is null ? null : false,
         });
 
         _total = data.TotalCount ?? data.Items.Count;
@@ -44,7 +48,7 @@ public partial class FeedbackListPage
 
     async Task LoadKpi()
     {
-        _kpi = await client.Kpi.Get([FeedbackKpiKeys.Total, FeedbackKpiKeys.NewThisWeek]);
+        _kpi = await client.Kpi.Get([FeedbackKpiKeys.Unread, FeedbackKpiKeys.NewThisWeek]);
     }
 
     string KpiLabel(string key)
@@ -61,6 +65,12 @@ public partial class FeedbackListPage
         RefreshGrid();
     }
 
+    void SetReadFilter(string? chip)
+    {
+        _readFilter = chip;
+        RefreshGrid();
+    }
+
     async Task OnRowClick(FluentDataGridRow<FeedbackSummaryResponse> row)
     {
         if (row.Item is null) return;
@@ -72,12 +82,20 @@ public partial class FeedbackListPage
             return;
         }
 
+        if (!detail.IsRead)
+        {
+            detail = await client.Feedback.MarkRead(row.Item.Id);
+        }
+
         await _dialogService.ShowDialogAsync<ViewFeedbackDialog>(new DialogOptions
         {
             Modal = true,
             Header = { CloseAction = { Visible = true } },
             Parameters = { ["Content"] = detail },
         });
+
+        RefreshGrid();
+        await LoadKpi();
     }
 
     public async Task Delete(Guid id)

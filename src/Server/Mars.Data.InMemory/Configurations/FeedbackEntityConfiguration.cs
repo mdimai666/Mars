@@ -22,5 +22,8 @@ public class FeedbackEntityConfiguration : IEntityTypeConfiguration<FeedbackEnti
         entity.Property(x => x.Phone).HasColumnType($"varchar({DefaultShortValueMaxLength})").HasMaxLength(DefaultShortValueMaxLength);
         entity.Property(x => x.Email).HasColumnType($"varchar({DefaultShortValueMaxLength})").HasMaxLength(DefaultShortValueMaxLength);
 
+        // Без HasDefaultValue: новые обращения всегда непрочитанные (CLR default false).
+        entity.Property(x => x.IsRead);
+
     }
 }

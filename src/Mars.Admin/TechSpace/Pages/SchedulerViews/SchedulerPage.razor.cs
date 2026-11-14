@@ -33,9 +33,6 @@ public partial class SchedulerPage
         _ = Load();
     }
 
-    private ButtonAppearance PageButtonAppearance(int pageIndex)
-        => pagination.CurrentPageIndex == pageIndex ? ButtonAppearance.Primary : ButtonAppearance.Default;
-
     private string? AriaCurrentValue(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;
 
@@ -57,16 +54,6 @@ public partial class SchedulerPage
     private void RefreshClick()
     {
         _ = Load();
-    }
-
-    private void DeleteItem(SchedulerJobResponse item)
-    {
-
-    }
-
-    private void EditItem(SchedulerJobResponse item)
-    {
-
     }
 
     private async void PlayItem(SchedulerJobResponse item)

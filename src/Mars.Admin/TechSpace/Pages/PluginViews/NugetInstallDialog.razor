@@ -5,7 +5,7 @@
 
 <FluentDialogBody Class="text-start">
     <TitleTemplate>
-        <FluentText Size="TextSize.Size500">Установка плагина из NuGet</FluentText>
+        <CloudyDialogHead Title="Install from NuGet" />
     </TitleTemplate>
     <ChildContent>
         @if (busy)
@@ -16,9 +16,9 @@
         {
             <div class="vstack gap-3 p-3" style="width: 420px;">
                 <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
-                <FluentTextInput Label="Версия (необязательно)" Placeholder="оставьте пустым для последней" @bind-Value="version" />
+                <FluentTextInput Label="Version (optional)" Placeholder="leave empty for latest" @bind-Value="version" />
                 <FluentText Size="TextSize.Size300" Color="Color.Default">
-                    Плагин будет установлен в data/plugins и активируется после рестарта сервера.
+                    The plugin will be installed to data/plugins and activated after a server restart.
                 </FluentText>
 
                 @if (successResult)
@@ -43,8 +43,8 @@
         }
         else if (!successResult)
         {
-            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="InstallAsync" Disabled="string.IsNullOrWhiteSpace(packageId)">Установить</FluentButton>
-            <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="InstallAsync" Disabled="string.IsNullOrWhiteSpace(packageId)">Install</FluentButton>
+            <FluentButton OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
         }
         else
         {

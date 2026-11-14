@@ -1,76 +1,88 @@
 @page "/PostCategory"
 @page "/PostCategory/{POSTTYPE}"
 @using Mars.Admin.SiteSpace.Pages.PostTypeViews
+@using Mars.Cms.Contracts.PostCategories
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
 <div class="flex-fill d-flex flex-column">
-    @if (postType is not null)
-    {
-        <div class="container mb-3">
-            <NavbarEditPostType ID="postType.Id" />
-        </div>
-    }
+    <div class="container mb-3">
+        <NavbarEditPostType ID="postType.Id" />
+    </div>
 
-    <header class="cloudy-hero cloudy-hero--split">
-        <div>
-            <h1>@AppRes.Categories</h1>
-            <p>@postType?.Title</p>
-        </div>
-        <div class="d-flex align-items-start">
-            <XActionsDropDown ContextPart="@postType?.TypeName" />
-        </div>
-    </header>
+    <CloudyPageHead Title="@postType.Title" Subtitle="Organize posts into hierarchical categories." KpiCols="1">
+        <Kpis>
+            <CloudyKpi Label="@KpiLabel(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                       Value="@KpiValue(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                       Icon="bi-folder2-open" />
+        </Kpis>
+    </CloudyPageHead>
 
-    <section class="cloudy-acrylic">
-        <div class="cloudy-acrylic__body">
-            @if (postType is null)
-            {
-                <SharedContentNoRecords />
-            }
-            else
-            {
-                <div class="row row-cols-lg-2 gx-5">
-                    <div class="col">
-                        <ManagePostCategoryView @ref=_managePostCategoryView
-                                                PostType=@postType
-                                                OnClickItem="OnClickItem"
-                                                OnClickCreate="OnClickCreate"
-                                                OnDeleteItem="OnDeleteItem" />
-                    </div>
-                    <div class="col">
-                        @if (showEditForm)
-                        {
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-end">
-                                        <FluentButton Appearance="ButtonAppearance.Default" OnClick="OnClickCancel">
-                                            @AppRes.Cancel
-                                        </FluentButton>
-                                    </div>
-                                    <EditPostCategoryView ID="_selId"
-                                                          @ref="_editPostForm"
-                                                          PostTypeName="@postType.TypeName"
-                                                          PostCategoryTypeName="default"
-                                                          AfterSave="AfterSave"
-                                                          AfterDelete="AfterDelete" />
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="card text-center opacity-50 ">
-                                <div class="card-body">
-                                    <h4 class="card-title my-2 fw-normal">
-                                        Выберите для редактирования
-                                    </h4>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    </section>
+    <CloudyBrowser Scrollable HideActionsButton="true">
+        <HeadLeft>
+            <CloudySearchBox Placeholder="Search categories…" ValueChanged="OnSearchChanged" />
+        </HeadLeft>
+        <HeadRight>
+            <button type="button" class="cloudy-icon-btn" title="Обновить" @onclick="Refresh">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <XActionsDropDown ContextPart="@postType.TypeName" />
+            <a class="cloudy-btn-primary" href="@urlEditPage/@postType.TypeName">@AppRes.Create</a>
+        </HeadRight>
+
+        <ChildContent>
+            <FluentDataGrid TGridItem="PostCategoryListItemResponse"
+                            ItemsProvider="_dataProvider"
+                            @ref="_grid"
+                            ItemSize="67"
+                            Virtualize
+                            GridTemplateColumns="minmax(0,3fr) minmax(0,2fr) 172px 56px"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                            OverscanCount="10"
+                            Class="cloudy-grid">
+                <ChildContent>
+                    <TemplateColumn Title="@AppRes.Title"
+                                    SortBy="@(GridSort<PostCategoryListItemResponse>.ByAscending(f => f.SlugPath))"
+                                    InitialSortDirection="DataGridSortDirection.Ascending"
+                                    IsDefaultSortColumn="true"
+                                    Sortable="true">
+                        @* отступ иерархии: (LevelsCount-1)*20, как в старом гриде — сохраняет порядок дерева *@
+                        <div class="cloudy-stack" style="padding-left:@(IndentPx(context))px">
+                            <a class="cloudy-stack__title" href="@urlEditPage/@postType.TypeName/@context.Id" title="@context.Title">@context.Title</a>
+                            <span class="cloudy-stack__sub" title="@context.SlugPath">@context.SlugPath</span>
+                        </div>
+                    </TemplateColumn>
+                    <TemplateColumn Title="@AppRes.Tags">
+                        <div class="cloudy-tags">
+                            @foreach (var tag in context.Tags)
+                            {
+                                <CloudyTag Text="@tag" Tint="@tag.StableTint()" />
+                            }
+                        </div>
+                    </TemplateColumn>
+                    <TemplateColumn Title="@AppRes.CreatedAt"
+                                    SortBy="@(GridSort<PostCategoryListItemResponse>.ByDescending(f => f.CreatedAt))"
+                                    Sortable="true"
+                                    Align="DataGridCellAlignment.End">
+                        <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
+                    </TemplateColumn>
+                    <TemplateColumn Title="@AppRes.Actions" Align="DataGridCellAlignment.End">
+                        <div class="cloudy-row-actions">
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </DFluentDeleteButton>
+                        </div>
+                    </TemplateColumn>
+                </ChildContent>
+                <EmptyContent>
+                    <p class="cloudy-empty">No categories match your search.</p>
+                </EmptyContent>
+            </FluentDataGrid>
+        </ChildContent>
+
+        <Foot>
+            <TotalResultsFound TotalCount="@_total" />
+        </Foot>
+    </CloudyBrowser>
 </div>

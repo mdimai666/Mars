@@ -26,10 +26,15 @@
       { "name": "icon-only row button square", "selector": ".fluent-data-grid td fluent-button:has(> svg:only-child)", "box": { "maxWidth": 48 }, "optional": true }
     ],
     "/dev/PostCategory": [
-      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid rendered", "selector": "table.cloudy-grid.fluent-data-grid", "exists": { "min": 1 } }
     ],
     "/dev/PostCategory/*": [
-      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid rendered", "selector": "table.cloudy-grid.fluent-data-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/EditPostCategory/*": [
+      { "name": "edit container rendered", "selector": ".edit-container", "exists": { "min": 1 } }
     ],
     "/dev/Users": [
       { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } }
@@ -74,11 +79,54 @@
     "/dev/tech/logs": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
     ],
+    "/dev/tech": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "hub hero rendered", "selector": ".tech-hub__hero h1", "exists": { "min": 1 } },
+      { "name": "hub cards rendered", "selector": ".tech-hub__card", "exists": { "min": 17 } },
+      { "name": "no dead nodes link", "absent": ".tech-hub__card[href='/dev/tech/nodes']" }
+    ],
+    "/dev/tech/models": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "models hero rendered", "selector": ".models-page__hero h1", "exists": { "min": 1 } },
+      { "name": "model cards rendered", "selector": ".models-page__card", "exists": { "min": 5 } }
+    ],
+    "/dev/tech/models/classmodels": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "classmodels hero rendered", "selector": ".classmodels-page__hero", "exists": { "min": 1 } },
+      { "name": "model masonry cards rendered", "selector": ".classmodels-page__card", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/components": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "components hero rendered", "selector": ".components-page__hero", "exists": { "min": 1 } },
+      { "name": "assembly groups rendered", "selector": ".components-page__group", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/playbooks": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "playbooks hero rendered", "selector": ".playbooks-page__hero", "exists": { "min": 1 } },
+      { "name": "editor panel rendered", "selector": ".playbooks-page__panel", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/scheduler": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "scheduler hero rendered", "selector": ".scheduler-page__hero", "exists": { "min": 1 } },
+      { "name": "jobs panel rendered", "selector": ".scheduler-page__panel", "exists": { "min": 1 } },
+      { "name": "jobs grid rendered", "selector": ".scheduler-page__panel .fluent-data-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/styledesigner": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "styledesigner hero rendered", "selector": ".styledesigner-page__hero", "exists": { "min": 1 } },
+      { "name": "workspace rendered", "selector": ".styledesigner-page__workspace", "exists": { "min": 1 } }
+    ],
     "/dev/tech/datasource": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
       { "name": "datasource hero rendered", "selector": ".datasource-page__title", "exists": { "min": 1 } },
       { "name": "source switcher rendered", "selector": ".datasource-page__source select", "exists": { "min": 1 } },
       { "name": "workspace rendered", "selector": ".datasource-page__workspace .ds-workspace", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/datasource/config": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "config hero rendered", "selector": ".ds-config-page__title", "exists": { "min": 1 } },
+      { "name": "back link rendered", "selector": ".ds-config-page__action[href='/dev/tech/datasource']", "exists": { "min": 1 } },
+      { "name": "config panel rendered", "selector": ".ds-config-page__panel .EditOptionForm", "exists": { "min": 1 } }
     ],
     "/dev/tech/frontend": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },

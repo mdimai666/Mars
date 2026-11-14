@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Interfaces;
-using Mars.Admin.SiteSpace.Pages.PluginViews;
 using Mars.Plugin.Contracts.Catalog;
 using Mars.Plugin.Contracts.Plugins;
 using Mars.WebApiClient.Interfaces;

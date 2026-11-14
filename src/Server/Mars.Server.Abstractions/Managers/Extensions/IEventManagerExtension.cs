@@ -93,6 +93,7 @@ public static class EventManagerExtension
     public static string FeedbackAdd(this EventManagerDefaults defaults) => $"entity/feedback/add";
     public static string FeedbackUpdate(this EventManagerDefaults defaults) => $"entity/feedback/update";
     public static string FeedbackDelete(this EventManagerDefaults defaults) => $"entity/feedback/delete";
+    public static string FeedbackRead(this EventManagerDefaults defaults) => $"entity/feedback/read";
 
     public static string UserAdd(this EventManagerDefaults defaults) => $"entity/user/add";
     public static string UserUpdate(this EventManagerDefaults defaults) => $"entity/user/update";

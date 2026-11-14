@@ -1,21 +1,84 @@
 @page "/EditPostCategory/{POSTTYPE}"
 @page "/EditPostCategory/{POSTTYPE}/{ID:guid}"
 
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Core.Features
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
 
 @attribute [Authorize(Roles = "Admin")]
+@inject IMarsWebApiClient client
 
 <ContentWrapper>
+    <StandardEditContainer ID=@ID
+                           TModel=PostCategoryEditModel
+                           TitleText="@AppRes.PostCategory"
+                           GetAction="@(()=>PostCategoryEditModel.GetAction(client, ID, CategoryTypeName, POSTTYPE))"
+                           SaveAction="@((s,create)=>PostCategoryEditModel.SaveAction(client, s, create))"
+                           DeleteAction="@(s=>PostCategoryEditModel.DeleteAction(client, s))"
+                           BeforeSave="OnBeforeSave"
+                           CanCreate=false
+                           @ref=f>
+        <SectionSubtitle>
+            @context.Slug
+        </SectionSubtitle>
+        <ChildContent>
+            <div class="vstack gap-3">
 
-    <EditPostCategoryView ID=@ID PostCategoryTypeName=@CategoryTypeName PostTypeName="@POSTTYPE" />
-    <div class="spacer-2"></div>
+                <div class="vstack">
+                    <FluentTextInput @bind-Value=@context.Title
+                                     @bind-Value:after="OnChangeTitle"
+                                     Label="@AppRes.Title"
+                                     Appearance="@TextInputAppearance.FilledDarker"
+                                     Required
+                                     Style="zoom:1.4" />
+                    <ValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" />
+                    <ValidationMessage For="@(() => context.Slug)" />
+                </div>
 
+                <FormItem2 For="@(() => context.ParentId)">
+                    <SelectParentCategoryDropDown @bind-Value="context.ParentId" OriginalId="context.Id" PostType="@POSTTYPE" />
+                </FormItem2>
+
+                <FormItem2 For="@(() => context.Tags)">
+                    <InputTags2 @bind-Value=context.Tags />
+                </FormItem2>
+
+                @if (context.Form is not null)
+                {
+                    <MetaValuesForm @ref="metaValueForm"
+                                    Definition="context.Form"
+                                    MetaValues="context.MetaValues"
+                                    MetaFields="context.PostCategoryType.MetaFields" />
+                }
+
+            </div>
+        </ChildContent>
+    </StandardEditContainer>
 </ContentWrapper>
 
 @code {
-
     [Parameter] public Guid ID { get; set; }
     [Parameter] public string POSTTYPE { get; set; } = "default";
 
     [Parameter, SupplyParameterFromQuery] public string CategoryTypeName { get; set; } = "default";
+
+    StandardEditContainer<PostCategoryEditModel> f = default!;
+    MetaValuesForm? metaValueForm;
+
+    async Task OnBeforeSave(PostCategoryEditModel model)
+    {
+        if (metaValueForm is not null) await metaValueForm.CommitAllAsync();
+    }
+
+    void OnChangeTitle()
+    {
+        if (string.IsNullOrWhiteSpace(f.Model.Slug) || Guid.TryParse(f.Model.Slug, out Guid _))
+        {
+            f.Model.Slug = TextTool.TranslateToPostSlug(f.Model.Title);
+        }
+    }
 }

@@ -59,14 +59,24 @@
     FormBlockEditor, PostStatusesEditor, SystemFieldSettingsPanel,
     RegenerateGeneratedMetaValuesForm).
   - `TechSpace/Pages/` — tech-зона: layout задаёт `TechSpace/_Imports.razor`
-    (`@layout CloudyTechLayout`). Моки Database/Marketplace/Plugins +
-    реальная `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`) +
-    реальная `AutomationPage` (`/dev/tech/automation` — нод-редактор `NodeEditor1`;
-    2026-11-05: заменила мок TechAutomationPage, `NodeRedPage` `/tech/nodered` удалена) +
-    бывшие Builder-домены (AppsViews, ClassModelViews, ComponentsViews,
-    DataSourceViews, DockerViews, FormViews, FrontEditorViews, NodeViews,
-    PlaybookViews, SchedulerViews, StyleDesignerViews, StyleGalleryViews,
-    DevTestPage). Маршруты унифицированы под `/tech/*` (2026-10-14):
+    (`@layout CloudyTechLayout`). Все страницы живые (моков не осталось):
+    `TechLogsPage` (`/dev/tech/logs`, данные `client.AppDebug.GetLogs`),
+    `AutomationPage` (`/dev/tech/automation` — нод-редактор `NodeEditor1`;
+    2026-11-05: заменила мок TechAutomationPage, `NodeRedPage` `/tech/nodered` удалена),
+    `TechPluginsPage`/`TechMarketplacePage` (PluginViews, живые данные 2026-11-12;
+    диалоги NugetInstallDialog/ZipUploadDialog/MarketplacePluginDialog там же,
+    на CloudyDialogHead, интерфейс английский), `FrontsPage`/`FrontEditorPage`
+    (FrontEditorViews, 2026-11-12), `DatasourcePage` (универсальный workbench
+    `/tech/datasource/{Slug?}`, 2026-11-14) + `DatasourceEditConfigPage`
+    (`/tech/datasource/config`, BEM ds-config-page), тех-хаб `BuilderAppsPage`
+    (`/tech`, BEM tech-hub), `BuilderModelsPage`/`ClassModelListPage`/
+    `ViewComponentsPage`/`Playbooks`/`SchedulerPage`/`StyleDesignerPage`
+    (рестайл CloudyTech 2026-11-14), StyleGalleryViews/DevTestPage (дев-утилиты).
+    Docker-страница вынесена в плагин `Mars.DockerPlugin` (отдельный репо;
+    пункт рельса условный по наличию `Mars.DockerPlugin.Front`).
+    `NodesPage` (`/tech/nodes`, заглушка) удалена 2026-11-14 — ноды в Automation.
+    `/tech/forms` — осиротевшее демо FluentSortableList (не билдер форм), ссылок нет.
+    Маршруты унифицированы под `/tech/*` (2026-10-14):
     `/builder/`→`/tech` (Overview), `/builder/models(/classmodels)`→`/tech/models(/classmodels)`,
     `/builder/com/list`→`/tech/components`, `/datasource*`→`/tech/datasource*`,
     `/builder/docker`→`/tech/docker`, `/nodered`→`/tech/nodered`, `/Nodes`→`/tech/nodes`,
@@ -545,9 +555,67 @@ side-карточками.
   расширение реестра, см. рецепт KPI); карточка Categories рендерится только при включённой
   фиче Category; подписи — из AppRes через `L[Label]` (как UsersPage). Тесты —
   `GetKpiTests` (Mars.WebApiClient.Integration.Tests, 4 passed).
-- Дальше: Feedback — статус «прочитан/непрочитан» (поле на сущности + отметка при просмотре)
-  и замена KPI `feedbacks.total` («всего обращений») на НЕПРОЧИТАННЫЕ (задача пользователя
-  2026-10-07); перенос Categories на list-паттерны (Posts —done 2026-10-30);
-  responsive-скрытие колонок DataGrid (не перенесено); остальные диалоги
-  (PasskeysPage, PluginViews) — на `CloudyDialogHead`/скин по мере правки страниц;
-  Nodes — ПОСЛЕДНИЙ шаг.
+- 2026-11-04…14 (до этого раунда, уже в ветке): self-profile страницы (/Profile,
+  /Profile/Edit, ApiKeys/Passkeys суброуты) + read-first EditUserPage; About/аватар;
+  Automation = NodeEditor1 с inline-панелью ноды; FrontsPage/FrontEditorPage
+  (CloudyTech, браузерный chrome превью, два режима); TechPluginsPage и
+  TechMarketplacePage на живых данных (старые /Plugins и /marketplace удалены);
+  EditNavMenuPage — дерево NavMenuTree с drag&drop + sticky-панель свойств;
+  DatasourcePage — универсальный workbench `/tech/datasource/{Slug?}` (старые
+  хаб/query/actions и мок /tech/database удалены); Docker-модуль вынесен в плагин.
+- 2026-11-14 (финальный раунд перед merge, объём подтверждён пользователем):
+  - Categories: ManagePostCategoryPage на DataGrid-паттерне (CloudyPageHead + 1 KPI
+    `postcategories.total:{type}`, CloudyBrowser Scrollable, cloudy-grid, иерархия
+    отступом `(LevelsCount-1)*20` в Title-ячейке, дефолт-сортировка SlugPath asc —
+    порядок дерева). ManagePostCategoryView поглощён в страницу. EditPostCategoryPage
+    переведена на StandardEditContainer (была на старом StandardEditForm1 — НЕ на
+    шелле, вопреки ожиданию), EditPostCategoryView поглощён; заодно фикс:
+    SelectParentCategoryDropDown получал захардкоженный PostType="post" — теперь
+    реальный тип из маршрута.
+  - Feedback read/unread: `FeedbackEntity.IsRead` + миграция AddFeedbackIsRead
+    (backfill старых строк DEFAULT true, затем DROP DEFAULT; HasDefaultValue в модели
+    НЕТ — иначе EF опустил бы CLR-default false и новые строки стали бы true).
+    `POST api/Feedback/{id}/read` (идемпотентен, событие `entity/feedback/read` только
+    при реальном изменении), фильтр `IsRead` в List-запросе, KPI `feedbacks.unread`
+    (FeedbacksUnreadKpiHandler; Total-хендлер оставлен — ключ потребляет GetKpiTests).
+    UI: чипы All/Unread, точка + утолщённый заголовок непрочитанных, MarkRead при
+    открытии диалога, refresh грида и KPI после закрытия. Excel-колонка IsRead не
+    добавлялась (бинарный шаблон). Тесты: tests/Mars.Server.Tests/Feedbacks (15).
+  - Диалоги плагинов: NugetInstallDialog/ZipUploadDialog перенесены из
+    SiteSpace/Pages/PluginViews в TechSpace/Pages/PluginViews (папка-источник удалена),
+    все три (+ MarketplacePluginDialog) на CloudyDialogHead, интерфейс английский.
+  - Tech-хаб `/tech` (BuilderAppsPage) → BEM tech-hub: hero + 17 карточек в 4 группах
+    (Main/Manage/System/Dev utilities), английский, tint на группу (purple/blue/teal/green);
+    Users в Manage (добавлен 2026-11-15 по запросу). Entities `/tech/models` → 5 доменов:
+    PostType, PostCategoryType, Users, UserType, ClassModels. Мёртвые ссылки убраны
+    (Nodes, Forms, STO Types — страницы не существует). Media из рельса убран
+    (правка пользователя 2026-11-15), в хабе остался.
+  - BuilderModelsPage/ClassModelListPage/ViewComponentsPage/Playbooks → BEM
+    models-page/classmodels-page/components-page/playbooks-page на --ct-*;
+    битые относительные href models-хаба заменены абсолютными /dev/…; мёртвый
+    плейсхолдер «[actions]» убран; bootstrap-аккордеон classmodels → нативный тоггл.
+  - SchedulerPage/StyleDesignerPage → BEM scheduler-page/styledesigner-page на --ct-*;
+    механика превью StyleDesigner сохранена (JS-токены inline на внешнем div, геометрия
+    на внутреннем); панели без overflow:hidden/backdrop-filter — иначе клиппинг
+    fixed-оверлеев FluentSelect/Autocomplete/DatePicker из StyleSampleForm. Скид грида
+    scheduler локальный (cloudy-grid из cloudy-list.less сидит на --cld-* и в tech-зоне
+    не работает — кандидат на общий tech-паттерн, если таких страниц станет больше).
+    XActionsDropDown явно возвращён в hero обеих страниц (ContentWrapper рендерил его
+    через GeneralSectionActions; на Fronts/Datasource/Logs он пропал молча — открытый
+    вопрос XActions в cloudy).
+  - NodesPage (/tech/nodes, заглушка «123123») удалена; маршрут убран из crawl.js.
+  - DatasourceEditConfigPage → BEM ds-config-page (hero + Back to workbench + панель).
+  - Моки Dashboard/Legion оставлены (решение пользователя), Public-зона
+    (Login/Register/Logout/Privacy) — редизайн отложен отдельно.
+  - Проверка: dotnet build Mars.slnx — 0 ошибок; Mars.Server.Tests 490/521
+    (31 падение — известный регресс xunit.v3 4.0.2 xUnit1024 в TemplateEngines);
+    Mars.Admin.Framework.Tests 50/50; Mars.Excel.Tests 3/3; assertions харнесса
+    обновлены (PostCategory, EditPostCategory, tech-хаб, models/classmodels/components/
+    playbooks/scheduler/styledesigner, datasource/config). Версия 0.8.4-alpha.60.
+- Дальше: responsive-скрытие колонок DataGrid (не перенесено; на 390px грид шире
+  шелла — FeedbackList/Users, системное, mobile-дефекты отложены); XActions в cloudy —
+  место не определено (дропдаун в hero Posts закомментирован, на Scheduler/StyleDesigner
+  возвращён в hero); моки Dashboard/Legion — оживить или убрать; Public-зона —
+  отдельный редизайн; tech-вариант cloudy-grid скина — если появятся ещё tech-гриды.
+  Тосты IMessageService: дефект 2026-11-12 («не рендерятся») пользователем 2026-11-14
+  подтверждён как НЕактуальный — работают нормально.

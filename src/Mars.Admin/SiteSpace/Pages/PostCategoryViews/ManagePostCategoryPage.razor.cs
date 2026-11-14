@@ -1,72 +1,106 @@
-﻿using Mars.Cms.Contracts.PostCategories;
+﻿using Mars.Admin.Shared.Cloudy;
+using Mars.Cms.Contracts.PostCategories;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
+using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.SiteSpace.Pages.PostCategoryViews;
 
 public partial class ManagePostCategoryPage
 {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
     [Parameter]
     public string POSTTYPE { get; set; } = "post";
-
-    ManagePostCategoryView _managePostCategoryView = default!;
-    EditPostCategoryView _editPostForm = default!;
 
     PostTypeAdminPanelItemResponse postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
 
     public static string GetPageLink(string postType) => $"PostCategory/{postType}";
 
     string prevPostType = "";
-    Guid _selId;
-    bool showEditForm;
+    string urlEditPage = "/dev/EditPostCategory";
 
-    protected override void OnParametersSet()
+    //table
+    FluentDataGrid<PostCategoryListItemResponse> _grid = default!;
+    GridItemsProvider<PostCategoryListItemResponse> _dataProvider = default!;
+    string _searchText = "";
+    int? _total;
+
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
+
+    protected override void OnInitialized()
     {
-        if (string.IsNullOrEmpty(POSTTYPE) == false && prevPostType != POSTTYPE)
+        // loader читает актуальный postType в момент вызова — при смене типа
+        // провайдер не пересоздаётся, достаточно RefreshDataAsync
+        _dataProvider = CloudyGridProvider.Create<PostCategoryListItemResponse>(LoadCategories);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // на маршруте "/PostCategory" без сегмента POSTTYPE приходит пустой строкой — нормализуем к "post"
+        var typeName = string.IsNullOrEmpty(POSTTYPE) ? "post" : POSTTYPE;
+        if (prevPostType != typeName)
         {
-            prevPostType = POSTTYPE;
-            postType = Q.Site.PostTypes.FirstOrDefault(s => s.TypeName == POSTTYPE) ?? Q.Site.PostTypes.First(s => s.TypeName == "post");
+            prevPostType = typeName;
+            postType = Q.Site.PostTypes.FirstOrDefault(s => s.TypeName == typeName) ?? Q.Site.PostTypes.First(s => s.TypeName == "post");
+
+            await LoadKpi();
+            Refresh();
         }
     }
 
-    async Task OnClickItem(PostCategoryListItemResponse item)
+    async Task<ListDataResult<PostCategoryListItemResponse>> LoadCategories(int skip, int take, string? sort)
     {
-        _selId = item.Id;
-        showEditForm = true;
-        await Task.Delay(10);//await init form
-        _ = _editPostForm.Load();
+        var data = await client.PostCategory.ListForPostType(postType.TypeName, new()
+        {
+            Skip = skip,
+            Take = take,
+            // дефолт — SlugPath ascending: сохраняет порядок дерева категорий
+            Sort = sort ?? nameof(PostCategoryListItemResponse.SlugPath),
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
     }
 
-    async Task OnClickCreate()
+    async Task LoadKpi()
     {
-        _selId = Guid.Empty;
-        showEditForm = true;
-        await Task.Delay(10);//await init form
-        _ = _editPostForm.Load();
+        try
+        {
+            _kpi = await client.Kpi.Get([PostCategoryKpiKeys.TotalFor(postType.TypeName)]);
+        }
+        catch
+        {
+            // KPI справочные: список работает независимо от них
+        }
+        StateHasChanged();
     }
 
-    void OnDeleteItem(PostCategoryListItemResponse item)
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
+
+    /// <summary>Отступ иерархии в пикселях: (LevelsCount-1)*20</summary>
+    static int IndentPx(PostCategoryListItemResponse item) => (item.LevelsCount - 1) * 20;
+
+    void OnSearchChanged(string text)
     {
-        _selId = Guid.Empty;
-        showEditForm = false;
-        //_ = _editPostForm.Load();
+        _searchText = text;
+        Refresh();
     }
 
-    void OnClickCancel()
+    async Task Delete(Guid id)
     {
-        _selId = Guid.Empty;
-        showEditForm = false;
+        await client.PostCategory.Delete(id).SmartDelete();
+        Refresh();
+        await LoadKpi();
     }
 
-    void AfterSave()
-    {
-        _managePostCategoryView.Refresh();
-    }
-
-    void AfterDelete()
-    {
-        _selId = Guid.Empty;
-        showEditForm = false;
-        _managePostCategoryView.Refresh();
-    }
+    void Refresh() => _grid?.RefreshDataAsync();
 }

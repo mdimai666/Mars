@@ -63,6 +63,7 @@ public static class MainCms
 
         services.AddSingleton<IKpiHandler, FeedbacksTotalKpiHandler>();
         services.AddSingleton<IKpiHandler, FeedbacksNewThisWeekKpiHandler>();
+        services.AddSingleton<IKpiHandler, FeedbacksUnreadKpiHandler>();
         services.AddSingleton<IKpiHandler, PostTypesTotalKpiHandler>();
         services.AddSingleton<IKpiHandler, PostTypesComponentKpiHandler>();
         services.AddSingleton<IKpiHandler, MetaFieldsTotalKpiHandler>();

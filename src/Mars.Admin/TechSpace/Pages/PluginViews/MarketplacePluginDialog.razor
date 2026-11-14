@@ -15,16 +15,13 @@
             {
                 <i class="bi bi-plugin text-secondary" style="font-size:36px;"></i>
             }
-            <div class="vstack">
-                <div class="hstack gap-2">
-                    <FluentText Size="TextSize.Size500">@Content.DisplayName</FluentText>
-                    @if (Content.IsRecommended)
-                    {
-                        <FluentBadge Appearance="BadgeAppearance.Filled" Class="badge-accent">Рекомендован</FluentBadge>
-                    }
-                </div>
+            <CloudyDialogHead Title="@Content.DisplayName">
+                @if (Content.IsRecommended)
+                {
+                    <FluentBadge Appearance="BadgeAppearance.Filled" Class="badge-accent">Recommended</FluentBadge>
+                }
                 <span class="text-secondary">@Content.AuthorName</span>
-            </div>
+            </CloudyDialogHead>
         </div>
     </TitleTemplate>
     <ChildContent>
@@ -36,17 +33,17 @@
         {
             <div class="vstack gap-3 p-3" style="width: 680px; max-height: 70vh; overflow:auto;">
                 <div class="hstack gap-3 flex-wrap">
-                    <span class="text-secondary" title="Последняя версия">
+                    <span class="text-secondary" title="Latest version">
                         <i class="bi bi-tag"></i> @Content.LatestVersion
                     </span>
-                    <span class="text-secondary" title="Загрузки">
+                    <span class="text-secondary" title="Downloads">
                         <i class="bi bi-download"></i> @Content.TotalDownloads.ToString("N0")
                     </span>
-                    <span class="hstack gap-1" title="Рейтинг">
+                    <span class="hstack gap-1" title="Rating">
                         <FluentRatingDisplay Max="5" Value="@Content.AvgRating" Count="@Content.ReviewsCount"
                                               Style="zoom:0.5" Color="@RatingDisplayColor.Brand" />
                     </span>
-                    <span class="text-secondary" title="Совместимость с версиями Марса">
+                    <span class="text-secondary" title="Mars compatibility">
                         <i class="bi bi-puzzle"></i> @(CompatibilityText(Content))
                     </span>
                 </div>
@@ -69,24 +66,24 @@
                 <div class="hstack gap-3">
                     @if (!string.IsNullOrEmpty(Content.RepositoryUrl))
                     {
-                        <a href="@Content.RepositoryUrl" target="_blank"><i class="bi bi-github"></i> Репозиторий</a>
+                        <a href="@Content.RepositoryUrl" target="_blank"><i class="bi bi-github"></i> Repository</a>
                     }
                     @if (!string.IsNullOrEmpty(Content.HomepageUrl))
                     {
-                        <a href="@Content.HomepageUrl" target="_blank">Сайт</a>
+                        <a href="@Content.HomepageUrl" target="_blank">Website</a>
                     }
                     @if (!string.IsNullOrEmpty(Content.LicenseUrl))
                     {
-                        <a href="@Content.LicenseUrl" target="_blank">Лицензия</a>
+                        <a href="@Content.LicenseUrl" target="_blank">License</a>
                     }
                 </div>
 
                 <hr />
 
-                <h6 class="mb-0">Отзывы (@_reviewsTotal)</h6>
+                <h6 class="mb-0">Reviews (@_reviewsTotal)</h6>
                 @if (_reviews.Count == 0)
                 {
-                    <div class="text-secondary">Отзывов пока нет.</div>
+                    <div class="text-secondary">No reviews yet.</div>
                 }
                 else
                 {
@@ -107,14 +104,14 @@
                     }
                     @if (_reviews.Count < _reviewsTotal)
                     {
-                        <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="LoadMoreReviewsAsync">Показать ещё</FluentButton>
+                        <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="LoadMoreReviewsAsync">Show more</FluentButton>
                     }
                 }
 
                 @if (_installSuccess)
                 {
                     <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss="false">
-                        Плагин установлен. Изменения применятся после рестарта сервера.
+                        Plugin installed. Changes apply after a server restart.
                     </FluentMessageBar>
                 }
                 @if (_errorMessage is not null)
@@ -129,13 +126,13 @@
     <ActionTemplate>
         @if (_installed && !_hasUpdate)
         {
-            <FluentBadge Color="BadgeColor.Informative">Установлен</FluentBadge>
+            <FluentBadge Color="BadgeColor.Informative">Installed</FluentBadge>
             <FluentSpacer />
         }
         else if (!_busy)
         {
             <FluentButton Appearance="ButtonAppearance.Primary" Disabled="_installing" OnClick="InstallAsync">
-                @(_installing ? "Установка…" : (_installed ? "Обновить" : "Установить"))
+                @(_installing ? "Installing…" : (_installed ? "Update" : "Install"))
             </FluentButton>
         }
         <FluentButton OnClick="CloseAsync">@AppRes.Close</FluentButton>
@@ -231,10 +228,10 @@
     static string CompatibilityText(CatalogPluginDto plugin)
         => (plugin.MarsVersionMin, plugin.MarsVersionMax) switch
         {
-            (null, null) => "совместимость не указана",
-            (var min, null) => $"Марс {min}+",
-            (null, var max) => $"Марс до {max}",
-            (var min, var max) => $"Марс {min}–{max}",
+            (null, null) => "compatibility not specified",
+            (var min, null) => $"Mars {min}+",
+            (null, var max) => $"Mars up to {max}",
+            (var min, var max) => $"Mars {min}–{max}",
         };
 
     static bool IsNewer(string? installed, string? latest)

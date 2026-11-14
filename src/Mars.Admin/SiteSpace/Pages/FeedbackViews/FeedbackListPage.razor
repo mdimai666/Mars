@@ -8,7 +8,7 @@
 
 <CloudyPageHead Title="@AppRes.Feedbacks" Subtitle="Visitor messages and contact requests." KpiCols="2">
     <Kpis>
-        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.Total)" Value="@KpiValue(FeedbackKpiKeys.Total)" Icon="bi-chat-square-text" />
+        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.Unread)" Value="@KpiValue(FeedbackKpiKeys.Unread)" Icon="bi-envelope" />
         <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.NewThisWeek)" Value="@KpiValue(FeedbackKpiKeys.NewThisWeek)" Icon="bi-envelope-plus" />
     </Kpis>
 </CloudyPageHead>
@@ -16,6 +16,7 @@
 <CloudyBrowser Scrollable>
     <HeadLeft>
         <CloudySearchBox Placeholder="Search feedback…" ValueChanged="OnSearchChanged" />
+        <CloudyChips Items="ReadFilterOptions" Selected="_readFilter" SelectedChanged="SetReadFilter" />
     </HeadLeft>
     <HeadRight>
         <button type="button" class="cloudy-btn-primary" @onclick="DownloadExcel">
@@ -39,7 +40,13 @@
                 <TemplateColumn Title="@AppRes.Title" Sortable="true"
                                 SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Title))">
                     <div class="cloudy-stack">
-                        <span class="cloudy-stack__title" title="@context.Title">@context.Title</span>
+                        <span class="cloudy-stack__title @(context.IsRead ? "" : "feedback-title--unread")" title="@context.Title">
+                            @if (!context.IsRead)
+                            {
+                                <span class="feedback-unread-dot" title="Unread"></span>
+                            }
+                            @context.Title
+                        </span>
                         <span class="cloudy-stack__sub" title="@context.Excerpt">@context.Excerpt</span>
                     </div>
                 </TemplateColumn>

@@ -3,12 +3,11 @@
 @using Mars.Plugin.Contracts.Options
 @using Mars.Plugin.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
-@using System.Net.Http.Headers
 @inject IMarsWebApiClient client
 
 <FluentDialogBody Class="text-start">
     <TitleTemplate>
-        <FluentText Size="TextSize.Size500">Загрузка ZIP файлов</FluentText>
+        <CloudyDialogHead Title="Upload ZIP plugins" />
     </TitleTemplate>
     <ChildContent>
         @if (busy)
@@ -17,8 +16,8 @@
         }
         else if (!IsAllowUploadZipManually)
         {
-            <FluentMessageBar Title="Настройки" Intent="@MessageBarIntent.Warning" AllowDismiss=false>
-                Загрузка zip плагинов отключена
+            <FluentMessageBar Title="Settings" Intent="@MessageBarIntent.Warning" AllowDismiss=false>
+                ZIP plugin upload is disabled
             </FluentMessageBar>
         }
         else
@@ -37,7 +36,7 @@
                     @if (SuccessResult)
                     {
                         <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
-                            Плагины загружены (@resultResponse?.Items.Count)
+                            Plugins uploaded (@resultResponse?.Items.Count)
                         </FluentMessageBar>
                     }
                     @if (errorMessage is not null)
@@ -53,7 +52,7 @@
             @if (SelectedFiles?.Count > 0)
             {
                 <div class="mt-3">
-                    <strong>Выбранные файлы:</strong>
+                    <strong>Selected files:</strong>
                     <ul>
                         @foreach (var file in SelectedFiles)
                         {
@@ -72,8 +71,8 @@
         }
         else if (!SuccessResult)
         {
-            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="UploadAsync">Загрузить</FluentButton>
-            <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="UploadAsync">Upload</FluentButton>
+            <FluentButton OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
         }
         else if (SuccessResult)
         {
@@ -101,13 +100,13 @@
     bool IsAllowUploadZipManually;
     string? errorMessage;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        Load();
+        await base.OnInitializedAsync();
+        await Load();
     }
 
-    async void Load()
+    async Task Load()
     {
         busy = true;
         StateHasChanged();
@@ -151,7 +150,6 @@
             StateHasChanged();
 
             var result = await client.Plugin.UploadPlugin(files);
-            // _ = _messageService.Success($"Плагины успешно загружены и обработаны ({result.Items.Count}).", duration: 3000);
 
             progressActive = false;
             resultResponse = result;
@@ -178,10 +176,7 @@
     {
         var result = await dialogService.ShowDialogAsync<ZipUploadDialog>(new DialogOptions()
         {
-            //Height = "240px",
-            //Title = $"Updating the {DialogData.Name} sheet",
             Modal = true,
-            //Class = "DeletionConfirmationDialog" class not support
             Parameters = { ["Content"] = "" },
         });
 

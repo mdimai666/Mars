@@ -5,68 +5,74 @@
 @using Mars.Cms.Contracts.Posts
 @using Mars.Server.Contracts.Options
 
-<ContentWrapper Title="ModelListPage">
+<PageTitle>Class Models</PageTitle>
 
-    @* <MModelPropSel @bind-Value="propSel1" /> *@
+<div class="classmodels-page">
+    <header class="classmodels-page__hero">
+        <div class="classmodels-page__hero-text">
+            <h1>Class Models</h1>
+            <p>
+                C# class models registered in the platform — inspect their properties and open
+                the source file in the IDE.
+            </p>
+        </div>
+    </header>
 
-    <h2>models = @Models.Count()</h2>
+    <section class="classmodels-page__section">
+        <header class="classmodels-page__section-head">
+            <h2>Models</h2>
+            <span class="classmodels-page__count">@Models.Count()</span>
+            <span class="classmodels-page__line"></span>
+        </header>
 
-    <div class="row1g-2 mansory">
-        @foreach (var model in Models)
-        {
-            var m = model;
-
-            <div class="col-121col-md-4 man-item">
-                <div class="card shadow-sm">
-                    <div class="card-body p-1">
-                        <b>@model.Name</b>
+        <div class="classmodels-page__masonry">
+            @foreach (var model in Models)
+            {
+                <article class="classmodels-page__card">
+                    <header class="classmodels-page__card-head">
+                        <span class="classmodels-page__name">@model.Name</span>
                         @if (model.ModelType.BaseType is not null)
                         {
-                            <text>
-                                : <span>@model.ModelType.BaseType?.Name</span>
-                            </text>
+                            <span class="classmodels-page__base">: @model.ModelType.BaseType.Name</span>
                         }
-                        <div>
-                            [actions]
-                            <a href="@m.SourceFilePath" class="text-primary cursor-pointer"
-                               @onclick:preventDefault
-                               @onclick=@(e => OpenModelFile(m))>[file]</a>
-                        </div>
-                        <hr class="m-0">
-                        <div>
-                            @foreach (var field in model!.Properties.Where(s => s.DeclaringType!.Name == model.ModelType.Name))
+                    </header>
+
+                    <a class="classmodels-page__source" href="@model.SourceFilePath"
+                       title="Open source file in the IDE"
+                       @onclick:preventDefault
+                       @onclick="() => OpenModelFile(model)">
+                        <i class="bi bi-file-earmark-code"></i>
+                        Source file
+                    </a>
+
+                    <div class="classmodels-page__props">
+                        @foreach (var field in model.Properties.Where(s => s.DeclaringType!.Name == model.ModelType.Name))
+                        {
+                            @drawField(field, model)
+                        }
+                    </div>
+
+                    <button class="classmodels-page__nested-toggle" type="button"
+                            aria-expanded="@(_expanded.Contains(model.Name) ? "true" : "false")"
+                            @onclick="() => ToggleNested(model.Name)">
+                        <span>Nested props</span>
+                        <i class="bi bi-chevron-down classmodels-page__chevron @(_expanded.Contains(model.Name) ? "classmodels-page__chevron--open" : null)"></i>
+                    </button>
+
+                    @if (_expanded.Contains(model.Name))
+                    {
+                        <div class="classmodels-page__nested">
+                            @foreach (var field in model.Properties.Where(s => s.DeclaringType!.Name != model.ModelType.Name))
                             {
                                 @drawField(field, model)
                             }
-
-                            <div class="accordion" id="@model.Name-accordion">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button p-1 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@model.Name-nested" aria-expanded="false" aria-controls="@model.Name-nested">
-                                            Nested props
-                                        </button>
-                                    </h2>
-                                    <div id="@model.Name-nested" class="accordion-collapse collapse 1show" data-bs-parent="#@model.Name-accordion" style="">
-                                        <div class="accordion-body p-1">
-
-                                            @foreach (var field in model.Properties.Where(s => s.DeclaringType!.Name != model.ModelType.Name))
-                                            {
-                                                @drawField(field, model)
-                                            }
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>@*accordion*@
                         </div>
-                    </div>
-                </div>
-            </div>
-
-        }
-    </div>
-
-</ContentWrapper>
+                    }
+                </article>
+            }
+        </div>
+    </section>
+</div>
 
 @code {
     [Inject] ModelInfoService modelService { get; set; } = default!;
@@ -74,28 +80,19 @@
     [Inject] NavigationManager navigationManager { get; set; } = default!;
 
     IEnumerable<ModelInfo> Models = new List<ModelInfo>();
-
-    ModelPropertySel propSel1 = default!;
+    readonly HashSet<string> _expanded = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Load();
+        Models = modelService.ModelList();
     }
 
-    void Load()
+    void ToggleNested(string name)
     {
-        Models = modelService.ModelList();
-
-        var option = Models.FirstOrDefault(s => s.Name == "OptionEntity")!;
-
-        if (option is not null)
+        if (!_expanded.Add(name))
         {
-            propSel1 = new ModelPropertySel
-            {
-                Model = option,
-                Property = option.Properties.FirstOrDefault()!
-            };
+            _expanded.Remove(name);
         }
     }
 
@@ -117,42 +114,20 @@
 
     }
 
-    RenderFragment drawField(PropertyInfo field, ModelInfo model) => @<div>
-    <span class="font-monospace fw-bold">
-        @field.Name
-    </span>
-    :
+    RenderFragment drawField(PropertyInfo field, ModelInfo model) => @<div class="classmodels-page__prop">
+    <span class="classmodels-page__prop-name">@field.Name</span>
     <MTypeBadge Value=@field.PropertyType />
-@if (@field.GetCustomAttributes(true).Count(s => s is RequiredAttribute) > 0)
+    @if (field.GetCustomAttributes(true).Count(s => s is RequiredAttribute) > 0)
     {
-    <span class="text-danger d-inline-block position-relative" style="width:0.7em;height:1em;" title="required">
-        <span class="fs-4 position-absolute" style="top:-0.2em">*</span>
-    </span>
+        <span class="classmodels-page__required" title="required">*</span>
     }
-@if(field.CanWrite == false)
+    @if (field.CanWrite == false)
     {
-    <span class="text-dark" title="read only">(r)</span>
+        <span class="classmodels-page__readonly" title="read only">(r)</span>
     }
-@if (field.DeclaringType!.Name != model.ModelType.Name)
+    @if (field.DeclaringType!.Name != model.ModelType.Name)
     {
-    <span class="text-dark">:@field.DeclaringType.Name</span>
+        <span class="classmodels-page__declaring">:@field.DeclaringType.Name</span>
     }
 </div>;
 }
-
-<style>
-    .mansory {
-        /*display: grid;
-              grid-template-columns: repeat(4, 1fr);
-              grid-template-rows: masonry;*/
-        column-count: 3;
-        column-gap: 20px;
-    }
-
-    .man-item {
-        display: grid;
-        /*grid-template-rows: 1fr auto;*/
-        margin-bottom: 20px;
-        break-inside: avoid;
-    }
-</style>

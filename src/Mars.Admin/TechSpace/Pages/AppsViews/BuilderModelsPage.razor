@@ -1,62 +1,80 @@
 @page "/tech/models"
 
-<ContentWrapper Title="Models">
+<PageTitle>Entities</PageTitle>
 
-    <section class="_MODELS_LIST">
-        <div class="row row-cols-1 row-cols-md-2 g-3">
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-blockquote-left fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                PostType
-                            </h4>
-                            <p class="">Типы записей</p>
-                            <p class="text-secondary">Основной набор данных</p>
-                            <a href="PostType" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-box-seam fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                STO Types
-                            </h4>
-                            <p class="">Smart thing models</p>
-                            <p class="text-secondary">Модели для формирования запросов</p>
-                            <a href="tech/models/StoEntityType" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-diamond fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                ClassModels
-                            </h4>
-                            <p class="">C# class models viewer</p>
-                            <p class="text-secondary">C# классы</p>
-                            <a href="tech/models/classmodels" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="models-page">
+    <header class="models-page__hero">
+        <div class="models-page__hero-text">
+            <h1>Entities</h1>
+            <p>
+                Model domains of the platform — content post types, users and the
+                C# class reflection browser.
+            </p>
         </div>
+    </header>
 
+    <section class="models-page__section">
+        <header class="models-page__section-head">
+            <h2>Model domains</h2>
+            <span class="models-page__count">5</span>
+            <span class="models-page__line"></span>
+        </header>
+
+        <div class="models-page__grid">
+            <a class="models-page__card" href="/dev/PostType">
+                <span class="models-page__icon models-page__icon--purple">
+                    <i class="bi bi-blockquote-left"></i>
+                </span>
+                <span class="models-page__text">
+                    <span class="models-page__title">PostType</span>
+                    <span class="models-page__subtitle">Post types — the main content data set</span>
+                </span>
+                <i class="bi bi-arrow-right models-page__arrow"></i>
+            </a>
+
+            <a class="models-page__card" href="/dev/PostCategoryType">
+                <span class="models-page__icon models-page__icon--blue">
+                    <i class="bi bi-tags"></i>
+                </span>
+                <span class="models-page__text">
+                    <span class="models-page__title">PostCategoryType</span>
+                    <span class="models-page__subtitle">Category types for post taxonomies</span>
+                </span>
+                <i class="bi bi-arrow-right models-page__arrow"></i>
+            </a>
+
+            <a class="models-page__card" href="/dev/Users">
+                <span class="models-page__icon models-page__icon--teal">
+                    <i class="bi bi-people"></i>
+                </span>
+                <span class="models-page__text">
+                    <span class="models-page__title">Users</span>
+                    <span class="models-page__subtitle">User accounts and roles</span>
+                </span>
+                <i class="bi bi-arrow-right models-page__arrow"></i>
+            </a>
+
+            <a class="models-page__card" href="/dev/UserType">
+                <span class="models-page__icon models-page__icon--purple">
+                    <i class="bi bi-person-gear"></i>
+                </span>
+                <span class="models-page__text">
+                    <span class="models-page__title">UserType</span>
+                    <span class="models-page__subtitle">User type profiles</span>
+                </span>
+                <i class="bi bi-arrow-right models-page__arrow"></i>
+            </a>
+
+            <a class="models-page__card" href="/dev/tech/models/classmodels">
+                <span class="models-page__icon models-page__icon--teal">
+                    <i class="bi bi-diamond"></i>
+                </span>
+                <span class="models-page__text">
+                    <span class="models-page__title">ClassModels</span>
+                    <span class="models-page__subtitle">Reflection browser of C# class models</span>
+                </span>
+                <i class="bi bi-arrow-right models-page__arrow"></i>
+            </a>
+        </div>
     </section>
-
-</ContentWrapper>
+</div>

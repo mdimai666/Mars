@@ -5,11 +5,89 @@
 @using System.Text.Json
 @inject IThemeService ThemeService
 
-<ContentWrapper Title="Style Designer">
-    <div class="row">
-        <div class="col-9">
-            <div class="me-4">
-                <h5>Components</h5>
+<PageTitle>Style Designer</PageTitle>
+
+<div class="styledesigner-page">
+    <header class="styledesigner-page__hero">
+        <div class="styledesigner-page__hero-text">
+            <h1 class="styledesigner-page__title">Style Designer</h1>
+            <p class="styledesigner-page__subtitle">
+                Токены темы FluentUI: бренд-цвет, режим, радиусы, обводка и тени.
+                Контролы применяются только к образцу справа — глобально тема меняется после Save.
+            </p>
+        </div>
+        <div class="styledesigner-page__actions">
+            <span class="styledesigner-page__hint">
+                <i class="bi bi-eye"></i>
+                live preview
+            </span>
+            @* ContentWrapper раньше рендерил этот дропдаун в заголовке (GeneralSectionActions) *@
+            <XActionsDropDown />
+        </div>
+    </header>
+
+    <div class="styledesigner-page__workspace">
+        <section class="styledesigner-page__panel styledesigner-page__panel--controls">
+            <header class="styledesigner-page__panel-head">
+                <h2>Control</h2>
+                <span class="styledesigner-page__rule"></span>
+            </header>
+            <div class="styledesigner-page__panel-body">
+                <EditOptionForm @ref=form TModel="DevAdminStyleOption" OnLoadData="OnLoadData" AfterSave="AfterSave">
+                    <ChildContent Context="context">
+                        <div class="styledesigner-page__controls">
+
+                            <button class="styledesigner-page__btn" type="button" @onclick="ResetStyle">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Reset
+                            </button>
+
+                            <div class="styledesigner-page__field">
+                                <label class="styledesigner-page__label">BrandColor</label>
+                                <input class="styledesigner-page__color" type="color"
+                                       @bind-value=@context.StylerStyle.BrandColor @bind-value:event="oninput" @bind-value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__field">
+                                <label class="styledesigner-page__label">Mode</label>
+                                <select class="styledesigner-page__select" @bind=@context.StylerStyle.Mode @bind:after="PreviewThemeAsync">
+                                    <option>Light</option>
+                                    <option>Dark</option>
+                                    <option>System</option>
+                                </select>
+                            </div>
+
+                            <div class="styledesigner-page__field styledesigner-page__field--inline">
+                                <label class="styledesigner-page__label">IsExact</label>
+                                <FluentSwitch @bind-Value=@context.StylerStyle.IsExact @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__group">
+                                <FluentSlider TValue="double" Label="HueTorsion" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.HueTorsion @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="double" Label="Vibrancy" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.Vibrancy @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__group">
+                                <FluentSlider TValue="int" Label="Radius" Min="0" Max="12" Step="1" @bind-Value=@context.StylerStyle.Radius @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="int" Label="StrokeWidth" Min="1" Max="3" Step="1" @bind-Value=@context.StylerStyle.StrokeWidth @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="double" Label="ShadowIntensity" Min="0" Max="2" Step="0.1" @bind-Value=@context.StylerStyle.ShadowIntensity @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                        </div>
+                    </ChildContent>
+                </EditOptionForm>
+            </div>
+        </section>
+
+        <section class="styledesigner-page__panel styledesigner-page__panel--preview">
+            <header class="styledesigner-page__panel-head">
+                <h2>Preview</h2>
+                <span class="styledesigner-page__panel-note">образец компонентов — не перекрашивается токенами зоны</span>
+                <span class="styledesigner-page__rule"></span>
+            </header>
+            @* Поверхность образца — штатная FluentCard (тема приложения), а не tech-панель:
+               превью должно показывать компоненты на их родном фоне в обоих режимах. *@
+            <div class="styledesigner-page__panel-body styledesigner-page__preview">
                 <FluentCard>
                     @* JS-тема (SetThemeToElementAsync) пишет полный набор токенов inline на внешний div;
                        геометрия стайлера — на внутренний: он ближе к компонентам и перебивает
@@ -67,49 +145,9 @@
                     </div>
                 </FluentCard>
             </div>
-        </div>
-        <div class="col-3">
-            <div class="ms-4 sticky-top" style="top:100px">
-                <h5>Control</h5>
-                <EditOptionForm @ref=form TModel="DevAdminStyleOption" OnLoadData="OnLoadData" AfterSave="AfterSave">
-
-                    <FluentButton OnClick="ResetStyle">Reset</FluentButton>
-
-                    <div class="d-block" style="min-height:300px">
-
-                        <div>
-                            <label>BrandColor</label>
-                            <input type="color" @bind-value=@context.StylerStyle.BrandColor @bind-value:event="oninput" @bind-value:after="PreviewThemeAsync" />
-                        </div>
-                        <div>
-                            <label>Mode</label>
-                            <select class="form-select" @bind=@context.StylerStyle.Mode @bind:after="PreviewThemeAsync">
-                                <option>Light</option>
-                                <option>Dark</option>
-                                <option>System</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>IsExact</label>
-                            <FluentSwitch @bind-Value=@context.StylerStyle.IsExact @bind-Value:after="PreviewThemeAsync" />
-                        </div>
-                        <div>
-                            <FluentSlider TValue="double" Label="HueTorsion" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.HueTorsion @bind-Value:after="PreviewThemeAsync" />
-                            <FluentSlider TValue="double" Label="Vibrancy" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.Vibrancy @bind-Value:after="PreviewThemeAsync" />
-                        </div>
-
-                        <div>
-                            <FluentSlider TValue="int" Label="Radius" Min="0" Max="12" Step="1" @bind-Value=@context.StylerStyle.Radius @bind-Value:after="PreviewThemeAsync" />
-                            <FluentSlider TValue="int" Label="StrokeWidth" Min="1" Max="3" Step="1" @bind-Value=@context.StylerStyle.StrokeWidth @bind-Value:after="PreviewThemeAsync" />
-                            <FluentSlider TValue="double" Label="ShadowIntensity" Min="0" Max="2" Step="0.1" @bind-Value=@context.StylerStyle.ShadowIntensity @bind-Value:after="PreviewThemeAsync" />
-                        </div>
-
-                    </div>
-                </EditOptionForm>
-            </div>
-        </div>
+        </section>
     </div>
-</ContentWrapper>
+</div>
 
 @code {
     EditOptionForm<DevAdminStyleOption>? form;

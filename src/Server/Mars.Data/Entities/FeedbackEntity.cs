@@ -38,6 +38,13 @@ public class FeedbackEntity : IBasicEntity
     [Comment("Тип обратной связи")]
     public EFeedbackType FeedbackType { get; set; } = EFeedbackType.InfoMessage;
 
+    /// <summary>
+    /// Новые обращения непрочитанные (CLR default false).
+    /// Историческим строкам true проставляет миграция AddFeedbackIsRead.
+    /// </summary>
+    [Comment("Прочитано")]
+    public bool IsRead { get; set; }
+
     // Relations
 
     [ForeignKey(nameof(AuthorizedUser))]

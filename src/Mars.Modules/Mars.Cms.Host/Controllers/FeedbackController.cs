@@ -76,6 +76,18 @@ public class FeedbackController : ControllerBase
         return (await _feedbackService.Update(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
+    [HttpPost("{id:guid}/read")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedbackDetailResponse))]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<FeedbackDetailResponse> MarkRead(Guid id, CancellationToken cancellationToken)
+    {
+        return (await _feedbackService.MarkRead(id, cancellationToken)).ToResponse();
+    }
+
     [HttpGet("list/offset")]
     public async Task<ListDataResult<FeedbackSummaryResponse>> List([FromQuery] ListFeedbackQueryRequest request, CancellationToken cancellationToken)
     {

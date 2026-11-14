@@ -27,13 +27,13 @@ const PAGES = args.pages
       '/dev/tech/models/classmodels', '/dev/tech/scheduler', '/dev/tech/components',
       '/dev/tech/playbooks', '/dev/tech/docker', '/dev/tech/devtest',
       '/dev/tech/styledesigner', '/dev/tech/style-gallery',
-      '/dev/tech/nodes', '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
+      '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
       '/dev/tech/frontend/editor/admin', '/dev/tech/plugins',
       '/dev/tech/datasource', '/dev/tech/datasource/config',
     ];
 
 // 'HotReload.BrowserTools' — 404 конфига browser-tools при serve.ps1 -Watch (артефакт watch, не продукта).
-const IGNORE_CONSOLE = ['favicon', 'blazor.webassembly.js', 'The resource https://', 'HotReload.BrowserTools'];
+const IGNORE_CONSOLE = ['favicon', 'blazor.webassembly.js', 'The resource https://', 'HotReload.BrowserTools', 'hot-reload-settings.json'];
 
 function loadAssertions() {
   const f = path.join(__dirname, 'assertions.json');

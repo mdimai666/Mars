@@ -600,6 +600,9 @@
   <data name="feedbacks.newThisWeek" xml:space="preserve">
     <value>New this week</value>
   </data>
+  <data name="feedbacks.unread" xml:space="preserve">
+    <value>Unread feedbacks</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>Type</value>
   </data>

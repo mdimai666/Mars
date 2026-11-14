@@ -600,6 +600,9 @@
   <data name="feedbacks.newThisWeek" xml:space="preserve">
     <value>Новых за неделю</value>
   </data>
+  <data name="feedbacks.unread" xml:space="preserve">
+    <value>Непрочитанных</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>Тип</value>
   </data>

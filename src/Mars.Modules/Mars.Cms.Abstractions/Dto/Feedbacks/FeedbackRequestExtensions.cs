@@ -30,6 +30,7 @@ public static class FeedbackRequestExtensions
             Take = request.Take,
             Search = request.Search,
             Sort = request.Sort,
+            IsRead = request.IsRead,
         };
 
     public static ListFeedbackQuery ToQuery(this TableFeedbackQueryRequest request)

@@ -32,9 +32,10 @@
 - `MARS_E2E_TESTS=1` — E2E (`tests/Mars.E2E.Tests`, `[E2EFact]`,
   `Mars.Test.AppHost/Attributes/E2EFactAttribute.cs`): Playwright + системный Edge
   (`channel: msedge`), Postgres-контейнер. Без переменной все тесты в Skip.
-- `MARS_DOCKER_TESTS=1` — docker-тесты: `tests/Mars.Docker.Tests` (`[DockerFact]`, живой демон:
-  pull/run/exec нод `docker.*`) и `tests/Mars.DockerImage.Tests` (`[DockerContainerFact]`,
-  сборка образа + миграции, `Fixtures/MarsFixture.cs`). Тяжёлые — без явной просьбы пользователя
+- `MARS_DOCKER_TESTS=1` — docker-тесты: `tests/Mars.DockerImage.Tests` (`[DockerContainerFact]`,
+  сборка образа + миграции, `Fixtures/MarsFixture.cs`). Тесты самого Docker-модуля
+  (`[DockerFact]`, pull/run/exec нод `docker.*`) уехали в плагин-репо `Mars.DockerPlugin`
+  (`tests/Mars.DockerPlugin.Tests`, тот же гейт). Тяжёлые — без явной просьбы пользователя
   не запускать.
 - `ExternalServices.*` (`tests/ExternalServices.Integration.Tests`,
   `ExternalIntegrationFactAttribute`) — внешние сервисы, тоже opt-in.

@@ -1,5 +1,12 @@
 # Mars.Docker — финализация модуля
 
+> **Статус 2026-11-14: модуль вынесен из core в плагин** `Mars.DockerPlugin`
+> (`C:\Users\D\Documents\VisualStudio\2026\Mars.DockerPlugin`, PackageId
+> `mdimai666.Mars.DockerPlugin`). Проекты `Mars.Docker.*`, страницы `/tech/docker`
+> и `tests/Mars.Docker.Tests` в этом репо удалены; feature-флаг `DockerAgent` упразднён
+> (установка плагина = включение). Namespace'ы переименованы в `Mars.DockerPlugin.*`;
+> TypeId нод сохранены (`module.docker.*Node`). Ниже — исторический план финализации.
+
 Ветка: `ai/docker-finalize`. Цели: рабочий CRUD контейнеров/образов в админке,
 конфиг источника Docker из appsettings, примитивы RunOnce/Exec для нод и плагинов,
 в будущем — ноды, XActions, AiChat-тулсет и рецепты маркетплейса (пример: плагин

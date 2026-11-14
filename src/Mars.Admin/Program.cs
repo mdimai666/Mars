@@ -6,7 +6,6 @@ using Mars.Admin.Startups;
 using Mars.AiChat.Front;
 using Mars.CodeCompletion.Front;
 using Mars.Datasource.Front;
-using Mars.Docker.Front;
 using Mars.Forms.Front;
 using Mars.Nodes.Workspace;
 using Mars.Plugin.Front;
@@ -76,7 +75,6 @@ builder.Services.AddNodeWorkspace()
                 .AddDatasourceWorkspace()
                 .AddSemanticKernelFront()
                 .AddAiChatFront()
-                .AddDockerFront()
                 .AddCodeCompletionFront()
                 .AddMarsFormsFront();
 
@@ -102,7 +100,6 @@ app.Services.UseMarsAdminFramework()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront()
             .UseAiChatFront()
-            .UseDockerFront()
             .UseMarsFormsFront()
             .RegisterFormEditors();
 

@@ -96,7 +96,12 @@
       { "name": "plugin cards rendered", "selector": ".plugins-page__grid .plugin-card", "exists": { "min": 1 } }
     ],
     "/dev/tech/marketplace": [
-      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "market hero rendered", "selector": ".market-hero__name", "exists": { "min": 1 } },
+      { "name": "shelves rendered", "selector": ".market-shelf", "exists": { "min": 1 } },
+      { "name": "shelf cards rendered", "selector": ".market-shelf__grid .pack-card", "exists": { "min": 4 } },
+      { "name": "catalog category tabs rendered", "selector": ".market-catalog__tab", "exists": { "min": 2 } },
+      { "name": "catalog rows rendered", "selector": ".market-catalog__row", "exists": { "min": 1 } }
     ],
     "/dev/tech/style-gallery": [
       { "name": "gallery sections rendered", "selector": "[data-gallery-section]", "exists": { "min": 21 } },

@@ -1,0 +1,343 @@
+@page "/tech/marketplace"
+@attribute [Authorize(Roles = "Admin")]
+@using Mars.Plugin.Contracts.Catalog
+
+<PageTitle>Marketplace</PageTitle>
+
+<div class="market-page">
+    <div class="market-page__shell">
+        @if (_statusLoading || (_catalogEnabled && _items is null && _loadError is null))
+        {
+            <div class="market-page__loading">Loading…</div>
+        }
+        else if (_initError is not null)
+        {
+            <div class="market-page__error">
+                <i class="bi bi-exclamation-triangle"></i>
+                @_initError
+                <button class="market-page__retry" type="button" @onclick="InitAsync">Повторить</button>
+            </div>
+        }
+        else if (!_catalogEnabled)
+        {
+            <div class="market-page__stub">
+                <i class="bi bi-shop"></i>
+                <h2>Каталог плагинов выключен</h2>
+                <p>
+                    Витрина маркетплейса питается от каталога плагинов. Настройте секцию <code>PluginCatalog</code>
+                    (Url и Enabled) в <code>appsettings.json</code> инстанса и перезапустите его.
+                </p>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div class="market-page__error">
+                <i class="bi bi-exclamation-triangle"></i>
+                @_loadError
+                <button class="market-page__retry" type="button" @onclick="LoadCatalogAsync">Повторить</button>
+            </div>
+        }
+        else if (_items!.Count == 0)
+        {
+            <div class="market-page__stub">
+                <i class="bi bi-shop"></i>
+                <h2>Каталог пуст</h2>
+                <p>В каталоге пока нет одобренных плагинов.</p>
+            </div>
+        }
+        else
+        {
+            <header class="market-hero">
+                <div class="market-hero__promo">
+                    <div class="market-hero__slide">
+                        <span class="market-hero__cat">@CategoryLabel(Current.Category)</span>
+                        <h2 class="market-hero__name">@Current.DisplayName</h2>
+                        <p class="market-hero__desc">@Current.Summary</p>
+                        <div class="market-hero__meta">
+                            <span>@Current.AuthorName</span>
+                            <span class="market-hero__rating">
+                                <i class="bi bi-star-fill"></i>
+                                @Rating(Current)
+                            </span>
+                            <span>@Downloads(Current.TotalDownloads) installs</span>
+                        </div>
+                        @if (_installing.Contains(Current.PackageId))
+                        {
+                            <button class="install-btn install-btn--hero" type="button" disabled>Installing…</button>
+                        }
+                        else if (IsInstalled(Current) && !HasUpdate(Current))
+                        {
+                            <button class="install-btn install-btn--hero install-btn--installed" type="button" @onclick="() => OpenDetails(Current)">
+                                <i class="bi bi-check"></i>
+                                Installed
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="install-btn install-btn--hero" type="button" @onclick="() => InstallAsync(Current)">
+                                @(IsInstalled(Current) ? "Update" : "Install")
+                            </button>
+                        }
+                    </div>
+
+                    <div class="market-hero__bar">
+                        <div class="market-hero__dots">
+                            @for (var i = 0; i < Popular.Count; i++)
+                            {
+                                var index = i;
+                                <button class="market-hero__dot @(index == _slide ? "market-hero__dot--active" : null)"
+                                        type="button" aria-label="Show @Popular[index].DisplayName"
+                                        @onclick="() => _slide = index"></button>
+                            }
+                        </div>
+                        <div class="market-hero__nav">
+                            <button class="market-hero__nav-btn" type="button" aria-label="Previous" @onclick="Prev">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button class="market-hero__nav-btn" type="button" aria-label="Next" @onclick="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="market-summary">
+                    <div class="market-summary__stats">
+                        <div class="market-summary__stat">
+                            <strong>@_items.Count</strong>
+                            <span>Plugins</span>
+                        </div>
+                        <div class="market-summary__stat">
+                            <strong>@_items.Select(p => p.AuthorName).Distinct().Count()</strong>
+                            <span>Authors</span>
+                        </div>
+                    </div>
+                    <a class="market-summary__build" href="https://mdimai666.github.io/Mars/md/Plugins/PluginGettingStart.md" target="_blank">
+                        <i class="bi bi-code-slash"></i>
+                        Build a plugin
+                    </a>
+                </aside>
+            </header>
+
+            @foreach (var shelf in Shelves())
+            {
+                <section class="market-shelf">
+                    <header class="market-shelf__head">
+                        <h2 class="market-shelf__title">@shelf.Title</h2>
+                        <span class="market-shelf__count">@shelf.Items.Count packages</span>
+                    </header>
+
+                    <div class="market-shelf__grid">
+                        @foreach (var item in shelf.Items)
+                        {
+                            <article class="pack-card">
+                                <header class="pack-card__top">
+                                    @if (item.IconUrl is not null && !_iconFailed.Contains(item.PackageId))
+                                    {
+                                        <span class="pack-card__icon pack-card__icon--img">
+                                            <img src="@item.IconUrl" alt="" @onerror="() => _iconFailed.Add(item.PackageId)" />
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pack-card__icon">@Initial(item)</span>
+                                    }
+                                    <div class="pack-card__id">
+                                        <button class="pack-card__name" type="button" title="@item.DisplayName" @onclick="() => OpenDetails(item)">
+                                            @item.DisplayName
+                                        </button>
+                                        <span class="pack-card__author">@item.AuthorName</span>
+                                    </div>
+                                    <span class="pack-card__cat" title="@(item.IsRecommended ? "Recommended" : null)">
+                                        @CategoryLabel(item.Category)
+                                        @if (item.IsRecommended)
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                    </span>
+                                </header>
+
+                                <p class="pack-card__desc" title="@item.Summary">@item.Summary</p>
+
+                                <footer class="pack-card__foot">
+                                    <span class="pack-card__rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        @Rating(item)
+                                    </span>
+                                    <span class="pack-card__installs">@Downloads(item.TotalDownloads) installs</span>
+                                    @if (_installing.Contains(item.PackageId))
+                                    {
+                                        <button class="install-btn" type="button" disabled>Installing…</button>
+                                    }
+                                    else if (IsInstalled(item) && !HasUpdate(item))
+                                    {
+                                        <button class="install-btn install-btn--installed" type="button" @onclick="() => OpenDetails(item)">
+                                            <i class="bi bi-check"></i>
+                                            Installed
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="install-btn" type="button" @onclick="() => InstallAsync(item)">
+                                            @(IsInstalled(item) ? "Update" : "Install")
+                                        </button>
+                                    }
+                                </footer>
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+
+            <section class="market-catalog">
+                <header class="market-catalog__head">
+                    <h2 class="market-catalog__title">Catalog</h2>
+                    <span class="market-shelf__count">@Filtered().Count() packages</span>
+                </header>
+
+                <label class="market-catalog__search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search packages..." @bind="_search" @bind:event="oninput" @bind:after="() => _page = 1" />
+                </label>
+
+                <div class="market-catalog__tabs">
+                    <button class="market-catalog__tab @(_category == "all" ? "market-catalog__tab--active" : null)"
+                            type="button" @onclick='() => SetCategory("all")'>
+                        All
+                        <span class="market-catalog__tab-count">@CountFor("all")</span>
+                    </button>
+                    @foreach (var category in Categories)
+                    {
+                        <button class="market-catalog__tab @(_category == category ? "market-catalog__tab--active" : null)"
+                                type="button" @onclick="() => SetCategory(category)">
+                            @CategoryLabel(category)
+                            <span class="market-catalog__tab-count">@CountFor(category)</span>
+                        </button>
+                    }
+                </div>
+
+                <div class="market-catalog__body">
+                    <aside class="market-catalog__filters">
+                        <div class="market-catalog__filter-group">
+                            <h3>Category</h3>
+                            <label class="market-catalog__filter-option">
+                                <input type="radio" name="market-category" value="all" checked="@(_category == "all")" @onchange='() => SetCategory("all")' />
+                                <span>All</span>
+                                <small>@CountFor("all")</small>
+                            </label>
+                            @foreach (var category in Categories)
+                            {
+                                <label class="market-catalog__filter-option">
+                                    <input type="radio" name="market-category" value="@category" checked="@(_category == category)" @onchange="() => SetCategory(category)" />
+                                    <span>@CategoryLabel(category)</span>
+                                    <small>@CountFor(category)</small>
+                                </label>
+                            }
+                        </div>
+
+                        <div class="market-catalog__filter-group">
+                            <h3>Rating</h3>
+                            @foreach (var option in RatingOptions)
+                            {
+                                <label class="market-catalog__filter-option">
+                                    <input type="radio" name="market-rating" value="@option.Value" checked="@(_minRating == option.Value)" @onchange="() => SetRating(option.Value)" />
+                                    <span>@option.Label</span>
+                                </label>
+                            }
+                        </div>
+
+                        <div class="market-catalog__filter-group">
+                            <h3>Tags</h3>
+                            <div class="market-catalog__tag-cloud">
+                                @foreach (var tag in AllTags())
+                                {
+                                    <button class="market-catalog__tag-chip @(_activeTags.Contains(tag) ? "market-catalog__tag-chip--active" : null)"
+                                            type="button" @onclick="() => ToggleTag(tag)">
+                                        @tag
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <button class="market-catalog__reset" type="button" @onclick="ResetFilters">Reset filters</button>
+                    </aside>
+
+                    <div class="market-catalog__main">
+                        @if (PageItems().Any())
+                        {
+                            <ul class="market-catalog__list">
+                                @foreach (var item in PageItems())
+                                {
+                                    <li class="market-catalog__row">
+                                        @if (item.IconUrl is not null && !_iconFailed.Contains(item.PackageId))
+                                        {
+                                            <span class="pack-card__icon pack-card__icon--img">
+                                                <img src="@item.IconUrl" alt="" @onerror="() => _iconFailed.Add(item.PackageId)" />
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="pack-card__icon">@Initial(item)</span>
+                                        }
+                                        <div class="market-catalog__row-id">
+                                            <button class="market-catalog__row-name" type="button" title="@item.DisplayName" @onclick="() => OpenDetails(item)">
+                                                @item.DisplayName
+                                            </button>
+                                            <span class="market-catalog__row-author">@item.AuthorName</span>
+                                        </div>
+                                        <span class="market-catalog__row-desc" title="@item.Summary">@item.Summary</span>
+                                        <span class="market-catalog__row-rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            @Rating(item)
+                                        </span>
+                                        <span class="market-catalog__row-installs">@Downloads(item.TotalDownloads)</span>
+                                        @if (_installing.Contains(item.PackageId))
+                                        {
+                                            <button class="install-btn" type="button" disabled>Installing…</button>
+                                        }
+                                        else if (IsInstalled(item) && !HasUpdate(item))
+                                        {
+                                            <button class="install-btn install-btn--installed" type="button" @onclick="() => OpenDetails(item)">
+                                                <i class="bi bi-check"></i>
+                                                Installed
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="install-btn" type="button" @onclick="() => InstallAsync(item)">
+                                                @(IsInstalled(item) ? "Update" : "Install")
+                                            </button>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="market-catalog__empty">No packages match your filters.</p>
+                        }
+
+                        @if (PageCount() > 1)
+                        {
+                            <div class="market-catalog__pagination">
+                                <button class="market-catalog__page-btn" type="button" disabled="@(_page == 1)" aria-label="Previous page" @onclick="() => _page--">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                @for (var num = 1; num <= PageCount(); num++)
+                                {
+                                    var n = num;
+                                    <button class="market-catalog__page-btn @(n == _page ? "market-catalog__page-btn--active" : null)" type="button" @onclick="() => _page = n">
+                                        @n
+                                    </button>
+                                }
+                                <button class="market-catalog__page-btn" type="button" disabled="@(_page == PageCount())" aria-label="Next page" @onclick="() => _page++">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+    </div>
+</div>

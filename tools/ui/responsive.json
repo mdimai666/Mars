@@ -12,6 +12,7 @@
     "/dev/tech/automation": { "controls": [".ne-toolbar", ".ne-side .DebugMessagesConsole"] },
     "/dev/tech/frontend": { "controls": [".fronts-page .hero h1", ".fronts-grid .front-card"] },
     "/dev/tech/plugins": { "controls": [".plugins-page__panel-head", ".plugins-page__grid .plugin-card", ".plugin-switch"] },
+    "/dev/tech/marketplace": { "controls": [".market-hero__promo", ".market-shelf__grid .pack-card", ".market-catalog__search", ".market-catalog__tab", ".market-catalog__row .install-btn"] },
     "/dev/tech/frontend/editor/admin": {
       "controls": [".fe-toolbar", ".files-panel .files-create__path", ".browser-bar .browser-address"],
       "iframes": [".browser-frame"]

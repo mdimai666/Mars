@@ -10,6 +10,9 @@ public record MarketplaceSearchRequest
 
     public string? Tag { get; init; }
 
+    /// <summary>Рубрика витрины (slug, например "integrations").</summary>
+    public string? Category { get; init; }
+
     public bool? Recommended { get; init; }
 
     /// <summary>downloads | rating | newest (по умолчанию — downloads).</summary>

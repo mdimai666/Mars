@@ -22,7 +22,7 @@ internal static class PageSkillRouter
         return skills;
     }
 
-    // Страницы модуля DataSource: /tech/datasource/query, /tech/datasource/config, /tech/datasource/actions
+    // Страницы модуля DataSource: /tech/datasource/{slug?}, /tech/datasource/config
     static bool IsDatasourcePage(string? pageContext)
     {
         if (string.IsNullOrWhiteSpace(pageContext)) return false;

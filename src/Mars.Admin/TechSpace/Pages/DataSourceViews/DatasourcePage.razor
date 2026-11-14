@@ -1,62 +1,75 @@
 @page "/tech/datasource"
+@page "/tech/datasource/{Slug?}"
+@attribute [Authorize(Roles = "Admin")]
+@using Mars.Datasource.Contracts.Config
 
-<ContentWrapper Title="Models">
+<PageTitle>Datasources</PageTitle>
 
-    <section class="_MODELS_LIST">
-        <div class="row row-cols-1 row-cols-md-2 g-3">
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-database-fill-gear fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Datasoources
-                            </h4>
-                            <p class="">Настройки БД</p>
-                            <p class="text-secondary">psql,mssql,mysql</p>
-                            <a href="tech/datasource/config" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-table fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Tables
-                            </h4>
-                            <p class="">Tables and sql Query</p>
-                            <p class="text-secondary">Создавайте запросы и редактируйте базу</p>
-                            <a href="tech/datasource/query" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card d-card-glow">
-                    <div class="hstack ms-4">
-                        <div class="vstack flex-grow-0 my-3">
-                            <i class="bi bi-wrench fs-1"></i>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-0">
-                                Utils
-                            </h4>
-                            <p class="">sql tools</p>
-                            <p class="text-secondary">Инструменты, метрики, настройки</p>
-                            <a href="tech/datasource/actions" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="datasource-page">
+    <header class="datasource-page__hero">
+        <div class="datasource-page__hero-text">
+            <h1 class="datasource-page__title">Datasources</h1>
+            <p class="datasource-page__subtitle">Universal workbench for connected sources — SQL, REST and files. Used by AiChat agents and Nodes.</p>
         </div>
+        <div class="datasource-page__actions">
+            <label class="datasource-page__source" title="Источник">
+                <i class="bi bi-hdd-network"></i>
+                <select value="@EffectiveSlug" @onchange="OnSourceChanged" disabled="@(sources.Count == 0)">
+                    @foreach (var item in sources)
+                    {
+                        <option value="@item.Slug">@item.Title · @KindLabel(item.Kind)</option>
+                    }
+                </select>
+                <i class="bi bi-chevron-down"></i>
+            </label>
+            <button class="datasource-page__action datasource-page__action--ghost @(maintenanceOpen ? "datasource-page__action--active" : null)"
+                    type="button" @onclick="() => maintenanceOpen = !maintenanceOpen">
+                <i class="bi bi-wrench"></i>
+                Maintenance
+            </button>
+            <a class="datasource-page__action datasource-page__action--ghost" href="/dev/tech/datasource/config">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </div>
+    </header>
 
-    </section>
+    @if (loadError is not null)
+    {
+        <div class="datasource-page__error">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>@loadError</span>
+            <button class="datasource-page__action datasource-page__action--ghost" type="button" @onclick="LoadAsync">
+                <i class="bi bi-arrow-clockwise"></i>
+                Retry
+            </button>
+        </div>
+    }
+    else if (loading)
+    {
+        <div class="datasource-page__loading">Loading…</div>
+    }
+    else
+    {
+        <div class="datasource-page__workspace">
+            <Mars.Datasource.Front.QueryPage DataSourceConfigSlug="@EffectiveSlug" />
+        </div>
+    }
 
-</ContentWrapper>
+    @if (maintenanceOpen)
+    {
+        <div class="datasource-page__backdrop" @onclick="() => maintenanceOpen = false"></div>
+        <aside class="datasource-page__drawer">
+            <header class="datasource-page__drawer-head">
+                <h2>Maintenance</h2>
+                <button class="datasource-page__drawer-close" type="button" title="Закрыть"
+                        @onclick="() => maintenanceOpen = false">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+            <div class="datasource-page__drawer-body">
+                <Mars.Datasource.Front.DataSourceInfoComponent Slug="@EffectiveSlug" />
+            </div>
+        </aside>
+    }
+</div>

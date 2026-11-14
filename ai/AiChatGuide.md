@@ -339,7 +339,7 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 
 `Mars.AiChat.Host/Tools/MarsSqlTools.cs` — доступ к SQL через каноничный слой данных Mars
 `IDatasourceService` (singleton, `src/Mars.Datasource/Mars.Datasource.Host/Services`): тот же путь,
-что у SQL-нод и страницы `/datasource/query`. Инструменты:
+что у SQL-нод и страницы `/tech/datasource`. Инструменты:
 
 - `list_data_sources` — список баз (slug/название/драйвер). Виртуальный slug `"default"` —
   основная БД самого Mars (connection string `DefaultConnection`); остальные — из `DatasourceOption`;

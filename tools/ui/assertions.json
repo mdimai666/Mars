@@ -74,8 +74,11 @@
     "/dev/tech/logs": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
     ],
-    "/dev/tech/database": [
-      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
+    "/dev/tech/datasource": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "datasource hero rendered", "selector": ".datasource-page__title", "exists": { "min": 1 } },
+      { "name": "source switcher rendered", "selector": ".datasource-page__source select", "exists": { "min": 1 } },
+      { "name": "workspace rendered", "selector": ".datasource-page__workspace .ds-workspace", "exists": { "min": 1 } }
     ],
     "/dev/tech/frontend": [
       { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },

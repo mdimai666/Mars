@@ -3,14 +3,87 @@
     min-width: 0;
 }
 
-/* Заголовок группы в дереве: сворачивается по клику (фон — вместо bootstrap-класса bg-light,
-   чтобы работал hover). */
-.ds-schema {
-    background: var(--bs-tertiary-bg, #f1f3f5);
+.ds-tree__filter {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 1px solid var(--ct-line, #dee2e6);
+    border-radius: 8px;
+    background: var(--ct-card, #fff);
+    color: var(--ct-ink, #212529);
+    padding: 5px 10px;
+    font-size: 13px;
+    outline: none;
+}
+
+.ds-tree__filter::placeholder {
+    color: var(--ct-muted, #6c757d);
+}
+
+.ds-tree__filter:focus {
+    border-color: var(--ct-hover-border, #cdd3e6);
+}
+
+.ds-tree__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 4px 8px;
+}
+
+/* Заголовок группы: сворачивается по клику. */
+.ds-tree__group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    margin-top: 4px;
+    border-radius: 8px;
+    color: var(--ct-muted, #6c757d);
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
     user-select: none;
 }
 
-.ds-schema:hover {
-    background: var(--bs-secondary-bg, #e9ecef);
+.ds-tree__group:hover {
+    color: var(--ct-ink, #212529);
+    background: var(--ct-hover-bg, #f1f3f5);
+}
+
+.ds-tree__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px 5px 22px;
+    border-radius: 8px;
+    color: var(--ct-item-ink, #212529);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ds-tree__item:hover {
+    background: var(--ct-hover-bg, #f1f3f5);
+    color: var(--ct-ink, #212529);
+}
+
+.ds-tree__item--active {
+    background: var(--ct-accent-soft, #ece7fd);
+    color: var(--ct-active-ink, #5237e8);
+    font-weight: 600;
+}
+
+.ds-tree__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ds-tree__badge {
+    flex-shrink: 0;
+    margin-left: auto;
+    border: 1px solid var(--ct-line, #dee2e6);
+    border-radius: 999px;
+    padding: 0 7px;
+    color: var(--ct-muted, #6c757d);
+    font-size: 10.5px;
+    font-weight: 600;
 }

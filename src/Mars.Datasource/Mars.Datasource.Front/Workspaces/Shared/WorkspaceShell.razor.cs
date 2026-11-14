@@ -19,8 +19,6 @@ public partial class WorkspaceShell : ComponentBase
 
     [Parameter] public string Slug { get; set; } = DatasourceConfig.DefaultSlug;
 
-    [Parameter] public IReadOnlyCollection<SelectDatasourceDto> Sources { get; set; } = [];
-
     [Parameter] public SelectDatasourceDto? Source { get; set; }
 
     [Parameter] public string SourceLabel { get; set; } = "";

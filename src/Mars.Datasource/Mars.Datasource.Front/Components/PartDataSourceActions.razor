@@ -37,7 +37,7 @@
 
     void OpenQueryTool()
     {
-        nav.NavigateTo($"{nav.BaseUri}datasource/query?slug={Uri.EscapeDataString(Config.Slug)}");
+        nav.NavigateTo($"{nav.BaseUri}tech/datasource/{Uri.EscapeDataString(Config.Slug)}");
     }
 
     async Task ClickTestConnection()

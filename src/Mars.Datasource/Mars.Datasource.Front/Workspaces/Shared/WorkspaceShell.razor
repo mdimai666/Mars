@@ -31,8 +31,14 @@ else
         {
             <div class="alert alert-danger flex-shrink-0 rounded-0 mb-0 py-2 px-3 fz14px">@Error</div>
         }
-        <DatasourceHeader Slug="@Slug" Sources="@Sources"
-                          SourceName="@Catalog.SourceName" ObjectCount="@ObjectCount" SourceLabel="@SourceLabel" />
+        <div class="ds-context flex-shrink-0 hstack gap-2 px-2">
+            <span class="ds-context__name" title="@Catalog.SourceName">@Catalog.SourceName</span>
+            <span class="ds-context__meta">объектов: @ObjectCount</span>
+            @if (!string.IsNullOrEmpty(SourceLabel))
+            {
+                <span class="ds-context__meta">@SourceLabel</span>
+            }
+        </div>
 
         <FluentMultiSplitter>
             <FluentMultiSplitterPane Size="250px" Min="170px" Max="460px" Collapsible="true" Resizable="true">

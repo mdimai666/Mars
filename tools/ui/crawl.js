@@ -29,7 +29,7 @@ const PAGES = args.pages
       '/dev/tech/styledesigner', '/dev/tech/style-gallery',
       '/dev/tech/nodes', '/dev/tech/automation', '/dev/tech/forms', '/dev/tech/frontend',
       '/dev/tech/frontend/editor/admin', '/dev/tech/plugins',
-      '/dev/tech/datasource', '/dev/tech/datasource/query', '/dev/tech/datasource/config', '/dev/tech/datasource/actions',
+      '/dev/tech/datasource', '/dev/tech/datasource/config',
     ];
 
 // 'HotReload.BrowserTools' — 404 конфига browser-tools при serve.ps1 -Watch (артефакт watch, не продукта).

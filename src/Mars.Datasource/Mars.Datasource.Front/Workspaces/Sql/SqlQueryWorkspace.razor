@@ -7,7 +7,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits Mars.Datasource.Front.Workspaces.QueryWorkspaceBase
 
-<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Sources="@listDatasources" Source="source"
+<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Source="source"
                 SourceLabel="@SourceLabel" Catalog="catalog" Tree="Tree" Tabs="tabs" ActiveTab="activeTab"
                 ObjectCount="objectCount" Hint="@Hint" TrailingLabel="@TrailingLabel" TrailingTitle="@TrailingTitle"
                 OnRetry="LoadAsync" OnOpenObject="OpenObjectAsync" OnRefreshCatalog="RefreshCatalogAsync"

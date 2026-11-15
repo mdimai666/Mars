@@ -87,7 +87,20 @@
     `BuilderSettingsPage` (дубль /Settings)/бейджи статус-бара/`builderlayout.less`
     удалены; slug фронта для ИИ парсится из `/tech/frontend/editor/{slug}`
     (`MarsFrontFilesTools`).
-  - `Public/` — Login/Register/Logout/Privacy (BlankLayout, вне зон).
+  - `Public/` — Login/Register/Logout/Privacy, лэйаут `CloudyPublicLayout`
+    (`Shared/Cloudy/`, вне зон админки; `BlankLayout` оставлен, но Public на нём больше не сидит).
+    Редизайн 2026-11-15 (светлый Cloudy + glass, в Vue-прототипе auth-страниц нет):
+    бренд-шапка (`SiteName`) + центрированная glass-карточка `.cloudy-auth-card` (440px,
+    acrylic-токены, `margin: auto` — не клипует верх при overflow) + футер «Главная · Политика».
+    Стили — `cloudy-public.less` (токены миксинами `.cloudy-tokens()`/`.cloudy-tokens-dark()`
+    на `.cloudy-public`, тёмная тема через `body[data-theme="dark"]`; фон — штатный
+    `.cloudy-backdrop`). Паттерны: `.cloudy-auth-divider` («или» перед SSO), `.cloudy-auth-alt`
+    (ссылка вход/регистрация), `.cloudy-auth-success`, `.cloudy-auth-logout` (спиннер «Выходим…»).
+    Ошибки — `FluentMessageBar`, не bootstrap-алерты. Инварианты совместимости: E2E-селекторы
+    `[name='login-email'] input`, `[name='password'] input`, `fluent-button[type='submit']`,
+    роут `/dev/Login`, `nameof(LoginForm.ExecuteLogin)` (Keycloak-тесты) — не менять;
+    code-behind Login/Register/Logout не тронут (SSO-callback, пасскей, cookie forceLoad).
+    Ссылки внутри Public — от `Navigation.BaseUri` (роут `/Login/sso/{slug}` ломает относительные).
     Privacy переделана 2026-11-15 по аналогии с WP Settings→Privacy: контент — пост
     из опции `PrivacyPolicyOption.PageId` (`Mars.Cms.Contracts/Options`, регистрация
     в `MainCms.UseMarsCms` с `appendToInitialSiteData` → анонимное чтение

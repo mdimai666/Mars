@@ -80,6 +80,21 @@
 
 ## Грабли
 
+- **Миграции — только генерацией, не руками**: `src/Server/Mars.Data.PostgreSQL/AddMigration.ps1
+  {Name}` (`dotnet ef migrations add`, startup-project Mars.WebApp). EF сортирует миграции по
+  `[Migration("…")]`-атрибуту, НЕ по имени файла; опечатка в году timestamp (прецедент 2026-11-15:
+  `AddFeedbackIsRead` с ID `2021…` вместо `2026…`) ставит миграцию раньше создающей таблицу →
+  `42P01 relation does not exist` на чистой БД. На живой БД с уже применёнными миграциями баг
+  НЕ виден (применяется только одна pending-миграция) — юнит-сьют его не ловит. После добавления
+  миграции обязателен прогон DB-интеграционных (`Mars.Integration.Tests`, свежий контейнер) или
+  E2E. Откат применённой миграции — `dotnet ef database update {Предыдущая}` (не raw SQL);
+  если applied-ID уже исчез из сборки (переименование после применения) — правится только запись
+  `__EFMigrationsHistory` (UPDATE migration_id), схема при этом уже корректна.
+- **E2E `BrowserErrorTracker` игнорирует 404 hot-reload ассетов** (`HotReload.BrowserTools.*`,
+  `hot-reload-settings.json`) — артефакт Debug-сборки: boot-конфиг WASM ссылается на hot-reload
+  модули, middleware отдаёт их только в Development, тесты идут в Test. Тот же игнор, что в
+  `tools/ui/crawl.js` (IGNORE_CONSOLE). Консоль-ошибки пишутся с location (`text @ url`) —
+  у resource-ошибок URL живёт в location, не в text.
 - Testcontainers for .NET 4.13 собирает образы через legacy `/build` API — `RUN --mount=type=cache`
   недоступен, `ImageFromDockerfileBuilder` на корневом Dockerfile падает. Нужен образ из
   Dockerfile с cache mounts — собирать через `docker build` (Process), как в

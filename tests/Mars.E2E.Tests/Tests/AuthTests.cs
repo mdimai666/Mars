@@ -31,8 +31,8 @@ public class AuthTests : BaseE2ETests
         // Assert
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        var userName = await Page.TextContentAsync(".navbar .user-name");
-        userName.Should().Contain(UserConstants.TestUserEmail);
+        var userEmail = await Page.GetAttributeAsync(".cloudy-userbar__trigger", "title");
+        userEmail.Should().Contain(UserConstants.TestUserEmail);
         tracker.AssertNoErrors();
     }
 }

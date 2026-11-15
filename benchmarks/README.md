@@ -161,7 +161,8 @@ Docker Desktop (WSL2), PostgreSQL 14 в контейнере, 1000 постов 
   деградировали (seq scan — индекса на slug не было). С миграцией
   `20260815151932_AddPostSlugIndexes` (выражение-индексы по `lower(slug)`) деградация
   устранена: `post_update` на ~36k постов — 641 ит/с против 202 ит/с до фикса
-  (подробности и EXPLAIN — в `ai/PostSlugIndexTask.md`); create в `run-perf.ps1`
+  (подробности — `ai/SiteEngineGuide.md` §«Грабли», история —
+  `git show 3b13b36a:ai/PostSlugIndexTask.md`); create в `run-perf.ps1`
   по-прежнему идёт последним.
 
 ---

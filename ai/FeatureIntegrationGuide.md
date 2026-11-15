@@ -198,11 +198,11 @@ app.Services.UseAppFrontMain()...UseSemanticKernelFront().Use<Feature>Front();  
    инвалидировать (слушатели `IEventManager`, подписка В КОНСТРУКТОРЕ) — решает хендлер.
 3. Регистрация в `Main<Module>.cs` — `services.AddSingleton<IKpiHandler, MyHandler>()`
    (singleton конструируется один раз; НЕ через `IMarsAppLifetimeService` — его `GetOrderedList`
-   ломается на нескольких регистрациях под одним интерфейсом, см. CloudyRedesignGuide §KPI).
+   ломается на нескольких регистрациях под одним интерфейсом, см. CloudyGuide §KPI).
 4. Фронт: `_client.Kpi.Get([ключи])` — один батч-вызов `GET api/Kpi?keys=…`
    (`Mars.Server/Controllers/KpiController.cs`, Admin-only, БЕЗ кэша — агрегатор).
 5. Label — стабильный ключ, перевод в `Mars.Contracts/Resources/AppRes*.resx` (имя записи = ключ).
-Детали паттерна — `ai/CloudyRedesignGuide.md` §«KPI-карточки».
+Детали паттерна — `ai/CloudyGuide.md` §«KPI-карточки».
 
 ### 8. Проверка
 
@@ -216,7 +216,7 @@ E2E — `tests/Mars.E2E.Tests` (Playwright + Testcontainers), см. `ai/E2ETesti
 ## Фронты и движки рендера (если фича связана с фронтом)
 
 С 2026-08 фронт — это папка с файлами, а не настройки в appsettings и не посты в БД
-(план рефакторинга: `ai/FrontReworkPlan.md`, пользовательская документация: `docs/dev_docs/AppFront/Fronts.md`).
+(гайд: `ai/FrontsGuide.md`, пользовательская документация: `docs/dev_docs/AppFront/Fronts.md`).
 
 - **Источник истины** — опция `FrontsOption` (`List<FrontItem>`: Slug/Title/Url/Path/EngineId/Enabled)
   в таблице Options; читается через `IOptionService`, изменения применяются в рантайме без рестарта.

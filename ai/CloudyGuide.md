@@ -1,11 +1,20 @@
-# CloudyRedesignGuide — редизайн админки «cloudy»
+# CloudyGuide — устройство админки Mars и Cloudy-паттерны
 
-Гайд для агента по редизайну админ-зоны Mars (ветка `feat/redesign-cloudy-variant`, старт 2026-10-03).
-Источник истины по UI — Vue-прототип `C:\Users\D\Documents\VisualStudio\2026\mars-redesign-project`
+Гайд для агента: как админка устроена СЕЙЧАС (пространства, лэйауты, паттерн-компоненты),
+как делать новые страницы и что переиспользовать. Редизайн «cloudy» завершён и влит в master
+(2026-11-15, merge `3b13b36a`); история работ — `git show 3b13b36a:ai/CloudyRedesignGuide.md`.
+Источник истины по палитре — Vue-прототип `C:\Users\D\Documents\VisualStudio\2026\mars-redesign-project`
 (`src/assets/main.css` — ВСЯ палитра: `:root` = светлая зона + тёмный tech, `.tech.light` = светлый tech;
 `src/components/*.vue` — разметка страниц; `admin_*.png` — референс-скриншоты).
-Смежные гайды: `ai/FluentUiGuide.md` (компоненты v5), `ai/CssRefactoringGuide.md` (слои токенов,
-`--mars-*`), `ai/TestingGuide.md`. Пользователь: без пиксель-перфекта, «общая схема».
+Смежные гайды: `ai/FluentUiGuide.md` (как верстать на FluentUI v5), `ai/CssRefactoringGuide.md`
+(слои токенов, `--mars-*`), `ai/FluentV5Reference.md` (факты библиотеки), `ai/TestingGuide.md`.
+Пользователь: без пиксель-перфекта, «общая схема».
+
+Выбор стиля: разведка игровых/киношных языков (сентябрь 2026, превью
+`ai/concepts/design/{cyberpunk,eagle-eye,crysis}/ui-style-preview.html` — автономные
+страницы-словари стиля) закрыта выбором **Cloudy** по Vue-прототипу; превью оставлены
+как история выбора, контракт сравнения и рецепт разведки — в истории:
+`git show 3b13b36a:ai/concepts/design/StyleExplorationPlan.md`.
 
 ## Раскладка кода
 
@@ -121,8 +130,6 @@
     CodeEditorExtraToolbar, GeneralSectionActions, DataGridSharedViews, DevErrors,
     MobileMenu, AsideBottomItems, AccessDenied/RedirectToLogin, AdminLayout+AdminHeader
     (rollback).
-  - В записях статуса до 2026-10-14 пути `Pages/X` — ныне `SiteSpace/Pages/X`,
-    `Pages/TechViews` и `Builder/` — ныне `TechSpace/Pages`.
   - `Shared/UserBar.razor` — аватар + bootstrap-dropdown `.cloudy-user-menu`; пункт переключения темы
     (`DevAdminStyleOption.StylerStyle.Mode` → `Q.Root.Emit("App.SetupTheme")` → `App.razor.cs`
     `SetupThemeAsync` → `IThemeService` → `body[data-theme]`; хелпер `marsIsDarkTheme` в
@@ -368,286 +375,123 @@ side-карточками.
   ESC/focus-trap, ручная синхронизация `Visible`. Замена: штатный сервис-диалог +
   `CloudyDialogHead` (заголовок) + скин `cloudy-dialog.less` (см. рецепт выше).
 
-## Статус / следующие шаги
+## Механика доменных страниц (справочник)
 
-- Готовы: лэйауты + топбары/сайдбары, темизация обеих зон, шаг 1 (Index/Posts/Categories/Users/
-  Settings + моки Dashboard/Legion), шаг 2 (TechViews-моки + рабочая TechLogsPage), паттерны списков
-  (cloudy-list.less + 8 компонентов), UsersPage мигрирована на них.
-- 2026-10-06: FluentDataGrid-паттерн для cloudy (решение пользователя: DataGrid + скин, паттерн
-  без обёртки-компонента, flex-fill скролл) — `CloudyGridProvider`, `.cloudy-browser--scroll`,
-  `table.cloudy-grid` скин; UsersPage переведена на бесконечную подгрузку (CloudyPager убран
-  с неё, компонент жив для пейджинговых страниц). ManagePostView (tech-зона) не тронут.
-- 2026-10-07: KPI-эндпоинты (`IKpiHandler` + `api/Kpi`, пилот UsersPage); модалки — штатный
-  `FluentDialog` через `IDialogService` (шим-вызов `ShowDialogAsync<T>`, `CloudyDialogHead`
-  в TitleTemplate, скин `cloudy-dialog.less`) — CreateUserDialog/ChangePasswordDialog переведены
-  на сервис-диалоги. FeedbackListPage переведена на DataGrid-паттерн (KPI `feedbacks.*`
-  хендлерами `Mars.Cms.Host/Kpi/`, ViewFeedbackDialog — на `CloudyDialogHead`, колонка CreatedAt
-  с «сегодня/вчера» — форматтер вынесен в расширение `FormatTime()`
-  (`Mars.Admin.Framework/Extensions/TimeFormatExtensions.cs`, общий с TechLogsPage), Type — тегом
-  без сортировки: поле сущности `FeedbackType`, Sort по `Type`
-  не сработает; тинт Type — ФИКСИРОВАННЫЙ маппинг (InfoMessage=0, BugReport=3, Question=1) +
-  детерминированный фолбэк: `string.GetHashCode()` рандомизирован на процесс, цвета «прыгали»
-  при каждой перезагрузке). Чипы-фильтры по Type отклонены (нет фильтра в `ListFeedbackQueryRequest`).
-  KPI-метрика фидбеков — «новых за НЕДЕЛЮ» (`feedbacks.newThisWeek`, отсчёт от понедельника;
-  решение пользователя 2026-10-07, не «за месяц» как у users). ManageNavMenuPage — тоже
-  DataGrid-паттерн, БЕЗ KPI (Title-stack со ссылкой на `/dev/EditNavMenu/<id>` + slug, Tags —
-  `CloudyTag` c `tag.StableTint()`); мёртвый OnRowClick (unreachable-код с ViewFeedbackDialog)
-  удалён. Детерминированный тинт строки — расширение `StableTint()`
-  (`Mars.Admin.Framework/Extensions/StringTintExtensions.cs`), НЕ `string.GetHashCode()`.
-  ListPostTypePage — DataGrid-паттерн + 4 KPI (`posttypes.total/componentTypes/metaFields/
-  metaValues`, ключи `Mars.Cms.Contracts/PostTypes/PostTypeKpiKeys.cs`, хендлеры
-  `Mars.Cms.Host/Kpi/`; все метрики — ТОЛЬКО в рамках PostType, решение пользователя
-  2026-10-11: metaFields считает поля с `PostTypeId != null`, metaValues — только
-  `PostMetaValues`, без UserType/PostCategory-владельцев). Инвалидация: total/component/
-  metaFields — wildcard `entity.PostType/**`; metaValues — `entity.post/**` (новый
-  Defaults-хелпер `PostAnyOperation()` без typeName). Чекбокс «Компонентные типы»
-  (IncludeComponent) — в HeadLeft.
-  ListUserTypePage — тот же паттерн (2026-10-11): KPI только `usertypes.total` (ключи
-  `Mars.Identity.Contracts/UserTypes/UserTypeKpiKeys.cs`, хендлер
-  `Mars.Identity.Host/Kpi/UserTypesTotalKpiHandler`, инвалидация wildcard
-  `entity.UserType/**`), колонки Title-stack/Tags(`StableTint`)/CreatedAt DESC/удаление.
-  ListPostCategoryTypePage — тот же паттерн (2026-10-11): KPI только `postcategorytypes.total`
-  (ключи `Mars.Cms.Contracts/PostCategoryTypes/PostCategoryTypeKpiKeys.cs`, хендлер
-  `Mars.Cms.Host/Kpi/PostCategoryTypesTotalKpiHandler`, инвалидация wildcard
-  `entity.PostCategoryType/**`).
-  ManageMediaPage (`/Media`) — ПЛИТОЧНЫЙ паттерн по прототипу CategoriesPage.vue (2026-10-11):
-  новые паттерны cloudy-list.less — `.cloudy-tiles`/`.cloudy-tile` (плитки папок/файлов,
-  hover-действия rename/delete/move, превью-миниатюры), `.cloudy-crumbs` (хлебные крошки
-  папок), `.cloudy-browser-group` (группы Folders/Files), `.cloudy-count`. KPI `media.files` +
-  `media.storage` (`MediaKpiKeys` в Mars.Media.Contracts/Files, хендлеры `Mars.Media.Host/Kpi/`;
-  storage = SUM FileSize в байтах, фронт хьюманизирует `ToHumanizedSize()`). Медиа-событий
-  НЕ было — добавлены Defaults `MediaFileAdd/MediaFileDelete` (`entity/mediafile/*`) и
-  триггеры в FileService (WriteUpload/Delete/DeleteMany) и MediaService (ScanFilesAndSaveInDB);
-  конструктор FileService теперь с IEventManager (тест FileServiceTests обновлён). Диалоги —
-  MediaFolderNameDialog/MediaMoveFileDialog (сервис-паттерн, страницы Pages/MediaViews).
-  `FluentMediaFilesList` не тронут (его использует ModalMediaSelect) — ОБА УДАЛЕНЫ
-  2026-10-12 (вариант 1, см. ниже). XActions-дропдаун
-  (скан файлов/миниатюры) и ссылка «Настройки медиа» со страницы сняты — команды доступны
-  через ActionCenter (открытый вопрос XActions-меню в cloudy). Файлы — НЕ DataGrid:
-  пейджинг `CloudyPager` (Skip/Take через `client.Media.List`, FolderId: null=все,
-  Guid.Empty=корень).
-  ManageMediaPage — клики по файлам, сортировка, flat-вид (2026-10-12): изображения —
-  spotlight.js (якорь `class="spotlight"` + контейнер плиток `.spotlight-group`, `data-media`/
-  `data-title`; API бандла: клик-делегация на document, группа = closest `.spotlight-group`).
-  НЕ-изображения — popover свойств: ОДИН общий `FluentPopover` с динамическим `AnchorId`
-  (id плитки `media-file-{Guid}`), контент `.cloudy-file-props` (cloudy-list.less); при
-  переключении на другой файл — сначала закрыть, `Task.Delay(50)`, потом открыть (иначе
-  anchored-region не перепривязывается). Текстовые файлы (whitelist расширений в
-  ManageMediaPage.razor.cs + лимит `MaxTextPreviewSize` 512 КБ) — `MediaTextFileDialog`
-  (сервис-паттерн): monospace `pre.cloudy-mono-preview`, широкая панель 920px через
-  `fluent-dialog:has(.cloudy-mono-preview)::part(dialog)` (cloudy-dialog.less); текст
-  тянется `window.blazor_fetch_text(url, maxChars)` (scripts.js, fetch + truncation);
-  oversized-текст — только popover с Download («Too large to preview»). Сортировка как в
-  старом FluentMediaFilesList — чипы Date/Name/Size (поля сущности
-  `CreatedAt`/`FileName`/`FileSize`, НЕ поля response-DTO), клик по активному чипу
-  переключает направление (иконка bi-arrow-down/up-short); расстановка (swap по запросу
-  2026-10-12): чипы сортировки — в HeadLeft рядом с кнопкой вида, хлебные крошки —
-  в `.cloudy-group-head` над плитками (во flat-виде скрыты). Вид «All files» (как галерея
-  телефона) — ОДНА иконочная кнопка `.cloudy-icon-btn` в HeadLeft (bi-collection ↔
-  bi-folder2-open, без текста, `ToggleView`): flat-вид прячет крошки/папки/New folder,
-  `FolderId=null` (=все файлы), при включении сбрасывает сортировку в CreatedAt DESC.
-  Папки и файлы — ОДНА область (заголовки секций Folders/Files убраны по запросу
-  пользователя 2026-10-12): один `.cloudy-browser-group` с одним гридом `.cloudy-tiles` —
-  папки → файлы → плитка загрузки последней. Загрузка — новый `MediaUploadTile`
-  (Pages/MediaViews) вместо `MediaUploadZone` (на странице больше не используется):
-  нативный `InputFile`, растянутый на плитку с opacity:0 (клик = picker, drag&drop =
-  нативный drop на input; НЕ FluentInputFile — см. память про его грабли), по файлу
-  `client.Media.Upload` (лимиты 1000 МБ / 50 шт как у MediaUploadZone, ошибки —
-  IMessageService пофайлово), стиль `.cloudy-tile--upload` (пунктир). Хлебные крошки
-  НЕ локализовать: корень — литерал "Media", имена папок как есть (страница вся
-  англоязычная, `AppRes.Media` в крошке давал разнобой «Медиа» среди English).
-  ManageMediaPage — второй раунд (2026-10-12): страница ОТКРЫВАЕТСЯ В ПАПКЕ ГОДА —
-  `OpenYearFolder` ищет в корне папку `Name == DateTime.Now.Year`, нет — создаёт
-  `CreateFolder(ParentId=null)` (серверный `Create` даёт тот же `Path="Media/{год}"`, что
-  `GetOrCreateByPath` при загрузке); ошибка — молчаливый фолбэк в корень. Загрузка всегда
-  в ТЕКУЩУЮ папку (tile `FolderId=_currentFolderId`; в корне/null — серверный фолбэк
-  Media/{год}). Кнопка «New folder» → bootstrap-dropdown «New» (`data-bs-toggle`, скин
-  `.cloudy-dropdown-menu` в cloudy-list.less): Folder / Text file / Upload files (JS
-  `blazor_click_element('media-upload-input')` кликает скрытый input плитки). Создание
-  текстового файла — `MediaCreateTextFileDialog`: имя (без точки → дописать `.txt`) +
-  `CodeEditor2 Lang=plaintext` (ContainerCssStyle height:100% + обёртка
-  `.cloudy-create-text__editor` 340px — грабля дефолтных 80vh), результат
-  `MediaNewTextFile(Name, Content)` → страница грузит `client.Media.Upload`
-  (MemoryStream, UTF-8 БЕЗ BOM). Drag-состояние плитки загрузки: Blazor
-  `@ondragenter/@ondragleave/@ondrop` на label (input накрывает плитку — события
-  всплывают до label), класс `.cloudy-tile--drag` = сплошная рамка + primary. Кодировки
-  превью: `blazor_fetch_text(url, maxChars, encoding?)` — arrayBuffer,
-  `TextDecoder('utf-8',{fatal:true})` → при ошибке `windows-1251` (детект «простой»,
-  по запросу пользователя), возвращает `{text, encoding}` → `record TextPreviewResult`;
-  в заголовке `MediaTextFileDialog` бейдж `.cloudy-enc-badge` — клик = ре-fetch
-  с форсированной кодировкой (utf-8 ↔ windows-1251; токены бейджа — только 5,
-  продублированных на хосте fluent-dialog). Страница у лимита 500 строк — плитка файла
-  вынесена в `MediaFileTile.razor` (File + EventCallback OnClick/OnMove/OnDelete),
-  текстовые хелперы — в `MediaTextPreview.cs` (whitelist расширений, MaxSize 512 КБ,
-  IsPreviewable/IsOversized).
-  ManageMediaPage — третий раунд (2026-10-12): ОШИБКИ СОХРАНЕНИЯ — ВНУТРИ ДИАЛОГА, при
-  ошибке диалог НЕ закрывается (кейс пользователя: создание json → серверный валидатор
-  `UploadMediaFileValidator`, whitelist расширений `MediaOption.AllowedFileExtensions` →
-  400 → `MarsValidationException` на клиенте; раньше возникал на странице ПОСЛЕ закрытия
-  диалога и выглядел как сырое исключение). Действие переехало в диалог:
-  `MediaCreateTextFileDialog` сам делает `Upload` (`[Parameter] FolderId`),
-  `MediaFolderNameDialog` принимает `[Parameter] Func<string, Task> SubmitAction`
-  (лямбды create/rename со страницы); catch `MarsValidationException` (join Errors) и
-  Exception → инлайн `.cloudy-dialog-error` (cloudy-dialog.less; в токены хоста диалога
-  добавлен `--cld-red-badge` #e5484d/#ff6b70 — синхронно с cloudy.less),
-  `CloseAsync(true)` ТОЛЬКО при успехе, OK-кнопка `Disabled` на время busy; страница
-  проверяет `result.Value is not true` (было — string/MediaNewTextFile; record
-  MediaNewTextFile удалён). Раскладка плиток: имя+размер ПРИЖАТЫ ВНИЗ, иконка/превью —
-  по центру оставшейся части: `margin: auto 0` на прямом иконочном ребёнке `.cloudy-tile`
-  (папки/загрузка) и на icon/thumb внутри `__open` (файлы), `__open` — `flex: 1`.
-  ModalMediaSelect → cloudy-диалог выбора (вариант 1 «фасад + реализация в приложении»,
-  2026-10-12): ядро браузинга выделено из ManageMediaPage в `MediaBrowser`
-  (Pages/MediaViews; `Mode = Manage | SelectSingle | SelectMulti`, колбэки
-  OnFilePicked/SelectionChanged/OnContentChanged, публичный `GetSelectedFiles()`);
-  страница /Media = CloudyPageHead + KPI + `<MediaBrowser Mode=Manage>` (~40 строк).
-  `MediaSelectDialog` — CloudyDialogHead + браузер в Select-режиме + футер
-  Cancel/«Add selected (N)»; single — клик по плитке закрывает сразу (Cancel —
-  `Dialog.CancelAsync()`, не `CloseAsync(null)` — CS8625); свежая загрузка
-  АВТОВЫБИРАЕТСЯ (single → первый файл, multi → все; ищем в перезагруженном списке
-  по Id — дефолт CreatedAt DESC кладёт новые на первую страницу). Показ — через
-  ФАСАД: сигнатуры `IAppMediaService.OpenSelectMedia/Many` сохранены (~10 call-сайтов в
-  Framework/Nodes.Front/FormEditor/приложении не тронуты), `AppMediaService` вместо
-  static-ссылки на компонент держит static-хендлеры `SelectFileHandler`/
-  `SelectFilesHandler`, которые регистрирует `MediaSelectRegistrar` (App.razor,
-  AuthorizeView — вместо AdminSharedContainer). Framework-чистка: УДАЛЕНЫ
-  ModalMediaSelect, FluentMediaFilesList (razor+cs), AdminSharedContainer; из
-  IAppMediaService убраны ListTable/Delete (единственный потребитель — список).
-  MediaFileTile расширен под выбор: `Selectable` (нет spotlight-якоря и hover-действий,
-  клик = выбор; id плитки не рендерится — popover только в Manage), `MultiSelect`/
-  `Selected` (бейдж-галочка `.cloudy-tile__check`, `.cloudy-tile--selected`); popover
-  свойств вынесен в `MediaFilePropsPopover` (публичный `Open(file, anchorId)` —
-  страница/браузер в лимите ~500 строк). Диалог выбора: ширина min(1200px, 100vw−48px)
-  через `fluent-dialog[fuib]:has(.cloudy-media-select)::part(dialog)` — `[fuib]` в
-  селекторе ОБЯЗАТЕЛЕН (adopted-правило default-fuib.css бьёт документальное при равной
-  специфичности — FluentV5Reference факт №10; фикс пользователя 2026-10-13), тело —
-  max-height 68vh со скроллом; компактные оверрайды плиток в `.cloudy-media-select`
-  (padding/gap меньше, thumb 48px, имя/meta 13/12px, чек 20px; сетка auto-fill
-  minmax(148px) и иконки 34px — как на странице, финальная правка пользователя). Токены
-  cloudy.less — миксины `.cloudy-tokens()`/`.cloudy-tokens-dark()` (вызываются на
-  `.cloudy-layout` И на хостах диалогов — полный набор, грабля «5 токенов» ушла).
-  ПОСЛЕДСТВИЕ: dev-стенд StandNodesApp остался БЕЗ медиа-пикера (мёртвый маунт в
-  Routes.razor убран; хендлеры регистрирует только Mars.Admin → OpenSelectMedia
-  возвращает null); если стенду нужен пикер — перенос медиа-семейства в Framework
-  (отклонённый вариант 2).
-- 2026-10-14: редактор поста — общий cloudy-скин шелла `StandardEditContainer`; раунд 2
-  в тот же день — шелл переписан на BEM-блок `edit-container` без bootstrap-утилит и из
-  сайдбара убран JS-`Affix` (фикс «прыгающей» ширины при скролле); раунд 3 — sticky не
-  лип (нет хода: стопка карточек вровень с колонкой), фикс = паттерн `.cloudy-sidebar`
-  (каппинг `max-height: calc(100vh - 48px)` + свой `overflow-y:auto` + flex-start, top:24px);
-  раунд 4 — корень «не липнет»: `default-fuib.css` (adopted) задаёт `body{overflow:hidden}`
-  и убивает ВСЕ sticky админки (левый рельс тоже), фикс `html body{overflow-x:clip;
-  overflow-y:visible}` в base.less, проверено playwright-замером (aside/рельс липнут top:24;
-  грабли выше). `cloudy-form.less`: базовая раскладка + скин (hero-хедер/`SectionSubtitle`,
-  glass `__main`, aside 320px, `edit-container--flat` для вложенных — single ManagePostPage
-  и ChildPostEditorDrawer через `[Parameter] Flat` у EditPostView); `EditPostPage` без
-  ContentWrapper. Все остальные edit-страницы шелла получили тот же вид автоматически.
-  Поля формы/Title-редактор не тронуты (решение пользователя). Рецепт — §«Edit-страница».
-- 2026-10-14 (2): tech-зона поглотила Builder — `BuilderLayout` удалён (с `BuilderASide`,
-  `HubConnectStatusBadge`, `AppUsageResBadge`, `BuilderSettingsPage`, `builderlayout.less`),
-  Builder-страницы переведены на `CloudyTechLayout` (guard `Roles="Admin"`) и маршруты `/tech/*`
-  (карта — §«Раскладка кода»). Статус-бар заменён на `CloudyTechDock` (иконки hub/память
-  в левом нижнем углу без фона, popover при наведении; данные тянет сам:
-  `client.System.SystemMinStat()` + `Q.Root.On(nameof(HubConnectionState))` с отпиской
-  в Dispose). Мёртвый `d_onPageLoad`-вызов не переносился (функция в scripts.js жива —
-  её зовут CloudyLayout/BlankLayout/AdminLayout). Утилиты `.pressed-in`/`.rotate-n90`
-  переехали из builderlayout.less в class.less. Ссылки на старые маршруты исправлены везде:
-  рельс/сайдбары/UserBar/SettingsPage/ActionCenter/FrontSettingsPage/EditPostTypePresentation/
-  Docker-модуль/AiChat (парсер slug → `frontend/editor`, SKILL.md, CLI-примеры) + харнесс
-  tools/ui (crawl.js, assertions.json).
-- 2026-10-14 (3): реструктуризация Mars.Admin на доменные пространства — `SiteSpace/`
-  (Pages+Components светлой зоны), `TechSpace/` (Pages tech-зоны: моки, TechLogsPage,
-  бывшие Builder-домены; один `_Imports` на пространство), `Public/` (BlankLayout,
-  вне зон), `Shared/` — только кросс-зонное; папки `Pages/`, `Builder/`, `Components/`
-  исчезли. Namespace'ы следуют папкам (`Mars.Admin.SiteSpace.Pages.*`,
-  `Mars.Admin.TechSpace.Pages.*`, `Mars.Admin.Public`); обновлены строковые ссылки:
-  `FrontContextId` в Nodes-примере, `PageType.Namespace.StartsWith("Mars.Admin.Public")`
-  в `App.razor.cs`, FQN в `Program.cs`. `BlazorPagesService.BuildRelativeSourcePath`
-  выводит путь из namespace — изменения не потребовал; ожидание `SourceRelativePath`
-  в `AdminPagesSmokeTests` обновлено. Компоненты разобраны по зонам:
-  FormBlockEditor/PostStatusesEditor/SystemFieldSettingsPanel/ChildPostEditorDrawer/
-  RegenerateGeneratedMetaValuesForm → `SiteSpace/Components`, CodeEditorExtraToolbar
-  (CodeEditor2 используется в обеих зонах) → `Shared`.
-- 2026-10-30: ManagePostPage/ManagePostView переведены на DataGrid-паттерн: CloudyPageHead
-  + 2 KPI (Total posts / Categories; Media и Statuses убраны),
-  CloudyBrowser Scrollable (HeadLeft — фильтр-категория, HeadRight — CloudySearchBox +
-  `.cloudy-icon-btn` refresh/фильтры/колонки + Create), грид `cloudy-grid` на
-  CloudyGridProvider, ячейки — паттерн-классы (stack/tags/time/grid-member/row-actions,
-  детерминированные тинты), bootstrap mobile/desktop-дубль Title-ячейки удалён.
-  Кнопка «AI help» удалена, XActionsDropDown в hero закомментирован (место не определено —
-  решение пользователя). Диалог настройки колонок — сервис-диалог `PostGridSettingsDialog`
-  (CloudyDialogHead + PostTypeGridSettingsEditor; результат — wrapper
-  `PostGridSettingsDialogResult`, т.к. null-настройки = «сброс» и неотличимы от отмены);
-  инлайн-FluentDialog + `SyncDialogAsync`-хак удалены. Панель фильтров — в новом слоте
-  `SubHead`/`SubHeadVisible` CloudyBrowser + `.cloudy-filters`-стили; CTS-дебаунс панели
-  заменён на `Debouncer`. Single-режим (EditPostView Flat в `.cloudy-acrylic`) не тронут.
-- 2026-11-04: тулбар ManagePostView — иконочные кнопки (фильтры/колонки/refresh) и
-  фильтр-категория в HeadLeft, в HeadRight только поиск + Create (решение пользователя).
-  KPI ManagePostPage переведены с Take=1-хака на KPI-эндпоинт: параметризованные ключи
-  `posts.total:{typeName}` / `postcategories.total:{typeName}` (`IParameterizedKpiHandler` —
-  расширение реестра, см. рецепт KPI); карточка Categories рендерится только при включённой
-  фиче Category; подписи — из AppRes через `L[Label]` (как UsersPage). Тесты —
-  `GetKpiTests` (Mars.WebApiClient.Integration.Tests, 4 passed).
-- 2026-11-04…14 (до этого раунда, уже в ветке): self-profile страницы (/Profile,
-  /Profile/Edit, ApiKeys/Passkeys суброуты) + read-first EditUserPage; About/аватар;
-  Automation = NodeEditor1 с inline-панелью ноды; FrontsPage/FrontEditorPage
-  (CloudyTech, браузерный chrome превью, два режима); TechPluginsPage и
-  TechMarketplacePage на живых данных (старые /Plugins и /marketplace удалены);
-  EditNavMenuPage — дерево NavMenuTree с drag&drop + sticky-панель свойств;
-  DatasourcePage — универсальный workbench `/tech/datasource/{Slug?}` (старые
-  хаб/query/actions и мок /tech/database удалены); Docker-модуль вынесен в плагин.
-- 2026-11-14 (финальный раунд перед merge, объём подтверждён пользователем):
-  - Categories: ManagePostCategoryPage на DataGrid-паттерне (CloudyPageHead + 1 KPI
-    `postcategories.total:{type}`, CloudyBrowser Scrollable, cloudy-grid, иерархия
-    отступом `(LevelsCount-1)*20` в Title-ячейке, дефолт-сортировка SlugPath asc —
-    порядок дерева). ManagePostCategoryView поглощён в страницу. EditPostCategoryPage
-    переведена на StandardEditContainer (была на старом StandardEditForm1 — НЕ на
-    шелле, вопреки ожиданию), EditPostCategoryView поглощён; заодно фикс:
-    SelectParentCategoryDropDown получал захардкоженный PostType="post" — теперь
-    реальный тип из маршрута.
-  - Feedback read/unread: `FeedbackEntity.IsRead` + миграция AddFeedbackIsRead
-    (backfill старых строк DEFAULT true, затем DROP DEFAULT; HasDefaultValue в модели
-    НЕТ — иначе EF опустил бы CLR-default false и новые строки стали бы true).
-    `POST api/Feedback/{id}/read` (идемпотентен, событие `entity/feedback/read` только
-    при реальном изменении), фильтр `IsRead` в List-запросе, KPI `feedbacks.unread`
-    (FeedbacksUnreadKpiHandler; Total-хендлер оставлен — ключ потребляет GetKpiTests).
-    UI: чипы All/Unread, точка + утолщённый заголовок непрочитанных, MarkRead при
-    открытии диалога, refresh грида и KPI после закрытия. Excel-колонка IsRead не
-    добавлялась (бинарный шаблон). Тесты: tests/Mars.Server.Tests/Feedbacks (15).
-  - Диалоги плагинов: NugetInstallDialog/ZipUploadDialog перенесены из
-    SiteSpace/Pages/PluginViews в TechSpace/Pages/PluginViews (папка-источник удалена),
-    все три (+ MarketplacePluginDialog) на CloudyDialogHead, интерфейс английский.
-  - Tech-хаб `/tech` (BuilderAppsPage) → BEM tech-hub: hero + 17 карточек в 4 группах
-    (Main/Manage/System/Dev utilities), английский, tint на группу (purple/blue/teal/green);
-    Users в Manage (добавлен 2026-11-15 по запросу). Entities `/tech/models` → 5 доменов:
-    PostType, PostCategoryType, Users, UserType, ClassModels. Мёртвые ссылки убраны
-    (Nodes, Forms, STO Types — страницы не существует). Media из рельса убран
-    (правка пользователя 2026-11-15), в хабе остался.
-  - BuilderModelsPage/ClassModelListPage/ViewComponentsPage/Playbooks → BEM
-    models-page/classmodels-page/components-page/playbooks-page на --ct-*;
-    битые относительные href models-хаба заменены абсолютными /dev/…; мёртвый
-    плейсхолдер «[actions]» убран; bootstrap-аккордеон classmodels → нативный тоггл.
-  - SchedulerPage/StyleDesignerPage → BEM scheduler-page/styledesigner-page на --ct-*;
-    механика превью StyleDesigner сохранена (JS-токены inline на внешнем div, геометрия
-    на внутреннем); панели без overflow:hidden/backdrop-filter — иначе клиппинг
-    fixed-оверлеев FluentSelect/Autocomplete/DatePicker из StyleSampleForm. Скид грида
-    scheduler локальный (cloudy-grid из cloudy-list.less сидит на --cld-* и в tech-зоне
-    не работает — кандидат на общий tech-паттерн, если таких страниц станет больше).
-    XActionsDropDown явно возвращён в hero обеих страниц (ContentWrapper рендерил его
-    через GeneralSectionActions; на Fronts/Datasource/Logs он пропал молча — открытый
-    вопрос XActions в cloudy).
-  - NodesPage (/tech/nodes, заглушка «123123») удалена; маршрут убран из crawl.js.
-  - DatasourceEditConfigPage → BEM ds-config-page (hero + Back to workbench + панель).
-  - Моки Dashboard/Legion оставлены (решение пользователя), Public-зона
-    (Login/Register/Logout/Privacy) — редизайн отложен отдельно.
-  - Проверка: dotnet build Mars.slnx — 0 ошибок; Mars.Server.Tests 490/521
-    (31 падение — известный регресс xunit.v3 4.0.2 xUnit1024 в TemplateEngines);
-    Mars.Admin.Framework.Tests 50/50; Mars.Excel.Tests 3/3; assertions харнесса
-    обновлены (PostCategory, EditPostCategory, tech-хаб, models/classmodels/components/
-    playbooks/scheduler/styledesigner, datasource/config). Версия 0.8.4-alpha.60.
-- Дальше: responsive-скрытие колонок DataGrid (не перенесено; на 390px грид шире
-  шелла — FeedbackList/Users, системное, mobile-дефекты отложены); XActions в cloudy —
-  место не определено (дропдаун в hero Posts закомментирован, на Scheduler/StyleDesigner
-  возвращён в hero); моки Dashboard/Legion — оживить или убрать; Public-зона —
-  отдельный редизайн; tech-вариант cloudy-grid скина — если появятся ещё tech-гриды.
-  Тосты IMessageService: дефект 2026-11-12 («не рендерятся») пользователем 2026-11-14
-  подтверждён как НЕактуальный — работают нормально.
+Устойчивые факты по страницам (выжимка из истории редизайна; полная история —
+`git show 3b13b36a:ai/CloudyRedesignGuide.md`, секция «Статус / следующие шаги»).
+
+### KPI-ключи по страницам
+
+Реестр и механика — рецепт «KPI-карточки» выше. Ключи-константы живут в Contracts
+модуля-владельца, хендлеры — в Host модуля.
+
+| Страница | Ключи | Хендлеры / инвалидация |
+|---|---|---|
+| UsersPage | `users.total`, `users.newThisMonth` | `Mars.Identity.Host/Kpi/Users*KpiHandler`, ключи `UserKpiKeys` (`Mars.Identity.Contracts/Users`); TTL 10 мин + `entity/user/add\|delete` |
+| FeedbackListPage | `feedbacks.total`, `feedbacks.newThisWeek`, `feedbacks.unread` | `Mars.Cms.Host/Kpi/Feedbacks*KpiHandler` + `FeedbacksUnreadKpiHandler`, ключи `FeedbackKpiKeys`; `FeedbackAdd/FeedbackDelete` + `entity/feedback/read`. **newThisWeek — за НЕДЕЛЮ от понедельника** (решение пользователя, не «за месяц» как у users) |
+| ListPostTypePage | `posttypes.total/componentTypes/metaFields/metaValues` | ключи `PostTypeKpiKeys` (`Mars.Cms.Contracts/PostTypes`), `Mars.Cms.Host/Kpi/`. Все метрики — ТОЛЬКО в рамках PostType: metaFields считает поля с `PostTypeId != null`, metaValues — только `PostMetaValues` (без UserType/PostCategory-владельцев). Инвалидация: `entity.PostType/**`; metaValues — `entity.post/**` (Defaults-хелпер `PostAnyOperation()`) |
+| ListUserTypePage | `usertypes.total` | `UserTypeKpiKeys` (`Mars.Identity.Contracts/UserTypes`), `UserTypesTotalKpiHandler`; `entity.UserType/**` |
+| ListPostCategoryTypePage | `postcategorytypes.total` | `PostCategoryTypeKpiKeys` (`Mars.Cms.Contracts/PostCategoryTypes`), `PostCategoryTypesTotalKpiHandler`; `entity.PostCategoryType/**` |
+| ManagePostPage | `posts.total:{typeName}`, `postcategories.total:{typeName}` | параметризованные (`IParameterizedKpiHandler`): `PostsTotalKpiHandler`/`PostCategoriesTotalKpiHandler` (`Mars.Cms.Host/Kpi/`), ключи `PostKpiKeys.TotalFor(typeName)`/`PostCategoryKpiKeys.TotalFor(typeName)`. Карточка Categories рендерится только при включённой фиче Category |
+| ManagePostCategoryPage | `postcategories.total:{type}` | тот же параметризованный хендлер |
+| ManageMediaPage | `media.files`, `media.storage` | `MediaKpiKeys` (`Mars.Media.Contracts/Files`), `Mars.Media.Host/Kpi/`; storage = SUM FileSize в байтах, фронт хьюманизирует `ToHumanizedSize()`. События `MediaFileAdd/MediaFileDelete` (`entity/mediafile/*`) добавлены в Defaults; триггеры — FileService (WriteUpload/Delete/DeleteMany) и MediaService (ScanFilesAndSaveInDB) |
+
+### Feedback (read/unread)
+
+- `FeedbackEntity.IsRead`; миграция `20261115010627_AddFeedbackIsRead`: backfill старых строк
+  `DEFAULT true`, затем `DROP DEFAULT`; `HasDefaultValue` в модели НЕТ — иначе EF опустил бы
+  CLR-default false и новые строки стали бы true.
+- `POST api/Feedback/{id}/read` (`FeedbackController.MarkRead`, `Mars.Cms.Host`) — идемпотентен,
+  событие `entity/feedback/read` только при реальном изменении; фильтр `IsRead` в List-запросе.
+- UI: чипы All/Unread, точка + утолщённый заголовок непрочитанных, MarkRead при открытии диалога,
+  refresh грида и KPI после закрытия. Excel-колонка IsRead не добавлялась (бинарный шаблон).
+- Type — тег БЕЗ сортировки (поле сущности `FeedbackType`), тинт ФИКСИРОВАННЫЙ:
+  InfoMessage=0, BugReport=3, Question=1. Чипы-фильтры по Type отклонены (нет фильтра
+  в `ListFeedbackQueryRequest`).
+- CreatedAt — «сегодня/вчера» через `FormatTime()`
+  (`Mars.Admin.Framework/Extensions/TimeFormatExtensions.cs`, общий с TechLogsPage).
+- Тесты: `tests/Mars.Server.Tests/Feedbacks`.
+
+### Media (`/Media`)
+
+- Страница = CloudyPageHead + KPI + `<MediaBrowser Mode=Manage>` (~40 строк). Ядро браузинга —
+  `MediaBrowser` (`SiteSpace/Pages/MediaViews`): `MediaBrowserMode = Manage | SelectSingle |
+  SelectMulti`, колбэки OnFilePicked/SelectionChanged/OnContentChanged, `GetSelectedFiles()`.
+- Плитки `.cloudy-tiles`/`.cloudy-tile`: папки → файлы → плитка загрузки в ОДНОЙ области
+  (`.cloudy-browser-group`). Крошки `.cloudy-crumbs` НЕ локализовать (корень — литерал "Media",
+  имена папок как есть; страница англоязычная). Сортировка — чипы Date/Name/Size (поля сущности
+  `CreatedAt`/`FileName`/`FileSize`, НЕ response-DTO), клик по активному меняет направление.
+  Flat-вид — одна иконочная кнопка в HeadLeft (`FolderId=null` = все файлы, сброс сортировки
+  в CreatedAt DESC).
+- Страница ОТКРЫВАЕТСЯ В ПАПКЕ ГОДА: `OpenYearFolder` (find-or-create `Name == DateTime.Now.Year`
+  в корне; ошибка — молчаливый фолбэк в корень). Загрузка всегда в ТЕКУЩУЮ папку.
+- `MediaUploadTile` — нативный `InputFile`, растянутый на плитку с opacity:0 (НЕ FluentInputFile);
+  лимиты 1000 МБ / 50 шт, ошибки пофайлово через IMessageService; drag-состояние — события
+  на label (`.cloudy-tile--drag`).
+- Изображения — spotlight.js (якорь `.spotlight` + контейнер `.spotlight-group`). НЕ-изображения —
+  ОДИН общий `FluentPopover` с динамическим `AnchorId` (при переключении: закрыть → `Task.Delay(50)`
+  → открыть, иначе anchored-region не перепривязывается); свойства — `MediaFilePropsPopover`.
+  Текст — `MediaTextFileDialog` (whitelist расширений + лимит 512 КБ в `MediaTextPreview.cs`;
+  `window.blazor_fetch_text(url, maxChars, encoding?)` — utf-8 fatal → фолбэк windows-1251;
+  бейдж кодировки = ре-fetch с форсированной кодировкой; oversized — только popover с Download).
+- Создание текстового файла — `MediaCreateTextFileDialog` (имя без точки → `.txt`;
+  `CodeEditor2 Lang=plaintext` в обёртке `.cloudy-create-text__editor` 340px — дефолтные 80vh
+  ломают раскладку). ОШИБКИ СОХРАНЕНИЯ — ВНУТРИ диалога (`.cloudy-dialog-error`, catch
+  `MarsValidationException`): действие делает сам диалог, `CloseAsync(true)` ТОЛЬКО при успехе,
+  OK Disabled на время busy; страница проверяет `result.Value is not true`.
+- Пикер: `MediaSelectDialog` (CloudyDialogHead + MediaBrowser в Select-режиме); ширина
+  min(1200px, 100vw−48px) через `fluent-dialog[fuib]:has(.cloudy-media-select)::part(dialog)`
+  (`[fuib]` обязателен — FluentV5Reference факт №10); свежая загрузка АВТОВЫБИРАЕТСЯ.
+  Фасад `IAppMediaService.OpenSelectMedia/Many` сохранён (~10 call-сайтов); static-хендлеры
+  регистрирует `MediaSelectRegistrar` (`App.razor`, AuthorizeView). ПОСЛЕДСТВИЕ: dev-стенд
+  StandNodesApp БЕЗ медиа-пикера (хендлеры только в Mars.Admin; перенос медиа-семейства
+  в Framework — отклонённый вариант).
+- УДАЛЕНЫ (2026-10-12): ModalMediaSelect, FluentMediaFilesList, AdminSharedContainer;
+  из IAppMediaService убраны ListTable/Delete.
+
+### Posts (ManagePostPage / ManagePostView)
+
+- DataGrid-паттерн; тулбар: HeadLeft — фильтр-категория + иконочные кнопки (фильтры/колонки/
+  refresh), HeadRight — только поиск + Create (решение пользователя 2026-11-04).
+- Настройка колонок — сервис-диалог `PostGridSettingsDialog` (CloudyDialogHead +
+  PostTypeGridSettingsEditor); результат — wrapper `PostGridSettingsDialogResult`, т.к.
+  null-настройки = «сброс» и неотличимы от отмены.
+- Панель фильтров — слот `SubHead`/`SubHeadVisible` + `.cloudy-filters`; дебаунс — `Debouncer`.
+- Single-режим — `EditPostView Flat` в `.cloudy-acrylic` (не тронут редизайном списков).
+- XActionsDropDown в hero закомментирован (место не определено — см. бэклог).
+
+### Categories
+
+- ManagePostCategoryPage: DataGrid-паттерн, иерархия отступом `(LevelsCount-1)*20` в Title-ячейке,
+  дефолт-сортировка SlugPath asc (порядок дерева). ManagePostCategoryView поглощён в страницу.
+- EditPostCategoryPage — на StandardEditContainer; `SelectParentCategoryDropDown` получает
+  реальный тип из маршрута (хардкод PostType="post" был багом).
+
+### NavMenu
+
+- ManageNavMenuPage: DataGrid-паттерн БЕЗ KPI; Title-stack со ссылкой на `/dev/EditNavMenu/<id>`
+  + slug; Tags — `CloudyTag` c `tag.StableTint()` (`StringTintExtensions.cs`).
+  Детерминированный тинт строки — `StableTint()`, НЕ `string.GetHashCode()`
+  (рандомизирован на процесс — цвета «прыгали» при перезагрузке).
+
+### Tech-хаб и tech-страницы
+
+- `/tech` (BuilderAppsPage) — BEM tech-hub: hero + 17 карточек в 4 группах
+  (Main/Manage/System/Dev utilities), английский, tint на группу (purple/blue/teal/green).
+- `/tech/models` — 5 доменов: PostType, PostCategoryType, Users, UserType, ClassModels.
+- SchedulerPage/StyleDesignerPage — BEM scheduler-page/styledesigner-page на `--ct-*`;
+  панели БЕЗ overflow:hidden/backdrop-filter (иначе клиппинг fixed-оверлеев
+  FluentSelect/Autocomplete/DatePicker из StyleSampleForm). Скид грида scheduler локальный:
+  `cloudy-grid` из cloudy-list.less сидит на `--cld-*` и в tech-зоне не работает.
+- XActionsDropDown явно возвращён в hero Scheduler/StyleDesigner; на Fronts/Datasource/Logs
+  пропал молча (открытый вопрос — см. бэклог).
+
+## Бэклог
+
+- Responsive-скрытие колонок DataGrid не перенесено: на 390px грид шире шелла
+  (FeedbackList/Users — системный лимит DataGrid; mobile-дефекты отложены).
+- XActions в cloudy — место не определено: дропдаун в hero Posts закомментирован,
+  на Scheduler/StyleDesigner возвращён в hero, на Fronts/Datasource/Logs отсутствует.
+- Моки Dashboard/Legion — оживить или убрать (решение пользователя: пока оставлены).
+- Tech-вариант cloudy-grid скина — если появятся ещё tech-гриды.
+- KPI: scope-группы ключей вместо явного списка, роли на отдельные ключи.

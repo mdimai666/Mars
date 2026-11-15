@@ -15,8 +15,9 @@
   ОДИН TFM (net8.0), 5 сборок: `Icons.dll` (5 КБ, база), `Icons.Regular.dll` (10.2 МБ),
   `Icons.Filled.dll` (8.6 МБ), `Icons.Color.dll` (3.5 МБ), `Icons.Light.dll` (0.2 МБ).
 
-Дата снятия фактов: 2026-10-01 (5.0.0), пересверено под 5.0.1 — 2026-11-12. Нарратив миграции —
-в `ai/FluentV5MigrationPlan.md`, CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGuide.md`.
+Дата снятия фактов: 2026-10-01 (5.0.0), пересверено под 5.0.1 — 2026-11-12. История миграции
+v4→v5 (план схлопнут): `git show 3b13b36a:ai/FluentV5MigrationPlan.md`.
+CSS-архитектура Mars (--mars-*, мост) — в `ai/CssRefactoringGuide.md`.
 
 ---
 

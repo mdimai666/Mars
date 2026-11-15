@@ -1,4 +1,4 @@
-# Setup Wizard — контекст для агента
+# SetupWizardGuide — контекст для агента
 
 ## Что это
 

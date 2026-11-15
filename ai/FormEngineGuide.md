@@ -384,7 +384,7 @@
 - **Свести XActions и формы опций на тот же механизм**: `XActionArgument` + `XActionFormDialog` —
   сегодня единственный работающий генератор «схема → форма», `OptionEditFormForOptionAttribute` /
   `IOptionsFormsLocator` — тот же паттерн. Без этого в платформе живут два параллельных генератора
-  форм; в `ai/XActionsPlan.md` связи с `Mars.Forms` пока нет.
+  форм; в `ai/XActionsGuide.md` связи с `Mars.Forms` пока нет.
 - **Пикер пользователя для слота `author`**: сейчас слот read-only с редактором `core.display.text`
   (подпись вместо значения), нужен отдельный редактор-связь.
 - **Натуральная ширина колонки (`auto`)** — вторая итерация раскладки (сейчас `null` = full).

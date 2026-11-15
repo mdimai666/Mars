@@ -77,41 +77,23 @@ Motion:     --mars-duration-{fast,normal,slow} (100/200/400ms), --mars-easing-de
 Алиасы на `--colorNeutral*`/`--colorBrand*` в тёмной теме флипаются сами (v5
 перегенерирует токены) — ручных dark-оверрайдов для них не нужно.
 
-## v5-токены: живые и мёртвые
+## v5-токены и `::part` — справочник
 
-**Живые** (пакет 5.0.0, бандл lib.module.js / reboot.css / default-fuib.css):
-`--colorNeutral*`, `--colorBrand*`, `--colorStatus*`, `--colorPalette*`,
-`--fontSizeBase100..600`, `--fontSizeHero700..1000`, `--borderRadius*`, `--strokeWidth*`,
-`--shadow*`, `--spacing*`, `--fontFamily*`. Compat-мост на `:root`:
-`--success/--warning/--error/--info` (+ `-inverted`) и `--font-monospace` — живы
-(определены как `var(--colorStatus*)`, оверрайды моста подхватывают).
+Полные карты живых/мёртвых токенов (со значениями), `::part`-карта и rendering-факты
+(host-теги, shadow DOM, селекторы) — в **`ai/FluentV5Reference.md`** (§1–3, пакет 5.0.1).
+Не дублировать их здесь; новую находку дописывать туда. Mars-специфика:
 
-**Мёртвые** (v4 FAST, в v5 не определены): `--type-ramp-*`, `--accent-fill-*`,
-`--neutral-fill-*`, `--neutral-layer-*`, `--neutral-foreground-*`, `--neutral-stroke-*`,
-`--design-unit`, `--neutral-base-color`, `--control-corner-radius`, `--base-height-multiplier`,
-`--badge-fill-*`.
-
-**Инвариант:** мёртвый токен в less НЕ даёт ошибки сборки — только молчаливую визуальную
-деградацию. Перед использованием любого не-Mars токена в стилях — проверить, что он живой
-(по этому списку или grep'ом css-бандла пакета).
-
-Живые классы/элементы для оверрайдов: `.fluent-data-grid*` (v5 рендерит
-`<div class="fluent-data-grid">`, обычная HTML-таблица — НЕ custom element),
-`.fluent-sortable-list`, элемент `fluent-badge`, элемент `fluent-label` (v5 рендерит
-без класса `.fluent-input-label` — селектор только по тегу).
-
-## `::part` — карта v4 → v5
-
-| Компонент | v4 | v5 |
-|---|---|---|
-| dialog | `::part(control)` | `::part(dialog)` |
-| switch | `::part(switch)` | `::part(checked-indicator)`; host несёт `checked="true"` |
-| tree-item | `::part(content-region)` | `::part(content)` + `::part(positioning-region)` |
-| button | `::part(control)` | внутреннего `<button>` НЕТ (shadow = slot+span.content), клик по host; есть `::part(content)` — span-обёртка слота (проверено на живом DOM 2026-10-01); стили на host наследуются в slot |
-| input/textarea | `::part(control)` | без изменений |
-
-`::deep` не пробивает shadow DOM веб-компонента (как и в v4). Scoped razor.css НЕ отключены
-(`ScopedCssEnabled` нигде нет) — работают.
+- **Инвариант:** мёртвый v4-токен в less НЕ даёт ошибки сборки — только молчаливую визуальную
+  деградацию. Перед использованием любого не-Mars токена — проверить, что он живой
+  (Reference §1).
+- Compat-мост на `:root` (`--success/--warning/--error/--info` (+ `-inverted`),
+  `--font-monospace`) — ЖИВ: определён как `var(--colorStatus*)`, оверрайды нашего моста
+  подхватывает сам.
+- Живые цели оверрайдов: `table.fluent-data-grid` (обычная HTML-таблица, НЕ custom element),
+  `.fluent-sortable-list`, элемент `fluent-badge`, элемент `fluent-label` (v5 рендерит
+  без класса `.fluent-input-label` — селектор только по тегу).
+- `::deep` не пробивает shadow DOM веб-компонента (как и в v4). Scoped razor.css НЕ отключены
+  (`ScopedCssEnabled` нигде нет) — работают.
 
 ## Тёмная тема
 
@@ -173,7 +155,8 @@ Motion:     --mars-duration-{fast,normal,slow} (100/200/400ms), --mars-easing-de
 - `FluentIcon` в v5 по умолчанию `currentColor` (в v4 был Accent) — принято; акцент
   ставится точечно `Color`/`WithColor`.
 - `FluentLabel` в v5 без `Typo`/`Color` (уходят в AdditionalAttributes — молчаливая потеря
-  стиля) — типографика через `FluentText` (таблица маппинга v4 Typo→Size — в плане миграции).
+  стиля) — типографика через `FluentText` (таблица маппинга v4 Typo→Size —
+  `FluentV5Reference.md` §4).
 
 ## Именование классов
 

@@ -1,6 +1,6 @@
 // Sweep мёртвых v4-параметров/компонентов FluentUI по .razor/.razor.cs/.cs.
 // Список паттернов: fenced-блок ```json с маркером "sweep-dead-params" из ai/FluentV5Reference.md;
-// если блока нет — встроенный список (синхронизирован с находками FluentV5MigrationPlan.md).
+// если блока нет — встроенный список (синхронизирован с находками FluentV5Reference.md).
 // Консервативен: только репорт file:line для ручной/агентской проверки, ничего не правит.
 // Запуск: node sweep.js [--root ../..] [--ref ai/FluentV5Reference.md]
 const fs = require('fs');

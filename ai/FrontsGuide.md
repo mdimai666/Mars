@@ -146,7 +146,7 @@
 пайплайн стал полностью динамическим (без рестарта), фронты — только файлы в `data/fronts/`,
 демонтирован DB-легаси (посты `page/template/block/layout`, Blazor-движок), добавлены список
 фронтов в админке, редактор с live-превью и ИИ-чатом. Полный план с заметками по фазам —
-в истории git (`ai/FrontReworkPlan.md`, файл схлопнут).
+в истории git: `git show 7660625a^:ai/FrontReworkPlan.md`.
 
 SiteEngine-реворк (сентябрь 2026): `MyHandlebars`/`IMarsHtmlTemplator` демонтированы — сайт-движки
 строятся на фабричном слое `TemplateEngine.Providers.*`, добавлен движок Scriban (`*.sbn`),

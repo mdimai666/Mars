@@ -13,14 +13,14 @@
 - **`ai/CssRefactoringGuide.md`** — CSS-архитектура: три слоя (`--mars-*` → important-мост
   на `html:root` → Fluent-токены), карта less-файлов, dark-хук `body[data-theme="dark"]`,
   грабли LESS (версии, интерполяция, `*/` в комментариях), рецепт компиляции.
-- **`ai/FluentV5MigrationPlan.md`** — история миграции v4→v5 и почему решения такие
-  (по закрытии инициативы схлопывается сюда по `ai/PlanLifecycleGuide.md`).
+- **История миграции v4→v5** (завершена, план схлопнут): `git show 3b13b36a:ai/FluentV5MigrationPlan.md`
+  — этапы, аудит «тихих» поломок, визуальный проход; устойчивые факты уже в Reference/гайдах.
 - **MCP `fluentui-blazor`** — только API/миграция-маппинг («какие параметры у компонента»,
   «чем заменён X»). Runtime-CSS не знает; описывает dev-ветку и расходился со stable —
   при расхождении верить Reference/пакету.
 - **nuget-пакет / GitHub** — ОТКРЫВАТЬ ТОЛЬКО если факта нет в гайдах. Новую находку
   СРАЗУ дописывать в `FluentV5Reference.md` (амортизация). Кэш пакета:
-  `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components\5.0.0\`.
+  `C:\Users\D\.nuget\packages\microsoft.fluentui.aspnetcore.components\5.0.1\`.
 - Быстрый путь для точечного бага: snippet из DevTools от пользователя (computed-стили
   элемента) — половина диагностики не нужна.
 
@@ -108,7 +108,7 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 - Навигация: `FluentNav`/`FluentNavCategory`/`FluentNavItem`/`FluentNavSectionHeader`
   (Menu2 в FW); фон пунктов сайдбара гасится `--nav-bg-color: transparent` (layout.less).
 - Типографика: `FluentText` c `Size300..900`/`As=TextTag.H1..H6` (таблица маппинга v4
-  Typo → v5 Size — в `FluentV5MigrationPlan.md`, этап стилей); у `FluentLabel` НЕТ
+  Typo → v5 Size — в `FluentV5Reference.md` §4); у `FluentLabel` НЕТ
   Color/Typo (уйдут в AdditionalAttributes молча).
 - Иконки: `FluentIcon` default = `currentColor` (осознанно); акцент — точечно `Color`.
 - Тёмная тема: только v5 `IThemeService` + CSS-хук `body[data-theme="dark"]`
@@ -142,10 +142,11 @@ Playwright-core + системный Edge (`channel: 'msedge'`, браузеры
 ## Отклонено
 
 - Стилизация через v5 `Theme`-мутацию (`CreateCustomThemeAsync`) для стайлера — перебивается
-  important-мостом на `html:root`; скаляры стайлера — CSS-переменные (см. план, шаг 3).
-  Theme-мутация осталась только для brand-цвета через `IThemeService`.
+  important-мостом на `html:root`; скаляры стайлера — CSS-переменные
+  (`CssRefactoringGuide.md` §«Стайлер»). Theme-мутация осталась только для brand-цвета
+  через `IThemeService`.
 - Переход на нейминг Fluent-токенов в нашем css — отклонён; источник истины `--mars-*`,
-  Fluent натягивается мостом (план «Mars-токены главнее Fluent»).
+  Fluent натягивается мостом (решение «Mars-токены главнее Fluent», 2026-09-29).
 - Нейминг `UiLayoutGuide.md`/`AdminUiGuide.md` для этого гайда — выбран `FluentUiGuide.md`.
 
 ## Рецепты

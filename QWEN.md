@@ -29,8 +29,8 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 Каталог плагинов, кабинет подписок (CloudPanel), Keycloak и облачная инфраструктура живут
 в отдельном репо `C:\Users\D\Documents\VisualStudio\2026\Mars.Cloud` (план — там в
-`ai/CloudInfraPlan.md`). С этим репо связаны: фазы 4–5 плана каталога
-(`ai/PluginServer/PluginCatalogPlan.md`), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
+`ai/CloudInfraPlan.md`). С этим репо связаны: каталог плагинов
+(`ai/PluginSystemGuide.md` §«Каталог плагинов»), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
 и будущая документация каталога в `docs/dev_docs/`.
 
 ## Структура решения и правила агентам
@@ -57,6 +57,8 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 - Начинать с `ai/FluentUiGuide.md` (инструменты, правила вёрстки, цикл правки); факты
   библиотеки — `ai/FluentV5Reference.md`, CSS/токены/less — `ai/CssRefactoringGuide.md`.
+- Устройство админки и Cloudy-паттерны (что переиспользовать при новой странице) —
+  `ai/CloudyGuide.md`; хостинг `/dev` и отдача ассетов — `ai/AdminHostingGuide.md`.
 - Не раскапывать nuget-пакет/GitHub ради фактов, которые уже есть в гайдах; новую находку
   дописывать в гайд (амортизация расследований).
 - Правки стилей — только `.less`; визуальная проверка без скриншотов — харнесс `tools/ui/`
@@ -122,6 +124,7 @@ domain socket (no second startup); otherwise they run in-process.
   source file paths and code (`--code`, `--json`). Read-only. Guide: `ai/CliPagesGuide.md`.
 - The command set is not fixed — discover it via `-h` and the sources
   (`src/Mars.Modules/Mars.CommandLine`, `src/Mars.WebApp/CommandLine`, CommandCli classes in modules).
+  General CLI mechanics (UDS, root flags, quiet/JSON) and `fn` (one-shot C# scripts): `ai/CliGuide.md`.
 - Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
 - Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
   Root flags go BEFORE the command (`Mars.exe --quiet pages list`), after a subcommand they fail to parse.

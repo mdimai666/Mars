@@ -3,7 +3,8 @@
 > Читатель — агент, который меняет нод-движок. **Гайд — карта, не ТЗ**: пути и решения сверяй с кодом.
 > Проверено по коду: 2026-09-26.
 > Рецепт создания ноды (модель/impl/форма/тесты/спека) — [NodeCreationGuide.md](./NodeCreationGuide.md).
-> Производительность выражений — [ExpressionEnginePlan.md](./ExpressionEnginePlan.md).
+> Движок выражений (производительность) — секция «Движок выражений» ниже; история инициативы:
+> `git show 3b13b36a:ai/ExpressionEnginePlan.md`.
 > История работы (планы схлопнуты в этот гайд): `git show 2d0f12dc:ai/NodesReworkPlan.md`,
 > `git show 2d0f12dc:ai/NodesReworkStage2Plan.md`.
 
@@ -58,6 +59,57 @@ flows.json → `NodeService.Load()` (в ответе также `OutputValueSpec
   перед долгим I/O аренду сужать до локальной функции (док в XML `ExpressionSession`).
 - В форме: `MarsValueInput` (конвенция ввода `@` = expression, `For="() => Node.X"` — по нему компонент
   сам тянет подсказки), `MarsPathInput` — путь без `@` (куда писать результат). Рецепты — NodeCreationGuide.
+
+## Движок выражений (производительность)
+
+Лестница стоимости в `ExpressionRunner.Resolve` (все ступени обязаны давать тот же результат,
+что DE-путь — parity-тесты; семантика и тексты ошибок `NodeExecuteException` не меняются):
+
+- **Hot path (~2 нс / 0 Б)**: значение — ЦЕЛИКОМ одиночный корневой путь
+  (`InputValueResolver.IsSingleRootPath`, anchored-regex) → `TryResolveRootPath` +
+  `ConvertToVarType`, без движков. `msg.Payload` при null/string/primitive payload читается
+  напрямую без `DynamicNodeMsgWrapper` (complex-payload — через wrapper, приоритет его
+  свойств сохраняется). Неразрешимый путь → fallthrough в DE.
+- **NCalc (~350 нс / 1 КБ)**: простые выражения по `SimpleExpressionClassifier` — ПОЛНЫЙ
+  match token-regex'ом (корневые пути, литералы, `+ - * % /`, сравнения, `&& || !`, скобки).
+  Конвертация: пути → bare-идентификаторы (`msg.count` → `msg_count`), внутри строковых
+  литералов не подменяются; решение и конвертация кэшируются. Опции: `StrictTypeMatching |
+  OrdinalStringComparer | NoStringTypeCoercion`. Parse/eval-ошибка → `Reject(text)` → DE.
+  C#-семантика: целочисленное деление — обработчик `EvaluateBinary`
+  (`CSharpIntegerDivision`, промоция C#, ulong не обрабатывается); string+number коэрция
+  закрыта `NoStringTypeCoercion` (mixed → ошибка NCalc → DE; string+string конкатенация
+  сохраняется). Member access в NCalc не работает (ncalc#216) — остаётся на DE.
+- **DynamicExpresso (~930 нс / 3 КБ на сложных)**: полный C#. Lambda-кэш
+  (`TryResolveDeCached`): bound-текст парсится ОДИН раз с объявленными параметрами по
+  фактическим типам значений; кэш-ключ = bound-текст + типы (тип значения пути может
+  меняться между сообщениями); на сообщение — `lambda.Invoke(Parameter...)`. НЕ кэшируется:
+  тексты с остаточными ссылками на корни (`ResidualRootRegex`) и с Parse-ошибкой.
+- **Пул**: `ExpressionRunnerPool` (singleton, `ConcurrentDictionary<nodeId, ConcurrentBag<runner>>`),
+  вход — `rns.Expressions(node)` → disposable-сессия (rent/return). Нет пула в
+  `rns.ServiceProvider` (тесты/моки NSubstitute) → ephemeral runner, поведение идентично.
+  Перепривязка переменных на сообщение ОБЯЗАТЕЛЬНА (RNS новый на каждое сообщение,
+  `NodeTaskJob.callbackNext`). Один runner арендуется одним воркером; мешок растёт
+  до фактического параллелизма (до 10 воркеров на канал).
+- **InlineFunctionNode**: вариант A выполнен — `BuildArgs()` арендует сессию только на цикл
+  сборки аргументов, `DynamicInvoke` делегата — вне сессии; `@expr` по-прежнему старый
+  механизм (`ppt.Eval`, компиляция на каждый вызов). Вариант B — открыт (бэклог).
+- Замеры: `benchmarks/Benchmark.NodeExpression/` (`RESULT.md` — производительность,
+  `SEMANTIC.md` — сравнение семантики DE vs NCalc; запуск — exe из bin после
+  `dotnet build -c Release`, семантики — `--semantic`; проект исключён из Debug-сборки slnx).
+  Исходные 107 мкс / 34 КБ на сообщение → hot path ~98 нс / 56 Б (~1100×).
+
+Грабли движка:
+
+- Кэшированная Lambda DE захватывает переменные интерпретатора КОНСТАНТАМИ на момент Parse —
+  поэтому кэш применим только к bound-текстам БЕЗ остаточных ссылок на msg/контексты;
+  всё зависящее от сообщения передаётся явными параметрами на Invoke (`env` — статичная lambda).
+- NCalc без `StrictTypeMatching`: `'1' == 1` → true (в C# ошибка);
+  `ArithmeticNullOrEmptyStringAsZero` НЕ включать (null-арифметика в C# — ошибка).
+- Стареющие `msg_*`-переменные в переиспользуемом Interpreter корректность не ломают
+  (неразрешившийся путь идёт dynamic-веткой), но накапливаются — ограничены distinct-путями ноды.
+- Классификатор консервативен: всё, что не match'ится полностью, — в DE; новое разрешение
+  (как `/` в фазе 4) — только с parity-тестами. Тихие расхождения найдены ровно два:
+  целочисленное деление и string+number коэрция — оба закрыты.
 
 ## Контракты выходов и цепочка подсказок
 
@@ -127,6 +179,13 @@ flows.json → `NodeService.Load()` (в ответе также `OutputValueSpec
 - Хранить последние входящие сообщения по умолчанию — память/приватность; только DebugMode + TTL.
 - Generic `InputSource<T>` для хранения — плоско строками (`Kind` + `Value`).
 - Monaco для expression-полей сразу — строка с попапом; Monaco приходит через модуль CodeCompletion.
+- Кэш Interpreter/Lambda в полях impl — отклонён пользователем («технический код, хранить поля
+  для этого в Impl не очень»); вместо него пул-сервис `ExpressionRunnerPool`.
+- Try-parse классификация выражений (пробуем NCalc, упало → DE) — тихие семантические
+  расхождения на валидных-в-обоих выражениях неприемлемы; явный классификатор предсказуем.
+- Единый движок DynamicExpresso без NCalc — параметризованная Lambda DE (195 нс) не достигает
+  уровня NCalc (27 нс) на простых выражениях (замер `DynExpressoParamLambda`).
+- Лок на ноду вместо пула runner'ов — сериализовал бы до 10 воркеров `NodeTaskJob`.
 
 ## Что ещё не сделано (бэклог)
 
@@ -140,6 +199,12 @@ flows.json → `NodeService.Load()` (в ответе также `OutputValueSpec
 - Deep-read контекстов по пути; массивы/индексы `[N]` в сеттерах записи.
 - `InlineFunctionNodeImpl` при null-результате не зовёт callback (поток молча обрывается) — обсудить;
   `@expr` в `InlineFunctionNode.Arguments` — старый механизм, на Kind-ось не переехал.
+- InlineFunctionNode вариант B (полная унификация `@expr` через лестницу runner'а): нужен
+  overload `Resolve(..., Type targetType)`; починит LINQ в аргументах (сейчас
+  `@msg.Payload.Count()` падает RuntimeBinderException — Eval без BindRootPaths), ускорит
+  простые аргументы до ~100–360 нс, НО изменит тексты ошибок и поведение ранее падавших
+  выражений — обсудить с пользователем. Вариант C (кэш typed-Lambda в текущем механизме)
+  поглощается B — не делать.
 - Проверить реализован ли flow-контекст полностью (`NodeService` передаёт `flowContext: null`) — от этого
   зависит отдача имён flow-переменных в `Load()`; SignalR-обновление списков переменных.
 - Inject `timestamp`: только unix-millis (ISO-8601?); массивы/объекты в const — сырой JSON-текст;

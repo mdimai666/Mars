@@ -153,31 +153,6 @@ public class UserController : ControllerBase
         return (await _userService.UsersEditViewModel(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("UserProfileInfo/{id:guid}")]
-    public async Task<UserProfileInfoResponse?> UserProfileInfo(Guid id, CancellationToken cancellationToken)
-    {
-        return (await _userService.UserProfileInfo(id, cancellationToken))?.ToResponse();
-    }
-
-    [HttpGet("UserEditProfile/{id:guid}")]
-    public async Task<UserEditProfileResponse?> UserEditProfile(Guid id, CancellationToken cancellationToken)
-    {
-        return (await _userService.UserEditProfileGet(id, cancellationToken))?.ToResponse();
-    }
-
-    [HttpPut("UserEditProfile/{id:guid}")]
-    public async Task<UserActionResult<UserEditProfileResponse>> UserEditProfile_Update(UserEditProfileDto dto, CancellationToken cancellationToken)
-    {
-        var result = await _userService.UserEditProfileUpdate(dto, cancellationToken);
-
-        return new UserActionResult<UserEditProfileResponse>
-        {
-            Ok = result.Ok,
-            Message = result.Message,
-            Data = result.Data.ToResponse()
-        };
-    }
-
     [Authorize(Roles = "Admin")]
     [HttpPut("UpdateUserRoles/{id:guid}")]
     public async Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)

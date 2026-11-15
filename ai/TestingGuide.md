@@ -7,22 +7,35 @@
 
 - Сьют — **xUnit v3 + Microsoft Testing Platform**: каждый тест-проект собирается как
   MTP-exe (`OutputType=Exe`) и запускается напрямую из `bin\Debug\net10.0`.
-- `dotnet test` **не использовать**: MTP-драйвер заблокирован несовместимостью SDK 10.0.400
-  (exit code 5, "Zero tests ran").
-- Полный прогон: `pwsh -NoProfile -File test-all.ps1` (`-IncludeE2E` — плюс E2E/DockerImage,
-  `-List` — только список проектов). Скрипт запускает exe с cwd = `bin\Debug\net10.0`
-  (фикстуры пишут в bin, изолированно по проектам); логи — `%TEMP%\mars-test-runs\<timestamp>\`.
-- Один проект: `dotnet build tests/<Проект>` затем `<Проект>.exe` из bin. Фильтр MTP —
-  по пути (`-filter "/Assembly/Namespace/Class/*"`), не по `FullyQualifiedName`; можно несколько.
+- `dotnet test` **работает** в MTP-режиме: opt-in задан в `global.json`
+  (`"test": { "runner": "Microsoft.Testing.Platform" }`) — файл не удалять. Без него на .NET 10 SDK
+  сборка падает с `error Testing with VSTest target is no longer supported by
+  Microsoft.Testing.Platform on .NET 10 SDK and later` (exit 1).
+- Канон точечного прогона: `dotnet test tests/<Проект> --filter "FullyQualifiedName~<Имя>"`
+  (работает и без разделителя `--`, и с ним). Фильтр — VSTest-синтаксис; xUnit-опции в MTP-режиме
+  не принимаются: `--class`, `--treenode-filter` → `Handshake failures` / zero tests (exit 5),
+  query-фильтр `--filter "/asm/ns/class"` → zero tests (exit 8), `-- --help` роняет хост SDK.
+  Справка по опциям — только у exe (`<exe> --help`).
+- Быстрый путь (без MSBuild, старт заметно быстрее): `dotnet build tests/<Проект>` затем
+  `<Проект>.exe` из bin. CLI — парсер **xUnit v3 in-process runner**, не MTP/VSTest: только
+  одинарное тире (`--filter` → `unknown option`, exit 3), полный список — `<exe> --help`
+  (единственная опция с двумя тире).
+- Фильтр тестов — по имени класса, не по `FullyQualifiedName`; надёжнее всего `-class`
+  (`"Ns.Class"`, поддерживает `*` по краям), также `-namespace`, `-method`, `-trait`.
+  Query-форма — `-filter "/Assembly/Namespace/Class/Method"`; VSTest-синтаксис легален только
+  через `-filterVSTest "FullyQualifiedName~X"`. Смешивать эти три вида в одном запуске нельзя.
+- **Грабли:** неверный путь в `-filter` не падает — прогон печатает `Total: 0` и выходит с кодом 0
+  (ложный зелёный). Всегда проверять, что `Total:` в сводке ненулевой; имена классов — `-list classes`.
 
 ## Опциональные гейты (переменные окружения)
 
 - `MARS_E2E_TESTS=1` — E2E (`tests/Mars.E2E.Tests`, `[E2EFact]`,
   `Mars.Test.AppHost/Attributes/E2EFactAttribute.cs`): Playwright + системный Edge
   (`channel: msedge`), Postgres-контейнер. Без переменной все тесты в Skip.
-- `MARS_DOCKER_TESTS=1` — docker-тесты: `tests/Mars.Docker.Tests` (`[DockerFact]`, живой демон:
-  pull/run/exec нод `docker.*`) и `tests/Mars.DockerImage.Tests` (`[DockerContainerFact]`,
-  сборка образа + миграции, `Fixtures/MarsFixture.cs`). Тяжёлые — без явной просьбы пользователя
+- `MARS_DOCKER_TESTS=1` — docker-тесты: `tests/Mars.DockerImage.Tests` (`[DockerContainerFact]`,
+  сборка образа + миграции, `Fixtures/MarsFixture.cs`). Тесты самого Docker-модуля
+  (`[DockerFact]`, pull/run/exec нод `docker.*`) уехали в плагин-репо `Mars.DockerPlugin`
+  (`tests/Mars.DockerPlugin.Tests`, тот же гейт). Тяжёлые — без явной просьбы пользователя
   не запускать.
 - `ExternalServices.*` (`tests/ExternalServices.Integration.Tests`,
   `ExternalIntegrationFactAttribute`) — внешние сервисы, тоже opt-in.
@@ -67,6 +80,21 @@
 
 ## Грабли
 
+- **Миграции — только генерацией, не руками**: `src/Server/Mars.Data.PostgreSQL/AddMigration.ps1
+  {Name}` (`dotnet ef migrations add`, startup-project Mars.WebApp). EF сортирует миграции по
+  `[Migration("…")]`-атрибуту, НЕ по имени файла; опечатка в году timestamp (прецедент 2026-11-15:
+  `AddFeedbackIsRead` с ID `2021…` вместо `2026…`) ставит миграцию раньше создающей таблицу →
+  `42P01 relation does not exist` на чистой БД. На живой БД с уже применёнными миграциями баг
+  НЕ виден (применяется только одна pending-миграция) — юнит-сьют его не ловит. После добавления
+  миграции обязателен прогон DB-интеграционных (`Mars.Integration.Tests`, свежий контейнер) или
+  E2E. Откат применённой миграции — `dotnet ef database update {Предыдущая}` (не raw SQL);
+  если applied-ID уже исчез из сборки (переименование после применения) — правится только запись
+  `__EFMigrationsHistory` (UPDATE migration_id), схема при этом уже корректна.
+- **E2E `BrowserErrorTracker` игнорирует 404 hot-reload ассетов** (`HotReload.BrowserTools.*`,
+  `hot-reload-settings.json`) — артефакт Debug-сборки: boot-конфиг WASM ссылается на hot-reload
+  модули, middleware отдаёт их только в Development, тесты идут в Test. Тот же игнор, что в
+  `tools/ui/crawl.js` (IGNORE_CONSOLE). Консоль-ошибки пишутся с location (`text @ url`) —
+  у resource-ошибок URL живёт в location, не в text.
 - Testcontainers for .NET 4.13 собирает образы через legacy `/build` API — `RUN --mount=type=cache`
   недоступен, `ImageFromDockerfileBuilder` на корневом Dockerfile падает. Нужен образ из
   Dockerfile с cache mounts — собирать через `docker build` (Process), как в

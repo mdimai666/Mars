@@ -46,19 +46,19 @@ public partial class FormLayoutEditor
 
     /// <summary>Зона приёма: пунктирная рамка и минимальная высота, чтобы пустое место было видно</summary>
     public static string DropAreaStyle
-        => "border:1px dashed var(--neutral-stroke-rest); border-radius:4px; padding:6px; min-height:44px";
+        => "border:1px dashed var(--colorNeutralStroke1); border-radius:4px; padding:6px; min-height:44px";
 
     /// <summary>Ряд — сплошная акцентная рамка: отличается от рамки ячейки внутри него</summary>
     public static string RowStyle
-        => "border:2px solid var(--accent-fill-rest); border-radius:6px; padding:4px; min-width:120px";
+        => "border:2px solid var(--colorBrandStroke1); border-radius:6px; padding:4px; min-width:120px";
 
     /// <summary>Ячейка (колонка) — пунктирная нейтральная рамка другого цвета, чем у ряда</summary>
     public static string ColumnStyle
-        => "border:2px dashed var(--neutral-stroke-rest); border-radius:6px; padding:4px; min-height:56px";
+        => "border:2px dashed var(--colorNeutralStroke1); border-radius:6px; padding:4px; min-height:56px";
 
     /// <summary>Листовой элемент — прямоугольник с названием</summary>
     public static string ElementStyle
-        => "background:var(--neutral-layer-2); border:1px solid var(--neutral-stroke-rest); border-radius:4px; padding:2px 4px";
+        => "background:var(--colorNeutralBackground2); border:1px solid var(--colorNeutralStroke1); border-radius:4px; padding:2px 4px";
 
     protected override void OnParametersSet()
     {

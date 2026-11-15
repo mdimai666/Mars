@@ -2,7 +2,7 @@
 @inject IFormEditorLocator Editors
 
 <div class="form-field mb-3" data-key="@Item.Key" title="@Item.Key">
-    <FluentLabel>@Binding.Title</FluentLabel>
+    <FluentText>@Binding.Title</FluentText>
 
     @if (EditorComponent is not null)
     {
@@ -12,9 +12,9 @@
     {
         <div class="card">
             <div class="card-body">
-                <FluentLabel Color="@Color.Warning">
+                <FluentText Color="Color.Warning">
                     нет редактора для поля <strong>@Item.Key</strong> (тип @Item.Field!.Type)
-                </FluentLabel>
+                </FluentText>
             </div>
         </div>
     }

@@ -1,0 +1,131 @@
+@page "/tech/logs"
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+@inject IJSRuntime JS
+
+<PageTitle>Logs</PageTitle>
+
+<div class="logs-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Logs</h1>
+            <p>Platform events and diagnostics.</p>
+        </div>
+        <div class="hero-actions">
+            <button class="live-btn @(_live ? "on" : null)" type="button" @onclick="ToggleLive" title="Автообновление каждые 5 секунд">
+                <span class="live-dot"></span>
+                Live
+            </button>
+            <button class="export-btn" type="button" @onclick="Export" title="Скачать текущую выборку">
+                <i class="bi bi-box-arrow-up"></i>
+                Export
+            </button>
+            <div class="view-switch">
+                <FluentSwitch @bind-Value="_monacoView" @bind-Value:after="OnViewChanged" Label="Monaco" />
+            </div>
+        </div>
+    </header>
+
+    <section class="logs-panel">
+        <header class="logs-head">
+            <div class="chips">
+                @foreach (var chip in CurrentChips)
+                {
+                    <button class="chip @(IsChipActive(chip.Id) ? "active" : null)" type="button" @onclick="() => OnChipClick(chip.Id)">
+                        @chip.Label
+                    </button>
+                }
+            </div>
+            <div class="head-right">
+                <button class="dates-toggle @(_dateMode ? "on" : null)" type="button" @onclick="ToggleDateMode"
+                        title="@(_dateMode ? "Быстрые периоды" : "Фильтр по датам")">
+                    <i class="bi bi-calendar3"></i>
+                </button>
+                @if (_dateMode)
+                {
+                    <div class="date-filter">
+                        <input type="date" @bind="_from" @bind:after="OnDateChanged" title="Дата с" />
+                        <span class="date-filter__sep">—</span>
+                        <input type="date" @bind="_to" @bind:after="OnDateChanged" title="Дата по" />
+                        @if (_from is not null || _to is not null)
+                        {
+                            <button class="date-filter__reset" type="button" @onclick="ResetDates" title="Сбросить даты">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="chips">
+                        @foreach (var chip in PeriodChips)
+                        {
+                            <button class="chip @(_period == chip.Id ? "active" : null)" type="button" @onclick="() => OnPeriodClick(chip.Id)">
+                                @chip.Label
+                            </button>
+                        }
+                    </div>
+                }
+                @if (!_monacoView)
+                {
+                    <label class="logs-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search logs..." @bind="_query" @bind:event="oninput" />
+                    </label>
+                }
+            </div>
+        </header>
+
+        @if (Busy)
+        {
+            <div class="empty">Loading…</div>
+        }
+        else if (error is not null)
+        {
+            <div class="empty error">@error</div>
+        }
+        else if (_monacoView)
+        {
+            <div class="logs-monaco">
+                <CodeEditor2 Lang="@CodeEditor2.Language.log" Value="@text" @ref="editor" OnInit="OnEditorInit"
+                             ContainerCssStyle="height:100%;border:none;border-radius:0;overflow:hidden;"
+                             OptionsJson='{"wordWrap":"off","minimap":{"enabled":false},"readOnly":true}' />
+            </div>
+        }
+        else
+        {
+            <ul class="logs-list">
+                @foreach (var log in FilteredEntries())
+                {
+                    <li class="log-row" title="Показать запись целиком" @onclick="() => ShowEntry(log)">
+                        <time>@log.Ts.FormatTime()</time>
+                        <span class="level @log.Level.ToLowerInvariant()">@log.Level</span>
+                        <span class="source">@log.Source</span>
+                        <span class="message">@log.Message</span>
+                    </li>
+                }
+                @if (!FilteredEntries().Any())
+                {
+                    <li class="empty">No log entries match.</li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+@if (_entry is not null)
+{
+    <div class="log-modal-backdrop" @onclick="CloseEntry"></div>
+    <div class="log-modal" role="dialog" aria-modal="true">
+        <header class="log-modal__head">
+            <span class="level @_entry.Level.ToLowerInvariant()">@_entry.Level</span>
+            <span class="log-modal__ts">@_entry.Ts.ToString("yyyy-MM-dd HH:mm:ss")</span>
+            <span class="log-modal__source">@_entry.Source</span>
+            <button class="log-modal__close" type="button" @onclick="CloseEntry" title="Закрыть">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <pre class="log-modal__text">@_entry.Message</pre>
+    </div>
+}

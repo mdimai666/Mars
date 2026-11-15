@@ -93,19 +93,15 @@ public partial class MetaFieldSettingsPanel
     {
         if (Field is not { } field) return;
 
-        DialogParameters parameters = new()
+        var result = await DialogService.ShowDialogAsync<MediaFolderSelectDialog>(new DialogOptions
         {
-            Title = "Папка загрузки",
-            SecondaryAction = null,
+            Header = { Title = "Папка загрузки" },
             Width = "500px",
             Modal = true,
-            PreventScroll = true,
-        };
+            Parameters = { ["Content"] = "" },
+        });
 
-        var dialog = await DialogService.ShowDialogAsync<MediaFolderSelectDialog>("", parameters);
-        var result = await dialog.Result;
-
-        if (result.Cancelled || result.Data is not string path) return;
+        if (result.Cancelled || result.Value is not string path) return;
 
         field.UploadFolder = path;
         await ChangedAsync();

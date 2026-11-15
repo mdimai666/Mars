@@ -25,14 +25,14 @@ public class AuthTests : BaseE2ETests
         // Act
         await Page.FillAsync("[name='login-email'] input", UserConstants.TestUserUsername);
         await Page.FillAsync("[name='password'] input", UserConstants.TestUserPassword);
-        await Page.ClickAsync("[type='submit'] button");
+        await Page.ClickAsync("fluent-button[type='submit']");
         await Page.WaitForURLAsync("**/dev");
 
         // Assert
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        var userName = await Page.TextContentAsync(".navbar .user-name");
-        userName.Should().Contain(UserConstants.TestUserEmail);
+        var userEmail = await Page.GetAttributeAsync(".cloudy-userbar__trigger", "title");
+        userEmail.Should().Contain(UserConstants.TestUserEmail);
         tracker.AssertNoErrors();
     }
 }

@@ -1,0 +1,26 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="MessageBar">
+
+    <div class="vstack gap-2">
+        <FluentMessageBar Intent="MessageBarIntent.Info" AllowDismiss="false" Title="Info">
+            Информационное сообщение (MessageBarIntent.Info).
+        </FluentMessageBar>
+        <FluentMessageBar Intent="MessageBarIntent.Success" AllowDismiss="false" Title="Success">
+            Операция выполнена успешно.
+        </FluentMessageBar>
+        <FluentMessageBar Intent="MessageBarIntent.Warning" AllowDismiss="false" Title="Warning">
+            Внимание: это предупреждение.
+        </FluentMessageBar>
+        <FluentMessageBar Intent="MessageBarIntent.Error" AllowDismiss="false" Title="Error">
+            Ошибка выполнения операции.
+        </FluentMessageBar>
+        <FluentMessageBar Intent="MessageBarIntent.Info" Title="С закрывашкой (AllowDismiss)">
+            Это сообщение можно закрыть.
+        </FluentMessageBar>
+        <FluentMessageBar Intent="MessageBarIntent.Success" AllowDismiss="false">
+            Сообщение без Title.
+        </FluentMessageBar>
+    </div>
+
+</GallerySection>

@@ -1,0 +1,283 @@
+@page "/legion"
+
+<PageTitle>Legion</PageTitle>
+
+<div class="legion-page">
+    <header class="legion-head">
+        <div class="hero">
+            <h1>Agent Legion Control Center</h1>
+            <p>Deploy, monitor and command your army of AI agents.</p>
+        </div>
+        <div class="kpis">
+            @foreach (var kpi in _kpis)
+            {
+                <div class="kpi">
+                    <div>
+                        <span class="kpi-label">@kpi.Label</span>
+                        <strong class="kpi-value">@kpi.Value</strong>
+                    </div>
+                    @if (kpi.Icon is not null)
+                    {
+                        <span class="kpi-icon"><i class="bi @kpi.Icon"></i></span>
+                    }
+                    else
+                    {
+                        <span class="kpi-dot @kpi.Dot"></span>
+                    }
+                </div>
+            }
+        </div>
+    </header>
+
+    <div class="legion-grid">
+        <section class="widget">
+            <h2>Legion Overview</h2>
+            <div class="matrix">
+                @foreach (var row in _matrix)
+                {
+                    <div class="matrix-row">
+                        @foreach (var cell in row)
+                        {
+                            <span class="mdot @CellClass(cell)"></span>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="legend">
+                @foreach (var item in _legend)
+                {
+                    <span class="legend-item">
+                        <span class="mdot @item.Color"></span>
+                        @item.Label
+                        <b>@item.Value</b>
+                    </span>
+                }
+            </div>
+        </section>
+
+        <section class="widget">
+            <h2>Active Missions</h2>
+            <ul class="missions">
+                @foreach (var mission in _missions)
+                {
+                    <li class="mission">
+                        <span class="row-chip"><i class="bi @mission.Icon"></i></span>
+                        <div class="mission-body">
+                            <span class="mission-name">@mission.Name</span>
+                            <div class="mission-row">
+                                <span class="mission-agents">@mission.Agents agents</span>
+                                <span class="m-bar"><span style="width:@(mission.Load)%"></span></span>
+                                <span class="mission-pct">@(mission.Load)%</span>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <button class="soft-btn" type="button">View all missions</button>
+        </section>
+
+        <section class="widget">
+            <h2>Agent Status</h2>
+            <div class="agent-row head">
+                <span>Agent</span>
+                <span>Role</span>
+                <span>Status</span>
+                <span class="load">Load</span>
+            </div>
+            @foreach (var agent in _agents)
+            {
+                <div class="agent-row">
+                    <span class="agent-id">@agent.Id</span>
+                    <span class="agent-role">@agent.Role</span>
+                    <span class="agent-status @agent.Status.ToLowerInvariant()">
+                        <span class="s-dot"></span>
+                        @agent.Status
+                    </span>
+                    <span class="load">@agent.Load</span>
+                </div>
+            }
+            <button class="soft-btn" type="button">Manage agents</button>
+        </section>
+
+        <section class="widget">
+            <h2>Command Terminal</h2>
+            <div class="term-input">
+                <input type="text" placeholder="Enter command..." />
+                <button class="term-send" type="button"><i class="bi bi-send"></i></button>
+            </div>
+            <h3>Recent Commands</h3>
+            <ul class="mini-rows">
+                @foreach (var cmd in _commands)
+                {
+                    <li>
+                        <span class="cmd-icon @cmd.Kind"><i class="bi @cmd.Icon"></i></span>
+                        <span class="row-title">@cmd.Text</span>
+                        <time class="row-date">@cmd.Time</time>
+                    </li>
+                }
+            </ul>
+            <button class="soft-btn" type="button">Command history</button>
+        </section>
+
+        <section class="widget">
+            <div class="widget-head">
+                <div>
+                    <h2>Performance</h2>
+                    <span class="widget-sub">Overall Efficiency</span>
+                </div>
+                <span class="trend">↑ 18%</span>
+            </div>
+            <svg class="chart" viewBox="0 0 280 90" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0,70 L20,58 L40,62 L60,48 L80,52 L100,40 L120,44 L140,30 L160,34 L180,24 L200,28 L220,18 L240,22 L260,16 L280,20 L280,90 L0,90 Z"
+                      fill="rgba(86, 97, 214, 0.12)" />
+                <polyline points="0,70 20,58 40,62 60,48 80,52 100,40 120,44 140,30 160,34 180,24 200,28 220,18 240,22 260,16 280,20"
+                          fill="none" stroke="var(--cld-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="chart-days">
+                @foreach (var day in _perfDays)
+                {
+                    <span>@day</span>
+                }
+            </div>
+        </section>
+
+        <section class="widget">
+            <h2>Resource Usage</h2>
+            <div class="resources">
+                @foreach (var res in _resources)
+                {
+                    <div class="res-row">
+                        <span class="res-label">@res.Label</span>
+                        <span class="m-bar"><span style="width:@(res.Load)%"></span></span>
+                        <span class="mission-pct">@(res.Load)%</span>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section class="widget">
+            <h2>Alerts</h2>
+            <ul class="mini-rows alerts">
+                @foreach (var alert in _alerts)
+                {
+                    <li>
+                        <span class="cmd-icon @alert.Kind"><i class="bi @alert.Icon"></i></span>
+                        <span class="row-title">@alert.Text</span>
+                        <time class="row-date">@alert.Time</time>
+                    </li>
+                }
+            </ul>
+            <button class="soft-btn" type="button">View all alerts</button>
+        </section>
+
+        <section class="widget">
+            <h2>Legion News</h2>
+            <ul class="mini-rows news">
+                @foreach (var item in _news)
+                {
+                    <li>
+                        <span class="row-title">@item.Text</span>
+                        <time class="row-date">@item.Date</time>
+                    </li>
+                }
+            </ul>
+            <button class="soft-btn" type="button">View all news</button>
+        </section>
+    </div>
+</div>
+
+@code {
+    sealed record Kpi(string Label, int Value, string? Icon = null, string? Dot = null);
+    sealed record LegendItem(string Label, int Value, string Color);
+    sealed record Mission(string Icon, string Name, int Agents, int Load);
+    sealed record AgentRow(string Id, string Role, string Status, string Load);
+    sealed record CommandItem(string Icon, string Kind, string Text, string Time);
+    sealed record ResourceItem(string Label, int Load);
+    sealed record NewsItem(string Text, string Date);
+
+    readonly Kpi[] _kpis =
+    [
+        new("Total Agents", 128, Icon: "bi-robot"),
+        new("Active", 98, Dot: "green"),
+        new("Idle", 18, Dot: "amber"),
+        new("Tasks", 354, Icon: "bi-diagram-3"),
+    ];
+
+    readonly string[] _matrix =
+    [
+        "GGGGGGGGGGGGGGGG",
+        "GGGGGGGGGGGGGGGG",
+        "GGGGGGGGGGGGGGGG",
+        "GGGGAGGGAGGGAGGG",
+        "VVVVVVVVVVVVVVVV",
+        "VVVVVVVVVVVVAAVA",
+        "VVVVVVVVVAVVAAVA",
+        "AAOAAAOAAOAAOAAO",
+        "OOOOOOOOOOOO",
+    ];
+
+    readonly LegendItem[] _legend =
+    [
+        new("Active", 98, "active"),
+        new("Busy", 12, "busy"),
+        new("Idle", 18, "idle"),
+        new("Offline", 8, "offline"),
+    ];
+
+    readonly Mission[] _missions =
+    [
+        new("bi-pencil", "Content Generation", 24, 75),
+        new("bi-graph-up", "Data Analysis", 18, 60),
+        new("bi-search", "SEO Optimization", 16, 40),
+        new("bi-image", "Media Processing", 12, 90),
+    ];
+
+    readonly AgentRow[] _agents =
+    [
+        new("Agent-001", "Writer", "Active", "72%"),
+        new("Agent-002", "Researcher", "Active", "48%"),
+        new("Agent-003", "Editor", "Busy", "91%"),
+        new("Agent-004", "Designer", "Idle", "23%"),
+        new("Agent-005", "Analyst", "Active", "65%"),
+    ];
+
+    readonly CommandItem[] _commands =
+    [
+        new("bi-send", "run", "Deploy content army", "2m ago"),
+        new("bi-check", "done", "Scale up researchers", "15m ago"),
+        new("bi-send", "run", "Optimize workflows", "1h ago"),
+        new("bi-check", "done", "Backup memory core", "2h ago"),
+    ];
+
+    readonly ResourceItem[] _resources =
+    [
+        new("Compute Power", 68),
+        new("Memory", 54),
+        new("Bandwidth", 42),
+        new("Storage", 71),
+    ];
+
+    readonly CommandItem[] _alerts =
+    [
+        new("bi-exclamation-triangle", "warn", "High load on Content Generation", "2m ago"),
+        new("bi-exclamation-circle", "danger", "Agent-007 went offline", "15m ago"),
+        new("bi-exclamation-triangle", "warn", "Memory usage is high", "1h ago"),
+    ];
+
+    readonly NewsItem[] _news =
+    [
+        new("New agent type: Strategist", "May 23"),
+        new("Performance boost deployed", "May 22"),
+        new("Missions system updated", "May 21"),
+    ];
+
+    readonly string[] _perfDays = ["00:00", "06:00", "12:00", "18:00", "24:00"];
+
+    static string CellClass(char c) => c switch
+    {
+        'G' => "active",
+        'V' => "busy",
+        'A' => "idle",
+        _ => "offline",
+    };
+}

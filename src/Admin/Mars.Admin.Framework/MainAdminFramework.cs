@@ -20,7 +20,7 @@ public static class MainAdminFramework
     public static void AddMarsAdminFramework(this IServiceCollection services, IConfiguration configuration, Type program)
     {
         services.AddWasmServices(configuration, program);
-        services.AddFluentUIComponents();
+        services.AddFluentUIComponents(config => config.Toast.Position = ToastPosition.TopCenter);
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
 
@@ -87,6 +87,7 @@ public static class MainAdminFramework
         services.TryAddScoped<ViewModelService>();
         services.TryAddScoped<AdminJs>();
         services.TryAddScoped<PasskeyJs>();
+        services.TryAddScoped<WysiwygQuillJs>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();

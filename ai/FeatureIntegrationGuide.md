@@ -189,6 +189,21 @@ app.Services.UseAppFrontMain()...UseSemanticKernelFront().Use<Feature>Front();  
 `HybridCache` уже зарегистрирован в WebApp (L2 — Postgres distributed cache). Пример использования
 с ключами/тегами/TTL: `Mars.AiChat.Host/Services/AiChatSessionStore.cs`.
 
+### 7.1. KPI-метрики для админки
+
+Карточки KPI на страницах админки считают серверные хендлеры, не фронтовые запросы-хаки:
+1. Ключ-константа в Contracts модуля (образец: `Mars.Identity.Contracts/Users/UserKpiKeys.cs`).
+2. Хендлер `IKpiHandler` (`Mars.Contracts/Common/IKpiHandler.cs`) в `Main<Module>.Host`
+   (образец: `Mars.Identity.Host/Kpi/`); чем считать, кэшировать (IMemoryCache + TTL) и
+   инвалидировать (слушатели `IEventManager`, подписка В КОНСТРУКТОРЕ) — решает хендлер.
+3. Регистрация в `Main<Module>.cs` — `services.AddSingleton<IKpiHandler, MyHandler>()`
+   (singleton конструируется один раз; НЕ через `IMarsAppLifetimeService` — его `GetOrderedList`
+   ломается на нескольких регистрациях под одним интерфейсом, см. CloudyRedesignGuide §KPI).
+4. Фронт: `_client.Kpi.Get([ключи])` — один батч-вызов `GET api/Kpi?keys=…`
+   (`Mars.Server/Controllers/KpiController.cs`, Admin-only, БЕЗ кэша — агрегатор).
+5. Label — стабильный ключ, перевод в `Mars.Contracts/Resources/AppRes*.resx` (имя записи = ключ).
+Детали паттерна — `ai/CloudyRedesignGuide.md` §«KPI-карточки».
+
 ### 8. Проверка
 
 ```

@@ -1,0 +1,52 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+
+@* Read-only представление значений метаполей (обзор профиля / админ-страница пользователя):
+   строки deflist по видимым полям, несколько значений одного поля склеиваются. *@
+
+<dl class="cloudy-deflist">
+    @foreach (var row in Rows)
+    {
+        <dt class="cloudy-deflist__term">@row.Field.Title</dt>
+        <dd class="cloudy-deflist__value">@row.Text</dd>
+    }
+</dl>
+
+@code {
+    [Parameter] public List<MetaValueEditModel> MetaValues { get; set; } = [];
+
+    public static bool HasVisibleValues(IEnumerable<MetaValueEditModel> values)
+        => values.Any(v => v.MetaField is not null && !v.MetaField.Hidden);
+
+    List<(MetaFieldEditModel Field, string Text)> Rows
+        => [.. MetaValues
+            .Where(v => v.MetaField is not null && !v.MetaField.Hidden)
+            .GroupBy(v => v.MetaField.Key)
+            .Select(g =>
+            {
+                var text = string.Join(", ", g.Select(FormatMeta).Where(s => s != "—"));
+                return (g.First().MetaField, Text: text.Length > 0 ? text : "—");
+            })
+            .OrderBy(t => t.Item1.Order)];
+
+    static string FormatMeta(MetaValueEditModel v)
+    {
+        var f = v.MetaField;
+        var s = f.Type switch
+        {
+            MetaFieldType.Bool => v.Bool ? "да" : "нет",
+            MetaFieldType.Int => v.Int.ToString(),
+            MetaFieldType.Long => v.Long.ToString(),
+            MetaFieldType.Float => v.Float.ToString("0.##"),
+            MetaFieldType.Decimal => v.Decimal.ToString("0.##"),
+            MetaFieldType.DateTime => v.DateTime?.ToString("d") ?? "",
+            MetaFieldType.Select => f.Variants.FirstOrDefault(x => x.Id == v.VariantId)?.Title ?? v.StringShort,
+            MetaFieldType.SelectMany => string.Join(", ", v.VariantsIds
+                .Select(id => f.Variants.FirstOrDefault(x => x.Id == id)?.Title)
+                .Where(x => !string.IsNullOrEmpty(x))),
+            MetaFieldType.Text => string.IsNullOrWhiteSpace(v.StringText) ? v.StringShort : v.StringText,
+            _ => string.IsNullOrWhiteSpace(v.StringShort) ? v.StringText : v.StringShort,
+        };
+        return string.IsNullOrWhiteSpace(s) ? "—" : s;
+    }
+}

@@ -122,7 +122,7 @@ internal class UserRepository : IUserRepository, IDisposable
                                                 .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                 ?? throw new NotFoundException();
 
-        entity.UpdateEntity(query);
+        entity.UpdateEntity(query, _lookupNormalizer);
 
         MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
 
@@ -261,8 +261,13 @@ internal class UserRepository : IUserRepository, IDisposable
         if (query.Roles?.Any() ?? false)
         {
             queryable = queryable.Include(s => s.Roles)
-                                    //.Where(s=>s.Roles.Any(x=>EF.Functions.ILike(x.Name, x.Name)))
-                                    .Where(entity => entity.Roles!.All(role => query.Roles.Contains(role.Name)));
+                                    .Where(entity => entity.Roles!.Any(role => query.Roles.Contains(role.Name)));
+        }
+
+        if (query.CreatedFrom is not null)
+        {
+            var createdFrom = query.CreatedFrom.Value;
+            queryable = queryable.Where(s => s.CreatedAt >= createdFrom);
         }
 
         return queryable;
@@ -375,24 +380,6 @@ internal class UserRepository : IUserRepository, IDisposable
         return user;
     }
 
-    public async Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        ThrowIfDisposed();
-
-        var user = await _marsDbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-
-        //MetaFieldService metaFieldService = _serviceProvider.GetRequiredService<MetaFieldService>();
-        //var user = Get(id, s => s.MetaValues).Result;
-        //var ef = GetEFContext();
-        //var metaFields = UserMetaFields(ef);
-        //user.MetaValues = metaFieldService.GetValuesBlank(user.MetaValues, metaFields);
-        //user.MetaFields = metaFields;
-        //return new UserEditProfileDto(user);
-
-        return user?.ToEditProfile();
-    }
-
     public async Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -446,8 +433,9 @@ internal class UserRepository : IUserRepository, IDisposable
         {
             var userTypesId = (await _marsDbContext.UserTypes.FirstAsync()).Id; //TODO: установить в настройках
 
-            var prefererUserName = query.PreferredUserName;
-            var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(query.PreferredUserName)
+            // провайдеры (Keycloak/Microsoft) отдают preferred_username почтой — режем до local-part
+            var prefererUserName = UserMapping.EmailLocalPart(query.PreferredUserName ?? query.Email)!;
+            var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(prefererUserName)
                                     || await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
 
             if (thisUserNameBusy) // TODO: пересмотреть

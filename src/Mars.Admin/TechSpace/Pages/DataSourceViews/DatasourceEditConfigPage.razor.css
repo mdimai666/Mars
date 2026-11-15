@@ -1,0 +1,64 @@
+.ds-config-page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ds-config-page__hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-bottom: 14px;
+}
+
+.ds-config-page__title {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ct-ink);
+}
+
+.ds-config-page__subtitle {
+    margin: 0;
+    color: var(--ct-muted);
+    font-size: 14px;
+}
+
+.ds-config-page__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ds-config-page__action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.ds-config-page__action:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.ds-config-page__panel {
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+    padding: 18px 20px;
+    overflow-y: auto;
+}

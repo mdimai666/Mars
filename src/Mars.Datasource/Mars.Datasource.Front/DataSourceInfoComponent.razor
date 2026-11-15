@@ -6,35 +6,43 @@
 @using Mars.Datasource.Front.Services;
 @using Mars.WebApiClient.Interfaces
 
-<div class="DataSourceInfoComponent">
+<div class="ds-maintenance">
     @if (actions is null)
     {
         <Mars.Admin.Framework.Components.SharedLoader2 />
     }
     else if (actions.Count == 0)
     {
-        <div class="text-secondary">У этого источника нет действий</div>
+        <p class="ds-maintenance__empty">У этого источника нет действий</p>
     }
     else
     {
-        <div class="d-flex gap-3 flex-wrap">
+        <ul class="ds-maintenance__list">
             @foreach (var action in actions)
             {
-                <a class="btn btn-outline-primary" title="@action.Description"
-                   @onclick=@(e => SendTextAction(action.Id))>@action.Label</a>
+                <li>
+                    <button class="ds-maintenance__action" type="button" title="@action.Description"
+                            disabled="@Busy" @onclick="() => SendTextAction(action.Id)">
+                        <span class="ds-maintenance__action-text">
+                            <strong>@action.Label</strong>
+                            <small>@action.Description</small>
+                        </span>
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </li>
             }
-        </div>
+        </ul>
     }
-
-    <hr />
 
     @if (Busy)
     {
-        <Mars.Admin.Framework.Components.SharedLoader2 />
+        <div class="ds-maintenance__busy">
+            <Mars.Admin.Framework.Components.SharedLoader2 />
+        </div>
     }
     else if (lastAction != null)
     {
-        <div class="p-5">
+        <div class="ds-maintenance__result">
             @if (!lastAction.Ok)
             {
                 <div class="alert alert-danger">
@@ -43,32 +51,21 @@
             }
             else
             {
-                <div class="alert alert-success">
-                    @if (!string.IsNullOrEmpty(lastAction.Message))
-                    {
-                        @lastAction.Message
-                    }
-                    else
-                    {
-                        <text>Ok</text>
-                    }
+                <div class="ds-maintenance__ok">
+                    @(string.IsNullOrEmpty(lastAction.Message) ? "Ok" : lastAction.Message)
                 </div>
 
                 if (lastAction.Data is not null)
                 {
-                    <div class="overflow-scroll 1custom-scroll1 h-100" style="width:calc(100vw - 270px - 20px)">
-                        <table class="table table-hover">
+                    <div class="ds-maintenance__data overflow-scroll">
+                        <table class="ds-maintenance__table">
                             <tbody>
                                 @foreach (var row in lastAction.Data)
                                 {
                                     <tr>
                                         @foreach (var col in row)
                                         {
-                                            <td>
-                                                <span class="text-nowrap">
-                                                    @col
-                                                </span>
-                                            </td>
+                                            <td><span class="text-nowrap">@col</span></td>
                                         }
                                     </tr>
                                 }

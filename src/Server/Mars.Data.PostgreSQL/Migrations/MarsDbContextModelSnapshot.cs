@@ -20,7 +20,7 @@ namespace Mars.Data.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -66,6 +66,11 @@ namespace Mars.Data.PostgreSQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("filled_username")
                         .HasComment("Заполненное имя");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_read")
+                        .HasComment("Прочитано");
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1322,6 +1327,11 @@ namespace Mars.Data.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("About")
+                        .HasColumnType("text")
+                        .HasColumnName("about")
+                        .HasComment("О себе");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer")

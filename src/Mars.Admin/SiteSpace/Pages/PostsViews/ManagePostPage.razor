@@ -1,0 +1,55 @@
+@page "/Post"
+@page "/Post/{POSTTYPE}"
+@using Mars.Cms.Contracts.PostCategories
+@using Mars.Cms.Contracts.Posts
+@using Mars.Cms.Contracts.PostTypes
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="flex-fill d-flex flex-column">
+    @if (_isSingle)
+    {
+        <CloudyPageHead Title="@(postType?.Title ?? "…")" Subtitle="Write, edit and publish your articles." />
+    }
+    else
+    {
+        <CloudyPageHead Title="@(postType?.Title ?? "…")" Subtitle="Write, edit and publish your articles." KpiCols="@(CategoriesEnabled ? 2 : 1)">
+            <Kpis>
+                <CloudyKpi Label="@KpiLabel(PostKpiKeys.TotalFor(postType!.TypeName))"
+                           Value="@KpiValue(PostKpiKeys.TotalFor(postType!.TypeName))"
+                           Icon="bi-file-earmark-text" />
+                @if (CategoriesEnabled)
+                {
+                    <CloudyKpi Label="@KpiLabel(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                               Value="@KpiValue(PostCategoryKpiKeys.TotalFor(postType.TypeName))"
+                               Icon="bi-folder2-open" />
+                }
+            </Kpis>
+        </CloudyPageHead>
+    }
+
+    @* Действия типа поста (XActionsDropDown) пока спрятаны — не определено место в cloudy-схеме.
+    @if (!_isSingle)
+    {
+        <div class="d-flex align-items-start">
+            <XActionsDropDown ContextPart="@postType!.TypeName" AlsoShowRootContext="true" />
+        </div>
+    }
+    *@
+
+    @if (_isSingle)
+    {
+        @if (_singlePostId != Guid.Empty)
+        {
+            <section class="cloudy-acrylic flex-fill d-flex flex-column">
+                <div class="cloudy-acrylic__body flex-fill d-flex flex-column">
+                    <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard Flat />
+                </div>
+            </section>
+        }
+    }
+    else
+    {
+        <ManagePostView PostType=@postType />
+    }
+</div>

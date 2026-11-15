@@ -23,6 +23,11 @@ public static class EventManagerExtension
     public static string PostAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.post/{typeName}/*";
 
     /// <summary>
+    /// <code>entity.post/**</code>
+    /// </summary>
+    public static string PostAnyOperation(this EventManagerDefaults defaults) => $"entity.post/**";
+
+    /// <summary>
     /// <code>Option/{optionClassName}</code>
     /// </summary>
     public static string OptionUpdate(this EventManagerDefaults defaults, string optionClassName) => $"Option.{optionClassName}";
@@ -88,6 +93,7 @@ public static class EventManagerExtension
     public static string FeedbackAdd(this EventManagerDefaults defaults) => $"entity/feedback/add";
     public static string FeedbackUpdate(this EventManagerDefaults defaults) => $"entity/feedback/update";
     public static string FeedbackDelete(this EventManagerDefaults defaults) => $"entity/feedback/delete";
+    public static string FeedbackRead(this EventManagerDefaults defaults) => $"entity/feedback/read";
 
     public static string UserAdd(this EventManagerDefaults defaults) => $"entity/user/add";
     public static string UserUpdate(this EventManagerDefaults defaults) => $"entity/user/update";
@@ -137,4 +143,7 @@ public static class EventManagerExtension
     /// <code>entity.PostCategory/*</code>
     /// </summary>
     public static string PostCategoryAnyOperation(this EventManagerDefaults defaults) => $"entity.PostCategory/*";
+
+    public static string MediaFileAdd(this EventManagerDefaults defaults) => $"entity/mediafile/add";
+    public static string MediaFileDelete(this EventManagerDefaults defaults) => $"entity/mediafile/delete";
 }

@@ -1,0 +1,168 @@
+{
+  "all": [
+    { "name": "body background is white", "selector": "body", "css": { "background-color": "rgb(255, 255, 255)" } },
+    { "name": "admin-layout background is white", "selector": ".admin-layout", "css": { "background-color": "rgb(255, 255, 255)" }, "optional": true },
+    { "name": "fluent-menu items wrapped in fluent-menu-list", "each": "fluent-menu", "hasChild": "fluent-menu-list" },
+    { "name": "no dead attr usemenuservice", "absent": "[usemenuservice]" },
+    { "name": "sidebar nav background transparent", "selector": ".admin-layout .menu-admin1", "css": { "--nav-bg-color": "transparent" }, "optional": true }
+  ],
+  "pages": {
+    "/dev": [
+      { "name": "cloudy shell rendered", "selector": ".cloudy-layout .cloudy-sidebar", "exists": { "min": 1 } },
+      { "name": "cloudy home stats rendered", "selector": ".cloudy-stats .cloudy-stat", "exists": { "min": 4 } },
+      { "name": "cloudy recent posts rendered", "selector": ".cloudy-recent", "exists": { "min": 1 } }
+    ],
+    "/dev/Post": [
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid header compact (design 57px: padding 12+12 + line 20)", "selector": "table.cloudy-grid.fluent-data-grid th", "box": { "maxHeight": 60 } },
+      { "name": "actions column is last", "selector": ".fluent-data-grid th:last-child", "text": { "contains": "Действия" } },
+      { "name": "icon-only row button square", "selector": ".fluent-data-grid td fluent-button:has(> svg:only-child)", "box": { "maxWidth": 48 }, "optional": true }
+    ],
+    "/dev/Post/*": [
+      { "name": "cloudy acrylic shell (single post types)", "selector": ".cloudy-acrylic", "exists": { "min": 1 }, "optional": true },
+      { "name": "cloudy browser rendered (list post types)", "selector": ".cloudy-browser", "exists": { "min": 1 }, "optional": true },
+      { "name": "cloudy-grid header compact (design 57px: padding 12+12 + line 20)", "selector": "table.cloudy-grid.fluent-data-grid th", "box": { "maxHeight": 60 }, "optional": true },
+      { "name": "actions column is last", "selector": ".fluent-data-grid th:last-child", "text": { "contains": "Действия" }, "optional": true },
+      { "name": "icon-only row button square", "selector": ".fluent-data-grid td fluent-button:has(> svg:only-child)", "box": { "maxWidth": 48 }, "optional": true }
+    ],
+    "/dev/PostCategory": [
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid rendered", "selector": "table.cloudy-grid.fluent-data-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/PostCategory/*": [
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid rendered", "selector": "table.cloudy-grid.fluent-data-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/EditPostCategory/*": [
+      { "name": "edit container rendered", "selector": ".edit-container", "exists": { "min": 1 } }
+    ],
+    "/dev/Users": [
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } }
+    ],
+    "/dev/EditNavMenu/*": [
+      { "name": "navmenu tree rendered", "selector": ".nmt", "exists": { "min": 1 } },
+      { "name": "navmenu rows rendered", "selector": ".nmt-row", "exists": { "min": 1 } },
+      { "name": "navmenu rows not collapsed/overlapping", "selector": ".nmt-row", "box": { "minHeight": 32, "noOverlap": [".nmt-row", ".nmt-props"] } },
+      { "name": "navmenu props panel rendered", "selector": ".nmt-props", "exists": { "min": 1 } }
+    ],
+    "/dev/Profile": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "profile hero rendered", "selector": ".cloudy-profile-hero", "exists": { "min": 1 } },
+      { "name": "profile cards rendered", "selector": ".cloudy-profile-cards .cloudy-card", "exists": { "min": 2 } }
+    ],
+    "/dev/Profile/Edit": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "edit container rendered", "selector": ".edit-container", "exists": { "min": 1 } }
+    ],
+    "/dev/Profile/ApiKeys": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser .cloudy-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/Profile/Passkeys": [
+      { "name": "profile subnav rendered", "selector": ".cloudy-subnav .cloudy-chip", "exists": { "min": 4 } },
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser .cloudy-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/Settings": [
+      { "name": "cloudy acrylic shell", "selector": ".cloudy-acrylic", "exists": { "min": 1 } }
+    ],
+    "/dev/dashboard": [
+      { "name": "cloudy shell rendered", "selector": ".cloudy-layout .cloudy-sidebar", "exists": { "min": 1 } }
+    ],
+    "/dev/legion": [
+      { "name": "cloudy shell rendered", "selector": ".cloudy-layout .cloudy-sidebar", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/automation": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "node editor rendered", "selector": ".NodeEditor1 .ne-toolbar", "exists": { "min": 1 } },
+      { "name": "side console panel rendered", "selector": ".ne-side .DebugMessagesConsole", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/logs": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } }
+    ],
+    "/dev/tech": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "hub hero rendered", "selector": ".tech-hub__hero h1", "exists": { "min": 1 } },
+      { "name": "hub cards rendered", "selector": ".tech-hub__card", "exists": { "min": 17 } },
+      { "name": "no dead nodes link", "absent": ".tech-hub__card[href='/dev/tech/nodes']" }
+    ],
+    "/dev/tech/models": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "models hero rendered", "selector": ".models-page__hero h1", "exists": { "min": 1 } },
+      { "name": "model cards rendered", "selector": ".models-page__card", "exists": { "min": 5 } }
+    ],
+    "/dev/tech/models/classmodels": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "classmodels hero rendered", "selector": ".classmodels-page__hero", "exists": { "min": 1 } },
+      { "name": "model masonry cards rendered", "selector": ".classmodels-page__card", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/components": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "components hero rendered", "selector": ".components-page__hero", "exists": { "min": 1 } },
+      { "name": "assembly groups rendered", "selector": ".components-page__group", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/playbooks": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "playbooks hero rendered", "selector": ".playbooks-page__hero", "exists": { "min": 1 } },
+      { "name": "editor panel rendered", "selector": ".playbooks-page__panel", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/scheduler": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "scheduler hero rendered", "selector": ".scheduler-page__hero", "exists": { "min": 1 } },
+      { "name": "jobs panel rendered", "selector": ".scheduler-page__panel", "exists": { "min": 1 } },
+      { "name": "jobs grid rendered", "selector": ".scheduler-page__panel .fluent-data-grid", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/styledesigner": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "styledesigner hero rendered", "selector": ".styledesigner-page__hero", "exists": { "min": 1 } },
+      { "name": "workspace rendered", "selector": ".styledesigner-page__workspace", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/datasource": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "datasource hero rendered", "selector": ".datasource-page__title", "exists": { "min": 1 } },
+      { "name": "source switcher rendered", "selector": ".datasource-page__source select", "exists": { "min": 1 } },
+      { "name": "workspace rendered", "selector": ".datasource-page__workspace .ds-workspace", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/datasource/config": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "config hero rendered", "selector": ".ds-config-page__title", "exists": { "min": 1 } },
+      { "name": "back link rendered", "selector": ".ds-config-page__action[href='/dev/tech/datasource']", "exists": { "min": 1 } },
+      { "name": "config panel rendered", "selector": ".ds-config-page__panel .EditOptionForm", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/frontend": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "fronts hero rendered", "selector": ".fronts-page .hero h1", "exists": { "min": 1 } },
+      { "name": "front cards rendered", "selector": ".fronts-grid .front-card", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/frontend/editor/admin": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "editor toolbar rendered", "selector": ".fe-page .fe-toolbar", "exists": { "min": 1 } },
+      { "name": "editor toolbar within viewport", "selector": ".fe-page .fe-toolbar", "box": { "withinViewport": true } },
+      { "name": "device switch rendered", "selector": ".fe-toolbar .segment .seg-btn", "exists": { "min": 5 } },
+      { "name": "files panel rendered", "selector": ".fe-page .files-panel", "exists": { "min": 1 } },
+      { "name": "files panel does not overlap editor/stage", "selector": ".fe-page .files-panel", "box": { "noOverlap": [".editor-panel", ".stage"] } },
+      { "name": "browser preview rendered", "selector": ".fe-page .browser .browser-frame", "exists": { "min": 1 } },
+      { "name": "preview iframe non-zero", "selector": ".fe-page .browser .browser-frame", "box": { "minWidth": 100, "minHeight": 100 } },
+      { "name": "browser address bar rendered", "selector": ".fe-page .browser-bar .browser-address", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/plugins": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "plugins hero rendered", "selector": ".plugins-page__title", "exists": { "min": 1 } },
+      { "name": "plugins panel rendered", "selector": ".plugins-page__panel", "exists": { "min": 1 } },
+      { "name": "filter chips rendered", "selector": ".plugins-page__chips .plugin-chip", "exists": { "min": 6 } },
+      { "name": "plugins search rendered", "selector": ".plugins-page__search-input", "exists": { "min": 1 } },
+      { "name": "plugin cards rendered", "selector": ".plugins-page__grid .plugin-card", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/marketplace": [
+      { "name": "tech shell rendered", "selector": ".cloudy-tech .cloudy-tech-rail", "exists": { "min": 1 } },
+      { "name": "market hero rendered", "selector": ".market-hero__name", "exists": { "min": 1 } },
+      { "name": "shelves rendered", "selector": ".market-shelf", "exists": { "min": 1 } },
+      { "name": "shelf cards rendered", "selector": ".market-shelf__grid .pack-card", "exists": { "min": 4 } },
+      { "name": "catalog category tabs rendered", "selector": ".market-catalog__tab", "exists": { "min": 2 } },
+      { "name": "catalog rows rendered", "selector": ".market-catalog__row", "exists": { "min": 1 } }
+    ],
+    "/dev/tech/style-gallery": [
+      { "name": "gallery sections rendered", "selector": "[data-gallery-section]", "exists": { "min": 21 } },
+      { "name": "gallery grid header compact (ItemSize=76 regression)", "selector": ".fluent-data-grid th", "box": { "maxHeight": 40 } }
+    ]
+  }
+}

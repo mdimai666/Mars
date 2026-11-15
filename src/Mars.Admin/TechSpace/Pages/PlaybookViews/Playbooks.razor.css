@@ -1,0 +1,113 @@
+.playbooks-page {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.playbooks-page__hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.playbooks-page__hero h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ct-ink);
+}
+
+.playbooks-page__hero p {
+    margin: 0;
+    max-width: 660px;
+    color: var(--ct-muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.playbooks-page__hero-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.playbooks-page__ghost {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.playbooks-page__ghost:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.playbooks-page__panel {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    overflow: hidden;
+}
+
+.playbooks-page__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ct-line);
+    flex: none;
+}
+
+.playbooks-page__head-icon {
+    color: var(--ct-active-ink);
+    font-size: 15px;
+}
+
+.playbooks-page__head-title {
+    color: var(--ct-ink);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.playbooks-page__lang {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.playbooks-page__editor {
+    flex: 1;
+    min-height: 420px;
+}
+
+@media (max-width: 760px) {
+    .playbooks-page__hero h1 {
+        font-size: 24px;
+    }
+}

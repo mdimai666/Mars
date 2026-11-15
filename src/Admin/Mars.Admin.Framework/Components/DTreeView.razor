@@ -17,13 +17,9 @@
             background: unset;
         }
 
-        fluent-tree-item::part(content-region) {
+        fluent-tree-item::part(content) {
             height: var(--item-height);
             /*background:red;*/
-        }
-
-        fluent-tree-item::after {
-            height: calc(var(--item-height) - ((var(--base-height-multiplier) + var(--density)) * var(--design-unit) / 4) * 2 * 1px)
         }
     </style>
     <FluentTreeView Items="_tree"

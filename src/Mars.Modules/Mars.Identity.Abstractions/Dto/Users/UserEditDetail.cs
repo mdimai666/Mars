@@ -17,7 +17,9 @@ public record UserEditDetail : UserSummary
     public required string? Email { get; init; }
 
     public required string UserName { get; init; }
-    //public required string About { get; init; }
+
+    [PersonalData]
+    public string? About { get; init; }
 
     [PersonalData]
     public required DateTime? BirthDate { get; init; }

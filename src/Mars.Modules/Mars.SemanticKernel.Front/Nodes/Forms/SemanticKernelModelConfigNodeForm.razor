@@ -16,7 +16,7 @@
     <div class="vstack gap-3">
 
         <FormItem2 For="() => Node.ModelType">
-            <FluentSelect @bind-Value=ModelTypeSet TOption="string" Items="SemanticKernelModelConfigNode.AvailModelTypes" />
+            <FluentSelect @bind-Value=ModelTypeSet TOption="string" TValue="string" Items="SemanticKernelModelConfigNode.AvailModelTypes" />
         </FormItem2>
 
         @if (_config is OllamaOptions)

@@ -592,6 +592,33 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New this week.
+        /// </summary>
+        public static string feedbacks_newThisWeek {
+            get {
+                return ResourceManager.GetString("feedbacks.newThisWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total feedbacks.
+        /// </summary>
+        public static string feedbacks_total {
+            get {
+                return ResourceManager.GetString("feedbacks.total", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unread feedbacks.
+        /// </summary>
+        public static string feedbacks_unread {
+            get {
+                return ResourceManager.GetString("feedbacks.unread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Female.
         /// </summary>
         public static string Female {
@@ -750,6 +777,24 @@ namespace Mars.Contracts.Resources {
         public static string Media {
             get {
                 return ResourceManager.GetString("Media", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files.
+        /// </summary>
+        public static string media_files {
+            get {
+                return ResourceManager.GetString("media.files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage used.
+        /// </summary>
+        public static string media_storage {
+            get {
+                return ResourceManager.GetString("media.storage", resourceCulture);
             }
         }
         
@@ -979,6 +1024,15 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string postcategories_total {
+            get {
+                return ResourceManager.GetString("postcategories.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Post category.
         /// </summary>
         public static string PostCategory {
@@ -1006,6 +1060,15 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Total category types.
+        /// </summary>
+        public static string postcategorytypes_total {
+            get {
+                return ResourceManager.GetString("postcategorytypes.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Post image.
         /// </summary>
         public static string PostImage {
@@ -1020,6 +1083,15 @@ namespace Mars.Contracts.Resources {
         public static string Posts {
             get {
                 return ResourceManager.GetString("Posts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total posts.
+        /// </summary>
+        public static string posts_total {
+            get {
+                return ResourceManager.GetString("posts.total", resourceCulture);
             }
         }
         
@@ -1065,6 +1137,42 @@ namespace Mars.Contracts.Resources {
         public static string PostTypes {
             get {
                 return ResourceManager.GetString("PostTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Component types.
+        /// </summary>
+        public static string posttypes_componentTypes {
+            get {
+                return ResourceManager.GetString("posttypes.componentTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meta fields.
+        /// </summary>
+        public static string posttypes_metaFields {
+            get {
+                return ResourceManager.GetString("posttypes.metaFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meta values.
+        /// </summary>
+        public static string posttypes_metaValues {
+            get {
+                return ResourceManager.GetString("posttypes.metaValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total post types.
+        /// </summary>
+        public static string posttypes_total {
+            get {
+                return ResourceManager.GetString("posttypes.total", resourceCulture);
             }
         }
         
@@ -1321,6 +1429,15 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type name.
         /// </summary>
         public static string TypeName {
@@ -1366,6 +1483,24 @@ namespace Mars.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New this month.
+        /// </summary>
+        public static string users_newThisMonth {
+            get {
+                return ResourceManager.GetString("users.newThisMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total users.
+        /// </summary>
+        public static string users_total {
+            get {
+                return ResourceManager.GetString("users.total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UserType.
         /// </summary>
         public static string UserType {
@@ -1380,6 +1515,15 @@ namespace Mars.Contracts.Resources {
         public static string UserTypes {
             get {
                 return ResourceManager.GetString("UserTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total user types.
+        /// </summary>
+        public static string usertypes_total {
+            get {
+                return ResourceManager.GetString("usertypes.total", resourceCulture);
             }
         }
         

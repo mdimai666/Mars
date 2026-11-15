@@ -1,0 +1,72 @@
+@page "/UserType"
+@using Mars.Identity.Contracts.UserTypes
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IStringLocalizer<AppRes> L
+
+<CloudyPageHead Title="@AppRes.UserTypes" Subtitle="User profile types with meta fields." KpiCols="1">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(UserTypeKpiKeys.Total)" Value="@KpiValue(UserTypeKpiKeys.Total)" Icon="bi-person-badge" />
+    </Kpis>
+</CloudyPageHead>
+
+<CloudyBrowser Scrollable>
+    <HeadLeft>
+        <CloudySearchBox Placeholder="Search user types…" ValueChanged="OnSearchChanged" />
+    </HeadLeft>
+    <HeadRight>
+        <a class="cloudy-btn-primary" href="@UrlEditPage">@AppRes.Create</a>
+    </HeadRight>
+
+    <ChildContent>
+        <FluentDataGrid TGridItem="UserTypeListItemResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) minmax(0,1.5fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<UserTypeListItemResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@UrlEditPage/@context.Id" title="@context.Title">@context.Title</a>
+                        <span class="cloudy-stack__sub" title="@context.TypeName">@context.TypeName</span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Tags">
+                    <div class="cloudy-tags">
+                        @foreach (var tag in context.Tags)
+                        {
+                            <CloudyTag Text="@tag" />
+                        }
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<UserTypeListItemResponse>.ByDescending(f => f.CreatedAt))"
+                                IsDefaultSortColumn="true"
+                                Align="DataGridCellAlignment.End">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No user types match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
+
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

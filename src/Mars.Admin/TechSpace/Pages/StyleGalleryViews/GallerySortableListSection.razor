@@ -1,0 +1,37 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="SortableList (FluentSortableList)">
+
+    <GalleryVariant Caption="Статические пункты, drag за handle (sortable-grab)">
+        <div class="card" style="width:340px;">
+            <div class="card-body p-2">
+                <FluentSortableList Id="gallerySortable"
+                                    Handle="true"
+                                    Items="_sortItems"
+                                    OnUpdate="@OnSortUpdate"
+                                    Context="item">
+                    <ItemTemplate>
+                        <div class="sortable-grab">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                        </div>
+                        <div class="sortable-item-content p-1" style="flex-grow: 1;" @key="item">
+                            @item
+                        </div>
+                    </ItemTemplate>
+                </FluentSortableList>
+            </div>
+        </div>
+    </GalleryVariant>
+
+</GallerySection>
+
+@code {
+    readonly List<string> _sortItems = ["Альфа", "Бета", "Гамма", "Дельта", "Эпсилон"];
+
+    void OnSortUpdate(FluentSortableListEventArgs e)
+    {
+        var item = _sortItems[e.OldIndex];
+        _sortItems.RemoveAt(e.OldIndex);
+        _sortItems.Insert(e.NewIndex, item);
+    }
+}

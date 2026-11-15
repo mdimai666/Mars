@@ -38,6 +38,9 @@ public record CreateUserRequest
     public required UserGender Gender { get; init; }
     public required string? AvatarUrl { get; init; }
 
+    [Display(Name = "Обо мне")]
+    public string? About { get; init; }
+
     public required string Type { get; init; }
     public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
 }
@@ -72,6 +75,9 @@ public record UpdateUserRequest
     public required UserGender Gender { get; init; }
     public required string? AvatarUrl { get; init; }
 
+    [Display(Name = "Обо мне")]
+    public string? About { get; init; }
+
     [StringLength(1000, MinimumLength = 3)]
     [Required]
     public required string Type { get; init; }
@@ -91,6 +97,7 @@ public record UserListItemResponse
 public record ListUserQueryRequest : BasicListQueryRequest
 {
     public IReadOnlyCollection<string>? Roles { get; init; }
+    public DateTimeOffset? CreatedFrom { get; init; }
 }
 
 public record TableUserQueryRequest : BasicTableQueryRequest

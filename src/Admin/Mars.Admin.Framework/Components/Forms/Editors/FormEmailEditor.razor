@@ -3,8 +3,8 @@
 
 @* Общий редактор «Email» *@
 
-<FluentTextField @bind-Value=Text
-                 TextFieldType="@TextFieldType.Email"
+<FluentTextInput @bind-Value=Text
+                 TextInputType="@TextInputType.Email"
                  Placeholder="user@example.com"
                  Name="@Binding.Field.Key"
                  Disabled="@Binding.ReadOnly"

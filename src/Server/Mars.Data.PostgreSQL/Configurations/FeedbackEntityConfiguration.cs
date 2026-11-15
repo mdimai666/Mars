@@ -22,5 +22,10 @@ public class FeedbackEntityConfiguration : IEntityTypeConfiguration<FeedbackEnti
         entity.Property(x => x.Phone).HasColumnType($"varchar({DefaultShortValueMaxLength})").HasMaxLength(DefaultShortValueMaxLength);
         entity.Property(x => x.Email).HasColumnType($"varchar({DefaultShortValueMaxLength})").HasMaxLength(DefaultShortValueMaxLength);
 
+        // Без HasDefaultValue: при дефолте БД EF опускает CLR-default (false) из INSERT,
+        // и новые строки получили бы дефолт БД. Новые обращения всегда пишутся явным false;
+        // историческим строкам true проставляет миграция AddFeedbackIsRead.
+        entity.Property(x => x.IsRead);
+
     }
 }

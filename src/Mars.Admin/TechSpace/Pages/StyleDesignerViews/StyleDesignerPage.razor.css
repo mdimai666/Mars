@@ -1,0 +1,246 @@
+/* Style Designer — BEM-блок страницы tech-зоны: hero + две панели (контролы / превью).
+   Цвета только через --ct-*/прототипные токены зоны.
+   ВАЖНО: содержимое превью (Fluent-компоненты под темой) НЕ перекрашивается —
+   это предмет редактирования; правила ниже касаются только шелла и контролов. */
+
+.styledesigner-page {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-bottom: 8px;
+}
+
+/*------------- hero -------------*/
+.styledesigner-page__hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: none;
+}
+
+.styledesigner-page__title {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ct-ink);
+}
+
+.styledesigner-page__subtitle {
+    margin: 0;
+    max-width: 660px;
+    color: var(--ct-muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.styledesigner-page__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.styledesigner-page__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-active-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+/*------------- рабочая область -------------*/
+/* Панели БЕЗ overflow:hidden и backdrop-filter: внутри превью живут Fluent-оверлеи
+   (select/autocomplete/datepicker из StyleSampleForm) — клиппинг и containing block
+   для fixed-позиционирования ломают их. Скроллится страница, как и раньше. */
+.styledesigner-page__workspace {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.styledesigner-page__panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+}
+
+.styledesigner-page__panel--controls {
+    position: sticky;
+    top: 0;
+}
+
+.styledesigner-page__panel-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.styledesigner-page__panel-head h2 {
+    margin: 0;
+    color: var(--ct-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.styledesigner-page__panel-note {
+    color: var(--ct-muted);
+    font-size: 12px;
+}
+
+.styledesigner-page__rule {
+    flex: 1;
+    border-top: 1px solid var(--ct-line);
+}
+
+.styledesigner-page__panel-body {
+    padding: 16px;
+}
+
+/*------------- контролы -------------*/
+.styledesigner-page__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* как min-height:300px в прежней разметке — каркас не прыгает на скелетоне загрузки */
+    min-height: 300px;
+}
+
+/* тулбар JSON-режима EditOptionForm: bootstrap .float-end (!important) сжимал бы
+   flex-контейнер контролов — переводим в обычный ряд над ними */
+.styledesigner-page__panel-body ::deep .EditOptionForm-main > .float-end {
+    float: none !important;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.styledesigner-page__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.styledesigner-page__btn:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.styledesigner-page__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.styledesigner-page__field--inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.styledesigner-page__label {
+    color: var(--ct-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.styledesigner-page__color {
+    width: 100%;
+    height: 36px;
+    padding: 3px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    cursor: pointer;
+}
+
+.styledesigner-page__color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.styledesigner-page__color::-webkit-color-swatch {
+    border: none;
+    border-radius: 7px;
+}
+
+.styledesigner-page__select {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-ink);
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.styledesigner-page__select:hover {
+    border-color: var(--ct-hover-border);
+}
+
+.styledesigner-page__select option {
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+}
+
+.styledesigner-page__group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--ct-line);
+    border-radius: 12px;
+    background: var(--ct-card);
+}
+
+/*------------- превью -------------*/
+/* Только отступы шелла. Фон/цвет образца задаёт FluentCard + JS-токены темы —
+   сюда НЕ добавлять color/background, иначе превью перестанет быть предметом темы. */
+.styledesigner-page__preview {
+    padding: 16px;
+}
+
+@media (max-width: 1100px) {
+    .styledesigner-page__workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .styledesigner-page__panel--controls {
+        position: static;
+    }
+}
+
+@media (max-width: 760px) {
+    .styledesigner-page__title {
+        font-size: 24px;
+    }
+}

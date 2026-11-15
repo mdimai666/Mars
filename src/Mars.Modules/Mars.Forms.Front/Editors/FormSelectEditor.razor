@@ -4,6 +4,7 @@
 @* Встроенный редактор выбора: в значении — стабильный ключ варианта, не заголовок *@
 
 <FluentSelect TOption="FormChoiceOption"
+              TValue="string"
               Items="@Binding.Field.Choices"
               OptionValue="@(c => c.Key)"
               OptionText="@(c => c.Title)"

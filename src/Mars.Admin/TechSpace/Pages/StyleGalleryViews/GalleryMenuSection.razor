@@ -1,0 +1,62 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Menu">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentMenu + Trigger (клик по кнопке)">
+            <div>
+                <FluentButton Id="gallery-menu-trigger" Appearance="ButtonAppearance.Primary">
+                    Открыть меню
+                    <span slot="end">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.ChevronDown())" />
+                    </span>
+                </FluentButton>
+                <FluentMenu Trigger="gallery-menu-trigger" OnClick="HandleMenuClick" OnCheckedChanged="HandleMenuClick">
+                    <FluentMenuList>
+                        <FluentMenuItem Id="gallery-mi-1" Label="Пункт 1" IconStart="@(new Icons.Regular.Size16.Document())" />
+                        <FluentMenuItem Id="gallery-mi-2" Label="Пункт 2" IconStart="@(new Icons.Regular.Size16.Edit())" />
+                        <FluentMenuItem Id="gallery-mi-sub" Label="Вложенное меню">
+                            <MenuItems>
+                                <FluentMenuItem Id="gallery-mi-sub-a" Label="Подпункт A" />
+                                <FluentMenuItem Id="gallery-mi-sub-b" Label="Подпункт B" />
+                            </MenuItems>
+                        </FluentMenuItem>
+                        <FluentDivider />
+                        <FluentMenuItem Id="gallery-mi-check" Role="MenuItemRole.Checkbox" Label="Checkbox-пункт" Checked="_menuChecked" />
+                        <FluentMenuItem Id="gallery-mi-disabled" Disabled Label="Disabled-пункт" />
+                    </FluentMenuList>
+                </FluentMenu>
+                <FluentText Size="TextSize.Size200" Class="text-secondary mt-2">
+                    Последний клик: @(_lastMenuClick ?? "—")
+                </FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentMenu OpenOnHover">
+            <div>
+                <FluentButton Id="gallery-menu-hover">Наведи курсор</FluentButton>
+                <FluentMenu Trigger="gallery-menu-hover" OpenOnHover>
+                    <FluentMenuList>
+                        <FluentMenuItem Label="Меню по ховеру" />
+                        <FluentMenuItem Label="Второй пункт" />
+                    </FluentMenuList>
+                </FluentMenu>
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>
+
+@code {
+    string? _lastMenuClick;
+    bool _menuChecked = true;
+
+    void HandleMenuClick(MenuItemEventArgs args)
+    {
+        _lastMenuClick = args.Item?.Id ?? "—";
+        if (args.Checked.HasValue)
+            _menuChecked = args.Checked.Value;
+    }
+}

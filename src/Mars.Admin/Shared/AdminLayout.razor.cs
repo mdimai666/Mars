@@ -152,26 +152,23 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
         MenuDrawerVisible = false;
     }
 
-    private IDialogReference? _dialog;
-
     async void OpenMobileMenu()
     {
         if (!_menuDrawerVisible) return;
 
-        DialogParameters<List<MenuItem>> parameters = new()
+        DialogOptions options = new()
         {
-            Content = menu_items,
             //Title = $"Hello {simplePerson.Firstname}",
-            Alignment = HorizontalAlignment.Left,
             Modal = true,
             //ShowDismiss = false,
             //PrimaryAction = "Maybe",
             //SecondaryAction = "Cancel",
 
             Width = "80vw",
+            Alignment = DialogAlignment.Start,
+            Parameters = { ["Content"] = menu_items },
         };
-        _dialog = await _dialogService.ShowPanelAsync<MobileMenu>(menu_items, parameters);
-        DialogResult result = await _dialog.Result;
+        DialogResult result = await _dialogService.ShowDrawerAsync<MobileMenu>(options);
         //HandlePanel(result);
     }
 

@@ -582,4 +582,52 @@
   <data name="CopyToClipboard" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
   </data>
+  <data name="users.total" xml:space="preserve">
+    <value>Всего пользователей</value>
+  </data>
+  <data name="users.newThisMonth" xml:space="preserve">
+    <value>Новых за месяц</value>
+  </data>
+  <data name="posts.total" xml:space="preserve">
+    <value>Всего записей</value>
+  </data>
+  <data name="postcategories.total" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="feedbacks.total" xml:space="preserve">
+    <value>Всего обращений</value>
+  </data>
+  <data name="feedbacks.newThisWeek" xml:space="preserve">
+    <value>Новых за неделю</value>
+  </data>
+  <data name="feedbacks.unread" xml:space="preserve">
+    <value>Непрочитанных</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="posttypes.total" xml:space="preserve">
+    <value>Всего типов записей</value>
+  </data>
+  <data name="posttypes.componentTypes" xml:space="preserve">
+    <value>Компонентные типы</value>
+  </data>
+  <data name="posttypes.metaFields" xml:space="preserve">
+    <value>Мета-поля</value>
+  </data>
+  <data name="posttypes.metaValues" xml:space="preserve">
+    <value>Мета-значения</value>
+  </data>
+  <data name="usertypes.total" xml:space="preserve">
+    <value>Всего типов пользователей</value>
+  </data>
+  <data name="postcategorytypes.total" xml:space="preserve">
+    <value>Всего типов категорий</value>
+  </data>
+  <data name="media.files" xml:space="preserve">
+    <value>Файлы</value>
+  </data>
+  <data name="media.storage" xml:space="preserve">
+    <value>Занято места</value>
+  </data>
 </root>

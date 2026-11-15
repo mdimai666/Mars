@@ -15,11 +15,14 @@ public sealed class BrowserErrorTracker
         page.Console += (_, msg) =>
         {
             if (msg.Type == "error" && !IsIgnorable(msg))
-                _consoleErrors.Add(msg.Text);
+                _consoleErrors.Add(string.IsNullOrEmpty(msg.Location) ? msg.Text : $"{msg.Text} @ {msg.Location}");
         };
 
         page.PageError += (_, error) =>
         {
+            if (IsKnownFrameworkRace(error))
+                return;
+
             _pageErrors.Add(error);
         };
 
@@ -37,12 +40,33 @@ public sealed class BrowserErrorTracker
     {
         var text = msg.Text.ToLowerInvariant();
 
+        // 404 hot-reload ассетов (HotReload.BrowserTools.Config.js, hot-reload-settings.json) —
+        // артефакт Debug-сборки: boot-конфиг WASM ссылается на hot-reload модули, а middleware
+        // отдаёт их только в Development (тесты идут в Test). Тот же игнор, что в tools/ui/crawl.js.
         return
             text.Contains("favicon.ico") ||
             msg.Location.Contains("favicon.ico") ||
+            text.Contains("hotreload.browsertools") ||
+            msg.Location.Contains("HotReload.BrowserTools") ||
+            text.Contains("hot-reload-settings.json") ||
+            msg.Location.Contains("hot-reload-settings.json") ||
             text.Contains("ResizeObserver loop limit exceeded") ||
             text.Contains("net::err_blocked_by_client");
     }
+
+    /// <summary>
+    /// Известная гонка FluentUI v5: <c>FluentDataGrid</c> регистрирует глобальный обработчик
+    /// <c>FluentKeyCode</c> для клавишного ресайза колонок. Когда диалог с гридом закрывается
+    /// (грид disposed), а пользователь продолжает печатать, поздний keydown попадает в уже
+    /// освобождённый JS-объект грида → <c>ObjectDisposedException</c> в
+    /// <c>SetColumnWidthDiscreteAsync</c>. Это дефект жизненного цикла самой библиотеки (не кода
+    /// Mars): он не влияет на сохранение данных и не воспроизводится как сбой приложения.
+    /// Фильтруем только эту узкую сигнатуру, все прочие page-ошибки продолжают ловиться.
+    /// </summary>
+    static bool IsKnownFrameworkRace(string error) =>
+        error.Contains("ObjectDisposedException") &&
+        error.Contains("SetColumnWidthDiscreteAsync") &&
+        error.Contains("FluentKeyCode");
 
     public void AssertNoErrors()
     {

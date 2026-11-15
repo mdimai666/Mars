@@ -64,7 +64,7 @@ public class SiteScribanFunctionsContributor : IScribanObjectContributor
             ? new ScriptParameterInfo(typeof(string), "key")
             : new ScriptParameterInfo(typeof(object), $"arg{i}");
 
-        public object? Invoke(TemplateContext context, ScriptNode callerNode, ScriptArray arguments, ScriptBlockStatement? blockStatement)
+        public object? Invoke(TemplateContext context, ScriptNode? callerNode, ScriptArray arguments, ScriptBlockStatement? blockStatement)
         {
             if (arguments.Count < 1)
             {
@@ -89,7 +89,7 @@ public class SiteScribanFunctionsContributor : IScribanObjectContributor
             return localizer[stringKey, formatArgs!];
         }
 
-        public ValueTask<object?> InvokeAsync(TemplateContext context, ScriptNode callerNode, ScriptArray arguments, ScriptBlockStatement? blockStatement)
+        public ValueTask<object?> InvokeAsync(TemplateContext context, ScriptNode? callerNode, ScriptArray arguments, ScriptBlockStatement? blockStatement)
             => new(Invoke(context, callerNode, arguments, blockStatement));
     }
 }

@@ -147,24 +147,14 @@
 }
 
 //////////////////////////////DARK
-body.dark {
-    .card, .accordion-item {
-        background: var(--mars-bg-subtle);
-    }
+// Тёмная тема — через токены v5 (IThemeService): --mars-* алиасы флипаются сами.
+.card, .accordion-item {
+    background: var(--mars-bg-surface);
+    color: var(--mars-text-primary);
+}
 
-    .dropdown-menu {
-        background: var(--mars-bg-subtle);
-    }
-
-    .accordion-button {
-        background: #293f5f;
-        color: white;
-    }
-
-    .accordion-button:not(.collapsed) {
-        background: #4a4a4f;
-        color: white;
-    }
+.dropdown-menu {
+    background: var(--mars-bg-surface);
 }
 
 .form-control {
@@ -234,34 +224,4 @@ body.dark {
     --bs-pagination-disabled-color: #6c757d;
     --bs-pagination-disabled-bg: #fff;
     --bs-pagination-disabled-border-color: #dee2e6;
-}
-
-.fluent-heading(@sizeVar) {
-    font-size: var(@sizeVar);
-}
-
-.use-fluent-typo, fluent-dialog {
-    h1 {
-        .fluent-heading(--type-ramp-plus-5-font-size);
-    }
-
-    h2 {
-        .fluent-heading(--type-ramp-plus-4-font-size);
-    }
-
-    h3 {
-        .fluent-heading(--type-ramp-plus-3-font-size);
-    }
-
-    h4 {
-        .fluent-heading(--type-ramp-plus-2-font-size);
-    }
-
-    h5 {
-        .fluent-heading(--type-ramp-plus-1-font-size);
-    }
-
-    h6 {
-        .fluent-heading(--type-ramp-base-font-size);
-    }
 }

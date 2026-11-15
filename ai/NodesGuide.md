@@ -32,7 +32,10 @@
   (провайдер подсказок, `ValueFieldInfo`, `ValueFieldContext`), `Services/IHostValueHints.cs`, редакторная
   геометрия и состояние (`Editor/`: `NodesDocument`, `Wire`/`WirePoints`, `WireDrawUtil`).
 - `src/Mars.Nodes/Mars.Nodes.Workspace` — редактор: `NodeEditor1` (+`NodesDocument`), `NodeEditContainer1`
-  (форма работает с **копией** ноды), провайдеры подсказок (`Services/ValueFields/`: композит
+  (форма работает с **копией** ноды; с 2026-11-05 не диалог, а инлайн-панель `node-edit-panel` в правой
+  панели редактора — composition: тулбар сверху, канвас + плавающая палитра `ne-palette` (чипы табов
+  в тулбаре), постоянная правая панель `ne-side`: консоль/INPUT либо форма ноды, стили `ne-*` в
+  `wwwroot/styles.css`), провайдеры подсказок (`Services/ValueFields/`: композит
   `ValueFieldProvider`, `MsgValueRootProvider`, `ContextValueRootProviders`, `HostValueHints`), палитра
   (`Models/PaletteBuilder`), INPUT-панель (`EditorParts/NodeInputViewer.razor`).
 - Ноды модулей/плагинов — тот же паттерн вне `src/Mars.Nodes` (эталон — `Mars.Docker.*`:

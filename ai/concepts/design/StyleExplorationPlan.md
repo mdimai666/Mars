@@ -183,7 +183,7 @@
   и должен совпадать с `.less` (в VS это делает Web Compiler).
 - После правок `js`/`css`, которые грузит браузер, — bump `MarsAppVersion` в `Directory.Build.props`.
 - Проверка — `dotnet build Mars.slnx` плюс сборка стенда `devstands/StandNodesApp/StandNodesApp.csproj`;
-  тесты — xUnit v3 через MTP (`pwsh -NoProfile -File test-all.ps1`), не `dotnet test`.
+  тесты — xUnit v3 через MTP (`pwsh -NoProfile -File test-all.ps1` или `dotnet test tests/<Проект>`).
 
 ## Открытые развилки (нужно решение пользователя)
 

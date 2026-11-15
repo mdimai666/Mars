@@ -1,9 +1,11 @@
 using System.Reflection;
 using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Common;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Handlers;
+using Mars.Media.Host.Kpi;
 using Mars.Media.Host.Services;
 using Mars.Media.Host.XActions;
 using Mars.Options.Abstractions.Services;
@@ -27,6 +29,9 @@ public static class MainMedia
         services.AddScoped<IMediaService, MediaService>();
         services.AddSingleton<IImageProcessor, ImageProcessor>();
         services.AddKeyedScoped<IMetaRelationModelProviderHandler, FileRelationModelProviderHandler>("File");
+
+        services.AddSingleton<IKpiHandler, MediaFilesTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, MediaStorageUsedKpiHandler>();
 
         services.AddMediaXActions();
 

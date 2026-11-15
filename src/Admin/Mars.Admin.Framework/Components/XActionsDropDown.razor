@@ -8,31 +8,33 @@
 
     @if (_actions is not null && _actions.Any() || ChildContent is not null)
     {
-        <FluentButton id="@buttonId" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
-            Действия
-            <span slot="end">
-                <i class="bi bi-chevron-down"></i>
-            </span>
+        <FluentButton Id="@buttonId"
+                      Appearance="ButtonAppearance.Subtle"
+                      Style="font-size: var(--fontSizeBase300);"
+                      IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
+                      Size="ButtonSize.Large">
+            @AppRes.Actions
         </FluentButton>
 
     }
-    <FluentMenu Anchor="@buttonId"
-                @bind-Open="open"
-                @onmenuchange="HandleOnMenuChanged">
-        @if (_actions is not null && _actions.Any())
-        {
-            @foreach (var item in _actions)
+    <FluentMenu Trigger="@buttonId"
+                OnClick="HandleOnMenuClick">
+        <FluentMenuList>
+            @if (_actions is not null && _actions.Any())
             {
-                <FluentMenuItem Id="@item.Key">
-                    @item.Value
-                </FluentMenuItem>
+                @foreach (var item in _actions)
+                {
+                    <FluentMenuItem Id="@item.Key">
+                        @item.Value
+                    </FluentMenuItem>
+                }
+                @if (_actions.Any() && ChildContent != null)
+                {
+                    <FluentDivider />
+                }
             }
-            @if (_actions.Any() && ChildContent != null)
-            {
-                <FluentDivider />
-            }
-        }
-        @ChildContent
+            @ChildContent
+        </FluentMenuList>
     </FluentMenu>
 </div>
 
@@ -51,7 +53,6 @@
 
     Type? _appPageType => router?.PageType;
 
-    bool open = false;
     string buttonId { get; set; } = "menubtn-" + Guid.NewGuid().ToString();
 
     public string? _rootContextId => ContextId ?? _appPageType?.FullName ?? "AppLoading";
@@ -70,9 +71,11 @@
                        .ToDictionary(x => x.Id, x => x.Label);
     }
 
-    private void HandleOnMenuChanged(MenuChangeEventArgs args)
+    private void HandleOnMenuClick(MenuItemEventArgs args)
     {
-        var id = args.Id!;
+        var id = args.Item?.Id;
+        if (string.IsNullOrEmpty(id)) return;
+
         actService.Inject(id);
         OnInjected.InvokeAsync(id);
     }

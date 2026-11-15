@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Data.Entities;
@@ -6,9 +7,11 @@ using Mars.Identity.Abstractions.Dto.Auth;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Accounts;
 using Mars.Identity.Abstractions.Mappings.UserProfiles;
+using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Contracts.Options;
+using Mars.Identity.Contracts.Users;
 using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
@@ -124,18 +127,51 @@ public class AccountController : ControllerBase
         return (await _accountsService.GetProfile(userId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
     }
 
-    [HttpPost("UploadAvatar")]
-    public Task<ActionResult<FileDetailResponse>> UploadAvatar(IFormFile file, CancellationToken cancellationToken)
+    [HttpGet("Profile/EditModel")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserProfileEditViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<UserProfileEditViewModel> ProfileEditModel(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        //Guid userId = Guid.Parse(_userManager.GetUserId(HttpContext.User)!);
-        //UserSummary user = await _userService.Get(userId, cancellationToken);
+        var userId = _requestContext.User.Id;
+        return await _userService.GetProfileEditModel(userId, cancellationToken);
+    }
 
-        //AppShared.Models.FileEntity ava;
+    [HttpPut("Profile")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDetailResponse))]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<UserDetailResponse> UpdateProfile([FromBody] UpdateUserProfileRequest request, CancellationToken cancellationToken)
+    {
+        var userId = _requestContext.User.Id;
+        return (await _userService.UpdateProfile(userId, request, cancellationToken)).ToResponse();
+    }
 
-        //ava = _fileService.WriteAvatar(user, file);
+    /// <summary>
+    /// Загрузка аватара: пишет полный (256×256) и миниатюру (64×64) в upload/Users/{id}/,
+    /// возвращает их URL. AvatarUrl в профиле сохраняется отдельным обновлением (PUT Profile).
+    /// userId можно передать только администратору (загрузка аватара другого пользователя).
+    /// </summary>
+    [HttpPost("Avatar")]
+    [Authorize]
+    [RequestSizeLimit(10 * 1024 * 1024)]
+    [ProducesResponseType(typeof(AvatarUploadResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<AvatarUploadResponse> UploadAvatar(IFormFile file, [FromQuery] Guid? userId, CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+            throw new UserActionException("Файл пуст");
 
-        //return new ResponseUploadFile(ava);
+        var currentUserId = _requestContext.User.Id;
+        var targetUserId = userId ?? currentUserId;
+        if (targetUserId != currentUserId && !User.IsInRole("Admin"))
+            throw new UserActionException("Загружать аватар другого пользователя может только администратор");
+
+        await using var stream = file.OpenReadStream();
+        return await _accountsService.UploadAvatar(targetUserId, stream, file.FileName, cancellationToken);
     }
 
     string html_redirect(string link) => html(@$"

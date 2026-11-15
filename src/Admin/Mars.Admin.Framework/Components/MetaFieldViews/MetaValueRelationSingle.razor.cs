@@ -15,6 +15,9 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// </summary>
 public partial class MetaValueRelationSingle
 {
+    public MetaValueRelationSingle(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
@@ -68,25 +71,21 @@ public partial class MetaValueRelationSingle
 
     async Task SelectAsync()
     {
-        DialogParameters parameters = new()
-        {
-            Title = ModelName,
-            SecondaryAction = null,
-            Width = "500px",
-            Modal = true,
-            PreventScroll = true
-        };
-
         var data = new MetaValueRelationSelectDialogData
         {
             ModelName = ModelName,
             ValueId = SelectedId,
         };
 
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
-        DialogResult? result = await dialog.Result;
+        DialogResult result = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(new DialogOptions
+        {
+            Header = { Title = ModelName },
+            Width = "500px",
+            Modal = true,
+            Parameters = { ["Content"] = data },
+        });
 
-        if (result.Cancelled || result.Data is not MetaValueRelationModelSummaryResponse selected) return;
+        if (result.Cancelled || result.Value is not MetaValueRelationModelSummaryResponse selected) return;
 
         Binding.Value = selected.Id;
         _model = selected;

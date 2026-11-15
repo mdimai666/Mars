@@ -19,6 +19,7 @@ public static class FeedbackMapping
             Excerpt = entity.Excerpt,
             FilledUsername = entity.FilledUsername,
             IsAuthorizedUser = entity.IsAuthorizedUser,
+            IsRead = entity.IsRead,
         };
 
     public static FeedbackDetailResponse ToResponse(this FeedbackDetail entity)
@@ -33,6 +34,7 @@ public static class FeedbackMapping
           Content = entity.Content,
           FilledUsername = entity.FilledUsername,
           IsAuthorizedUser = entity.IsAuthorizedUser,
+          IsRead = entity.IsRead,
       };
 
     public static ListDataResult<FeedbackSummaryResponse> ToResponse(this ListDataResult<FeedbackSummary> list)

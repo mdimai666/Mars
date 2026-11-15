@@ -39,6 +39,11 @@ public record UpdateFeedbackRequest
 
 public record ListFeedbackQueryRequest : BasicListQueryRequest
 {
+    /// <summary>
+    /// Фильтр по статусу прочтения: null — все, false — непрочитанные, true — прочитанные.
+    /// </summary>
+    [DefaultValue(null)]
+    public bool? IsRead { get; init; }
 }
 
 public record TableFeedbackQueryRequest : BasicTableQueryRequest

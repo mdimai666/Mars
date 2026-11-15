@@ -1,0 +1,221 @@
+@page "/EditNavMenu"
+@page "/EditNavMenu/{ID:guid}"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NavMenu = Mars.Cms.Contracts.NavMenus.NavMenuDetailResponse
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper>
+    <StandardEditContainer ID=@ID
+                           TitleText="@AppRes.NavMenu"
+                           TModel=NavMenu
+                           GetAction="GetMenu"
+                           SaveAction="@((s,create)=>NavMenu.SaveAction(client,s,create))"
+                           DeleteAction="@(s=>NavMenu.DeleteAction(client,s))"
+                           OnLoadData="OnMenuLoaded"
+                           AfterSave="AfterSave"
+                           AfterDelete="AfterDelete"
+                           CanDelete="@(!(_loadedMenu?.IsSystem ?? false))"
+                           @ref=f CanCreate=false>
+        <ChildContent>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextInput @bind-Value=@context.Title Label="@AppRes.Title"
+                                     @bind-Value:after=OnChangeTitle
+                                     Appearance="@TextInputAppearance.FilledDarker"
+                                     Required
+                                     Class="w-100" />
+                    <ValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextInput @bind-Value=@context.Slug Label="@AppRes.Slug" Class="w-100" />
+                    <ValidationMessage For="@(() => context.Slug)" />
+                </div>
+                <div class="vstack gap-3">
+                    <FormItem2 For="() => context.Class" Label="@AppRes.CssClass">
+                        <FluentTextInput @bind-Value=@context.Class Class="w-100" />
+                    </FormItem2>
+                    <FormItem2 For="() => context.Style" Label="@AppRes.CssStyle">
+                        <FluentTextInput @bind-Value=@context.Style Class="w-100" />
+                    </FormItem2>
+                </div>
+
+                <div class="d-roles">
+                    <FluentAutocomplete TOption="string" TValue="string"
+                                        Label="@AppRes.Roles"
+                                        Width="100%"
+                                        Items="@_availRoles.Select(s=>s.Name)"
+                                        Placeholder="Select"
+                                        IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                        @bind-SelectedItems="@context.SetRoles" />
+
+                    <div>
+                        <FluentSwitch @bind-Value=@context.RolesInverse Label="Инвертировать роли" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="spacer-2"></div>
+
+            <div class="nmt-layout">
+                <NavMenuTree Items="context.MenuItems"
+                             ItemsChanged="v => context.MenuItems = v"
+                             SelectedItem="_selMenu"
+                             SelectedItemChanged="v => _selMenu = v"
+                             OnAdd="AddNewMenuItem"
+                             OnAddChild="AddChildMenuItem"
+                             OnCopy="CopyMenuItem"
+                             OnDelete="OnDeleteMenuItem"
+                             OnToggle="OnToggleMenuItem" />
+
+                <div class="nmt-props">
+                    <div class="nmt-props__head">
+                        <h6>Свойства</h6>
+                        @if (_selMenu is not null)
+                        {
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => _selMenu = null)">@AppRes.Cancel</FluentButton>
+                        }
+                    </div>
+                    @if (_selMenu is null)
+                    {
+                        <div class="nmt-props__hint">
+                            &lt;Выберите пункт для редактирования&gt;
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="nmt-props__form">
+                            <FluentTextInput @bind-Value=@_selMenu.Title Label="@AppRes.Title" Class="w-100" />
+
+                            @if (!_selMenu.IsHeader && !_selMenu.IsDivider)
+                            {
+                                <FluentTextInput @bind-Value=@_selMenu.Url Label="Url" Class="w-100" />
+
+                                <FluentCheckbox @bind-Value=@_selMenu.OpenInNewTab Label="Открывать в новой вкладке" />
+                            }
+
+                            <div class="nmt-props__iconrow">
+                                <FluentTextInput @bind-Value=@_selMenu.Icon Label="Icon" Class="w-100" />
+                                <FluentButton OnClick=OnClickIconSelectMedia Title="Выбрать из медиа">
+                                    <FluentIcon Value="@(new Icons.Regular.Size16.Folder())" />
+                                </FluentButton>
+                            </div>
+
+                            <FluentTextInput @bind-Value=@_selMenu.Class Label="@AppRes.CssClass" Class="w-100" />
+                            <FluentTextInput @bind-Value=@_selMenu.Style Label="@AppRes.CssStyle" Class="w-100" />
+
+                            <div class="nmt-props__checks">
+                                <FluentCheckbox @bind-Value=@_selMenu.IsHeader Label="Заголовок секции" />
+                                <FluentCheckbox @bind-Value=@_selMenu.IsDivider Label="Разделитель" />
+                                <FluentCheckbox @bind-Value=@_selMenu.Disabled Label="Отключён" />
+                            </div>
+
+                            <FluentAutocomplete TOption="string" TValue="string"
+                                                Label="@AppRes.Roles"
+                                                Width="100%"
+                                                Items="@_availRoles.Select(s=>s.Name)"
+                                                Placeholder="Select"
+                                                IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                                @bind-SelectedItems="@_selMenu.SetRoles" />
+
+                            <FluentCheckbox @bind-Value=@_selMenu.RolesInverse Label="Инвертировать роли (не для)" />
+
+                            <div class="nmt-props__actions">
+                                <div class="nmt-props__move">
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" Title="Выше" OnClick=@(e => NodePropArrowClick("up"))>
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
+                                    </FluentButton>
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" Title="Ниже" OnClick=@(e => NodePropArrowClick("down"))>
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
+                                    </FluentButton>
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" Title="На уровень выше" OnClick=@(e => NodePropArrowClick("left"))>
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowLeft())" />
+                                    </FluentButton>
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" Title="Вложить в предыдущий" OnClick=@(e => NodePropArrowClick("right"))>
+                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowRight())" />
+                                    </FluentButton>
+                                </div>
+
+                                @if (_selMenu.IsSystem)
+                                {
+                                    <FluentButton Appearance="@(_selMenu.Disabled ? ButtonAppearance.Primary : ButtonAppearance.Default)"
+                                                  OnClick="e => OnToggleMenuItem(_selMenu)">
+                                        @(_selMenu.Disabled ? "Включить" : "Отключить")
+                                    </FluentButton>
+                                }
+                                else
+                                {
+                                    <DFluentDeleteButton OnConfirm="e => OnDeleteMenuItem(_selMenu)" />
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </ChildContent>
+        <SectionExtraSidebar>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
+                    <div class="spacer-1"></div>
+                    <FormItem2 For="@(() => context.Tags)">
+                        <InputTags2 @bind-Value=context.Tags />
+                    </FormItem2>
+                </div>
+            </div>
+            @if (_loadedMenu is { IsSystem: true, IsPersisted: true })
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <FluentButton Appearance="ButtonAppearance.Default" OnClick="OnResetDevMenu">Сбросить к дефолту</FluentButton>
+                        <div class="text-secondary small mt-2">
+                            Сохранённая копия будет удалена, меню вернётся к генерируемому кодом состоянию.
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="card">
+                <div class="card-body">
+                    <a href=@url target="_blank">
+                        <FluentButton Appearance="ButtonAppearance.Default">Export</FluentButton>
+                    </a>
+                    <FluentButton Appearance="ButtonAppearance.Default" OnClick="ShowImportModal">Import</FluentButton>
+                </div>
+            </div>
+        </SectionExtraSidebar>
+    </StandardEditContainer>
+    <div class="spacer-5"></div>
+</ContentWrapper>
+
+<FluentDialog @ref="_importDialog"
+              aria-label="Import dialog"
+              Modal=true
+              OnStateChange="@(e => { if (e.State == DialogState.Closed) { visibleImportModal = false; _importDialogShown = false; } })">
+    <FluentDialogBody Class="text-start">
+        <TitleTemplate>
+            <h2>Import</h2>
+        </TitleTemplate>
+        <ChildContent>
+            <div>
+                @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
+                <div class="my-2">
+                    <InputFile OnChange="LoadFiles" />
+                </div>
+                <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
+                <div class="spacer-2"></div>
+                <FluentButton Appearance="ButtonAppearance.Primary" Disabled=importButtonDisabled OnClick=OnImportClick>
+                    <i class="bi bi-upload me-2"></i>
+                    Импорт
+                </FluentButton>
+            </div>
+        </ChildContent>
+    </FluentDialogBody>
+</FluentDialog>

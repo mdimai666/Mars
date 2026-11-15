@@ -36,6 +36,7 @@ internal sealed class PluginCatalogClient : IPluginCatalogClient
         var parameters = new Dictionary<string, string?>();
         if (!string.IsNullOrWhiteSpace(query.Q)) parameters["q"] = query.Q;
         if (!string.IsNullOrWhiteSpace(query.Tag)) parameters["tag"] = query.Tag;
+        if (!string.IsNullOrWhiteSpace(query.Category)) parameters["category"] = query.Category;
         if (query.Recommended == true) parameters["recommended"] = "true";
         if (!string.IsNullOrWhiteSpace(query.Sort)) parameters["sort"] = query.Sort;
         if (!string.IsNullOrWhiteSpace(marsVersion)) parameters["minVersion"] = marsVersion;

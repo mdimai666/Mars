@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mars.DockerImage.Tests;
 
-public class MarsStartTests : IClassFixture<MarsFixture>
+[Collection(MarsCollection.Name)]
+public class MarsStartTests
 {
     private const string AdminEmail = "admin@mail.ru";
     private const string AdminPassword = "Admin123!";

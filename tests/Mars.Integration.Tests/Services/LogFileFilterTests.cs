@@ -16,6 +16,11 @@ public class LogFileFilterTests : IDisposable
     static string Entry(string ts, string level, string message = "message")
         => $"{ts}\t{level}\t[Test.Logger]\t[EventId]\t{message}";
 
+    // ParseTimestamp приводит время записи к LocalDateTime машины, поэтому записи
+    // у границ дня нужно строить в локальной таймзоне — иначе тест зависит от таймзоны.
+    static string LocalEntry(DateTime local, string level, string message = "message")
+        => Entry(new DateTimeOffset(local), level, message);
+
     void WriteLogFile(string day, params string[] lines)
     {
         Directory.CreateDirectory(dir);
@@ -67,6 +72,22 @@ public class LogFileFilterTests : IDisposable
         var result = LogFileFilter.FilterLines(reader, null, new DateTime(2026, 8, 5)).ToArray();
 
         result.Should().ContainSingle().Which.Should().Contain("recent");
+    }
+
+    [Fact]
+    public void FilterLines_ByUntil_DropsNewerEntries()
+    {
+        var log = string.Join('\n',
+            LocalEntry(new DateTime(2026, 8, 10, 9, 0, 0), "WARN", "day10"),
+            LocalEntry(new DateTime(2026, 8, 11, 23, 59, 59), "WARN", "day11-late"),
+            LocalEntry(new DateTime(2026, 8, 12, 0, 0, 1), "WARN", "day12"));
+
+        using var reader = new StringReader(log);
+        var until = new DateTime(2026, 8, 11).AddDays(1).AddTicks(-1);
+        var result = LogFileFilter.FilterLines(reader, null, null, until).ToArray();
+
+        result.Should().HaveCount(2);
+        result.Should().NotContain(l => l.Contains("day12"));
     }
 
     [Fact]
@@ -127,6 +148,22 @@ public class LogFileFilterTests : IDisposable
         var result = LogFileFilter.ReadSeamless(dir, null, new DateTime(2026, 8, 11), 1000);
 
         result.Should().ContainSingle().Which.Should().Contain("day11");
+    }
+
+    [Fact]
+    public void ReadSeamless_SkipsFilesNewerThanUntil()
+    {
+        WriteLogFile("2026-08-10",
+            Entry(new DateTimeOffset(2026, 8, 10, 10, 0, 0, Tz), "WARN", "day10"));
+        WriteLogFile("2026-08-11",
+            Entry(new DateTimeOffset(2026, 8, 11, 12, 0, 0, Tz), "WARN", "day11"));
+        WriteLogFile("2026-08-12",
+            Entry(new DateTimeOffset(2026, 8, 12, 12, 0, 0, Tz), "WARN", "day12"));
+
+        var result = LogFileFilter.ReadSeamless(dir, null, null, 1000, new DateTime(2026, 8, 11, 23, 59, 59));
+
+        result.Should().HaveCount(2);
+        result.Should().NotContain(l => l.Contains("day12"));
     }
 
     [Fact]

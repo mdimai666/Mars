@@ -35,6 +35,7 @@ public partial class StandardEditContainer<TModel> : ComponentBase
     [Parameter] public bool NavigateAfterCreate { get; set; } = true;
 
     [Parameter] public RenderFragment<TModel>? ChildContent { get; set; }
+    [Parameter] public RenderFragment<TModel>? SectionSubtitle { get; set; }
     [Parameter] public RenderFragment<TModel>? SectionSidePublish { get; set; }
     [Parameter] public RenderFragment<TModel>? SectionExtraSidebar { get; set; }
 

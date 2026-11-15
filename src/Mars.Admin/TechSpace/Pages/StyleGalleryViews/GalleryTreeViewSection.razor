@@ -1,0 +1,60 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="TreeView">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentTreeView (Items: ITreeViewItem, вложенные уровни)">
+            <div class="card" style="width:280px;">
+                <div class="card-body p-2">
+                    <FluentTreeView Items="_treeItems" />
+                </div>
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>
+
+@code {
+    class GalleryTreeItem : ITreeViewItem
+    {
+        public required string Id { get; set; }
+        public required string Text { get; set; }
+        public IEnumerable<ITreeViewItem>? Items { get; set; }
+        public Icon? IconStart { get; set; }
+        public Icon? IconEnd { get; set; }
+        public Icon? IconAside { get; set; }
+        public Icon? IconCollapsed { get; set; }
+        public Icon? IconExpanded { get; set; }
+        public bool Disabled { get; set; }
+        public bool Expanded { get; set; }
+        public Func<TreeViewItemExpandedEventArgs, Task>? OnExpandedAsync { get; set; }
+    }
+
+    static readonly Icon FolderIcon = new Icons.Regular.Size16.Folder();
+    static readonly Icon DocumentIcon = new Icons.Regular.Size16.Document();
+
+    static readonly IReadOnlyCollection<ITreeViewItem> _treeItems =
+    [
+        new GalleryTreeItem
+        {
+            Id = "src", Text = "src", IconStart = FolderIcon, Expanded = true,
+            Items =
+            [
+                new GalleryTreeItem
+                {
+                    Id = "src/Mars.Admin", Text = "Mars.Admin", IconStart = FolderIcon, Expanded = true,
+                    Items =
+                    [
+                        new GalleryTreeItem { Id = "src/Mars.Admin/Builder", Text = "Builder", IconStart = FolderIcon },
+                        new GalleryTreeItem { Id = "src/Mars.Admin/Program.cs", Text = "Program.cs", IconStart = DocumentIcon },
+                    ],
+                },
+                new GalleryTreeItem { Id = "src/Mars.WebApp", Text = "Mars.WebApp", IconStart = FolderIcon },
+            ],
+        },
+        new GalleryTreeItem { Id = "README.md", Text = "README.md", IconStart = DocumentIcon },
+        new GalleryTreeItem { Id = "Mars.slnx", Text = "Mars.slnx", IconStart = DocumentIcon, Disabled = true },
+    ];
+}

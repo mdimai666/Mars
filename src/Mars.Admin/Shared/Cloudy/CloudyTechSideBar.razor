@@ -1,0 +1,48 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using Mars.Plugin.Front
+
+<nav class="cloudy-tech-rail" aria-label="Разделы админки">
+    <NavLink href="/dev/tech" Match="@NavLinkMatch.All" class="cloudy-tech-rail__item" title="Overview">
+        <i class="bi bi-house" aria-hidden="true"></i>
+        <span>Overview</span>
+    </NavLink>
+    <NavLink href="/dev/tech/models" class="cloudy-tech-rail__item" title="Entities">
+        <i class="bi bi-box" aria-hidden="true"></i>
+        <span>Entities</span>
+    </NavLink>
+    <NavLink href="/dev/tech/frontend" class="cloudy-tech-rail__item" title="Frontend">
+        <i class="bi bi-files" aria-hidden="true"></i>
+        <span>Frontend</span>
+    </NavLink>
+    <NavLink href="/dev/tech/automation" class="cloudy-tech-rail__item" title="Automation">
+        <i class="bi bi-lightning-charge" aria-hidden="true"></i>
+        <span>Automation</span>
+    </NavLink>
+    <NavLink href="/dev/tech/datasource" class="cloudy-tech-rail__item" title="Datasources">
+        <i class="bi bi-database" aria-hidden="true"></i>
+        <span>Datasources</span>
+    </NavLink>
+    @if (WebAssemblyPluginFrontExtensions.PluginLoadAssemblies.Any(a => a.GetName().Name == "Mars.DockerPlugin.Front"))
+    {
+        <NavLink href="/dev/tech/docker" class="cloudy-tech-rail__item" title="Docker">
+            <i class="bi bi-docker-black-stroke" aria-hidden="true"></i>
+            <span>Docker</span>
+        </NavLink>
+    }
+    <NavLink href="/dev/tech/plugins" class="cloudy-tech-rail__item" title="Plugins">
+        <i class="bi bi-plug" aria-hidden="true"></i>
+        <span>Plugins</span>
+    </NavLink>
+    <NavLink href="/dev/tech/marketplace" class="cloudy-tech-rail__item" title="Market">
+        <i class="bi bi-bag" aria-hidden="true"></i>
+        <span>Market</span>
+    </NavLink>
+    <NavLink href="/dev/tech/logs" class="cloudy-tech-rail__item" title="Logs">
+        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+        <span>Logs</span>
+    </NavLink>
+    <NavLink href="/dev/Settings" class="cloudy-tech-rail__item" title="Settings">
+        <i class="bi bi-gear" aria-hidden="true"></i>
+        <span>Settings</span>
+    </NavLink>
+</nav>

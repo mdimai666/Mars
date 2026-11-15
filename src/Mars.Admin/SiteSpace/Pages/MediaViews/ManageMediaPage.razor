@@ -1,0 +1,15 @@
+@page "/Media"
+@using Mars.Media.Contracts.Files
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IStringLocalizer<AppRes> L
+
+<CloudyPageHead Title="@AppRes.Media" Subtitle="Browse folders and files of your site." KpiCols="2">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(MediaKpiKeys.Files)" Value="@KpiValue(MediaKpiKeys.Files)" Icon="bi-file-earmark-text" />
+        <CloudyKpi Label="@KpiLabel(MediaKpiKeys.Storage)" Value="@StorageValue()" Icon="bi-hdd" />
+    </Kpis>
+</CloudyPageHead>
+
+<MediaBrowser Mode="MediaBrowserMode.Manage" OnContentChanged="LoadKpi" />

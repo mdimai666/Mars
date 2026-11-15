@@ -1,0 +1,113 @@
+﻿using Mars.Admin.Shared.Cloudy;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Contracts.Common;
+using Mars.WebApiClient.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
+
+namespace Mars.Admin.SiteSpace.Pages.FeedbackViews;
+
+public partial class FeedbackListPage
+{
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
+    [Inject] AdminJs _appjs { get; set; } = default!;
+
+    static readonly string[] ReadFilterOptions = ["Unread"];
+
+    FluentDataGrid<FeedbackSummaryResponse> _grid = default!;
+    GridItemsProvider<FeedbackSummaryResponse> _dataProvider = default!;
+
+    string _searchText = "";
+    string? _readFilter;
+    int? _total;
+    IReadOnlyDictionary<string, KpiResult> _kpi = new Dictionary<string, KpiResult>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _dataProvider = CloudyGridProvider.Create<FeedbackSummaryResponse>(LoadFeedbacks);
+        await LoadKpi();
+    }
+
+    async Task<ListDataResult<FeedbackSummaryResponse>> LoadFeedbacks(int skip, int take, string? sort)
+    {
+        var data = await client.Feedback.List(new()
+        {
+            Skip = skip,
+            Take = take,
+            Sort = sort ?? $"-{nameof(FeedbackSummaryResponse.CreatedAt)}",
+            Search = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            IsRead = _readFilter is null ? null : false,
+        });
+
+        _total = data.TotalCount ?? data.Items.Count;
+        StateHasChanged();
+        return data;
+    }
+
+    async Task LoadKpi()
+    {
+        _kpi = await client.Kpi.Get([FeedbackKpiKeys.Unread, FeedbackKpiKeys.NewThisWeek]);
+    }
+
+    string KpiLabel(string key)
+        => _kpi.TryGetValue(key, out var r) && !string.IsNullOrEmpty(r.Label) ? L[r.Label].Value : key;
+
+    string KpiValue(string key)
+        => _kpi.TryGetValue(key, out var r) ? r.Value.ToString("N0") : "—";
+
+    void RefreshGrid() => _grid?.RefreshDataAsync();
+
+    void OnSearchChanged(string text)
+    {
+        _searchText = text;
+        RefreshGrid();
+    }
+
+    void SetReadFilter(string? chip)
+    {
+        _readFilter = chip;
+        RefreshGrid();
+    }
+
+    async Task OnRowClick(FluentDataGridRow<FeedbackSummaryResponse> row)
+    {
+        if (row.Item is null) return;
+
+        var detail = await client.Feedback.Get(row.Item.Id);
+        if (detail is null)
+        {
+            _ = _messageService.Error("element not found");
+            return;
+        }
+
+        if (!detail.IsRead)
+        {
+            detail = await client.Feedback.MarkRead(row.Item.Id);
+        }
+
+        await _dialogService.ShowDialogAsync<ViewFeedbackDialog>(new DialogOptions
+        {
+            Modal = true,
+            Header = { CloseAction = { Visible = true } },
+            Parameters = { ["Content"] = detail },
+        });
+
+        RefreshGrid();
+        await LoadKpi();
+    }
+
+    public async Task Delete(Guid id)
+    {
+        await client.Feedback.Delete(id).SmartDelete();
+        RefreshGrid();
+        await LoadKpi();
+    }
+
+    async Task DownloadExcel()
+    {
+        string url = Q.ServerUrlJoin("api/Feedback/DownloadExcel");
+        await _appjs.DownloadFileFromUrl(url);
+    }
+}

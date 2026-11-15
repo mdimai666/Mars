@@ -73,8 +73,6 @@ public partial class ObjectsQueryWorkspace
 
     readonly string _examplesButtonId = "ds-http-examples-" + Guid.NewGuid().ToString("N");
 
-    bool _examplesOpen;
-
     /// <summary>Имя документа запросов источника объявляет провайдер (у rest это requests.http).</summary>
     string DocumentName => profile?.DocumentName ?? DatasourceSettings.RequestsDocument;
 
@@ -286,8 +284,6 @@ public partial class ObjectsQueryWorkspace
     //=== примеры условий (file) ================================================
 
     readonly string _fileExamplesButtonId = "ds-file-examples-" + Guid.NewGuid().ToString("N");
-
-    bool _fileExamplesOpen;
 
     /// <summary>
     /// Вставить пример условия в редактор. Текст запроса к файлу — одно выражение, поэтому

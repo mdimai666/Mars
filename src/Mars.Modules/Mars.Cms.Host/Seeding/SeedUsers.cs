@@ -32,11 +32,15 @@ public static class SeedUsers
             var userTypeId = ef.UserTypes.AsNoTracking().FirstOrDefault(s => s.TypeName == UserTypeEntity.DefaultTypeName)?.Id
                                 ?? ef.UserTypes.AsNoTracking().First().Id;
 
+            // username — local-part почты: полное письмо не проходит UserNameRuleValidator (@ запрещён)
+            var adminUserName = adminEmail.Split('@', 2)[0];
+            if (string.IsNullOrWhiteSpace(adminUserName)) adminUserName = "admin";
+
             var user = new UserEntity
             {
                 //Basic
-                UserName = adminEmail,
-                NormalizedUserName = adminEmail.ToUpper(),
+                UserName = adminUserName,
+                NormalizedUserName = adminUserName.ToUpper(),
                 Email = adminEmail,
                 NormalizedEmail = adminEmail.ToUpper(),
                 EmailConfirmed = true,

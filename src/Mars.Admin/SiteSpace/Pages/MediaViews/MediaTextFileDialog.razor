@@ -1,0 +1,52 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="@DialogTitle">
+            <button type="button" class="cloudy-enc-badge" title="Switch encoding" @onclick="ToggleEncoding">
+                @_encoding
+                <i class="bi bi-arrow-repeat"></i>
+            </button>
+        </CloudyDialogHead>
+    </TitleTemplate>
+    <ChildContent>
+        <pre class="cloudy-mono-preview">@_content</pre>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end flex-fill">
+            <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px"
+                          Href="@FileUrl" Target="_blank">
+                Download
+            </FluentButton>
+        </div>
+    </ActionTemplate>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public string DialogTitle { get; set; } = "";
+    [Parameter] public string Content { get; set; } = "";
+    [Parameter] public string ContentEncoding { get; set; } = "utf-8";
+    [Parameter] public string FileUrl { get; set; } = "";
+    [Parameter] public int MaxChars { get; set; }
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+
+    string _content = "";
+    string _encoding = "utf-8";
+
+    protected override void OnInitialized()
+    {
+        _content = Content;
+        _encoding = ContentEncoding;
+    }
+
+    async Task ToggleEncoding()
+    {
+        var forced = _encoding == "utf-8" ? "windows-1251" : "utf-8";
+        var result = await JS.InvokeAsync<TextPreviewResult>("blazor_fetch_text", FileUrl, MaxChars, forced);
+        _content = result.Text;
+        _encoding = result.Encoding;
+    }
+}

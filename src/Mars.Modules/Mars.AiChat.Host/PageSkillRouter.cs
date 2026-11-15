@@ -17,12 +17,22 @@ internal static class PageSkillRouter
         if (IsPostEditPage(pageContext)) skills.Add("mars-posts");
         if (IsMediaPage(pageContext)) skills.Add("mars-media");
         if (IsDatasourcePage(pageContext)) skills.Add("mars-datasource");
+        if (IsPrivacyPolicySettingsPage(pageContext)) skills.Add("mars-privacy-policy");
         if (option.EnableSqlAccess) skills.Add("mars-sql");
 
         return skills;
     }
 
-    // Страницы модуля DataSource: /datasource/query, /datasource/config, /datasource/actions
+    // Раздел настроек «Политика»: /Settings/Option/{FullName с '+' вместо '.'}
+    static bool IsPrivacyPolicySettingsPage(string? pageContext)
+    {
+        if (string.IsNullOrWhiteSpace(pageContext)) return false;
+
+        return pageContext.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Any(seg => seg.Contains("PrivacyPolicyOption", StringComparison.OrdinalIgnoreCase));
+    }
+
+    // Страницы модуля DataSource: /tech/datasource/{slug?}, /tech/datasource/config
     static bool IsDatasourcePage(string? pageContext)
     {
         if (string.IsNullOrWhiteSpace(pageContext)) return false;

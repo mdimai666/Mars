@@ -29,7 +29,7 @@
                 </FormItem2>
 
                 <FormItem2 For="@(() => context.AllowedFileExtensionsSetter)" class="col">
-                    <Microsoft.FluentUI.AspNetCore.Components.FluentTextField @bind-Value=@context.AllowedFileExtensionsSetter Disabled=@context.IsAllowAllFileTypes Class="w-100" />
+                    <Microsoft.FluentUI.AspNetCore.Components.FluentTextInput @bind-Value=@context.AllowedFileExtensionsSetter Disabled=@context.IsAllowAllFileTypes Class="w-100" />
                 </FormItem2>
             </div>
         </div>

@@ -14,12 +14,12 @@
         <!-- Форма добавления -->
         <EditForm Model="@this" OnValidSubmit="OnAddClick">
             <div class="hstack gap-2">
-                <FluentTextField Required
+                <FluentTextInput Required
                                  class="flex-fill"
                                  Label="FrontContextId"
                                  @bind-Value="newFrontContextId" />
                 <FluentButton Type="ButtonType.Submit"
-                              Appearance="Appearance.Accent"
+                              Appearance="ButtonAppearance.Primary"
                               IconStart="@(new Icons.Regular.Size16.Add())">
                     @AppRes.Add
                 </FluentButton>
@@ -35,8 +35,8 @@
                     {
                         <div class="hstack justify-content-between align-items-center border-bottom pb-1">
                             <span>@f</span>
-                            <FluentButton Appearance="Appearance.Stealth"
-                                          IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Neutral))"
+                            <FluentButton Appearance="ButtonAppearance.Subtle"
+                                          IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Default))"
                                           OnClick="() => OnRemoveClick(f)">
                                 @AppRes.Delete
                             </FluentButton>

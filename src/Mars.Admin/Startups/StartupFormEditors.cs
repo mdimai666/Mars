@@ -1,7 +1,7 @@
-using Mars.Admin.Components;
+﻿using Mars.Admin.SiteSpace.Components;
 using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Components.Forms.Editors;
-using Mars.Admin.Pages.PostsViews.Forms;
+using Mars.Admin.SiteSpace.Pages.PostsViews.Forms;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Forms.Contracts;

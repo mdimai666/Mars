@@ -1,0 +1,104 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IDialogService dialogService
+
+<GallerySection Title="Dialog">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="Через IDialogService.ShowDialogAsync<T> (нативный v5 API)">
+            <div class="vstack gap-1">
+                <FluentButton Id="gallery-dialog-service-open" Appearance="ButtonAppearance.Primary" OnClick="OpenServiceDialog">
+                    Открыть диалог сервиса
+                </FluentButton>
+                <FluentText Size="TextSize.Size200" Class="text-secondary">
+                    Результат: @(_serviceDialogResult ?? "—")
+                </FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="Инлайн FluentDialog (@@ref + ShowAsync/HideAsync)">
+            <FluentButton Id="gallery-dialog-inline-open" OnClick="OpenInlineDialog">Открыть инлайн-диалог</FluentButton>
+        </GalleryVariant>
+
+    </div>
+
+    <FluentDialog aria-label="Gallery inline dialog"
+                  @ref="_inlineDialog"
+                  Modal
+                  OnStateChange="OnInlineDialogStateChange">
+        <FluentDialogBody>
+            <TitleTemplate>
+                <FluentText Size="TextSize.Size500">Инлайн-диалог</FluentText>
+            </TitleTemplate>
+            <ChildContent>
+                <div class="vstack gap-2">
+                    <FluentText>
+                        Открыт императивно: @@ref → ShowAsync(). Закрытие — HideAsync(), ESC или кнопкой.
+                        Паттерн синхронизации флага — OnAfterRenderAsync + OnStateChange(DialogState.Closed).
+                    </FluentText>
+                    <FluentBadge Class="badge-accent" Content="inline dialog" />
+                </div>
+            </ChildContent>
+            <ActionTemplate>
+                <div class="d-flex justify-content-end gap-2">
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="CloseInlineDialog">Закрыть</FluentButton>
+                </div>
+            </ActionTemplate>
+        </FluentDialogBody>
+    </FluentDialog>
+
+</GallerySection>
+
+@code {
+    FluentDialog? _inlineDialog;
+    bool _inlineVisible;
+    bool _inlineShown;
+    string? _serviceDialogResult;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_inlineDialog is null) return;
+
+        if (_inlineVisible && !_inlineShown)
+        {
+            await _inlineDialog.ShowAsync();
+            _inlineShown = true;
+        }
+        else if (!_inlineVisible && _inlineShown)
+        {
+            await _inlineDialog.HideAsync();
+            _inlineShown = false;
+        }
+    }
+
+    void OnInlineDialogStateChange(DialogEventArgs e)
+    {
+        if (e.State != DialogState.Closed) return;
+
+        _inlineShown = false;
+        _inlineVisible = false;
+    }
+
+    void OpenInlineDialog() => _inlineVisible = true;
+
+    void CloseInlineDialog() => _inlineVisible = false;
+
+    async Task OpenServiceDialog()
+    {
+        var result = await dialogService.ShowDialogAsync<GallerySampleDialog>(new DialogOptions
+        {
+            Header =
+            {
+                Title = "Диалог галереи",
+                CloseAction = { Visible = true },
+            },
+            Width = "480px",
+            Modal = true,
+            Parameters = { ["Content"] = "Контент передан параметром Content." },
+        });
+
+        _serviceDialogResult = result.Cancelled
+            ? "Cancelled"
+            : $"CloseAsync: {result.Value as string ?? "—"}";
+    }
+}

@@ -1,0 +1,28 @@
+@page "/tech/datasource/config"
+@attribute [Authorize(Roles = "Admin")]
+@using Mars.Datasource.Contracts.Config
+
+<PageTitle>Datasource settings</PageTitle>
+
+<div class="ds-config-page">
+    <header class="ds-config-page__hero">
+        <div class="ds-config-page__hero-text">
+            <h1 class="ds-config-page__title">Datasource settings</h1>
+            <p class="ds-config-page__subtitle">Connection configurations of the datasource engine — SQL, REST and file sources.</p>
+        </div>
+        <div class="ds-config-page__actions">
+            <a class="ds-config-page__action" href="/dev/tech/datasource">
+                <i class="bi bi-arrow-left"></i>
+                Back to workbench
+            </a>
+        </div>
+    </header>
+
+    <section class="ds-config-page__panel">
+        <EditOptionForm TModel="DatasourceOption">
+            <CascadingValue Value="context">
+                <Mars.Datasource.Front.Components.EditDatasourceOptions />
+            </CascadingValue>
+        </EditOptionForm>
+    </section>
+</div>

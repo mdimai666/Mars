@@ -60,7 +60,7 @@ public static class SiteScribanFunctions
 
         var queryRows = DataQueryBodyParser.FunctionBodyParse(body, key);
 
-        Dictionary<string, object>? dCopy = null;
+        Dictionary<string, object?>? dCopy = null;
         if (isCache)
         {
             dCopy = SnapshotData(rctx.DataObject);
@@ -85,7 +85,7 @@ public static class SiteScribanFunctions
         {
             var dResult = SnapshotData(rctx.DataObject);
 
-            IEnumerable<KeyValuePair<string, object>> diff = dCopy.Except(dResult).Concat(dResult.Except(dCopy));
+            IEnumerable<KeyValuePair<string, object?>> diff = dCopy.Except(dResult).Concat(dResult.Except(dCopy));
 
             var tsCache = DataQueryBodyParser.ParseTimespan(cache ?? "10m");
             memoryCache?.Set(cacheKey, diff, tsCache ?? TimeSpan.FromMinutes(5));
@@ -94,7 +94,7 @@ public static class SiteScribanFunctions
         return null;
     }
 
-    static Dictionary<string, object> SnapshotData(ScriptObject dataObject)
+    static Dictionary<string, object?> SnapshotData(ScriptObject dataObject)
         => dataObject.ToDictionary(entry => entry.Key, entry => entry.Value);
 
     //=========================================================

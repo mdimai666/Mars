@@ -10,26 +10,26 @@
     <div class="vstack gap-2">
 
         <FormItem2 For="() => Node.Mode">
-            <FluentSelect TOption="AuthFlowNodeMode"
+            <FluentSelect TOption="AuthFlowNodeMode" TValue="AuthFlowNodeMode"
                           Items="Enum.GetValues<AuthFlowNodeMode>()"
-                          @bind-SelectedOption=@Node.Mode />
+                          @bind-Value=@Node.Mode />
         </FormItem2>
 
         <FormItem2 For="() => Node.TimeoutSeconds">
-            <FluentNumberField @bind-Value=@Node.TimeoutSeconds Class="" />
+            <FluentNumberInput @bind-Value=@Node.TimeoutSeconds Class="" />
         </FormItem2>
 
         <div class="spacer-1"></div>
 
-        <FluentLabel Typo="Typography.Subject">Credentials</FluentLabel>
+        <FluentText Size="TextSize.Size400">Credentials</FluentText>
 
         @if (Node.Mode != AuthFlowNodeMode.ApiKey && Node.Mode != AuthFlowNodeMode.BearerToken)
         {
             <FormItem2 For="() => Node.Username">
-                <FluentTextField @bind-Value=@Node.Username Class="" Required AutoComplete="new-password" />
+                <FluentTextInput @bind-Value=@Node.Username Class="" Required AutoComplete="new-password" />
             </FormItem2>
             <FormItem2 For="() => Node.Password">
-                <FluentTextField TextFieldType="TextFieldType.Password" @bind-Value=@Node.Password Class="" Required AutoComplete="new-password" />
+                <FluentTextInput TextInputType="TextInputType.Password" @bind-Value=@Node.Password Class="" Required AutoComplete="new-password" />
             </FormItem2>
         }
 
@@ -40,22 +40,22 @@
         else if (Node.Mode == AuthFlowNodeMode.BearerToken)
         {
             <FormItem2 For="() => Node.TokenUrl">
-                <FluentTextField @bind-Value=@Node.TokenUrl Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.TokenUrl Class="flex-fill" Required />
             </FormItem2>
             <FormItem2 For="() => Node.ClientId">
-                <FluentTextField @bind-Value=@Node.ClientId Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.ClientId Class="flex-fill" Required />
             </FormItem2>
             <FormItem2 For="() => Node.ClientSecret">
-                <FluentTextField @bind-Value=@Node.ClientSecret Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.ClientSecret Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.Scope">
-                <FluentTextField @bind-Value=@Node.Scope Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.Scope Class="flex-fill" Required />
             </FormItem2>
         }
         else if (Node.Mode == AuthFlowNodeMode.CookieForm)
         {
             <FormItem2 For="() => Node.LoginPageUrl">
-                <FluentTextField @bind-Value=@Node.LoginPageUrl Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.LoginPageUrl Class="flex-fill" Required />
             </FormItem2>
             <FormItem2 For="() => Node.FollowRedirects" Label="&nbsp;">
                 <FluentCheckbox @bind-Value=@Node.FollowRedirects Class="">
@@ -66,32 +66,32 @@
         else if (Node.Mode == AuthFlowNodeMode.CookieEndpoint)
         {
             <FormItem2 For="() => Node.CookieEndpointConfig.LoginEndpointUrl">
-                <FluentTextField @bind-Value=@Node.CookieEndpointConfig.LoginEndpointUrl Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.CookieEndpointConfig.LoginEndpointUrl Class="flex-fill" Required />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.UsernameFieldName">
-                <FluentTextField @bind-Value=@Node.CookieEndpointConfig.UsernameFieldName Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.CookieEndpointConfig.UsernameFieldName Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.PasswordFieldName">
-                <FluentTextField @bind-Value=@Node.CookieEndpointConfig.PasswordFieldName Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.CookieEndpointConfig.PasswordFieldName Class="flex-fill" />
             </FormItem2>
 
             <FormItem2 For="() => Node.CookieEndpointConfig.AdditionalFields">
                 <DictionaryTextArea @bind-Value="Node.CookieEndpointConfig.AdditionalFields" Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.ContentType">
-                <FluentSelect TOption="AuthFlowLoginEndpointContentType"
+                <FluentSelect TOption="AuthFlowLoginEndpointContentType" TValue="AuthFlowLoginEndpointContentType"
                               Items="Enum.GetValues<AuthFlowLoginEndpointContentType>()"
-                              @bind-SelectedOption=@Node.CookieEndpointConfig.ContentType />
+                              @bind-Value=@Node.CookieEndpointConfig.ContentType />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.LoginHeaders">
                 <DictionaryTextArea @bind-Value="Node.CookieEndpointConfig.LoginHeaders" Class="flex-fill" />
             </FormItem2>
 
             <FormItem2 For="() => Node.CookieEndpointConfig.HealthCheckUrl">
-                <FluentTextField @bind-Value=@Node.CookieEndpointConfig.HealthCheckUrl Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.CookieEndpointConfig.HealthCheckUrl Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.AuthCookieName">
-                <FluentTextField @bind-Value=@Node.CookieEndpointConfig.AuthCookieName Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.CookieEndpointConfig.AuthCookieName Class="flex-fill" />
             </FormItem2>
             <FormItem2 For="() => Node.CookieEndpointConfig.FollowRedirects" Label="&nbsp;">
                 <FluentCheckbox @bind-Value=@Node.CookieEndpointConfig.FollowRedirects Class="">
@@ -102,10 +102,10 @@
         else if (Node.Mode == AuthFlowNodeMode.ApiKey)
         {
             <FormItem2 For="() => Node.ApiKey">
-                <FluentTextField @bind-Value=@Node.ApiKey Class="flex-fill" Required />
+                <FluentTextInput @bind-Value=@Node.ApiKey Class="flex-fill" Required />
             </FormItem2>
             <FormItem2 For="() => Node.ApiKeyHeaderName">
-                <FluentTextField @bind-Value=@Node.ApiKeyHeaderName Class="flex-fill" />
+                <FluentTextInput @bind-Value=@Node.ApiKeyHeaderName Class="flex-fill" />
             </FormItem2>
         }
         else

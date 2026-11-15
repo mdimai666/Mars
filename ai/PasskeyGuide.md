@@ -44,8 +44,8 @@ ASP.NET Core Identity 10 (`SignInManager`/`UserManager`), без сторонн�
   (`Content(json, "application/json")`) — не оборачивать в UserActionResult.
 - Клиентский JS: `src/Admin/Mars.Admin.Framework/wwwroot/PasskeyJsInterop.js` + обёртка `PasskeyJs.cs`
   (DI — `TryAddScoped` в `MainAdminFramework.AddWasmServices`).
-- UI: кнопка входа — `src/Mars.Admin/Pages/Public/LoginForm.razor(.cs)` (`ExecutePasskeyLogin`);
-  управление — `src/Mars.Admin/Pages/UserViews/PasskeysPage.razor(.cs)` (`@page "/Passkeys"`,
+- UI: кнопка входа — `src/Mars.Admin/Public/LoginForm.razor(.cs)` (`ExecutePasskeyLogin`);
+  управление — `src/Mars.Admin/SiteSpace/Pages/UserViews/PasskeysPage.razor(.cs)` (`@page "/Passkeys"`,
   ссылка `/dev/Passkeys` в `UserBar.razor`).
 - WebApiClient: `IPasskeyServiceClient`/`PasskeyServiceClient` (`src/Mars.WebApiClient`) — `client.Passkey`
   (List/Rename/Delete). Церемонии через него НЕ ходят — только JS.

@@ -11,16 +11,16 @@
 
     <div class="vstack gap-3">
         <FormItem2 For="()=>context.SiteUrl">
-            <FluentTextField @bind-Value=@context.SiteUrl Appearance="FluentInputAppearance.Filled" Class="w-100" />
+            <FluentTextInput @bind-Value=@context.SiteUrl Appearance="TextInputAppearance.FilledDarker" Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.SiteName">
-            <FluentTextField @bind-Value=@context.SiteName Class="w-100" />
+            <FluentTextInput @bind-Value=@context.SiteName Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.SiteDescription">
             <FluentTextArea Rows="3" @bind-Value=@context.SiteDescription Class="w-100" />
         </FormItem2>
         <FormItem2 For="()=>context.AdminEmail">
-            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@context.AdminEmail Class="w-100" AutoComplete="off" />
+            <FluentTextInput TextInputType="@TextInputType.Email" @bind-Value=@context.AdminEmail Class="w-100" AutoComplete="off" />
         </FormItem2>
         <div style="margin-left: 46%;">
             <FluentCheckbox @bind-Value=@context.AllowUsersSelfRegister>

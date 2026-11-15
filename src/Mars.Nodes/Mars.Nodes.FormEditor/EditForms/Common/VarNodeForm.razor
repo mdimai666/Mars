@@ -7,12 +7,12 @@
 
     <div class="vstack gap-3">
         <FormItem2 For=@(()=>Node.VarType)>
-            <FluentSelect TOption="string"
+            <FluentSelect TOption="string" TValue="string"
                 Items="VarNode.ListTypesSelect()"
                 @bind-Value=Node.VarType />
         </FormItem2>
         <FormItem2 For=@(()=>Node.DefaultValue)>
-            <FluentTextField @bind-Value=Node.DefaultValue />
+            <FluentTextInput @bind-Value=Node.DefaultValue />
         </FormItem2>
     </div>
 

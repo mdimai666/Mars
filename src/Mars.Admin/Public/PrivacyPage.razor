@@ -1,0 +1,107 @@
+@page "/privacy"
+@layout CloudyPublicLayout
+@using Mars.Cms.Contracts.Options
+@using Mars.Cms.Contracts.Posts
+@using BlazoredHtmlRender
+@using Mars.AiChat.Front.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+@inject NavigationManager Navigation
+@inject IAiChatAppService AiChat
+
+<ContentWrapper Title="@(_post?.Title ?? "Политика конфиденциальности")">
+    @if (_loading)
+    {
+        <div class="xcenter" style="min-height:40vh">
+            <SharedLoader1 />
+        </div>
+    }
+    else if (_error is not null)
+    {
+        <div class="alert alert-danger">@_error</div>
+    }
+    else if (_post is not null)
+    {
+        <BlazoredHtml Html="@(_post.Content ?? "")" />
+    }
+    else
+    {
+        <div class="content-body">
+            @if (_notFound)
+            {
+                <div class="alert alert-warning">
+                    Выбранный пост политики не найден.
+                    <AuthorizeView Roles="Admin">
+                        <Authorized>
+                            Выберите другой пост в <a href="@SettingsHref">настройках политики</a>.
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            }
+
+            <p>Политика конфиденциальности этого сайта ещё не опубликована.</p>
+
+            <h5>Что должна содержать политика</h5>
+            <ul>
+                <li>кто оператор сайта и как с ним связаться;</li>
+                <li>какие персональные данные собираются (формы, регистрация, cookies, аналитика);</li>
+                <li>цели и правовые основания обработки;</li>
+                <li>кому данные передаются (третьи лица и сервисы);</li>
+                <li>сроки хранения и порядок удаления данных;</li>
+                <li>права пользователя: доступ, исправление, отзыв согласия, удаление;</li>
+                <li>меры защиты данных;</li>
+                <li>порядок изменения политики.</li>
+            </ul>
+
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <div class="d-flex gap-2 flex-wrap my-3">
+                        <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => Navigation.NavigateTo(SettingsUrl))">
+                            Настроить
+                        </FluentButton>
+                        <PrivacyPolicyDraftButton />
+                        <FluentButton Appearance="ButtonAppearance.Default" OnClick="@(() => AiChat.Open())">
+                            Написать с ИИ
+                        </FluentButton>
+                    </div>
+                    <p class="text-secondary small">
+                        Кнопка «Написать с ИИ» открывает чат с агентом — попросите его написать политику
+                        конфиденциальности, скилл <code>mars-privacy-policy</code> подскажет ему шаги.
+                    </p>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    }
+</ContentWrapper>
+
+@code {
+    bool _loading;
+    bool _notFound;
+    string? _error;
+    PostDetailResponse? _post;
+
+    static string SettingsUrl => "Settings/Option/" + typeof(PrivacyPolicyOption).FullName!.Replace(".", "+");
+
+    string SettingsHref => Navigation.BaseUri + SettingsUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var option = Q.Site.GetOption<PrivacyPolicyOption>();
+        if (option?.PageId is not Guid id || id == Guid.Empty) return;
+
+        _loading = true;
+        try
+        {
+            _post = await client.Post.Get(id);
+            _notFound = _post is null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

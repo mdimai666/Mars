@@ -104,4 +104,104 @@ public class EventManagerTests
         triggeredCount.Should().Be(5);
     }
 
+    [Theory]
+    [InlineData(false, "entity/**/add", "entity/post/add")]
+    [InlineData(false, "**/post/add", "entity/post/add")]
+    [InlineData(false, "", "entity/post/add")]
+    [InlineData(false, "entity/post/add", "")]
+    public void TestTopic_EdgePatterns_ReturnsFalse(bool result, string pattern, string value)
+    {
+        IEventManager.TestTopic(pattern, value).Should().Be(result);
+    }
+
+    [Fact]
+    public void RemoveEventListener_SameDelegate_Unsubscribes()
+    {
+        var eventManager = new EventManager();
+        var triggeredCount = 0;
+        Action<ManagerEventPayload> handler = _ => triggeredCount++;
+
+        eventManager.AddEventListener("entity.post/post/add", handler);
+        eventManager.RemoveEventListener("entity.post/post/add", handler);
+
+        eventManager.TriggerEvent(new ManagerEventPayload("entity.post/post/add", new { }));
+
+        triggeredCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void TriggerEvent_WildcardFirstSegmentPattern_Fires()
+    {
+        var eventManager = new EventManager();
+        var triggeredCount = 0;
+
+        eventManager.AddEventListener("*/post/add", _ => triggeredCount++);
+
+        eventManager.TriggerEvent(new ManagerEventPayload("entity.post/post/add", new { }));
+
+        triggeredCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void TriggerEvent_CaseInsensitiveTopic_Fires()
+    {
+        var eventManager = new EventManager();
+        var triggeredCount = 0;
+
+        eventManager.AddEventListener("entity.post/post/add", _ => triggeredCount++);
+
+        eventManager.TriggerEvent(new ManagerEventPayload("Entity.Post/Post/Add", new { }));
+
+        triggeredCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void DeclaredEvents_ReturnsDistinctSubscribedTopics()
+    {
+        var eventManager = new EventManager();
+
+        eventManager.AddEventListener("entity.post/post/add", _ => { });
+        eventManager.AddEventListener("entity.post/post/add", _ => { });
+        eventManager.AddEventListener("entity.post/*/add", _ => { });
+
+        eventManager.DeclaredEvents().Select(s => s.Key).Should()
+            .BeEquivalentTo(["entity.post/post/add", "entity.post/*/add"]);
+    }
+
+    [Fact]
+    public async Task ConcurrentAddAndTrigger_NoExceptions_AllSubscribersFire()
+    {
+        var eventManager = new EventManager();
+        const int threadCount = 8;
+        const int perThread = 200;
+        var fired = new int[threadCount * perThread];
+
+        using var barrier = new Barrier(threadCount + 1);
+
+        var addTasks = Enumerable.Range(0, threadCount).Select(t => Task.Run(() =>
+        {
+            barrier.SignalAndWait();
+            for (var i = 0; i < perThread; i++)
+            {
+                var index = t * perThread + i;
+                eventManager.AddEventListener($"entity.post/type{index}/add", _ => Interlocked.Increment(ref fired[index]));
+            }
+        })).ToArray();
+
+        var triggerTask = Task.Run(() =>
+        {
+            barrier.SignalAndWait();
+            for (var i = 0; i < perThread; i++)
+            {
+                eventManager.TriggerEvent(new ManagerEventPayload("entity.post/type0/add", new { }));
+            }
+        });
+
+        await Task.WhenAll([.. addTasks, triggerTask]);
+
+        eventManager.TriggerEvent(new ManagerEventPayload("entity.post/type0/add", new { }));
+
+        Volatile.Read(ref fired[0]).Should().BeGreaterThanOrEqualTo(1);
+        eventManager.DeclaredEvents().Should().HaveCount(threadCount * perThread);
+    }
 }

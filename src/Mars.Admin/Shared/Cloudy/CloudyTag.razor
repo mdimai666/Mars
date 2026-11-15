@@ -1,0 +1,11 @@
+<span class="cloudy-tag @VariantClass">@Text</span>
+
+@code {
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public int? Tint { get; set; }
+    [Parameter] public bool Muted { get; set; }
+
+    string VariantClass => Muted
+        ? "cloudy-tag--muted"
+        : Tint is null ? "cloudy-tag--primary" : $"cloudy-tint-{Tint % 5}";
+}

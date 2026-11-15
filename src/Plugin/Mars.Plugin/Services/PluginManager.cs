@@ -500,6 +500,11 @@ internal class PluginManager
                         ServeUnknownFileTypes = true,
                         FileProvider = new PhysicalFileProvider(frontBinWwwRoot),
                     });
+                }
+
+                if (Directory.Exists(frontWwwRoot))
+                {
+
                     pluginAppBuilder.UseStaticFiles(new StaticFileOptions
                     {
                         ServeUnknownFileTypes = true,

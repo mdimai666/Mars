@@ -13,11 +13,20 @@
   Power Platform connectors, ToolJet/Retool, Grafana Infinity, n8n.
 - **Новый источник = проект-провайдер + профиль.** Ядро, контроллер и фронт читают
   `DatasourceKindProfile` из каталога, а не сравнивают `Kind`; ветвлений по kind'у в общем слое нет.
-- **Два мира в UI** (решение пользователя, не «улучшать»): один роут `/datasource/query?slug=`,
+- **Два мира в UI** (решение пользователя, не «улучшать»): один роут `/tech/datasource/{slug?}`
+  (решение 2026-11-14: тип источника в URL не фигурирует; старые `/datasource/query?slug=`,
+  хаб `/tech/datasource`, `/tech/datasource/actions` и мок `/tech/database` удалены),
   диспетчер `QueryPage` по `Kind` → `Workspaces/Sql/SqlQueryWorkspace` или
   `Workspaces/Objects/ObjectsQueryWorkspace`; общий низ — `WorkspaceShell` + `ResultTable` +
   `QueryResultGrid`. SQL-словарь (таблица/колонка/схема, `Q*`, `BrowseSqlBuilder`) живёт только
   в sql-мире; в общем мире — объект/поле/операция.
+- **Страница админки** `Mars.Admin/TechSpace/Pages/DataSourceViews/DatasourcePage` (razor+cs+css,
+  BEM `datasource-page`): Cloudy-hero с переключателем источников (все kind'и), шторкой Maintenance
+  (`DataSourceInfoComponent` — действия каталога, включая backup) и ссылкой на
+  `/tech/datasource/config` (форма настроек осталась). Рабочая область — `QueryPage` внутри
+  `datasource-page__workspace`. `DatasourceHeader` удалён: переключатель в hero, в оболочке
+  компактная строка `ds-context` (имя · объектов · тип). Оболочка и дерево рестайлены под
+  `--ct-*` токены tech-зоны (тёмная/светлая тема follows токены).
 
 ## Где что лежит (10 проектов)
 
@@ -114,7 +123,7 @@
   бюджет 20 КБ), `run_query(slug, objectId?, query?, parametersJson?)` (file/rest; sql отсекается
   в `execute_sql`), `execute_sql` (свободный SQL — «harness-инструмент»; ≤25 строк модели + `total`).
 - Скиллы (`ai-skills/`): `mars-sql` (preload при `EnableSqlAccess`) и `mars-datasource`
-  (preload на страницах `/datasource/*` — `PageSkillRouter`); подтверждение записи через `ask_user` —
+  (preload на страницах с сегментом `datasource` — `PageSkillRouter`); подтверждение записи через `ask_user` —
   правило скилла, серверная сторона запросы не гейтит.
 - **`AiScenario` в профиле больше нет** — генерация/дописывание SQL только через чат; EF-хендлер схемы
   внутренней БД удалён (схема `default` — тоже из каталога), ссылка `Datasource.Host → Mars.Data` снята.

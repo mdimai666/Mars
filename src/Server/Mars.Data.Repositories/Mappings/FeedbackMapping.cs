@@ -18,6 +18,7 @@ internal static class FeedbackMapping
             Excerpt = entity.Content?.TextEllipsis(150) ?? "",
             FilledUsername = entity.FilledUsername ?? entity.AuthorizedUser?.FullName ?? "",
             IsAuthorizedUser = entity.AuthorizedUserId != null,
+            IsRead = entity.IsRead,
         };
 
     public static FeedbackDetail ToDetail(this FeedbackEntity entity)
@@ -32,6 +33,7 @@ internal static class FeedbackMapping
             FilledUsername = entity.FilledUsername ?? entity.AuthorizedUser?.FullName ?? "",
             IsAuthorizedUser = entity.AuthorizedUserId != null,
             Content = entity.Content ?? "",
+            IsRead = entity.IsRead,
         };
 
     public static IReadOnlyCollection<FeedbackSummary> ToSummaryList(this IEnumerable<FeedbackEntity> entities)

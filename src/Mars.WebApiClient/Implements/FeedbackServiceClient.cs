@@ -27,6 +27,11 @@ internal class FeedbackServiceClient : BasicServiceClient, IFeedbackServiceClien
                     .PutJsonAsync(request)
                     .ReceiveJson<FeedbackDetailResponse>();
 
+    public Task<FeedbackDetailResponse> MarkRead(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}", id, "read")
+                    .PostAsync()
+                    .ReceiveJson<FeedbackDetailResponse>();
+
     public Task Delete(Guid id)
         => _client.Request($"{_basePath}{_controllerName}", id)
                     .OnError(OnStatus404ThrowException)

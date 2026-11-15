@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using Mars.Contracts.Common;
@@ -30,16 +31,17 @@ public class AppDebugController : ControllerBase
     [HttpGet("GetLogs")]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public UserActionResult<string> GetLogs(int lines = 1000, string levels = "", string period = "")
+    public UserActionResult<string> GetLogs(int lines = 1000, string levels = "", string period = "", string from = "", string to = "")
     {
         try
         {
             var maxLines = Math.Min(lines, 1000);
 
             var selectedLevels = LogFileFilter.ParseLevels(levels);
-            var since = LogFileFilter.ParsePeriod(period) is { } p ? DateTime.Now - p : (DateTime?)null;
+            var since = ParseDate(from) ?? (LogFileFilter.ParsePeriod(period) is { } p ? DateTime.Now - p : (DateTime?)null);
+            var until = ParseDate(to) is { } t ? t.Date.AddDays(1).AddTicks(-1) : (DateTime?)null;
 
-            var text = string.Join(Environment.NewLine, LogFileFilter.ReadSeamless(_logPath, selectedLevels, since, maxLines));
+            var text = string.Join(Environment.NewLine, LogFileFilter.ReadSeamless(_logPath, selectedLevels, since, maxLines, until));
 
             return new UserActionResult<string>
             {
@@ -56,6 +58,11 @@ public class AppDebugController : ControllerBase
             };
         }
     }
+
+    static DateTime? ParseDate(string? value) =>
+        DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+            ? date.Date
+            : null;
 
     [HttpGet("LogFiles")]
     public IEnumerable<string> LogFiles()

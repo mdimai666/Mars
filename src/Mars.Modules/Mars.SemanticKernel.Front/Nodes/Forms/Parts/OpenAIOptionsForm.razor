@@ -4,16 +4,16 @@
 @using System.Text.Json
 
 <FormItem2 For="() => Value.ModelId">
-    <FluentTextField @bind-Value=Value.ModelId />
+    <FluentTextInput @bind-Value=Value.ModelId />
 </FormItem2>
 <FormItem2 For="() => Value.Endpoint">
-    <FluentTextField @bind-Value=Value.Endpoint Placeholder="@OpenAIOptions.DefaultEndpoint" />
+    <FluentTextInput @bind-Value=Value.Endpoint Placeholder="@OpenAIOptions.DefaultEndpoint" />
 </FormItem2>
 <FormItem2 For="() => Value.ApiKey">
-    <FluentTextField @bind-Value=Value.ApiKey Class="w-100" />
+    <FluentTextInput @bind-Value=Value.ApiKey Class="w-100" />
 </FormItem2>
 <FormItem2 For="() => Value.OrgId">
-    <FluentTextField @bind-Value=Value.OrgId />
+    <FluentTextInput @bind-Value=Value.OrgId />
 </FormItem2>
 
 @code {

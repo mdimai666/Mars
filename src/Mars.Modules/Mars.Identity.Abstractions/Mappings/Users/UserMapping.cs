@@ -33,6 +33,7 @@ public static class UserMapping
             CreatedAt = entity.CreatedAt,
             ModifiedAt = entity.ModifiedAt,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
@@ -70,27 +71,6 @@ public static class UserMapping
             DefaultSelectRole = model.DefaultSelectRole
         };
 
-    public static UserProfileInfoDto ToProfile(this UserDetail userDetail, int commentCount)
-        => new()
-        {
-            Id = userDetail.Id,
-            FirstName = userDetail.FirstName,
-            LastName = userDetail.LastName,
-            MiddleName = userDetail.MiddleName,
-            Email = userDetail.Email,
-            Username = userDetail.UserName,
-            About = "",
-            AvatarUrl = "",
-            BirthDate = userDetail.BirthDate,
-            Gender = userDetail.Gender,
-            Phone = userDetail.PhoneNumber,
-
-            CommentCount = commentCount,
-            Roles = userDetail.Roles,
-            Type = userDetail.Type,
-            MetaValues = userDetail.MetaValues,
-        };
-
     public static UserEditResponse ToResponse(this UserEditDetail entity)
         => new()
         {
@@ -107,6 +87,7 @@ public static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Roles = entity.Roles,
             Type = entity.Type,

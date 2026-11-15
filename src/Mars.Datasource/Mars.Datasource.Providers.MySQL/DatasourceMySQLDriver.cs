@@ -45,6 +45,7 @@ public class DatasourceMySQLDriver(DatasourceConfig config) : SqlDatasourceDrive
             JOIN information_schema.KEY_COLUMN_USAGE kcu
               ON kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
              AND kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA
+             AND kcu.TABLE_NAME = tc.TABLE_NAME
             WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
         ) pk ON pk.TABLE_SCHEMA = c.TABLE_SCHEMA
             AND pk.TABLE_NAME = c.TABLE_NAME

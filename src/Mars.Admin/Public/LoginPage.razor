@@ -1,0 +1,12 @@
+@page "/Login"
+@page "/Login/sso/{ProviderSlug}"
+@layout CloudyPublicLayout
+
+<div class="cloudy-auth-card">
+    <h1 class="cloudy-auth-card__title">@AppRes.SignIn</h1>
+    <LoginForm ProviderPassedInUriPart=@ProviderSlug />
+</div>
+
+@code {
+    [Parameter] public string? ProviderSlug { get; set; }
+}

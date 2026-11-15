@@ -13,6 +13,7 @@ public record FeedbackSummaryResponse : IBasicEntityResponse
     public required bool IsAuthorizedUser { get; init; }
     public required string Excerpt { get; init; }
     public required string FilledUsername { get; init; }
+    public required bool IsRead { get; init; }
 }
 
 public record FeedbackDetailResponse : IBasicEntityResponse
@@ -26,5 +27,6 @@ public record FeedbackDetailResponse : IBasicEntityResponse
     public required bool IsAuthorizedUser { get; init; }
     public required string FilledUsername { get; init; }
     public required string Content { get; init; }
+    public required bool IsRead { get; init; }
 
 }

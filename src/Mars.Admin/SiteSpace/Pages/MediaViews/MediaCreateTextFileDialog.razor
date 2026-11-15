@@ -1,0 +1,76 @@
+@using System.Text
+@using Mars.Core.Exceptions
+@using Mars.WebApiClient.Interfaces
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="New text file" />
+    </TitleTemplate>
+    <ChildContent>
+        <div class="cloudy-create-text">
+            <FluentTextInput @bind-Value="_name" Placeholder="File name (notes.txt)" Autofocus="true" />
+            <div class="cloudy-create-text__editor">
+                <CodeEditor2 Lang="@CodeEditor2.Language.plaintext" @ref="_editor"
+                             ContainerCssStyle="height:100%;border:1px solid var(--cld-line);border-radius:10px;overflow:hidden;" />
+            </div>
+            @if (_error is not null)
+            {
+                <div class="cloudy-dialog-error">@_error</div>
+            }
+        </div>
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end flex-fill">
+            <FluentButton Appearance="ButtonAppearance.Primary" Style="min-width:100px" OnClick="Submit" Disabled="_busy">
+                @AppRes.Ok
+            </FluentButton>
+        </div>
+    </ActionTemplate>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter] public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public Guid? FolderId { get; set; }
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    CodeEditor2? _editor;
+    string _name = "";
+    string? _error;
+    bool _busy;
+
+    async Task Submit()
+    {
+        if (string.IsNullOrWhiteSpace(_name) || _busy) return;
+
+        var name = _name.Trim();
+        if (!name.Contains('.')) name += ".txt";
+
+        _busy = true;
+        _error = null;
+        try
+        {
+            var content = _editor is not null ? await _editor.GetValue() : "";
+            using var stream = new MemoryStream(new UTF8Encoding(false).GetBytes(content));
+            await client.Media.Upload(stream, name, FolderId);
+            await Dialog.CloseAsync(true);
+        }
+        catch (MarsValidationException ex)
+        {
+            _error = ex.Errors is { Count: > 0 }
+                ? string.Join("; ", ex.Errors.Values.SelectMany(x => x))
+                : ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

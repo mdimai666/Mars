@@ -8,7 +8,6 @@ using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
 using Mars.CommandLine.Scripting;
 using Mars.Datasource;
-using Mars.Docker.Host;
 using Mars.Excel.Host;
 using Mars.Forms.Abstractions;
 using Mars.Identity.Host;
@@ -124,7 +123,6 @@ public static class MarsWebAppStartup
                         .AddMarsSiteEngineScriban()
                         .AddEditorJsBlazored();
 
-        builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker(b.Configuration));
         builder.AddIfFeatureEnabled(FeatureFlags.AITool, builder =>
         {
             builder.Services.AddMarsSemanticKernel();
@@ -232,7 +230,6 @@ public static class MarsWebAppStartup
         app.Services.UseMarsSiteEngineStartup();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
 
-        app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
         app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
         app.UseIfFeatureEnabled(FeatureFlags.AiChat, app => app.UseMarsAiChat());
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsOAuth());

@@ -1,0 +1,111 @@
+@using Mars.Cms.Contracts.Posts
+@using Mars.Cms.Contracts.PostTypes
+@using Mars.Core.Features
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject Mars.WebApiClient.Interfaces.IMarsWebApiClient Client
+@inject NavigationManager Navigation
+@inject Mars.Admin.Framework.Interfaces.IMessageService MessageService
+
+<FluentButton Appearance="ButtonAppearance.Default"
+              IconStart="@(new Icons.Regular.Size16.Add())"
+              Disabled="_busy"
+              OnClick="CreateDraftAsync">
+    @(_busy ? "Создание…" : "Создать черновик политики")
+</FluentButton>
+
+@code {
+    bool _busy;
+
+    /// <summary>Разделы политики (152-ФЗ + WordPress Privacy Guide): заголовок → что раскрыть.</summary>
+    static (string Title, string Text)[] Sections =>
+    [
+        ("1. Общие положения",
+         "Укажите оператора: название сайта или организации, адрес и email для обращений. Опишите, что настоящая политика определяет порядок обработки персональных данных пользователей сайта."),
+        ("2. Какие данные мы собираем",
+         "Перечислите категории данных: регистрационные (имя, email), данные форм и комментариев, файлы cookie, данные аналитики. Укажите, какие данные собираются автоматически, а какие — предоставляются пользователем."),
+        ("3. Цели и правовые основания обработки",
+         "Опишите, зачем собираются данные (обратная связь, учётная запись, исполнение договора) и на каком основании (согласие пользователя, договор, требования закона)."),
+        ("4. Передача данных третьим лицам",
+         "Перечислите сервисы, которым могут передаваться данные (аналитика, платёжные системы, хостинг), и дайте ссылки на их политики конфиденциальности."),
+        ("5. Сроки хранения данных",
+         "Укажите, как долго хранятся данные и когда они удаляются (достижение целей обработки, отзыв согласия, удаление учётной записи)."),
+        ("6. Права пользователя",
+         "Опишите права: доступ к своим данным, исправление, отзыв согласия, удаление. Укажите порядок обращения для реализации этих прав."),
+        ("7. Меры защиты данных",
+         "Опишите организационные и технические меры защиты персональных данных."),
+        ("8. Контакты оператора",
+         "Укажите email и почтовый адрес для обращений по вопросам обработки персональных данных."),
+        ("9. Изменение политики",
+         "Опишите, как пользователи уведомляются об изменениях политики и с какого момента действует новая редакция."),
+    ];
+
+    async Task CreateDraftAsync()
+    {
+        _busy = true;
+        try
+        {
+            var type = Q.Site.PostTypes.FirstOrDefault(t => t.TypeName == "post")?.TypeName
+                       ?? Q.Site.PostTypes.FirstOrDefault()?.TypeName;
+            if (type is null)
+            {
+                _ = MessageService.Error("Нет ни одного типа записей — создайте тип в разделе «Типы записей».");
+                return;
+            }
+
+            var blank = await Client.Post.GetPostBlank(type);
+            var editor = blank.Form.Field(SystemFieldsCatalog.Content)?.Field?.Editor ?? "";
+            var title = "Политика конфиденциальности";
+
+            var post = await Client.Post.Create(new CreatePostRequest
+            {
+                Id = null,
+                Title = title,
+                Type = type,
+                Slug = $"{TextTool.TranslateToPostSlug(title)}-{Guid.NewGuid().ToString("N")[..8]}",
+                Tags = [],
+                Content = BuildContent(editor),
+                Status = null,
+                Excerpt = null,
+                LangCode = blank.Post.LangCode,
+                CategoryIds = [],
+                MetaValues = [],
+            });
+
+            Navigation.NavigateTo($"EditPost/{type}/{post.Id}");
+        }
+        catch (Exception ex)
+        {
+            _ = MessageService.Error(ex.Message);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    /// <summary>Скелет разделов под редактор контента типа: Editor.js, WYSIWYG или plain text.</summary>
+    static string BuildContent(string editor) => editor switch
+    {
+        FormEditorCatalog.BlockEditor => BuildBlockEditorJson(),
+        FormEditorCatalog.Wysiwyg => string.Join("", Sections.Select(s => $"<h2>{s.Title}</h2><p>{s.Text}</p>")),
+        _ => string.Join("\n\n", Sections.Select(s => $"{s.Title}\n{s.Text}")),
+    };
+
+    static string BuildBlockEditorJson()
+    {
+        var blocks = new List<object>();
+        foreach (var (title, text) in Sections)
+        {
+            blocks.Add(new { type = "header", data = new { text = title, level = 2 } });
+            blocks.Add(new { type = "paragraph", data = new { text } });
+        }
+
+        return System.Text.Json.JsonSerializer.Serialize(new
+        {
+            time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            blocks,
+            version = "2.31.0",
+        });
+    }
+}

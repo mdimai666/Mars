@@ -15,7 +15,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mars.Data.PostgreSQL.Migrations
 {
     [DbContext(typeof(MarsDbContext))]
-    [Migration("20211111120000_AddFeedbackIsRead")]
+    [Migration("20261115010627_AddFeedbackIsRead")]
     partial class AddFeedbackIsRead
     {
         /// <inheritdoc />
@@ -23,7 +23,7 @@ namespace Mars.Data.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);

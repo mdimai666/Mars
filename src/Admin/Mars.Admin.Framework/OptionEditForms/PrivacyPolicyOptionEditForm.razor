@@ -1,0 +1,156 @@
+@using Mars.Cms.Contracts.Options
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Options.Contracts.Dto.Options
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+@attribute [OptionEditFormForOptionAttribute(typeof(PrivacyPolicyOption))]
+@attribute [Display(Name = "Политика")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="PrivacyPolicyOption" OnLoadData="OnLoad" AfterSave="AfterSave">
+
+    <h3>Политика конфиденциальности</h3>
+
+    <p>
+        Публичная страница <a href='@($"{Nav.BaseUri}privacy")' target="_blank">/privacy</a> показывает выбранный пост
+        без авторизации — как страница политики в WordPress. Пока пост не выбран, страница
+        показывает заглушку с кратким руководством.
+    </p>
+
+    <FormItem2 For="()=>context.PageId">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            @if (_selected is not null)
+            {
+                <div class="d-flex align-items-center gap-2">
+                    @if (!string.IsNullOrEmpty(_selected.ImageUrl))
+                    {
+                        <img src="@_selected.ImageUrl" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:4px" />
+                    }
+                    <div>
+                        <div>@_selected.Title</div>
+                        <div class="text-secondary small">@_selected.Description</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <span class="text-secondary">Пост не выбран</span>
+            }
+            <FluentButton Appearance="ButtonAppearance.Default" OnClick="SelectAsync">Выбрать…</FluentButton>
+            @if (form.Model.PageId is not null)
+            {
+                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ClearAsync">Очистить</FluentButton>
+            }
+        </div>
+    </FormItem2>
+
+    <div class="my-3">
+        <PrivacyPolicyDraftButton />
+    </div>
+
+    <FluentMessageBar Intent="MessageBarIntent.Info" AllowDismiss=false>
+        <p>
+            Черновик создаётся со скелетом разделов и открывается в редакторе. После ревью
+            опубликуйте пост и выберите его выше — только тогда он появится на /privacy.
+        </p>
+    </FluentMessageBar>
+
+    <div class="spacer-2"></div>
+
+    <h4>Из чего должна состоять политика</h4>
+    <ol>
+        <li><b>Общие положения</b> — кто оператор (название сайта/организации, контакты), что регулирует политика.</li>
+        <li><b>Какие данные собираются</b> — регистрация, формы, комментарии, cookies, аналитика.</li>
+        <li><b>Цели и правовые основания</b> — зачем собираются данные, на каком основании (согласие, договор, закон).</li>
+        <li><b>Передача третьим лицам</b> — аналитика, платёжные системы, хостинг; ссылки на их политики.</li>
+        <li><b>Сроки хранения</b> — как долго хранятся данные и когда удаляются.</li>
+        <li><b>Права пользователя</b> — доступ, исправление, отзыв согласия, удаление; порядок обращения.</li>
+        <li><b>Меры защиты</b> — организационные и технические меры защиты данных.</li>
+        <li><b>Контакты оператора</b> — email и адрес для обращений.</li>
+        <li><b>Изменение политики</b> — как уведомляются пользователи и когда действует новая редакция.</li>
+    </ol>
+
+    <h4>Написание с ИИ</h4>
+    <p>
+        Откройте чат с ИИ-агентом (кнопка ✦ внизу справа) и попросите:
+        «Напиши политику конфиденциальности для сайта». Скилл <code>mars-privacy-policy</code>
+        проведёт агента по шагам: контекст сайта, создание поста, настройка этой опции.
+    </p>
+
+</EditOptionForm>
+
+@code {
+    EditOptionForm<PrivacyPolicyOption> form = default!;
+
+    [Inject] IDialogService DialogService { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] NavigationManager Nav { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService MessageService { get; set; } = default!;
+
+    MetaValueRelationModelSummaryResponse? _selected;
+
+    async Task OnLoad(PrivacyPolicyOption model)
+    {
+        if (model.PageId is not Guid id || id == Guid.Empty)
+        {
+            _selected = null;
+            return;
+        }
+
+        try
+        {
+            var models = await client.PostType.GetMetaValueRelationModels("Post", [id]);
+            _selected = models.GetValueOrDefault(id);
+        }
+        catch (Exception ex)
+        {
+            _ = MessageService.Error(ex.Message);
+        }
+    }
+
+    async Task SelectAsync()
+    {
+        var data = new MetaValueRelationSelectDialogData
+        {
+            ModelName = "Post",
+            ValueId = form.Model.PageId ?? Guid.Empty,
+        };
+
+        var result = await DialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(new DialogOptions
+        {
+            Header = { Title = "Страница политики" },
+            Width = "500px",
+            Modal = true,
+            Parameters = { ["Content"] = data },
+        });
+
+        if (result.Cancelled || result.Value is not MetaValueRelationModelSummaryResponse selected) return;
+
+        form.Model.PageId = selected.Id;
+        _selected = selected;
+        StateHasChanged();
+    }
+
+    void ClearAsync()
+    {
+        form.Model.PageId = null;
+        _selected = null;
+    }
+
+    void AfterSave(PrivacyPolicyOption value)
+    {
+        // сеттер Options сбрасывает статический optCache — /privacy в этой вкладке увидит изменение
+        var key = nameof(PrivacyPolicyOption);
+        var item = new OptionSummaryResponse
+        {
+            Key = key,
+            Type = typeof(PrivacyPolicyOption).FullName!,
+            Value = JsonSerializer.Serialize(value),
+        };
+        var list = Q.Site.Options.ToList();
+        var idx = list.FindIndex(s => s.Key == key);
+        if (idx >= 0) list[idx] = item; else list.Add(item);
+        Q.Site.Options = list;
+    }
+}

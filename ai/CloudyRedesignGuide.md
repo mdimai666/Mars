@@ -88,6 +88,21 @@
     удалены; slug фронта для ИИ парсится из `/tech/frontend/editor/{slug}`
     (`MarsFrontFilesTools`).
   - `Public/` — Login/Register/Logout/Privacy (BlankLayout, вне зон).
+    Privacy переделана 2026-11-15 по аналогии с WP Settings→Privacy: контент — пост
+    из опции `PrivacyPolicyOption.PageId` (`Mars.Cms.Contracts/Options`, регистрация
+    в `MainCms.UseMarsCms` с `appendToInitialSiteData` → анонимное чтение
+    `Q.Site.GetOption<PrivacyPolicyOption>()`). Рендер: `client.Post.Get(id)`
+    (анонимный, Content уже HTML через PostTransformer) + `BlazoredHtml`;
+    RemotePageViewer НЕ подходит (заточен под Admin-only AdminFront/Render).
+    Если пост не выбран — заглушка-гайд + админ-кнопки (Настроить / Создать черновик /
+    Написать с ИИ). Настройки: `PrivacyPolicyOptionEditForm` (раздел «Политика»,
+    пикер `MetaValueRelationSelectDialog` ModelName="Post", AfterSave обновляет
+    `Q.Site.Options` — сеттер сбрасывает optCache). Черновик:
+    `PrivacyPolicyDraftButton` (Framework) — скелет разделов 152-ФЗ под редактор
+    типа (Editor.js/WYSIWYG/plain), в опцию НЕ назначается автоматически.
+    ИИ-помощь: скилл `Mars.AiChat.Host/ai-skills/mars-privacy-policy/SKILL.md` +
+    preload в `PageSkillRouter` на разделе настроек (тесты `Mars.AiChat.Tests/
+    PrivacyPolicySkillTests`).
   - `Shared/` — только кросс-зонное: лэйауты + `Cloudy/`, UserBar, ActionCenter,
     XActionFormDialog, FluentDialogXActionFormPresenter, FrontDemoActionRunner,
     CodeEditorExtraToolbar, GeneralSectionActions, DataGridSharedViews, DevErrors,
@@ -309,6 +324,10 @@ side-карточками.
   less такого не видят — правила в `document.adoptedStyleSheets` (детали: FluentV5Reference).
 - **Сборка при живом `tools/ui/serve.ps1`** ломает fingerprint-ассеты (404 на .wasm) — сначала
   остановить сервер (детали: память проекта `wasm-fingerprint-stale-server`).
+- **`NavigateTo` с ведущим '/' уходит в корень origin, минуя маунт админки** (`/dev`):
+  `NavigateTo("/EditPost/…")` дал 404 на `localhost:5005/EditPost/…` (баг 2026-11-15).
+  Относительный URI без слэша (`"EditPost/…"`) резолвится от `BaseUri`; для `<a href>`
+  в разметке — `Navigation.BaseUri + "путь"` (в `EditPostPage` исторически хардкод `/dev`).
 - После коммита, затрагивающего css/js — bump `MarsAppVersion` в `Directory.Build.props` (cache-busting).
 
 ## Инварианты

@@ -27,6 +27,9 @@ public class AiChatHubClient : IAsyncDisposable
     public event Action<Guid, Guid, string>? OnError;
     public event Action<Guid, AiPageToolRequest>? OnPageToolRequest;
 
+    /// <summary>Агент просит обновить InitialSiteData в админке (сайдбар/меню/настройки).</summary>
+    public event Action<Guid>? OnRefreshSiteData;
+
     /// <summary>
     /// Соединение восстановлено после обрыва. Подписка на группу чата уже
     /// восстановлена; подписчику стоит пересинхронизировать состояние по REST,
@@ -144,6 +147,9 @@ public class AiChatHubClient : IAsyncDisposable
 
         connection.On<Guid, AiPageToolRequest>(AiChatHubEvents.PageToolRequest,
             (chatId, request) => OnPageToolRequest?.Invoke(chatId, request));
+
+        connection.On<Guid>(AiChatHubEvents.RefreshSiteData,
+            chatId => OnRefreshSiteData?.Invoke(chatId));
     }
 
     public async ValueTask DisposeAsync()

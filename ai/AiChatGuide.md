@@ -118,9 +118,11 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
      (`SkillsToolset`, `MarsSkillsTools`) — модель сама ищет и подгружает полные инструкции;
   3. `PageSkillRouter` — детерминированный preload полных инструкций по открытой странице:
      `/tech/frontend/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
-     `EnableSqlAccess` → `mars-sql`. Агент сразу знает, какими инструментами работать,
-     не тратя ходы на discovery.
-  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`.
+     `EnableSqlAccess` → `mars-sql`; страницы админ-фронта `/p/{path}`, редактор фронта `admin`,
+     `/NavMenu` и `/EditNavMenu/{id}` → `mars-admin-pages`. Агент сразу знает, какими инструментами
+     работать, не тратя ходы на discovery.
+  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`, `mars-media`,
+  `mars-datasource`, `mars-privacy-policy`, `mars-admin-pages`.
   Скиллы включены всегда (флага нет): A/B-прогоны фазы 0 показали, что DeepSeek-v4-flash уверенно
   работает и с провайдерами, и с каталогом — прежняя гипотеза «провайдеры ломают модель» не подтвердилась
   (регрессия была из-за битых сохранённых сессий и потерянных front-инструкций).
@@ -197,6 +199,13 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/tech/fr
   и попадает в инструкции агента.
 
 Чтобы подключить новую страницу к мосту — реализуй `IAiChatPageHandler` и зарегистрируй его так же.
+
+Третий пример — `EditNavMenuPage` (partial-файл `EditNavMenuPage.AiChat.cs`): поля меню
+(title/slug/class/style/disabled/rolesInverse/roles/tags) + `menuItems` (полная замена списка
+пунктов JSON-массивом; признак `isSystem` сохраняется по id существующих пунктов). `Save` —
+через `f.Save()` контейнера; AfterSave страницы сам обновляет InitialSiteData (как `EditPostTypePage`).
+При открытой странице редактирования меню мост приоритетнее серверных `MarsNavMenuTools`
+(правило скилла `mars-admin-pages`) — иначе сохранение формы перезапишет правки агента.
 
 ## Как добавить новый инструмент агента
 
@@ -367,6 +376,36 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
   на уровне правил промпта и подтверждения пользователем.
 - Ошибки драйверы возвращают как `Ok=false + Message` (не исключениями) — инструменты отдают их модели строкой.
 
+### Меню навигации (MarsNavMenuTools)
+
+`Mars.AiChat.Host/Tools/MarsNavMenuTools.cs` — меню CMS, в т.ч. сайдбар админки (системное меню
+slug `dev`). Тулсет `NavMenuToolset` включён всегда. Инструменты: `ListNavMenus`, `GetNavMenu(slug)`,
+`AddMenuItem`, `UpdateMenuItem`, `RemoveMenuItem` — через singleton `INavMenuService`
+(`Mars.Cms.Host/Services/NavMenuService.cs`, кеш уже внутри).
+
+- Поиск меню по slug — через `ListForAdmin` (он подмешивает несохранённое системное меню `dev`),
+  затем `GetDetail(id)`. Константы `DevMenuFactory` живут в `Mars.Cms.Host` — в тулзах не используются.
+- Правка = read-modify-write полного меню (`Update` с полным `UpdateNavMenuQuery`), как сохранение
+  из редактора меню. Первое изменение `dev` сохраняет копию в БД (merge с дефолтом — в сервисе).
+- Системные пункты (`IsSystem`) удалить нельзя — тулз отказывает и предлагает `disabled="true"`
+  (то же правило, что в UI `EditNavMenuPage`). `RemoveMenuItem` удаляет и подпункты;
+  подтверждение через `ask_user` — правило скилла.
+- `UpdateMenuItem`: пустая строка = не менять, `-` = очистить icon/roles; `parentId="root"` — в корень;
+  защита от циклов при перемещении.
+- Правила и рецепт «страница админ-фронта + пункт сайдбара» — скилл `mars-admin-pages`.
+
+**Обновление сайдбара — явное, по команде агента.** После правки меню агент вызывает
+`RefreshInitialSiteData` (`MarsSiteDataTools`, тулсет `core`, per-run экземпляр с chatId):
+событие `AiChatHubEvents.RefreshSiteData` в группу чата → `AiChatTerminal.HubOnRefreshSiteData` →
+`ViewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true)` —
+как `AfterSave` у `EditPostTypePage`; сайдбар (`CloudyLayout`/`AdminLayout`) обновляется по событию
+`Q.Root` без перезагрузки. В headless-прогоне браузера нет — событие уходит в пустоту.
+
+**Отклонено:** автоматическая рассылка `NavMenuChanged` через `ChatHub` из `NavMenuService` при любой
+правке меню (пользователь отверг 2026-11-17: «убери эту гадость») — обновление должно быть явным
+действием агента, а не побочным эффектом записи. Страницы сами обновляют InitialSiteData после
+сохранения (`EditNavMenuPage.RefreshInitialSiteData` в AfterSave/AfterDelete/OnResetDevMenu).
+
 ### Файлы фронта (MarsFrontFilesTools)
 
 `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs` — ИИ правит файлы фронта (Handlebars-шаблоны сайта)
@@ -385,6 +424,9 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 - Правила работы — скилл `mars-front-editor` (структура фронта `_root.hbs`/`pages`/`blocks`/
   `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`); при открытом редакторе
   фронта `PageSkillRouter` preload-ит его инструкции в контекст запуска.
+- Админ-фронт (slug `admin`, `data/admin/front`) — особый: страницы открываются в админке
+  по `/dev/p/{url из @page}` (`ai/AdminHostingGuide.md`), сайдбар — не в блоках, а меню CMS `dev`;
+  для него дополнительно preload-ится скилл `mars-admin-pages` (см. «Меню навигации»).
 - Сохранение автоматическое: `WriteFrontFile` пишет прямо в папку фронта; `FrontFilesService` после записи
   явно уведомляет движок фронта (`IWebTemplateService.NotifyFileChanged`) — кеш рендера чистится и SignalR
   `reload` обновляет предпросмотр (FileSystemWatcher — только страховка: рендер кеширует скомпилированный
@@ -469,6 +511,8 @@ SQL-доступ к базам (схема/чтение/запись через 
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
 вложения в чат (скрепка/буфер, превью + spotlight, отправка картинок в vision-модели через `DataContent`),
 медиатека (`MarsMediaTools`: список/детали/чтение содержимого/добавление/удаление, скилл `mars-media`),
+меню навигации и сайдбар админки (`MarsNavMenuTools`, скилл `mars-admin-pages`, мост `EditNavMenuPage`),
+обновление InitialSiteData в открытой админке по команде агента (`RefreshInitialSiteData`),
 выбор модели на чат (селектор подключений в терминале, если их больше одного),
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).

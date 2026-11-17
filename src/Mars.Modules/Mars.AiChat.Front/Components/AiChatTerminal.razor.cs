@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Services;
 using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Front.Services;
 using Mars.WebApiClient.Interfaces;
@@ -27,6 +28,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     [Inject] IJSRuntime _js { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
     [Inject] NavigationManager _navigation { get; set; } = default!;
+    [Inject] ViewModelService _viewModelService { get; set; } = default!;
 
     private IJSObjectReference? _module;
     private DotNetObjectReference<AiChatTerminal>? _dotnetRef;
@@ -338,6 +340,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _hub.OnStopped += HubOnStopped;
         _hub.OnError += HubOnError;
         _hub.OnPageToolRequest += HubOnPageToolRequest;
+        _hub.OnRefreshSiteData += HubOnRefreshSiteData;
         _hub.OnReconnected += HubOnReconnected;
     }
 
@@ -397,6 +400,27 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     {
         if (chatId != _chatId) return;
         _ = ReloadSessionAsync();
+    }
+
+    // ---------- обновление данных сайта по команде агента ----------
+
+    private void HubOnRefreshSiteData(Guid chatId)
+    {
+        if (chatId != _chatId) return;
+        _ = RefreshSiteDataAsync();
+    }
+
+    private async Task RefreshSiteDataAsync()
+    {
+        try
+        {
+            // как AfterSave у EditPostType: сайдбар и данные сайта обновятся по событию Q.Root
+            await _viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
+        }
+        catch
+        {
+            // запрос мог не пройти (обрыв связи) — данные обновятся при следующей загрузке
+        }
     }
 
     // ---------- инструменты на открытой странице ----------
@@ -998,6 +1022,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _hub.OnStopped -= HubOnStopped;
             _hub.OnError -= HubOnError;
             _hub.OnPageToolRequest -= HubOnPageToolRequest;
+            _hub.OnRefreshSiteData -= HubOnRefreshSiteData;
             _hub.OnReconnected -= HubOnReconnected;
         }
 

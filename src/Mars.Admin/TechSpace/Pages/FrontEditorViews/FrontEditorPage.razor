@@ -66,6 +66,13 @@
                 <i class="bi bi-box-arrow-up-right"></i>
                 Открыть сайт
             </a>
+            @if (AdminPageUrl is not null)
+            {
+                <a class="ghost-btn" href="@AdminPageUrl" target="_blank" rel="noopener">
+                    <i class="bi bi-window-sidebar"></i>
+                    Открыть в админке
+                </a>
+            }
         </div>
     </header>
 
@@ -437,6 +444,23 @@
 
     string AdminPreviewUrl(string relPath)
         => previewBase + "/api/AdminFront/Render?file=" + Uri.EscapeDataString(relPath.Replace('\\', '/'));
+
+    // адрес просматриваемой страницы админ-фронта в админке (/dev/p/{url из @page});
+    // null, если превью смотрит не страницу (блок/шаблон) или url файла неизвестен
+    string? AdminPageUrl
+    {
+        get
+        {
+            if (!IsAdminFront || string.IsNullOrEmpty(previewSrc)) return null;
+
+            var file = System.Web.HttpUtility.ParseQueryString(new Uri(previewSrc).Query)["file"];
+            if (string.IsNullOrEmpty(file)) return null;
+
+            if (!pageUrlByFile.TryGetValue(file.Replace('\\', '/').TrimStart('/'), out var pageUrl)) return null;
+
+            return previewBase + "/dev/p" + (pageUrl.StartsWith('/') ? pageUrl : "/" + pageUrl);
+        }
+    }
 
     #endregion
 

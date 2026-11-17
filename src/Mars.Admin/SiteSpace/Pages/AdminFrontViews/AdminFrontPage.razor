@@ -1,0 +1,13 @@
+@page "/p/{**catch}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+@* Страница специального фронта админки (data/admin/front): catch — URL из директивы @page,
+   рендерится на сервере через handlebars, HTML рисует RemotePageViewer в обвязке админки *@
+<Mars.Admin.Framework.Pages.RemotePageViewer Url="@RenderUrl" />
+
+@code {
+    [Parameter] public string? Catch { get; set; }
+
+    string RenderUrl => $"/api/AdminFront/RenderByPath?path={Uri.EscapeDataString(Catch ?? "")}";
+}

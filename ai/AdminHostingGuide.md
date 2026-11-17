@@ -33,6 +33,24 @@
   в `AppFrontMigration`/`FrontManagerTests` — миграция легаси-конфигов фронтов, оставлены).
 - NOADMIN-режим: `#if NOADMIN` в `MainAdmin` — админка не подключается.
 
+## Страницы админ-фронта: `/dev/p/{path}`
+
+- Админ-фронт (`data/admin/front`, handlebars, создаётся `FrontTemplateService.EnsureAdminFront`
+  из `Res/front_templates/admin`) не роутится публично; его страницы открываются в админке
+  по адресу `/dev/p/{path}`, где `{path}` — URL из директивы `@page` файла (пустой → индекс).
+- Сервер: отдельный маршрут не нужен — `/dev/p/*` попадает в `MapFallbackToPage("/_AdminHost")`.
+  WASM: catch-all страница `Mars.Admin/SiteSpace/Pages/AdminFrontViews/AdminFrontPage.razor`
+  (`@page "/p/{**catch}"`, Admin-only) → `RemotePageViewer` → `GET /api/AdminFront/RenderByPath`.
+- API: `AdminFrontController.RenderByPath` → `AdminFrontRenderHandler` — матчинг штатным
+  `WebSiteTemplate.WebPageRouteMatcher` (поддерживает `{slug}`/constraints, переменные
+  доступны в шаблоне как `{{slug}}`); рендер без кеша с форс-пересканом, как `Render?file=`.
+  Файловый вариант `Render?file=` остался для превью редактора и ListViewTemplate постов.
+- В редакторе фронтов (`FrontEditorPage`) для админ-фронта есть кнопка «Открыть в админке»
+  (вычисляет `/dev/p/{url}` из `pageUrlByFile` по file-параметру previewSrc).
+- Грабля: `MapFallbackToPage` — `nonfile`, путь с точкой в последнем сегменте до шелла не дойдёт;
+  семантика `/dev/p/` — URL страницы, не имя файла.
+- Тесты: `AdminFrontRenderByPathTests` (`tests/Mars.SiteEngine.Integration.Tests`, Docker).
+
 ## Ассеты и кеширование
 
 - `MapStaticAssets` в ветке после publish раздаёт прекомпрессированные `.br/.gz` по

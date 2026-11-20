@@ -30,6 +30,7 @@ public sealed class PxServerRunClient : IPxBlocksApiClient, IPxRunTransport, IAs
     private readonly SemaphoreSlim _connectionGate = new(1, 1);
     private readonly ConcurrentDictionary<Guid, (Action<IReadOnlyList<PxExecutionEvent>> Events, Action<PxRunResultDto> Finished)> _subscriptions = new();
     private HubConnection? _connection;
+    private bool _disposed;
 
     public PxServerRunClient(IFlurlClient flurlClient)
     {
@@ -110,7 +111,27 @@ public sealed class PxServerRunClient : IPxBlocksApiClient, IPxRunTransport, IAs
                     handlers.Finished(result);
             });
 
-            await connection.StartAsync(cancellationToken);
+            // В окне реконнекта события теряются: сверяем подписки со статусом запусков,
+            // иначе потерянный RunFinished оставит редактор в «исполняется» навсегда.
+            connection.Reconnected += _ => ProbeSubscriptionsAsync();
+            connection.Closed += _ =>
+            {
+                // Автопереподключение исчерпано — итогов на этом соединении больше не будет.
+                if (!_disposed)
+                    FailAllSubscriptions("Connection to the run server was lost");
+                return Task.CompletedTask;
+            };
+
+            try
+            {
+                await connection.StartAsync(cancellationToken);
+            }
+            catch
+            {
+                await connection.DisposeAsync();
+                throw;
+            }
+
             _connection = connection;
             return _connection;
         }
@@ -120,8 +141,42 @@ public sealed class PxServerRunClient : IPxBlocksApiClient, IPxRunTransport, IAs
         }
     }
 
+    /// <summary>
+    /// После реконнекта: запуск уже не активен, а итог не получен — он потерян в окне
+    /// переподключения (сервер итоги не хранит). Синтезируем отказ, чтобы редактор не завис.
+    /// TryRemove гарантирует ровно один итог на подписку (гонка с настоящим RunFinished).
+    /// </summary>
+    private async Task ProbeSubscriptionsAsync()
+    {
+        foreach (var runId in _subscriptions.Keys)
+        {
+            bool active;
+            try
+            {
+                active = await _http.Request("api/PxBlocks", "Run", runId).GetJsonAsync<bool>();
+            }
+            catch
+            {
+                continue; // сервер недоступен — проверим на следующем реконнекте
+            }
+
+            if (!active && _subscriptions.TryRemove(runId, out var handlers))
+                handlers.Finished(new PxRunResultDto { Success = false, ErrorMessage = "Run result was lost during reconnect" });
+        }
+    }
+
+    private void FailAllSubscriptions(string message)
+    {
+        foreach (var runId in _subscriptions.Keys)
+        {
+            if (_subscriptions.TryRemove(runId, out var handlers))
+                handlers.Finished(new PxRunResultDto { Success = false, ErrorMessage = message });
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
         if (_connection != null)
         {
             await _connection.DisposeAsync();

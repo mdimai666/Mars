@@ -1199,4 +1199,117 @@ public class PxInterpreterTests
         Assert.Contains(events, e => e.Kind == PxExecutionEventKind.BlockEntered && e.BlockId == "print1");
         Assert.Contains(events, e => e.Kind == PxExecutionEventKind.Output && e.Text == "hi");
     }
+
+    /// <summary>f() { return f() } — без лимита глубины крашит процесс StackOverflow (R1).</summary>
+    private const string RecursiveFunctionJson = """
+    {
+      "blocks": { "languageVersion": 0, "blocks": [
+        {
+          "type": "function_definition", "id": "fd",
+          "extraState": { "name": "boom", "functionid": "f1", "arguments": [] },
+          "inputs": { "STACK": { "block": {
+            "type": "function_return", "id": "fr",
+            "inputs": { "RETURN_VALUE": { "block": {
+              "type": "function_call_output", "id": "fc",
+              "extraState": { "name": "boom", "functionid": "f1", "arguments": [] }
+            } } }
+          } } }
+        },
+        { "type": "function_call", "id": "call1",
+          "extraState": { "name": "boom", "functionid": "f1", "arguments": [] } }
+      ] }
+    }
+    """;
+
+    [Fact]
+    public async Task Functions_InfiniteRecursion_RuntimeErrorNotStackOverflow()
+    {
+        var result = await PxTestRun.RunAsync(RecursiveFunctionJson, PxTestRun.Fast());
+
+        Assert.False(result.Success);
+        Assert.Contains("depth limit", result.ErrorMessage);
+        Assert.Equal("fc", result.ErrorBlockId);
+    }
+
+    [Fact]
+    public async Task Procedures_InfiniteRecursion_RuntimeErrorNotStackOverflow()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "procedures_defnoreturn", "id": "pd",
+              "fields": { "NAME": "loop" },
+              "extraState": { "params": [] },
+              "inputs": { "STACK": { "block": {
+                "type": "procedures_callnoreturn", "id": "pc",
+                "extraState": { "name": "loop", "params": [] }
+              } } }
+            },
+            { "type": "procedures_callnoreturn", "id": "call1",
+              "extraState": { "name": "loop", "params": [] } }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.False(result.Success);
+        Assert.Contains("depth limit", result.ErrorMessage);
+        Assert.Equal("pc", result.ErrorBlockId);
+    }
+
+    [Fact]
+    public async Task Functions_FiniteRecursion_WithinLimit_Works()
+    {
+        // down(n): n <= 0 → "done", иначе down(n - 1); глубина ~61 при лимите 256.
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "function_definition", "id": "fd",
+              "extraState": { "name": "down", "functionid": "f1", "arguments": [ { "id": "a1", "name": "n", "type": "number" } ] },
+              "inputs": { "STACK": { "block": {
+                "type": "core.functions.if_return", "id": "ir",
+                "inputs": {
+                  "CONDITION": { "block": {
+                    "type": "core.logic.compare", "id": "cmp", "fields": { "OP": "LTE" },
+                    "inputs": {
+                      "A": { "block": { "type": "argument_reporter_number", "id": "rp", "fields": { "VALUE": "n" } } },
+                      "B": { "block": { "type": "core.math.number", "id": "zero", "fields": { "NUM": 0 } } }
+                    }
+                  } },
+                  "VALUE": { "block": { "type": "core.text.text", "id": "td", "fields": { "TEXT": "done" } } }
+                },
+                "next": { "block": {
+                  "type": "function_return", "id": "fr",
+                  "inputs": { "RETURN_VALUE": { "block": {
+                    "type": "function_call_output", "id": "fc",
+                    "extraState": { "name": "down", "functionid": "f1", "arguments": [ { "id": "a1", "name": "n", "type": "number" } ] },
+                    "inputs": { "a1": { "block": {
+                      "type": "core.math.arithmetic", "id": "sub", "fields": { "OP": "MINUS" },
+                      "inputs": {
+                        "A": { "block": { "type": "argument_reporter_number", "id": "rp2", "fields": { "VALUE": "n" } } },
+                        "B": { "block": { "type": "core.math.number", "id": "one", "fields": { "NUM": 1 } } }
+                      }
+                    } } }
+                  } } }
+                } }
+              } } }
+            },
+            { "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "function_call_output", "id": "fcTop",
+                "extraState": { "name": "down", "functionid": "f1", "arguments": [ { "id": "a1", "name": "n", "type": "number" } ] },
+                "inputs": { "a1": { "block": { "type": "core.math.number", "id": "n60", "fields": { "NUM": 60 } } } }
+              } } } }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["done"], result.Output);
+    }
 }

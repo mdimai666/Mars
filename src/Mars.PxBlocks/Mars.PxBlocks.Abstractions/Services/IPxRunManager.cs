@@ -21,4 +21,7 @@ public interface IPxRunManager
 
     /// <summary>Число активных запусков.</summary>
     int ActiveRunCount { get; }
+
+    /// <summary>Запуск ещё исполняется? false — завершён или не существовал (итог хранит только хаб-рассылка).</summary>
+    bool IsActive(Guid runId);
 }

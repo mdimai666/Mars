@@ -204,6 +204,13 @@
         {
             await ResetRunStateAsync();
         }
+        catch (Exception exception)
+        {
+            // Любой иной сбой (SaveAsync, транспорт) не должен оставить Run заблокированным.
+            _runError = $"Ошибка запуска: {exception.Message}";
+            _status = "ошибка запуска";
+            await ResetRunStateAsync();
+        }
     }
 
     /// <summary>Локальное исполнение (in-process) — задел под будущий браузерный рантайм.</summary>
@@ -282,8 +289,8 @@
                 RunId = runId,
                 BlocksJson = blocksJson,
                 // Контекст решает, что и как запускается: политика (события, лимиты)
-                // применяется на сервере. Без контекста — лимит шагов снят (остановка
-                // только кнопкой Stop), события — по явным параметрам редактора.
+                // применяется на сервере, лимит контекста — потолок. 0/null — серверный
+                // дефолт лимита шагов; события — по явным параметрам редактора.
                 ContextName = Context,
                 StepLimit = Context != null ? null : 0,
                 EventNames = EventNames

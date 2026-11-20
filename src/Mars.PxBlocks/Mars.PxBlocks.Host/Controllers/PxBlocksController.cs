@@ -15,8 +15,15 @@ namespace Mars.PxBlocks.Host.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class PxBlocksController(IPxBlockCatalog catalog, IPxEditorContextRegistry contexts) : ControllerBase
+public class PxBlocksController(IPxBlockCatalog catalog, IPxEditorContextRegistry contexts, IPxRunManager runs) : ControllerBase
 {
+    /// <summary>
+    /// Активен ли запуск (read-эндпоинт): клиент после реконнекта сверяет подписки,
+    /// чтобы не висеть в «исполняется», если итог потерян в окне переподключения.
+    /// POST Run/Stop по-прежнему объявляет хост.
+    /// </summary>
+    [HttpGet("Run/{runId:guid}")]
+    public bool RunActive(Guid runId) => runs.IsActive(runId);
     /// <summary>Определения блоков и toolbox сервера — редактор получает их при открытии.</summary>
     [HttpGet(nameof(Definitions))]
     public PxDefinitionsResponse Definitions() => new()

@@ -66,65 +66,65 @@
   доменные пакеты под устройства (MQTT / ноды Mars.Nodes) и запуск PxBlocks-программ
   из графа Mars.Nodes (нода-обёртка).
 
-### Ревью 2026-11-20 — дефекты к исправлению (отдельной сессией)
+### Ревью 2026-11-20 — дефекты ИСПРАВЛЕНЫ 2026-11-20 (кроме одного открытого решения)
 
-Полное ревью подсистемы (Core/Runtime/Contracts/Abstractions/Host/Workspace). База крепкая
-(культуры Invariant, гонки POST/RunFinished в песочнице обработаны, порядок событий гарантирован
-цепочкой отправок, ошибки с blockId), но найдены дефекты. Критичные подтверждены экспериментально
-(временный пробник-консоль со ссылкой на Runtime; удалён). Код НЕ правился. Фиксить по порядку:
+Полное ревью подсистемы (Core/Runtime/Contracts/Abstractions/Host/Workspace); критичные были
+подтверждены экспериментально. Фиксы 2026-11-20: тесты 146/146 (было 133, +13), `dotnet build
+Mars.slnx` чистый, смоук `PxBlocksEndpointTests` 3/3. Закоммичено 2026-11-20 (не запушено).
 
-- [ ] **R1. КРИТично: рекурсия крашит процесс (StackOverflowException).**
-      `Runtime/Execution/PxInterpreter.cs` — нет лимита глубины вызовов функций/процедур.
-      Программа `f(){ return f() }` при `StepLimit=100000` убивает процесс: exit 0xC00000FD,
-      стек `CallFunctionAsync→ExecuteChainAsync→EvaluateAsync` (~250–1000 кадров до краша).
-      Лимит шагов не спасает — стек кончается раньше; StackOverflow в .NET не перехватывается.
-      На сервере любой пользователь с доступом к POST Run крашит весь Mars; в WASM — вкладку.
-      Фикс: счётчик глубины в `PxContext` (лимит ~256) → `PxRuntimeException` с blockId;
-      инкремент/декремент в `CallFunctionAsync`/`CallProcedureAsync`. Тест: рекурсивная функция
-      даёт ошибку исполнения, процесс жив.
-- [ ] **R2. КРИТично: цепочки длиннее ~28 блоков не исполняются.**
-      `Runtime/Parsing/PxParser.cs` → `JsonNode.Parse(blocksJson)` с дефолтным `MaxDepth=64`.
-      Цепочка `next→block` даёт ~2 уровня JSON на блок: chain из 30 `core.text.print` падает
-      `JsonReaderException: The maximum configured depth of 64 has been exceeded`
-      (проверено: 10/20 — OK, 30/40/60 — отказ). Редактор такую программу собрать позволяет,
-      запуск отвечает «Invalid workspace JSON». Тесты не ловят — программы в них короткие.
-      Фикс: `JsonDocumentOptions { MaxDepth = 512+ }` в Parse(string) + depth-guard в
-      ParseStatement/ParseExpression (иначе R1 вернётся через глубокий JSON). Тест: chain 100+
-      блоков парсится и исполняется; сверхглубокий JSON — PxParseException, не краш.
-- [ ] **R3. Важно (до объявления POST Run в WebApp): серверные лимиты дырявые.**
-      `Host/Services/PxRunManager.cs` → `StepLimit = request.StepLimit ?? context?.StepLimit ?? 0`:
-      (а) дефолт сервера — безлимит (в `PxRunOptions` дефолт 100k — рассинхрон);
-      (б) явное поле запроса ПРИОРИТЕТНЕЕ политики контекста — клиент обходит лимит контекста
-      своим значением; для песочницы лимит должен быть потолком (min), а не fallback;
-      (в) число параллельных запусков не ограничено (`_runs` растёт без потолка).
-      Фикс: разумный серверный дефолт + потолок из контекста поверх запроса + кап
-      одновременных запусков (отказ Started=false при переполнении).
-- [ ] **R4. Среднее: гонка Stop/Dispose в PxRunManager.**
-      `Stop`: `TryGetValue` → `Cts.Cancel()`; хвост `ExecuteAsync`: `TryRemove` → `session.Dispose()`.
-      Попадание между ними — `ObjectDisposedException` → 500 на Stop. Фикс: remove-before-dispose
-      и/или catch ObjectDisposedException в Stop (вернуть false).
-- [ ] **R5. Среднее: PxServerRunClient теряет RunFinished в окне реконнекта.**
-      `Workspace/Run/PxServerRunClient.cs`: автопереподключение до ~47 с; события в окне теряются,
-      потерянный итог → редактор висит в «исполняется» навсегда (таймаута/опроса статуса нет).
-      Плюс при неудачном `StartAsync` созданное соединение не диспозится (утечка на попытку).
-      Фикс: dispose при неудачном старте; таймаут ожидания итога и/или опрос статуса запуска.
-- [ ] **R6. Мелочи (по желанию, одним заходом):**
-      - `PxSandboxEditor.Run`: catch только `JSDisconnectedException` — иной сбой `SaveAsync`
-        оставит `_running=true` навсегда (Run заблокирован); нужен finally/общий catch.
-      - Имплементации блоков создаются на запуск (`PxContext.Implement`), но не диспозятся
-        по завершении — домен с IDisposable-полями течёт (диспозится только state хоста).
-      - `PxBlockCatalog`/`PxEditorContextRegistry`/`PxBlockImplementsLocator` не потокобезопасны;
-        регистрация только на старте — нормально, зафиксировать инвариант в гайде
-        (горячая регистрация плагинов сломает).
-      - Одна SignalR-группа на всех: каждый клиент видит события ВСЕХ запусков — для
-        многопользовательской админки решить вопрос приватности вывода (группа на запуск?).
-      - `PxRunManager.DisposeState` на ранних отказах Start — sync-over-async на потоке запроса
-        (Playwright-state может блокировать надолго).
-      - `PxWorkspaceJsInterop.DisposeAsync`: await faulted `_moduleTask` бросает не-JSDisconnected
-        исключение при неудачной загрузке модуля.
+- [x] **R1. Рекурсия крашила процесс (StackOverflowException).** Фикс: `PxRunOptions.CallDepthLimit`
+      + счётчик `PxContext.CallDepth` (`EnterCall`/`ExitCall` в `CallFunctionAsync`/`CallProcedureAsync`,
+      глубина считается и на вычислении аргументов — рекурсия через `f(f(...))` тоже ловится)
+      → `PxCallDepthExceededException` с blockId. **Дефолт 128, НЕ 256 как оценивало ревью:**
+      замерено ~4 КБ стека на уровень вызова (async-кадры `CallFunctionAsync→ExecuteChainAsync→
+      ExecuteOneAsync→EvaluateAsync`), при лимите 256 процесс всё равно крашился на ~244 уровнях
+      (exit 0xC00000FD, проверено тестом). 128 даёт двукратный запас. Тесты: бесконечная рекурсия
+      функции и процедуры → ошибка исполнения с blockId, процесс жив; конечная рекурсия (61 уровень)
+      работает.
+- [x] **R2. Цепочки длиннее ~28 блоков не парсились (JsonNode.Parse MaxDepth=64).** Фикс:
+      `JsonDocumentOptions { MaxDepth = 1024 }` + оборачивание `JsonException` в `PxParseException`;
+      depth-guard парсера `MaxNestingDepth = 256` (цепочки next и вложенные входы считаются вместе;
+      разбор рекурсивный — без потолка глубокий JSON крашил бы стек). Цепочка до ~254 блоков
+      парсится и исполняется (тест 150); 300 — PxParseException «nesting»; 600 — PxParseException
+      «Invalid workspace JSON» (глубина самого JSON); битый JSON — PxParseException.
+- [x] **R3. Серверные лимиты дырявые.** Фикс в `PxRunManager`: `EffectiveLimit` — положительное
+      значение запроса действует, но положительный лимит контекста — ПОТОЛОК (min, обход закрыт);
+      0/null запроса → серверный дефолт `DefaultStepLimit = 100_000` (синхронно с PxRunOptions),
+      `DefaultOutputLimit = 10_000`. Кап `MaxConcurrentRuns = 16` (проверка после TryAdd — гонка
+      двух Start не обходит; переполнение → Started=false). Прочая политика (EventNames, seed) —
+      по-прежнему явные поля запроса в приоритете. Песочница: `StepLimit=0` теперь означает
+      «серверный дефолт», не безлимит (комментарий в PxSandboxEditor обновлён).
+- [x] **R4. Гонка Stop/Dispose.** Фикс: catch `ObjectDisposedException` в `Stop` → false
+      (remove-before-dispose в хвосте ExecuteAsync уже был, но окно между TryGetValue и Cancel
+      остаётся). Тест: 50 запусков × 20 Stop в гонке с завершением — без исключений.
+- [x] **R5. PxServerRunClient терял RunFinished в окне реконнекта.** Фикс: (а) dispose соединения
+      при неудачном `StartAsync`; (б) новый read-эндпоинт `GET api/PxBlocks/Run/{runId}` → bool
+      (`IPxRunManager.IsActive`, контроллер библиотеки — POST Run/Stop по-прежнему объявляет хост);
+      (в) на `Reconnected` клиент опрашивает статус каждой подписки: запуск не активен, а итог не
+      получен → синтетический отказ «Run result was lost during reconnect» (сервер итоги не хранит);
+      (г) на `Closed` (автопереподключение исчерпано) все подписки получают отказ. TryRemove
+      гарантирует ровно один итог на подписку (гонка с настоящим RunFinished). Интеграционный тест
+      эндпоинта статуса; сам реконнект в тестах не форсируется.
+- [x] **R6. Мелочи:**
+      - `PxSandboxEditor.Run`: добавлен общий catch — любой сбой сбрасывает `_running`
+        (JSDisconnected-путь сохранён).
+      - Имплементации диспозятся по завершении запуска: `PxContext.DisposeImplementsAsync`
+        в finally `PxInterpreter.RunAsync` (IDisposable/IAsyncDisposable, ошибки уборки не
+        заслоняют итог). State хоста по-прежнему диспозит PxRunManager.
+      - **Инвариант (зафиксировать при горячей регистрации плагинов):** `PxBlockCatalog`/
+        `PxEditorContextRegistry`/`PxBlockImplementsLocator` не потокобезопасны — регистрация
+        допустима ТОЛЬКО на старте (AddPxBlocks/UsePxBlocks); горячая регистрация сломает.
+      - `PxRunManager` ранние отказы Start: `IAsyncDisposable`-state (Playwright) убирается
+        в фоне (не блокирует поток запроса), `IDisposable` — синхронно как раньше
+        (закреплено тестом `RunManager_DisposesState_WhenContextUnknown`).
+      - `PxWorkspaceJsInterop.DisposeAsync`: catch не-JSDisconnected исключений faulted
+        `_moduleTask` (неудачная загрузка модуля — убирать нечего).
+      - **ОТКРЫТО (решение пользователя):** одна SignalR-группа `pxblocks` на всех — каждый
+        клиент видит события ВСЕХ запусков. Для многопользовательской админки нужна приватность
+        вывода (группа на запуск? протокол join при Subscribe). Не менялось — требует решения
+        о протоколе хаба.
 
-Порядок фикса: R1+R2 с тестами → R3 (обязателен до Run-эндпоинта в WebApp) → R4/R5 → R6.
-После фикса обновить этот раздел и память `project/pxblocks-review-critical-defects.md`.
+Дальше по инициативе: пункт C (NuGet-публикация 4 пакетов) и доменные контексты в WebApp.
 
 ## Архитектура: гибридная обёртка Blockly
 

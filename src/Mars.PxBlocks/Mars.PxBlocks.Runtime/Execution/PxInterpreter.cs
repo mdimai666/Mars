@@ -85,6 +85,12 @@ public sealed class PxInterpreter
         {
             return Result(context, success: false, exception.Message, exception.BlockId);
         }
+        finally
+        {
+            // Имплементации живут ровно один запуск — домен с IDisposable-полями
+            // (соединения, буферы) убирается здесь; состояние хоста диспозит запускающий.
+            await context.DisposeImplementsAsync();
+        }
     }
 
     /// <summary>Стек операторов: каждый блок — событие BlockEntered (материал для подсветки).</summary>
@@ -282,26 +288,35 @@ public sealed class PxInterpreter
         if (!context.Procedures.TryGetValue(name, out var definition))
             throw new PxRuntimeException($"Function '{name}' is not defined", blockId);
 
-        // Рамка функции: параметры локальны, остальное видно до глобального скоупа.
-        var scope = new PxScope(context.Global);
-        for (var i = 0; i < definition.Params.Count; i++)
-        {
-            var value = i < args.Count
-                ? await EvaluateAsync(args[i], callerScope, context)
-                : PxNumberValue.Zero;
-            scope.Define(definition.Params[i].Id, value);
-        }
-
+        // Глубина считается и на вычислении аргументов: рекурсия возможна через f(f(...)).
+        context.EnterCall(blockId);
         try
         {
-            await ExecuteChainAsync(definition.Body, scope, context);
-            if (definition.Return != null)
-                return await EvaluateAsync(definition.Return, scope, context);
-            return PxNullValue.Instance;
+            // Рамка функции: параметры локальны, остальное видно до глобального скоупа.
+            var scope = new PxScope(context.Global);
+            for (var i = 0; i < definition.Params.Count; i++)
+            {
+                var value = i < args.Count
+                    ? await EvaluateAsync(args[i], callerScope, context)
+                    : PxNumberValue.Zero;
+                scope.Define(definition.Params[i].Id, value);
+            }
+
+            try
+            {
+                await ExecuteChainAsync(definition.Body, scope, context);
+                if (definition.Return != null)
+                    return await EvaluateAsync(definition.Return, scope, context);
+                return PxNullValue.Instance;
+            }
+            catch (PxReturnSignal signal)
+            {
+                return signal.Value ?? PxNullValue.Instance;
+            }
         }
-        catch (PxReturnSignal signal)
+        finally
         {
-            return signal.Value ?? PxNullValue.Instance;
+            context.ExitCall();
         }
     }
 
@@ -315,27 +330,36 @@ public sealed class PxInterpreter
         if (!context.Functions.TryGetValue(name, out var definition))
             throw new PxRuntimeException($"Function '{name}' is not defined", blockId);
 
-        // Рамка функции: параметры локальны (по id и по имени — для argument_reporter),
-        // остальное видно до глобального скоупа.
-        var scope = new PxScope(context.Global);
-        for (var i = 0; i < definition.Params.Count; i++)
-        {
-            var parameter = definition.Params[i];
-            var value = i < args.Count
-                ? await EvaluateAsync(args[i], callerScope, context)
-                : TypeDefault(parameter.Type);
-            scope.Define(parameter.Id, value);
-            scope.Define(parameter.Name, value);
-        }
-
+        // Глубина считается и на вычислении аргументов: рекурсия возможна через f(f(...)).
+        context.EnterCall(blockId);
         try
         {
-            await ExecuteChainAsync(definition.Body, scope, context);
-            return PxNullValue.Instance;
+            // Рамка функции: параметры локальны (по id и по имени — для argument_reporter),
+            // остальное видно до глобального скоупа.
+            var scope = new PxScope(context.Global);
+            for (var i = 0; i < definition.Params.Count; i++)
+            {
+                var parameter = definition.Params[i];
+                var value = i < args.Count
+                    ? await EvaluateAsync(args[i], callerScope, context)
+                    : TypeDefault(parameter.Type);
+                scope.Define(parameter.Id, value);
+                scope.Define(parameter.Name, value);
+            }
+
+            try
+            {
+                await ExecuteChainAsync(definition.Body, scope, context);
+                return PxNullValue.Instance;
+            }
+            catch (PxReturnSignal signal)
+            {
+                return signal.Value ?? PxNullValue.Instance;
+            }
         }
-        catch (PxReturnSignal signal)
+        finally
         {
-            return signal.Value ?? PxNullValue.Instance;
+            context.ExitCall();
         }
     }
 

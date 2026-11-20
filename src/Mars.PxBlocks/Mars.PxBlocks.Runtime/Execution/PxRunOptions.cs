@@ -11,6 +11,14 @@ public sealed class PxRunOptions
     /// </summary>
     public int StepLimit { get; init; } = 100_000;
 
+    /// <summary>
+    /// Максимум глубины вложенных вызовов функций/процедур — защита от рекурсии,
+    /// которая иначе крашит процесс StackOverflowException (не перехватывается в .NET).
+    /// 128, не 256: замерено ~4 КБ стека на уровень вызова (async-кадры), стек кончается
+    /// на ~244 уровнях — лимит должен срабатывать с запасом. 0 или отрицательное — без лимита.
+    /// </summary>
+    public int CallDepthLimit { get; init; } = 128;
+
     /// <summary>Каждые N шагов — Task.Yield, чтобы UI (WASM) оставался отзывчивым. 0 — не уступать.</summary>
     public int YieldEvery { get; init; } = 1024;
 

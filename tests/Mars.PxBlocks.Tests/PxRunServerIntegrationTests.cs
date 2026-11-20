@@ -124,6 +124,40 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task RunStatus_ReadEndpoint_ReflectsLifecycle()
+    {
+        // Read-эндпоинт статуса: им клиент сверяет подписки после реконнекта (R5).
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            { "type": "core.loops.while_until", "id": "w1", "fields": { "MODE": "WHILE" },
+              "inputs": { "BOOL": { "block": { "type": "core.logic.boolean", "id": "b1", "fields": { "BOOL": "TRUE" } } } } }
+          ] }
+        }
+        """;
+
+        var runId = Guid.NewGuid();
+        var response = await _client!.RunAsync(new PxRunRequest { RunId = runId, BlocksJson = json, StepLimit = int.MaxValue });
+        Assert.True(response.Started);
+
+        using var http = new HttpClient { BaseAddress = new Uri(_app!.Urls.First()) };
+        Assert.Equal("true", await http.GetStringAsync($"api/PxBlocks/Run/{runId}"));
+
+        Assert.True(await _client.StopAsync(runId));
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        var body = "true";
+        while (DateTime.UtcNow < deadline)
+        {
+            body = await http.GetStringAsync($"api/PxBlocks/Run/{runId}");
+            if (body == "false")
+                break;
+            await Task.Delay(50);
+        }
+
+        Assert.Equal("false", body);
+    }
+
+    [Fact]
     public async Task Stop_InfiniteLoop_CancelsServerRun()
     {
         var json = """

@@ -26,6 +26,12 @@ public sealed class PxContext
 
     public int StepLimit { get; }
 
+    /// <summary>Максимум глубины вложенных вызовов функций/процедур; 0 — без лимита.</summary>
+    public int CallDepthLimit { get; }
+
+    /// <summary>Текущая глубина вложенных вызовов (растёт в CallFunction/CallProcedure).</summary>
+    public int CallDepth { get; private set; }
+
     /// <summary>Каждые N шагов — Task.Yield (отзывчивость UI в WASM); 0 — не уступать.</summary>
     public int YieldEvery { get; }
 
@@ -55,6 +61,7 @@ public sealed class PxContext
     {
         CancellationToken = cancellationToken;
         StepLimit = options.StepLimit;
+        CallDepthLimit = options.CallDepthLimit;
         YieldEvery = options.YieldEvery;
         OutputLimit = options.OutputLimit;
         RaiseEvent = options.OnEvent;
@@ -121,6 +128,42 @@ public sealed class PxContext
     }
 
     internal void Fire(PxExecutionEvent executionEvent) => RaiseEvent?.Invoke(executionEvent);
+
+    /// <summary>Вход в вызов функции/процедуры: лимит глубины защищает стек от рекурсии.</summary>
+    internal void EnterCall(string? blockId)
+    {
+        if (CallDepthLimit > 0 && CallDepth >= CallDepthLimit)
+            throw new PxCallDepthExceededException(blockId, CallDepthLimit);
+        CallDepth++;
+    }
+
+    internal void ExitCall() => CallDepth--;
+
+    /// <summary>Уборка имплементаций запуска (домен с IDisposable-полями); ошибки не заслоняют итог.</summary>
+    internal async ValueTask DisposeImplementsAsync()
+    {
+        foreach (var instance in _instances.Values)
+        {
+            try
+            {
+                switch (instance)
+                {
+                    case IAsyncDisposable asyncDisposable:
+                        await asyncDisposable.DisposeAsync();
+                        break;
+                    case IDisposable disposable:
+                        disposable.Dispose();
+                        break;
+                }
+            }
+            catch
+            {
+                // Ошибка уборки имплементации не должна заслонять итог исполнения.
+            }
+        }
+
+        _instances.Clear();
+    }
 
     /// <summary>Шаг исполнения: отмена, лимит шагов (StepLimit &lt;= 0 — без лимита), периодическая уступка потоку.</summary>
     internal async ValueTask StepAsync(string? blockId)

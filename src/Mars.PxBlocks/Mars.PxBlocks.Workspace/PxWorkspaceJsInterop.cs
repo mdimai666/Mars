@@ -121,8 +121,15 @@ public class PxWorkspaceJsInterop : IAsyncDisposable
     {
         if (_moduleTask.IsValueCreated)
         {
-            var module = await _moduleTask.Value;
-            await module.DisposeAsync();
+            try
+            {
+                var module = await _moduleTask.Value;
+                await module.DisposeAsync();
+            }
+            catch (Exception exception) when (exception is not JSDisconnectedException)
+            {
+                // Неудачная загрузка модуля (faulted _moduleTask) — убирать нечего.
+            }
         }
     }
 }

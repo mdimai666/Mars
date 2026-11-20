@@ -21,6 +21,15 @@ namespace Mars.PxBlocks.Host.Services;
 /// </summary>
 public sealed class PxRunManager : IPxRunManager
 {
+    /// <summary>Серверный дефолт лимита шагов, когда ни запрос, ни контекст не задали положительный (совпадает с PxRunOptions).</summary>
+    public const int DefaultStepLimit = 100_000;
+
+    /// <summary>Серверный дефолт лимита строк вывода.</summary>
+    public const int DefaultOutputLimit = 10_000;
+
+    /// <summary>Кап одновременных запусков; переполнение — отказ Started=false.</summary>
+    public const int MaxConcurrentRuns = 16;
+
     private readonly IPxBlockCatalog _catalog;
     private readonly IPxBlocksBroadcaster _broadcaster;
     private readonly IPxEditorContextRegistry _contexts;
@@ -81,26 +90,53 @@ public sealed class PxRunManager : IPxRunManager
             return Fail($"Run {runId} is already active");
         }
 
+        // Проверка после TryAdd — кап не обходится гонкой двух одновременных Start.
+        if (_runs.Count > MaxConcurrentRuns)
+        {
+            _runs.TryRemove(runId, out _);
+            session.Dispose();
+            return Fail($"Too many concurrent runs (limit {MaxConcurrentRuns})");
+        }
+
         _ = Task.Run(() => ExecuteAsync(session, program, request, context, state, initialVariables));
         return new PxRunResponse { RunId = runId, Started = true };
 
         PxRunResponse Fail(string message, string? blockId = null)
         {
-            DisposeState(state);
+            if (state is IAsyncDisposable)
+            {
+                // Асинхронная уборка (Playwright-браузер) может быть долгой —
+                // в фоне, чтобы не блокировать поток запроса.
+                _ = Task.Run(() => DisposeStateAsync(state).AsTask());
+            }
+            else if (state is IDisposable)
+            {
+                // Синхронный Dispose ожидается быстрым; хост получает состояние уже убранным.
+                DisposeStateAsync(state).AsTask().GetAwaiter().GetResult();
+            }
+
             return new PxRunResponse { Started = false, ErrorMessage = message, ErrorBlockId = blockId };
         }
     }
 
     public bool Stop(Guid runId)
     {
-        if (_runs.TryGetValue(runId, out var session))
+        if (!_runs.TryGetValue(runId, out var session))
+            return false;
+
+        try
         {
             session.Cts.Cancel();
             return true;
         }
-
-        return false;
+        catch (ObjectDisposedException)
+        {
+            // Запуск завершился между TryGetValue и Cancel — сессия уже диспознута.
+            return false;
+        }
     }
+
+    public bool IsActive(Guid runId) => _runs.ContainsKey(runId);
 
     private async Task ExecuteAsync(
         PxRunSession session,
@@ -110,11 +146,13 @@ public sealed class PxRunManager : IPxRunManager
         object? state,
         IReadOnlyDictionary<string, PxValue>? initialVariables)
     {
-        // Явные поля запроса имеют приоритет; незаполненные дополняет политика контекста.
+        // Лимиты: положительное значение запроса действует, но контекст — потолок
+        // (клиент не обходит политику своим значением); без запроса — серверный дефолт.
+        // Прочая политика (события, seed) — явные поля запроса в приоритете.
         var options = new PxRunOptions
         {
-            StepLimit = request.StepLimit ?? context?.StepLimit ?? 0,
-            OutputLimit = request.OutputLimit ?? context?.OutputLimit ?? 10_000,
+            StepLimit = EffectiveLimit(request.StepLimit, context?.StepLimit, DefaultStepLimit),
+            OutputLimit = EffectiveLimit(request.OutputLimit, context?.OutputLimit, DefaultOutputLimit),
             RandomSeed = request.RandomSeed,
             EventNames = request.EventNames ?? context?.EventNames,
             State = state,
@@ -164,9 +202,14 @@ public sealed class PxRunManager : IPxRunManager
         return values;
     }
 
-    /// <summary>Синхронная уборка состояния (ранние отказы Start — запуск не состоялся).</summary>
-    private static void DisposeState(object? state) =>
-        DisposeStateAsync(state).AsTask().GetAwaiter().GetResult();
+    /// <summary>Запрос в приоритете, положительный лимит контекста — потолок; 0/отрицательное — серверный дефолт.</summary>
+    private static int EffectiveLimit(int? requested, int? contextLimit, int defaultLimit)
+    {
+        var limit = requested is > 0 ? requested.Value : defaultLimit;
+        if (contextLimit is > 0)
+            limit = Math.Min(limit, contextLimit.Value);
+        return limit;
+    }
 
     private static async ValueTask DisposeStateAsync(object? state)
     {

@@ -155,4 +155,58 @@ public class PxParserTests
         Assert.NotNull(head.Next);
         Assert.Equal("p2", head.Next!.BlockId);
     }
+
+    /// <summary>Цепочка из count print-блоков через next→block (~2 уровня JSON на блок).</summary>
+    private static string PrintChainJson(int count)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append("""{ "blocks": { "languageVersion": 0, "blocks": [ """);
+        for (var i = 0; i < count; i++)
+        {
+            // Объект print-блока остаётся открытым: «next» — его поле.
+            sb.Append($$"""{ "type": "core.text.print", "id": "p{{i}}", "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t{{i}}", "fields": { "TEXT": "n{{i}}" } } } }""");
+            if (i < count - 1)
+                sb.Append(""", "next": { "block": """);
+        }
+
+        sb.Append(" }"); // последний print-блок
+        for (var i = 0; i < count - 1; i++)
+            sb.Append(" } }"); // обёртка next + объемлющий print-блок
+        sb.Append(" ] } }");
+        return sb.ToString();
+    }
+
+    [Fact]
+    public async Task ParseAndRun_ChainOf150_Works()
+    {
+        // Дефолт JsonNode.Parse (MaxDepth=64) резал цепочки уже на ~30 блоках (R2).
+        var result = await PxTestRun.RunAsync(PrintChainJson(150), PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(150, result.Output.Count);
+        Assert.Equal("n149", result.Output[^1]);
+    }
+
+    [Fact]
+    public void Parse_ChainOf300_ThrowsNestingError()
+    {
+        // Глубже потолка разбора — PxParseException, а не StackOverflow.
+        var exception = Assert.Throws<PxParseException>(() => PxParser.CreateDefault().Parse(PrintChainJson(300)));
+        Assert.Contains("nesting", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_ChainOf600_JsonDepthExceeded_ThrowsParseException()
+    {
+        // Глубже MaxDepth самого JSON — ошибка оборачивается в PxParseException.
+        var exception = Assert.Throws<PxParseException>(() => PxParser.CreateDefault().Parse(PrintChainJson(600)));
+        Assert.Contains("Invalid workspace JSON", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_MalformedJson_ThrowsParseException()
+    {
+        var exception = Assert.Throws<PxParseException>(() => PxParser.CreateDefault().Parse("{ broken json"));
+        Assert.Contains("Invalid workspace JSON", exception.Message);
+    }
 }

@@ -252,6 +252,98 @@ public class PxRunManagerTests
         Assert.Equal(0, manager.ActiveRunCount);
     }
 
+    /// <summary>Бесконечный while(true) без тела: шаги идут, событий нет — удобно для капа запусков.</summary>
+    private const string SilentLoopJson = """
+    {
+      "blocks": { "languageVersion": 0, "blocks": [
+        { "type": "core.loops.while_until", "id": "w1", "fields": { "MODE": "WHILE" },
+          "inputs": { "BOOL": { "block": { "type": "core.logic.boolean", "id": "b1", "fields": { "BOOL": "TRUE" } } } } }
+      ] }
+    }
+    """;
+
+    [Fact]
+    public async Task Start_RequestStepLimit_CappedByContext()
+    {
+        var (manager, broadcaster, _, contexts) = CreateManager();
+        contexts.Register(PxEditorContext.Define("cap").StepLimit(10));
+
+        // Клиент не обходит политику контекста своим большим значением (R3).
+        var response = manager.Start(new PxRunRequest { BlocksJson = LoopJson, ContextName = "cap", StepLimit = 1_000_000 });
+
+        Assert.True(response.Started);
+        var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.False(result.Success);
+        Assert.Contains("step limit", result.ErrorMessage);
+        Assert.True(result.Steps <= 11, $"Steps={result.Steps}");
+    }
+
+    [Fact]
+    public async Task Start_WithoutLimits_ServerDefaultStopsInfiniteLoop()
+    {
+        var (manager, broadcaster, _, _) = CreateManager();
+
+        // Ни контекст, ни запрос не задали лимит — серверный дефолт, не безлимит (R3).
+        var response = manager.Start(new PxRunRequest { BlocksJson = LoopJson });
+
+        Assert.True(response.Started);
+        var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.False(result.Success);
+        Assert.Contains("step limit", result.ErrorMessage);
+        Assert.True(result.Steps <= PxRunManager.DefaultStepLimit + 1, $"Steps={result.Steps}");
+    }
+
+    [Fact]
+    public async Task Start_TooManyConcurrentRuns_Refused()
+    {
+        var (manager, _, _, _) = CreateManager();
+        var runIds = new List<Guid>();
+        for (var i = 0; i < PxRunManager.MaxConcurrentRuns; i++)
+        {
+            var response = manager.Start(new PxRunRequest { BlocksJson = SilentLoopJson, StepLimit = int.MaxValue });
+            Assert.True(response.Started);
+            runIds.Add(response.RunId);
+        }
+
+        var overflow = manager.Start(new PxRunRequest { BlocksJson = SilentLoopJson, StepLimit = int.MaxValue });
+        Assert.False(overflow.Started);
+        Assert.Contains("concurrent", overflow.ErrorMessage);
+
+        foreach (var runId in runIds)
+            Assert.True(manager.Stop(runId));
+
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && manager.ActiveRunCount > 0)
+            await Task.Delay(20);
+        Assert.Equal(0, manager.ActiveRunCount);
+    }
+
+    [Fact]
+    public async Task Stop_RacingWithCompletion_NeverThrows()
+    {
+        // Гонка Stop с хвостом ExecuteAsync (TryRemove → Dispose) не должна давать 500 (R4).
+        for (var i = 0; i < 50; i++)
+        {
+            var (manager, broadcaster, _, _) = CreateManager();
+            var response = manager.Start(new PxRunRequest { BlocksJson = PrintJson });
+            for (var s = 0; s < 20; s++)
+                manager.Stop(response.RunId);
+            await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        }
+    }
+
+    [Fact]
+    public async Task IsActive_TracksRunLifecycle()
+    {
+        var (manager, broadcaster, _, _) = CreateManager();
+        var response = manager.Start(new PxRunRequest { BlocksJson = SilentLoopJson, StepLimit = int.MaxValue });
+
+        Assert.True(manager.IsActive(response.RunId));
+        Assert.True(manager.Stop(response.RunId));
+        await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.False(manager.IsActive(response.RunId));
+    }
+
     [Fact]
     public void Catalog_RegisterAssembly_PicksUpSetsAndImplements()
     {

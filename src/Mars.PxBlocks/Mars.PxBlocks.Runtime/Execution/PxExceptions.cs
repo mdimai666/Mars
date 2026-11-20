@@ -30,6 +30,16 @@ public sealed class PxStepLimitExceededException : PxRuntimeException
         => Steps = steps;
 }
 
+/// <summary>Превышена глубина вложенных вызовов — защита от рекурсии (StackOverflow не перехватывается).</summary>
+public sealed class PxCallDepthExceededException : PxRuntimeException
+{
+    public int Limit { get; }
+
+    public PxCallDepthExceededException(string? blockId, int limit)
+        : base($"Function call depth limit exceeded ({limit})", blockId)
+        => Limit = limit;
+}
+
 /// <summary>Служебный сигнал break/continue — разворачивает стек до ближайшего цикла.</summary>
 internal sealed class PxFlowSignal : Exception
 {

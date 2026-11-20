@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mars.PxBlocks.Runtime.Ast;
 using Mars.PxBlocks.Runtime.Execution;
@@ -13,8 +14,21 @@ namespace Mars.PxBlocks.Runtime.Parsing;
 /// </summary>
 public sealed class PxParser
 {
+    /// <summary>
+    /// Глубина JSON: цепочка next→block даёт ~2 уровня на блок, дефолт JsonNode.Parse (64)
+    /// резал цепочки уже на ~30 блоках. Потолок разбора узлов — <see cref="MaxNestingDepth"/>.
+    /// </summary>
+    private const int MaxJsonDepth = 1024;
+
+    /// <summary>
+    /// Потолок вложенности узлов (цепочки next и вложенные входы считаются вместе):
+    /// разбор рекурсивный, без потолка глубокий JSON крашит стек (StackOverflow не перехватывается).
+    /// </summary>
+    private const int MaxNestingDepth = 256;
+
     private readonly PxBlockImplementsLocator? _implements;
     private PxProgram _program = new();
+    private int _depth;
 
     public PxParser(PxBlockImplementsLocator? implements = null)
         => _implements = implements;
@@ -24,8 +38,17 @@ public sealed class PxParser
 
     public PxProgram Parse(string blocksJson)
     {
-        var root = JsonNode.Parse(blocksJson) ?? throw new PxParseException("Empty workspace JSON");
-        return Parse(root);
+        JsonNode? root;
+        try
+        {
+            root = JsonNode.Parse(blocksJson, nodeOptions: null, new JsonDocumentOptions { MaxDepth = MaxJsonDepth });
+        }
+        catch (JsonException exception)
+        {
+            throw new PxParseException($"Invalid workspace JSON: {exception.Message}");
+        }
+
+        return Parse(root ?? throw new PxParseException("Empty workspace JSON"));
     }
 
     public PxProgram Parse(JsonNode root)
@@ -80,6 +103,20 @@ public sealed class PxParser
     }
 
     private PxStatement? ParseStatement(JsonObject block)
+    {
+        if (++_depth > MaxNestingDepth)
+            throw new PxParseException($"Workspace nesting exceeds {MaxNestingDepth} levels", BlockId(block));
+        try
+        {
+            return ParseStatementCore(block);
+        }
+        finally
+        {
+            _depth--;
+        }
+    }
+
+    private PxStatement? ParseStatementCore(JsonObject block)
     {
         if (IsDisabled(block))
             return NextStatement(block);
@@ -197,6 +234,20 @@ public sealed class PxParser
     }
 
     private PxExpression ParseExpression(JsonObject block)
+    {
+        if (++_depth > MaxNestingDepth)
+            throw new PxParseException($"Workspace nesting exceeds {MaxNestingDepth} levels", BlockId(block));
+        try
+        {
+            return ParseExpressionCore(block);
+        }
+        finally
+        {
+            _depth--;
+        }
+    }
+
+    private PxExpression ParseExpressionCore(JsonObject block)
     {
         if (IsDisabled(block))
             return NullLiteral(BlockId(block));

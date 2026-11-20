@@ -18,6 +18,9 @@ using Mars.Nodes.Workspace;
 using Mars.Notifications.Host;
 using Mars.Options.Host;
 using Mars.Plugin;
+using Mars.PxBlocks.Contracts;
+using Mars.PxBlocks.Host;
+using Mars.PxBlocks.Host.Hubs;
 using Mars.QueryLang.Host;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.CMS;
@@ -41,6 +44,7 @@ using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
 using Mars.XActions.Host;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -114,6 +118,7 @@ public static class MarsWebAppStartup
                         .AddPostgresDistributedCache(builder.Configuration)
                         .AddMarsNodes()
                         .AddMarsWebAppNodes()
+                        .AddPxBlocks()
                         .AddDatasource()
                         .AddMarsScheduler()
                         .AddMarsExcel()
@@ -225,6 +230,13 @@ public static class MarsWebAppStartup
         app.UseMarsAdmin();
         app.UseMarsNodes()
            .UseMarsWebAppNodes();
+        // PxBlocks: ядерные определения блоков; хаб событий исполнения — по образцу ChatHub.
+        // REST запуска и доменные контексты объявляют потребители (админка/ноды).
+        app.UsePxBlocks();
+        app.MapHub<PxBlocksHub>(PxBlocksConstants.HubRoute, options =>
+        {
+            options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
+        });
         app.UseDatasource();
         app.UseEditorJsBlazored();
         app.Services.UseMarsSiteEngineStartup();

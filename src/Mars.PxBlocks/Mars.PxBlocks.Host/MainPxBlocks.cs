@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.PxBlocks.Host.Services;
 using Mars.PxBlocks.Contracts.Services;
 using Mars.PxBlocks.Core.Definitions;
@@ -16,6 +17,8 @@ public static class MainPxBlocks
 {
     public static IServiceCollection AddPxBlocks(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddSingleton<IPxBlockCatalog, PxBlockCatalog>();
         services.AddSingleton<IPxBlocksBroadcaster, PxBlocksBroadcaster>();
         services.AddSingleton<IPxRunManager, PxRunManager>();

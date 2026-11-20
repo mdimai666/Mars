@@ -16,6 +16,7 @@
 | `src/Server` | Ядро и данные (см. ниже) |
 | `src/Mars.Modules` | Все модули платформы, плоско (см. ниже) |
 | `src/Mars.Nodes` | Движок нод визуального программирования |
+| `src/Mars.PxBlocks` | Блочный редактор в духе MakeCode/PXT (Blockly) + .NET-интерпретатор |
 | `src/Mars.Datasource` | Подключения к внешним базам данных |
 | `src/Admin` | Библиотеки админки: `Mars.Admin.Framework` (компоненты), `Mars.Admin.Contracts`, `Mars.Admin.Host` (хостинг админки на сервере) |
 | `src/Mars.Admin` | Админка — Blazor WASM-приложение |
@@ -43,6 +44,16 @@ SSO, Scheduler, Docker, Excel, QueryLang, AiChat, SemanticKernel, TemplateEngine
 `NodeTaskJob/`, `Nodes/`, `Hubs/`), `Abstractions`, `Expressions` (резолвер выражений), `Host`,
 `Front.Abstractions` (фронтовый SDK редактора: интерфейсы, компоненты, wire-геометрия),
 `Workspace` (Blazor-редактор), `FormEditor`.
+
+`src/Mars.PxBlocks` — `Core` (определения блоков fluent-API `PxMaster`, реестр типов, toolbox),
+`Runtime` (AST + tree-walking интерпретатор, чистый .NET — работает и в WASM), `Contracts`
+(wire-DTO, клиент API/хаба), `Abstractions` (каталог блоков, менеджер запусков, контексты),
+`Host` (api/PxBlocks read-эндпоинты + SignalR-хаб, `AddPxBlocks()`/`UsePxBlocks()`),
+`Workspace` (RCL-редактор: Blockly 13.1.1 через Vite-бандл, рейка в стиле MakeCode).
+Суффиксы `.Core`/`.Runtime`/`.Workspace` — Nodes-подобные подсистемы: `.Core` — модели без JS,
+`.Runtime` — исполнение, `.Workspace` — Blazor-редактор. Подключён в `MarsWebAppStartup`
+(ядерные блоки core.*); доменные контексты и REST запуска объявляют потребители
+(образец — `devstands/StandPxBlocksApp`). План инициативы — `ai/PxBlocksPlan.md`.
 
 ### tests/
 

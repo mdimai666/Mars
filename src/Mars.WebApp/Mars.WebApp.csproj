@@ -121,6 +121,7 @@
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource\Mars.Datasource.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+        <ProjectReference Include="..\Mars.PxBlocks\Mars.PxBlocks.Host\Mars.PxBlocks.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host\Mars.SSO.Host.csproj" />
 
     </ItemGroup>

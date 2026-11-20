@@ -41,13 +41,16 @@
 направленность ссылок (чужих `.Host` нет, Contracts WASM-чистый), хуки `AddPxBlocks()`/`UsePxBlocks()`
 в `MainPxBlocks.cs`, тесты `tests/Mars.PxBlocks.Tests`, виртуальные папки slnx. Открыты:
 
-- [ ] A. В `ai/ProjectStructureGuide.md` нет `src/Mars.PxBlocks`: добавить строку в карту `src/`
-      + сноску про суффиксы Nodes-подобных подсистем (`.Core`/`.Runtime`/`.Workspace`)
-      + пометку статуса (standalone, потребитель — devstand).
-- [ ] B. Подключение к `Mars.WebApp`: сейчас модуль НЕ собран в корне композиции, единственный
-      потребитель — стенд `devstands/StandPxBlocksApp`. Решение: подключить `AddPxBlocks()`/
-      `UsePxBlocks()` в `MarsWebAppStartup` или зафиксировать standalone-статус до появления
-      реальных контекстов (админка/ноды).
+- [x] A. `ai/ProjectStructureGuide.md`: строка в карте `src/` + абзац о семействе
+      (суффиксы `.Core`/`.Runtime`/`.Workspace`, статус) — добавлено 2026-11-20.
+- [x] B. Подключение к `Mars.WebApp` — выполнено 2026-11-20: ссылка на `Mars.PxBlocks.Host`
+      в csproj, `.AddPxBlocks()` в цепочке сервисов, `app.UsePxBlocks()` +
+      `MapHub<PxBlocksHub>(PxBlocksConstants.HubRoute)` (транспорты WebSockets|LongPolling,
+      по образцу ChatHub) в `MarsWebAppStartup`. `AddPxBlocks` регистрирует контроллеры
+      через `AddApplicationPart` (конвенция `MainNodes`/`MainCms`). Доменные контексты
+      и REST запуска — за потребителями (админка/ноды), пока контекстов в WebApp нет.
+      Смоук подключения: `tests/Mars.Integration.Tests/Controllers/PxBlocks/PxBlocksEndpointTests.cs`
+      (Definitions с core.*-блоками, пустой Contexts, 404 на неизвестный контекст).
 - [ ] C. NuGet: CI (`nuget-publish.yml`) пакует все `src/**` с `<PackageId>`; он объявлен у
       Core/Runtime/Abstractions/Contracts → на следующем теге опубликуются 4 пакета
       `mdimai666.Mars.PxBlocks.*`. Решить, готовы ли; у Host и Workspace PackageId нет —
@@ -62,6 +65,66 @@
 - Реальные контексты под админку (LINQ-фильтры, порядок операций в нодах);
   доменные пакеты под устройства (MQTT / ноды Mars.Nodes) и запуск PxBlocks-программ
   из графа Mars.Nodes (нода-обёртка).
+
+### Ревью 2026-11-20 — дефекты к исправлению (отдельной сессией)
+
+Полное ревью подсистемы (Core/Runtime/Contracts/Abstractions/Host/Workspace). База крепкая
+(культуры Invariant, гонки POST/RunFinished в песочнице обработаны, порядок событий гарантирован
+цепочкой отправок, ошибки с blockId), но найдены дефекты. Критичные подтверждены экспериментально
+(временный пробник-консоль со ссылкой на Runtime; удалён). Код НЕ правился. Фиксить по порядку:
+
+- [ ] **R1. КРИТично: рекурсия крашит процесс (StackOverflowException).**
+      `Runtime/Execution/PxInterpreter.cs` — нет лимита глубины вызовов функций/процедур.
+      Программа `f(){ return f() }` при `StepLimit=100000` убивает процесс: exit 0xC00000FD,
+      стек `CallFunctionAsync→ExecuteChainAsync→EvaluateAsync` (~250–1000 кадров до краша).
+      Лимит шагов не спасает — стек кончается раньше; StackOverflow в .NET не перехватывается.
+      На сервере любой пользователь с доступом к POST Run крашит весь Mars; в WASM — вкладку.
+      Фикс: счётчик глубины в `PxContext` (лимит ~256) → `PxRuntimeException` с blockId;
+      инкремент/декремент в `CallFunctionAsync`/`CallProcedureAsync`. Тест: рекурсивная функция
+      даёт ошибку исполнения, процесс жив.
+- [ ] **R2. КРИТично: цепочки длиннее ~28 блоков не исполняются.**
+      `Runtime/Parsing/PxParser.cs` → `JsonNode.Parse(blocksJson)` с дефолтным `MaxDepth=64`.
+      Цепочка `next→block` даёт ~2 уровня JSON на блок: chain из 30 `core.text.print` падает
+      `JsonReaderException: The maximum configured depth of 64 has been exceeded`
+      (проверено: 10/20 — OK, 30/40/60 — отказ). Редактор такую программу собрать позволяет,
+      запуск отвечает «Invalid workspace JSON». Тесты не ловят — программы в них короткие.
+      Фикс: `JsonDocumentOptions { MaxDepth = 512+ }` в Parse(string) + depth-guard в
+      ParseStatement/ParseExpression (иначе R1 вернётся через глубокий JSON). Тест: chain 100+
+      блоков парсится и исполняется; сверхглубокий JSON — PxParseException, не краш.
+- [ ] **R3. Важно (до объявления POST Run в WebApp): серверные лимиты дырявые.**
+      `Host/Services/PxRunManager.cs` → `StepLimit = request.StepLimit ?? context?.StepLimit ?? 0`:
+      (а) дефолт сервера — безлимит (в `PxRunOptions` дефолт 100k — рассинхрон);
+      (б) явное поле запроса ПРИОРИТЕТНЕЕ политики контекста — клиент обходит лимит контекста
+      своим значением; для песочницы лимит должен быть потолком (min), а не fallback;
+      (в) число параллельных запусков не ограничено (`_runs` растёт без потолка).
+      Фикс: разумный серверный дефолт + потолок из контекста поверх запроса + кап
+      одновременных запусков (отказ Started=false при переполнении).
+- [ ] **R4. Среднее: гонка Stop/Dispose в PxRunManager.**
+      `Stop`: `TryGetValue` → `Cts.Cancel()`; хвост `ExecuteAsync`: `TryRemove` → `session.Dispose()`.
+      Попадание между ними — `ObjectDisposedException` → 500 на Stop. Фикс: remove-before-dispose
+      и/или catch ObjectDisposedException в Stop (вернуть false).
+- [ ] **R5. Среднее: PxServerRunClient теряет RunFinished в окне реконнекта.**
+      `Workspace/Run/PxServerRunClient.cs`: автопереподключение до ~47 с; события в окне теряются,
+      потерянный итог → редактор висит в «исполняется» навсегда (таймаута/опроса статуса нет).
+      Плюс при неудачном `StartAsync` созданное соединение не диспозится (утечка на попытку).
+      Фикс: dispose при неудачном старте; таймаут ожидания итога и/или опрос статуса запуска.
+- [ ] **R6. Мелочи (по желанию, одним заходом):**
+      - `PxSandboxEditor.Run`: catch только `JSDisconnectedException` — иной сбой `SaveAsync`
+        оставит `_running=true` навсегда (Run заблокирован); нужен finally/общий catch.
+      - Имплементации блоков создаются на запуск (`PxContext.Implement`), но не диспозятся
+        по завершении — домен с IDisposable-полями течёт (диспозится только state хоста).
+      - `PxBlockCatalog`/`PxEditorContextRegistry`/`PxBlockImplementsLocator` не потокобезопасны;
+        регистрация только на старте — нормально, зафиксировать инвариант в гайде
+        (горячая регистрация плагинов сломает).
+      - Одна SignalR-группа на всех: каждый клиент видит события ВСЕХ запусков — для
+        многопользовательской админки решить вопрос приватности вывода (группа на запуск?).
+      - `PxRunManager.DisposeState` на ранних отказах Start — sync-over-async на потоке запроса
+        (Playwright-state может блокировать надолго).
+      - `PxWorkspaceJsInterop.DisposeAsync`: await faulted `_moduleTask` бросает не-JSDisconnected
+        исключение при неудачной загрузке модуля.
+
+Порядок фикса: R1+R2 с тестами → R3 (обязателен до Run-эндпоинта в WebApp) → R4/R5 → R6.
+После фикса обновить этот раздел и память `project/pxblocks-review-critical-defects.md`.
 
 ## Архитектура: гибридная обёртка Blockly
 

@@ -48,11 +48,11 @@
     доменные редакторы значений — `Editors/`;
   - `src/Admin/Mars.Admin.Framework/Components/MetaFieldViews/MetaValueStore.cs` — единственный
     перевод EAV-строк в значения формы и обратно;
-  - `src/Mars.Admin/` — `Components/SystemFieldSettingsPanel.razor` (скоуп `post.systemfields`),
-    `Pages/PostsViews/Forms/PostFormValueStore.cs`, `Startups/StartupFormEditors.cs` (регистрация
-    редакторов и панелей), страницы `Pages/PostsViews/EditPostView.razor` (+ ИИ-хендлер),
+  - `src/Mars.Admin/` — `SiteSpace/Components/SystemFieldSettingsPanel.razor` (скоуп `post.systemfields`),
+    `SiteSpace/Pages/PostsViews/Forms/PostFormValueStore.cs`, `Startups/StartupFormEditors.cs` (регистрация
+    редакторов и панелей), страницы `SiteSpace/Pages/PostsViews/EditPostView.razor` (+ ИИ-хендлер),
     `EditPostTypePage`, `EditPostTypePresentationPage`, `ManagePostView`, `PostTypeGridSettingsEditor`,
-    `Pages/UserViews/EditUserPage`, `Pages/PostCategoryViews/EditPostCategoryView`.
+    `SiteSpace/Pages/UserViews/EditUserPage`, `SiteSpace/Pages/PostCategoryViews/EditPostCategoryView`.
 
 ## Поток: определение → рендер → запись
 
@@ -384,7 +384,7 @@
 - **Свести XActions и формы опций на тот же механизм**: `XActionArgument` + `XActionFormDialog` —
   сегодня единственный работающий генератор «схема → форма», `OptionEditFormForOptionAttribute` /
   `IOptionsFormsLocator` — тот же паттерн. Без этого в платформе живут два параллельных генератора
-  форм; в `ai/XActionsPlan.md` связи с `Mars.Forms` пока нет.
+  форм; в `ai/XActionsGuide.md` связи с `Mars.Forms` пока нет.
 - **Пикер пользователя для слота `author`**: сейчас слот read-only с редактором `core.display.text`
   (подпись вместо значения), нужен отдельный редактор-связь.
 - **Натуральная ширина колонки (`auto`)** — вторая итерация раскладки (сейчас `null` = full).

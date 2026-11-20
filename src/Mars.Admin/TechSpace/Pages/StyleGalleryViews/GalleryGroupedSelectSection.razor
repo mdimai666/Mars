@@ -1,0 +1,37 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="GroupedSelectDropDown">
+
+    <GalleryVariant Caption="Статические сгруппированные items (кнопка + FluentMenu с вложенными группами)">
+        <div style="width:300px;">
+            <GroupedSelectDropDown TOption="GalleryOption"
+                                   Items="@_groups"
+                                   OptionText="@(o => o.Name)"
+                                   OptionValue="@(o => o.Key)"
+                                   Value="@_value"
+                                   ValueChanged="@(v => _value = v)"
+                                   ButtonStyle="min-width:250px;" />
+            <FluentText Size="TextSize.Size200" Class="text-secondary mt-1">Выбрано: @(_value ?? "—")</FluentText>
+        </div>
+    </GalleryVariant>
+
+</GallerySection>
+
+@code {
+    record GalleryOption(string Key, string Name, string Group);
+
+    static readonly GalleryOption[] _options =
+    [
+        new("text", "Текст", "Поля"),
+        new("number", "Число", "Поля"),
+        new("image", "Изображение", "Поля"),
+        new("http-get", "HTTP GET", "Интеграции"),
+        new("http-post", "HTTP POST", "Интеграции"),
+        new("static", "Статический контент", ""),
+    ];
+
+    static readonly IEnumerable<IGrouping<string?, GalleryOption>> _groups = _options.GroupBy(o => (string?)o.Group);
+
+    string _value = "number";
+}

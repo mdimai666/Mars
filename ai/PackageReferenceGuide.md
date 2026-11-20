@@ -23,8 +23,14 @@
 | Проект | Пакет | Зачем |
 |---|---|---|
 | `Mars.WebApp` | `Microsoft.CodeAnalysis.Common/CSharp/CSharp.Workspaces/Workspaces.Common/Workspaces.MSBuild` | без них `Microsoft.EntityFrameworkCore.Design` даёт конфликт Roslyn 5.0.0/5.3.0 (NU1107) |
-| `Mars.WebApp.Nodes.Host` | `System.Drawing.Common` | без него `dotless.Core` транзитивно тянет уязвимый 4.5.0 (NU1904) |
-| `Mars.Excel.Host` | `System.IO.Packaging`, `System.Linq.Dynamic.Core` | пины против уязвимых версий, тянущихся через ClosedXML/ClosedXML.Report (NU1903) |
+| `Mars.Plugin` | `System.Security.Cryptography.Pkcs` | без него `NuGet.Protocol` транзитивно тянет уязвимый 8.0.1 (NU1902/NU1903, CVE-2026-70162/CVE-2026-84008) |
+| `Mars.Datasource.Providers.MsSQL` | `System.Security.Cryptography.Pkcs` | без него `Microsoft.Data.SqlClient` транзитивно тянет уязвимый 9.0.18 (те же CVE) |
+
+История: пины `System.Drawing.Common` (Mars.WebApp.Nodes.Host) и `System.IO.Packaging`/`System.Linq.Dynamic.Core`
+(Mars.Excel.Host, Mars.Datasource.Providers.File) убраны 2026-11-09 — первый вместе с удалением `dotless.Core`
+и less-ноды `CssCompilerNode`, вторые стали не нужны после апгрейда ClosedXML 0.105.1 / ClosedXML.Report 0.2.12.
+`System.Linq.Dynamic.Core` в `Mars.Datasource.Providers.File` — прямая зависимость кода (`FileQueryConfig`,
+`FileDatasourceProvider`), не пин.
 
 Если при удалении «неиспользуемого» пакета в выводе сборки появляются новые `NU19xx`/`NU1107` —
 это он и был пином; вернуть обратно с комментарием.

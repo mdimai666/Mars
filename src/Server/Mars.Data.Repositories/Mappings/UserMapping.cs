@@ -35,6 +35,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
@@ -56,6 +57,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
             AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
 
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDetailDto(),
@@ -86,26 +88,8 @@ internal static class UserMapping
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
 
-            AvatarUrl = "",
-            About = "",
-        };
-
-    public static UserEditProfileDto ToEditProfile(this UserEntity entity)
-        => new()
-        {
-            Id = entity.Id,
-            FirstName = entity.FirstName,
-            LastName = entity.LastName,
-            MiddleName = entity.MiddleName,
-            Email = entity.Email,
-            Username = entity.UserName ?? "xxxx",
-            About = "",
-            AvatarUrl = "",
-            BirthDate = entity.BirthDate?.Date,
-            Gender = entity.Gender.ToMap(),
-            Phone = entity.PhoneNumber,
-            Type = entity.UserType.TypeName,
-            MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
+            AvatarUrl = entity.AvatarUrl,
+            About = entity.About,
         };
 
     public static Mars.Identity.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
@@ -113,12 +97,16 @@ internal static class UserMapping
     public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Identity.Contracts.Users.UserGender gender)
         => (Mars.Data.OwnedTypes.Users.UserGender)gender;
 
+    /// <summary>Local-part почты — username-fallback: полное письмо не проходит валидацию username ('@' запрещён).</summary>
+    public static string? EmailLocalPart(string? email)
+        => email?.Split('@', 2)[0];
+
     public static UserEntity ToEntity(this CreateUserQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
         => new()
         {
             Id = query.Id ?? Guid.Empty,
-            UserName = query.UserName ?? query.Email,
-            NormalizedUserName = lookupNormalizer.NormalizeName(query.UserName ?? query.Email),
+            UserName = query.UserName ?? EmailLocalPart(query.Email),
+            NormalizedUserName = lookupNormalizer.NormalizeName(query.UserName ?? EmailLocalPart(query.Email)),
 
             Email = query.Email,
             NormalizedEmail = lookupNormalizer.NormalizeEmail(query.Email),
@@ -133,15 +121,17 @@ internal static class UserMapping
             BirthDate = query.BirthDate,
             Gender = ParseGender(query.Gender),
             AvatarUrl = query.AvatarUrl,
+            About = query.About,
 
             UserTypeId = userTypeId,
             MetaValues = query.MetaValues.ToEntity<UserMetaValueEntity>(),
 
         };
 
-    public static UserEntity UpdateEntity(this UserEntity entity, UpdateUserQuery query)
+    public static UserEntity UpdateEntity(this UserEntity entity, UpdateUserQuery query, ILookupNormalizer lookupNormalizer)
     {
         entity.UserName = query.UserName;
+        entity.NormalizedUserName = lookupNormalizer.NormalizeName(entity.UserName);
         entity.FirstName = query.FirstName;
         entity.LastName = query.LastName ?? "";
         entity.MiddleName = query.MiddleName;
@@ -151,6 +141,7 @@ internal static class UserMapping
         entity.BirthDate = query.BirthDate;
         entity.Gender = UserMapping.ParseGender(query.Gender);
         entity.AvatarUrl = query.AvatarUrl;
+        entity.About = query.About;
 
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;
@@ -186,8 +177,8 @@ internal static class UserMapping
         => new()
         {
             //Id = query.Id ?? Guid.Empty,
-            UserName = query.PreferredUserName ?? query.Email,
-            NormalizedUserName = lookupNormalizer.NormalizeName(query.PreferredUserName ?? query.Email),
+            UserName = query.PreferredUserName ?? EmailLocalPart(query.Email),
+            NormalizedUserName = lookupNormalizer.NormalizeName(query.PreferredUserName ?? EmailLocalPart(query.Email)),
 
             Email = query.Email,
             NormalizedEmail = lookupNormalizer.NormalizeEmail(query.Email),

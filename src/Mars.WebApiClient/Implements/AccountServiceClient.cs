@@ -3,6 +3,8 @@ using Flurl.Http;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
@@ -25,6 +27,26 @@ internal class AccountServiceClient : BasicServiceClient, IAccountServiceClient
         => await _client.Request($"{_basePath}{_controllerName}", "Logout")
                     .AllowAnyHttpStatus()
                     .PostAsync();
+
+    public Task<UserProfileEditViewModel> GetProfileEditModel()
+        => _client.Request($"{_basePath}{_controllerName}", "Profile", "EditModel")
+                    .OnError(OnStatus404ThrowException)
+                    .GetJsonAsync<UserProfileEditViewModel>();
+
+    public Task<UserDetailResponse> UpdateProfile(UpdateUserProfileRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "Profile")
+                    .PutJsonAsync(request)
+                    .ReceiveJson<UserDetailResponse>();
+
+    public Task<AvatarUploadResponse> UploadAvatar(Stream image, string fileName, Guid? userId = null)
+    {
+        var request = _client.Request($"{_basePath}{_controllerName}", "Avatar");
+        if (userId is not null)
+            request = request.SetQueryParam("userId", userId.Value);
+
+        return request.PostMultipartAsync(mp => mp.AddFile("file", image, fileName))
+                      .ReceiveJson<AvatarUploadResponse>();
+    }
 
     public async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData)
     {

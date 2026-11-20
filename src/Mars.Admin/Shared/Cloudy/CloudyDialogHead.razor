@@ -1,0 +1,13 @@
+<div class="cloudy-dialog-head">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <span class="cloudy-dialog-head__title">@Title</span>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    /// <summary>Дополнительный контент заголовка (после названия). Вставляется в FluentDialogBody.TitleTemplate.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

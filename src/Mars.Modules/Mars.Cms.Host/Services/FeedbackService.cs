@@ -67,6 +67,20 @@ internal class FeedbackService : IFeedbackService
         return updated;
     }
 
+    public async Task<FeedbackDetail> MarkRead(Guid id, CancellationToken cancellationToken)
+    {
+        var changed = await _feedbackRepository.MarkRead(id, cancellationToken);
+        var detail = (await GetDetail(id, cancellationToken))!;
+
+        if (changed)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackRead(), detail);
+            _eventManager.TriggerEvent(payload);
+        }
+
+        return detail;
+    }
+
     public async Task<FeedbackSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();

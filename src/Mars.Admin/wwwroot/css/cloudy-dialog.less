@@ -1,0 +1,176 @@
+//-------------------------------------------------------------
+// CLOUDY DIALOG — скин штатного FluentDialog (показ через IDialogService.ShowDialogAsync)
+// Компонент: CloudyDialogHead (Shared/Cloudy) — заголовок во FluentDialogBody.TitleTemplate
+// Паттерн диалога: ai/CloudyRedesignGuide.md; факты по ::part — ai/FluentV5Reference.md
+// (shadow-dialog жёстко max-width:600px — ширина только через ::part(dialog))
+//-------------------------------------------------------------
+
+// Диалоги рендерятся FluentProviders в корне App.razor — ВНЕ `.cloudy-layout`,
+// поэтому на хосте дублируется ВЕСЬ набор токенов — миксины из cloudy.less
+// (единый источник, рассинхрон невозможен).
+fluent-dialog,
+fluent-drawer {
+    .cloudy-tokens();
+}
+
+body[data-theme="dark"] {
+    fluent-dialog,
+    fluent-drawer {
+        .cloudy-tokens-dark();
+    }
+}
+
+fluent-dialog::part(dialog) {
+    max-width: min(600px, calc(100vw - 48px));
+    border: 1px solid var(--cld-line);
+    border-radius: 14px;
+    background: var(--cld-surface);
+    box-shadow: 0 24px 64px rgba(13, 18, 32, .35);
+}
+
+fluent-dialog-body {
+    &::part(title) {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--cld-line);
+    }
+
+    &::part(content) {
+        padding: 16px 20px;
+    }
+
+    &::part(actions) {
+        padding: 0 20px 16px;
+    }
+}
+
+.cloudy-dialog-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+
+    &__title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--cld-ink);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+//------------- ошибка сохранения в диалоге (при ошибке диалог НЕ закрывается) -------------
+.cloudy-dialog-error {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(229, 72, 77, .12);
+    color: var(--cld-red-badge);
+    font-size: 13px;
+    word-break: break-word;
+}
+
+//------------- превью текстового файла (MediaTextFileDialog) -------------
+// Широкая панель — как log-modal в TechLogsPage; дефолт скина — 600px.
+// `[fuib]` в селекторе ОБЯЗАТЕЛЕН: default-fuib.css (adopted-лист, в каскаде ПОСЛЕ
+// документальных) имеет своё правило ширины на fluent-dialog[fuib] и бьёт
+// документальное при равной специфичности (FluentV5Reference факт №10).
+fluent-dialog[fuib]:has(.cloudy-mono-preview)::part(dialog),
+fluent-dialog[fuib]:has(.cloudy-create-text)::part(dialog) {
+    width: min(920px, calc(100vw - 48px));
+    max-width: min(920px, calc(100vw - 48px));
+}
+
+.cloudy-mono-preview {
+    margin: 0;
+    max-height: min(60vh, 620px);
+    overflow: auto;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--cld-ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+//------------- бейдж кодировки в заголовке (клик = utf-8 ↔ windows-1251) -------------
+.cloudy-enc-badge {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    padding: 3px 10px;
+    border: 1px solid var(--cld-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cld-muted);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-ink);
+        border-color: var(--cld-muted-strong);
+    }
+}
+
+//------------- создание текстового файла (MediaCreateTextFileDialog) -------------
+.cloudy-create-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__editor {
+        height: 340px;
+        min-height: 0;
+    }
+}
+
+//------------- выбор файла (MediaSelectDialog) -------------
+fluent-dialog[fuib]:has(.cloudy-media-select)::part(dialog) {
+    width: min(1200px, calc(100vw - 48px));
+    max-width: min(1200px, calc(100vw - 48px));
+}
+
+.cloudy-media-select {
+    max-height: min(68vh, 720px);
+    overflow: auto;
+    .cloudy-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+        gap: 12px;
+    }
+
+    .cloudy-tile {
+        gap: 4px;
+        padding: 12px 10px 10px;
+    }
+
+    .cloudy-tile__open {
+        gap: 4px;
+    }
+
+    .cloudy-tile__icon {
+        font-size: 34px;
+    }
+
+    .cloudy-tile__thumb {
+        height: 48px;
+    }
+
+    .cloudy-tile__name {
+        font-size: 13px;
+    }
+
+    .cloudy-tile__meta {
+        font-size: 12px;
+    }
+
+    .cloudy-tile__check {
+        top: 6px;
+        right: 6px;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+    }
+}

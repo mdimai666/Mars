@@ -13,17 +13,14 @@ internal class FluentDialogXActionFormPresenter(IDialogService dialogService, IX
     {
         var componentType = formProvider.GetForm(command.Id) ?? typeof(XActionFormDialog);
 
-        var parameters = new DialogParameters
+        var result = await dialogService.ShowDialogAsync(componentType, new DialogOptions
         {
-            Title = command.Label,
+            Header = { Title = command.Label },
             Width = "480px",
-            PreventScroll = true,
-        };
+            Parameters = { ["Content"] = command },
+        });
 
-        var dialog = await dialogService.ShowDialogAsync(componentType, command, parameters);
-        var result = await dialog.Result;
-
-        if (result is { Cancelled: false } && result.Data is IReadOnlyDictionary<string, string> values)
+        if (result is { Cancelled: false } && result.Value is IReadOnlyDictionary<string, string> values)
             return values;
 
         return null;

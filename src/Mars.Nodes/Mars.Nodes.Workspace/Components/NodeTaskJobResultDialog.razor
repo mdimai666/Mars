@@ -5,37 +5,36 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
-@implements IDialogContentComponent<NodeTaskJobResultDialogModel>
-
-<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
-    <div class="hstack">
-        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
-        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "NodeTask Job result")</FluentLabel>
-    </div>
-</FluentDialogHeader>
 <FluentDialogBody Class="text-start">
-    <div class="d-flex flex-row gap-4" style="min-height:80vh;">
-        <div class="flex-fill">
-            @if (_busy)
-            {
-                <FluentProgressRing />
-            }
-            else if (_model is not null)
-            {
-                <NodeTaskJobResultDetailView Model="_model" Editor="Content.Editor" />
-            }
-            else
-            {
-                <Mars.Admin.Framework.Components.SharedContentNoRecords />
-            }
+    <TitleTemplate>
+        <div class="hstack">
+            <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
+            <FluentText Size="TextSize.Size500">@(Dialog.Options.Header.Title ?? "NodeTask Job result")</FluentText>
         </div>
-    </div>
+    </TitleTemplate>
+    <ChildContent>
+        <div class="d-flex flex-row gap-4" style="min-height:80vh;">
+            <div class="flex-fill">
+                @if (_busy)
+                {
+                    <FluentSpinner />
+                }
+                else if (_model is not null)
+                {
+                    <NodeTaskJobResultDetailView Model="_model" Editor="Content.Editor" />
+                }
+                else
+                {
+                    <Mars.Admin.Framework.Components.SharedContentNoRecords />
+                }
+            </div>
+        </div>
+    </ChildContent>
 </FluentDialogBody>
-<FluentDialogFooter Visible="false" />
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public IDialogInstance Dialog { get; set; } = default!;
 
     [Inject] INodeServiceClient _client { get; set; } = default!;
 
@@ -69,18 +68,13 @@
 
     public static void ShowDialog(IDialogService _dialogService, Guid taskId, INodeEditorApi editor)
     {
-        DialogParameters parameters = new()
+        _ = _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(new DialogOptions
         {
-            Title = "NodeTask Job result",
-            PrimaryActionEnabled = false,
-            SecondaryActionEnabled = false,
+            Header = { Title = "NodeTask Job result", CloseAction = { Visible = true } },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(new NodeTaskJobResultDialogModel(taskId, editor), parameters);
+            Parameters = { ["Content"] = new NodeTaskJobResultDialogModel(taskId, editor) }
+        });
     }
 
 }

@@ -1,0 +1,70 @@
+@page "/tech/components"
+@using BlazoredHtmlRender
+
+<PageTitle>Components</PageTitle>
+
+<div class="components-page">
+    <header class="components-page__hero">
+        <div class="components-page__hero-text">
+            <h1>Components</h1>
+            <p>
+                Blazor components available to the HTML renderer, grouped by their assembly.
+                Use the anchors to jump to a group.
+            </p>
+        </div>
+        <div class="components-page__hero-actions">
+            <span class="components-page__total">
+                <i class="bi bi-puzzle"></i>
+                @typesCount components
+            </span>
+        </div>
+    </header>
+
+    @* scroll-to/scroll-target — делегирование клика в scripts.js; текст якоря без вложенных элементов *@
+    <nav class="components-page__anchors" aria-label="Assemblies">
+        @foreach (var group in grouped)
+        {
+            <a class="components-page__anchor" scroll-to="#_@(AnchorId(group.Key))" scroll-target="main">@AssemblyName(group.Key)</a>
+        }
+    </nav>
+
+    <div class="components-page__groups">
+        @foreach (var group in grouped)
+        {
+            <section class="components-page__group" id="_@(AnchorId(group.Key))">
+                <header class="components-page__group-head">
+                    <span class="components-page__group-label">Assembly</span>
+                    <span class="components-page__group-name" title="@group.Key.FullName">@group.Key.FullName</span>
+                    <span class="components-page__group-count">@group.Count()</span>
+                </header>
+
+                <div class="components-page__items">
+                    @foreach (var d in group)
+                    {
+                        <div class="components-page__item">
+                            <span class="components-page__tag">@d.Key</span>
+                            <span class="components-page__type" title="@d.Value.Name">@d.Value.Name</span>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</div>
+
+@code {
+    List<IGrouping<System.Reflection.Assembly, KeyValuePair<string, Type>>> grouped = new();
+    int typesCount = 0;
+
+    static string AssemblyName(System.Reflection.Assembly assembly) => assembly.FullName!.Split(',')[0];
+
+    static string AnchorId(System.Reflection.Assembly assembly) => AssemblyName(assembly).Replace('.', '_');
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var list = BlazoredHtml.ComponentsDict.DistinctBy(s => s.Value);
+        typesCount = list.Count();
+        grouped = list.GroupBy(s => s.Value.Assembly).ToList();
+    }
+}

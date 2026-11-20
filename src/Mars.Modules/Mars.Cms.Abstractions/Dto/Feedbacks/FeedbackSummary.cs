@@ -13,4 +13,5 @@ public record FeedbackSummary : IHasId
     public required bool IsAuthorizedUser { get; init; }
     public required string Excerpt { get; init; }
     public required string FilledUsername { get; init; }
+    public required bool IsRead { get; init; }
 }

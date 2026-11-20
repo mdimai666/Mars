@@ -7,6 +7,7 @@ using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Services;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Storage.Services;
@@ -23,6 +24,7 @@ public class FileServiceTests
     private readonly IFileRepository _fileRepository;
     private readonly IImageProcessor _imageProcessor;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IEventManager _eventManager;
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly FileService _fileService;
 
@@ -33,6 +35,8 @@ public class FileServiceTests
         _fileRepository = Substitute.For<IFileRepository>();
         _imageProcessor = Substitute.For<IImageProcessor>();
         _validatorFactory = Substitute.For<IValidatorFactory>();
+        _eventManager = Substitute.For<IEventManager>();
+        _eventManager.Defaults.Returns(new EventManagerDefaults());
 
         _fileHostingInfo = new FileHostingInfo
         {
@@ -43,7 +47,7 @@ public class FileServiceTests
 
         _optionService.FileHostingInfo().Returns(_fileHostingInfo);
 
-        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor, _validatorFactory);
+        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor, _validatorFactory, _eventManager);
     }
 
     [Fact]

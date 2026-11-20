@@ -13,7 +13,7 @@ namespace Mars.AiChat.Host.CommandLine;
 
 /// <summary>
 /// Полигон: разовый прогон агента без веб-сервера и браузера.
-/// mars aichat send -m "задача" [-p /front/editor/landing] [-u userId]
+/// mars aichat send -m "задача" [-p /tech/frontend/editor/landing] [-u userId]
 /// Печатает транскрипт (вызовы инструментов, результаты, ответ) в консоль.
 /// </summary>
 public class AiChatCli : CommandCli
@@ -23,7 +23,7 @@ public class AiChatCli : CommandCli
         var aichat = new Command("aichat", "AI chat agent (headless playground)");
 
         var optionMessage = new Option<string>("--message", "-m") { Description = "user message", Required = true };
-        var optionPage = new Option<string?>("--page", "-p") { Description = "page context, e.g. /front/editor/landing" };
+        var optionPage = new Option<string?>("--page", "-p") { Description = "page context, e.g. /tech/frontend/editor/landing" };
         var optionUser = new Option<Guid?>("--user", "-u") { Description = "user id (default: first admin by creation date)" };
         var optionSkills = new Option<bool?>("--skills") { Description = "A/B: skills toolset (SearchSkills/LoadSkill) on/off, default on" };
         var optionAccess = new Option<bool?>("--access") { Description = "A/B: agent workspace (file_access_*) on/off, default on" };

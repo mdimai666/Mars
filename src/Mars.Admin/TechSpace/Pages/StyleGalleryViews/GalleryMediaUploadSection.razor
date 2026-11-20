@@ -1,0 +1,12 @@
+@using Mars.Admin.Framework.Components.MediaViews
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="MediaUploadZone">
+
+    <GalleryVariant Caption="Ручной режим (AutoUpload=false): рендер не обращается к бэкенду, API — только при выборе файлов">
+        <MediaUploadZone AutoUpload="false"
+                         Label="Перетащите или выберите файл"
+                         ZoneStyle="min-height: 100px; max-width: 300px;" />
+    </GalleryVariant>
+
+</GallerySection>

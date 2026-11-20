@@ -1,0 +1,14 @@
+/* Индикатор непрочитанного обращения в ячейке заголовка (токены cloudy-зоны). */
+.feedback-unread-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cld-primary);
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.feedback-title--unread {
+    font-weight: 700;
+}

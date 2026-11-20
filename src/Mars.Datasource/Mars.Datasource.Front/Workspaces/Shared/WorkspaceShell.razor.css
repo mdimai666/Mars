@@ -61,21 +61,63 @@
     overflow: hidden;
 }
 
+/* Контекстная строка источника: имя, число объектов, тип. Переключатель источников — в hero страницы. */
+.ds-context {
+    height: 36px;
+    border-bottom: 1px solid var(--ct-line, #e3e7f4);
+    font-size: 12.5px;
+    min-width: 0;
+}
+
+.ds-context__name {
+    color: var(--ct-ink, #212529);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ds-context__meta {
+    color: var(--ct-muted, #6c757d);
+    white-space: nowrap;
+}
+
 .ds-tabs {
     overflow-x: auto;
 }
 
 .ds-tab {
-    border: 1px solid var(--bs-border-color, #dee2e6);
-    border-bottom: none;
-    border-radius: .25rem .25rem 0 0;
+    border: 1px solid var(--ct-line, #dee2e6);
+    border-radius: 8px;
     cursor: pointer;
-    color: var(--bs-secondary-color, #6c757d);
+    color: var(--ct-muted, #6c757d);
+    background: var(--ct-card, #fff);
     white-space: nowrap;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.ds-tab:hover {
+    border-color: var(--ct-hover-border, #cdd3e6);
+    color: var(--ct-ink, #212529);
 }
 
 .ds-tab-active {
-    background: var(--bs-body-bg, #fff);
-    color: var(--bs-body-color, #212529);
+    background: var(--ct-accent-soft, #ece7fd);
+    border-color: var(--ct-hover-border, #cdd3e6);
+    color: var(--ct-active-ink, #5237e8);
     font-weight: 600;
+}
+
+/* Bootstrap-кнопки тулбара и дерева (btn-light) — под палитру зоны: светлая тема админки
+   перекрывает --ct-* токены, поэтому кнопки следуют за ней без отдельных правил. */
+.ds-workspace ::deep .btn-light {
+    border: 1px solid var(--ct-line, #dee2e6);
+    background: var(--ct-card, #f8f9fa);
+    color: var(--ct-item-ink, #212529);
+}
+
+.ds-workspace ::deep .btn-light:hover:not(:disabled) {
+    border-color: var(--ct-hover-border, #cdd3e6);
+    background: var(--ct-hover-bg, #e9ecef);
+    color: var(--ct-ink, #212529);
 }

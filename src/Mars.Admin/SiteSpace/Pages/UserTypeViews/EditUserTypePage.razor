@@ -1,0 +1,74 @@
+@page "/EditUserType"
+@page "/EditUserType/{ID:guid}"
+
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Identity.Contracts.UserTypes
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper>
+    <StandardEditContainer ID=@ID
+                           TModel=UserTypeEditModel
+                           GetAction="@(()=>UserTypeEditModel.GetAction(client,ID))"
+                           SaveAction="@((s,create)=>UserTypeEditModel.SaveAction(client,s,create))"
+                           DeleteAction="@(s=>UserTypeEditModel.DeleteAction(client,s))"
+                           @ref=f CanCreate=false>
+        <ChildContent>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextInput @bind-Value=@context.Title Label="@AppRes.Title"
+                                     Appearance="@TextInputAppearance.FilledDarker"
+                                     Required
+                                     Style="zoom:1.4" />
+                    <ValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextInput @bind-Value=@context.TypeName Label="TypeName" />
+                    <ValidationMessage For="@(() => context.TypeName)" />
+                </div>
+
+            </div>
+
+            <div class="spacer-2"></div>
+
+            <div class="vstack gap-4">
+
+                @* <div class="card">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap">
+
+                        </div>
+                    </div>
+                </div> *@
+
+                <div class="card">
+                    <div class="card-header">
+                        Meta fields
+                    </div>
+                    <div class="card-body">
+                        <div class="card-section">
+                            <MetaFieldsGroup Fields="context.MetaFields"
+                                             MetaRelationModels="context.MetaRelationModels" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="d-block" style="height:50vh"></div>
+
+        </ChildContent>
+        <SectionExtraSidebar>
+        </SectionExtraSidebar>
+    </StandardEditContainer>
+
+</ContentWrapper>

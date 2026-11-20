@@ -25,7 +25,7 @@ public class LogCleanupJob : IJob
         _logger = logger;
     }
 
-    public Task Execute(IJobExecutionContext context)
+    public ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         try
         {
@@ -44,6 +44,6 @@ public class LogCleanupJob : IJob
             _logger.LogError(ex, "logs cleanup failed");
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

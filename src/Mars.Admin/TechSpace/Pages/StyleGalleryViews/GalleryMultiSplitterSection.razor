@@ -1,0 +1,21 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="MultiSplitter (FluentMultiSplitter)">
+
+    <GalleryVariant Caption="Три панели (Size/Min), горизонтальный сплиттер">
+        <div style="height:180px; border:1px solid var(--colorNeutralStroke1); border-radius:4px; overflow:hidden;">
+            <FluentMultiSplitter Orientation="Orientation.Horizontal" BarSize="6px" Class="w-100 h-100">
+                <FluentMultiSplitterPane Size="30%" Min="120px">
+                    <div class="p-2">Панель 1 (30%, min 120px)</div>
+                </FluentMultiSplitterPane>
+                <FluentMultiSplitterPane Size="40%" Min="120px">
+                    <div class="p-2">Панель 2 (40%, min 120px)</div>
+                </FluentMultiSplitterPane>
+                <FluentMultiSplitterPane Min="120px">
+                    <div class="p-2">Панель 3 (min 120px)</div>
+                </FluentMultiSplitterPane>
+            </FluentMultiSplitter>
+        </div>
+    </GalleryVariant>
+
+</GallerySection>

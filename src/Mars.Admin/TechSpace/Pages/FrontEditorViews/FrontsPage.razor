@@ -1,0 +1,135 @@
+@page "/tech/frontend"
+@using Mars.SiteEngine.Contracts.Options
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Фронты")]
+@inject IMarsWebApiClient client
+
+<PageTitle>Фронты</PageTitle>
+
+<div class="fronts-page">
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Фронты</h1>
+            <p>
+                Фронт — это папка с файлами (шаблоны, стили, скрипты), из которых движок рендера собирает
+                страницы сайта. У каждого фронта свой движок и точка маунта (URL). Откройте карточку,
+                чтобы редактировать файлы в редакторе с живым предпросмотром.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a class="ghost-btn" href="Settings/Front">
+                <i class="bi bi-gear"></i>
+                Настройки фронтов
+            </a>
+        </div>
+    </header>
+
+    @if (loadFailed)
+    {
+        <div class="fronts-error">
+            <i class="bi bi-exclamation-triangle"></i>
+            Не удалось загрузить список фронтов
+        </div>
+    }
+    else if (option is null)
+    {
+        <div class="fronts-loading">Loading…</div>
+    }
+    else
+    {
+        <section class="fronts-section">
+            <header class="section-head">
+                <h2>Специальные</h2>
+                <span class="count">1</span>
+                <span class="line"></span>
+            </header>
+
+            <div class="fronts-grid">
+                <a class="front-card" href="tech/frontend/editor/admin">
+                    <div class="front-top">
+                        <span class="front-icon tint-purple"><i class="bi bi-window-desktop"></i></span>
+                        <div class="front-id">
+                            <span class="front-name">admin</span>
+                            <span class="front-sub">фронт админки</span>
+                        </div>
+                        <span class="front-badge special">спец</span>
+                    </div>
+                    <p class="front-desc">Специальный фронт админ-панели, не роутится публично</p>
+                    <div class="front-meta">
+                        <span class="meta-chip"><i class="bi bi-code-slash"></i> handlebars</span>
+                        <span class="meta-chip"><i class="bi bi-folder2"></i> data/admin/front</span>
+                    </div>
+                    <span class="front-cta">Открыть редактор <i class="bi bi-arrow-right"></i></span>
+                </a>
+            </div>
+        </section>
+
+        <section class="fronts-section">
+            <header class="section-head">
+                <h2>Публичные фронты</h2>
+                <span class="count">@option.Fronts.Count</span>
+                <span class="line"></span>
+            </header>
+
+            @if (option.Fronts.Count == 0)
+            {
+                <div class="fronts-empty">Публичных фронтов пока нет — добавьте их в настройках фронтов.</div>
+            }
+            else
+            {
+                <div class="fronts-grid">
+                    @foreach (var front in option.Fronts)
+                    {
+                        <a class="front-card" href="tech/frontend/editor/@front.Slug">
+                            <div class="front-top">
+                                <span class="front-icon tint-blue"><i class="bi bi-window-desktop"></i></span>
+                                <div class="front-id">
+                                    <span class="front-name">@front.Slug</span>
+                                    <span class="front-sub">@(string.IsNullOrWhiteSpace(front.Title) ? "Фронт сайта" : front.Title)</span>
+                                </div>
+                                @if (!front.Enabled)
+                                {
+                                    <span class="front-badge off">выключен</span>
+                                }
+                            </div>
+                            <div class="front-meta">
+                                <span class="meta-chip"><i class="bi bi-code-slash"></i> @front.EngineId</span>
+                                @if (!string.IsNullOrEmpty(front.Url))
+                                {
+                                    <span class="meta-chip"><i class="bi bi-link-45deg"></i> @front.Url</span>
+                                }
+                            </div>
+                            <div class="front-path" title="@FrontPath(front)">
+                                <i class="bi bi-folder2"></i>
+                                <span>@FrontPath(front)</span>
+                            </div>
+                            <span class="front-cta">Открыть редактор <i class="bi bi-arrow-right"></i></span>
+                        </a>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>
+
+@code {
+    FrontsOption? option;
+    bool loadFailed;
+
+    /// <summary>Путь фронта: как задан в настройках, либо по конвенции data/fronts/&lt;Slug&gt;</summary>
+    static string FrontPath(FrontItem front)
+        => string.IsNullOrWhiteSpace(front.Path) ? $"data/fronts/{front.Slug}" : front.Path;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            option = await client.Option.GetOption<FrontsOption>();
+        }
+        catch
+        {
+            loadFailed = true;
+        }
+    }
+}

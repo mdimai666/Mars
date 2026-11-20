@@ -1,0 +1,109 @@
+@using Mars.Core.Exceptions
+@using Mars.Plugin.Contracts.Plugins
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="Install from NuGet" />
+    </TitleTemplate>
+    <ChildContent>
+        @if (busy)
+        {
+            <SharedLoader1 />
+        }
+        else
+        {
+            <div class="vstack gap-3 p-3" style="width: 420px;">
+                <FluentTextInput Label="Package ID" Placeholder="My.Plugin.Package" @bind-Value="packageId" Required />
+                <FluentTextInput Label="Version (optional)" Placeholder="leave empty for latest" @bind-Value="version" />
+                <FluentText Size="TextSize.Size300" Color="Color.Default">
+                    The plugin will be installed to data/plugins and activated after a server restart.
+                </FluentText>
+
+                @if (successResult)
+                {
+                    <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
+                        @resultResponse?.Message
+                    </FluentMessageBar>
+                }
+                @if (errorMessage is not null)
+                {
+                    <FluentMessageBar Title="@AppRes.Error" Intent="@MessageBarIntent.Error" AllowDismiss=false>
+                        @errorMessage
+                    </FluentMessageBar>
+                }
+            </div>
+        }
+    </ChildContent>
+    <ActionTemplate>
+        @if (busy)
+        {
+            <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
+        }
+        else if (!successResult)
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="InstallAsync" Disabled="string.IsNullOrWhiteSpace(packageId)">Install</FluentButton>
+            <FluentButton OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+        }
+        else
+        {
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+        }
+    </ActionTemplate>
+</FluentDialogBody>
+
+@code {
+    [CascadingParameter]
+    public IDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    string packageId = string.Empty;
+    string? version;
+    bool busy;
+    bool successResult;
+    PluginInstallResponse? resultResponse;
+    string? errorMessage;
+
+    private Task OkAsync() => Dialog.CloseAsync(resultResponse);
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    private async Task InstallAsync()
+    {
+        errorMessage = null;
+        busy = true;
+        StateHasChanged();
+
+        try
+        {
+            resultResponse = await client.Plugin.InstallFromNuget(packageId, string.IsNullOrWhiteSpace(version) ? null : version);
+            successResult = true;
+        }
+        catch (MarsValidationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (UserActionException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            busy = false;
+            StateHasChanged();
+        }
+    }
+
+    public static async Task<PluginInstallResponse?> ShowAsync(IDialogService dialogService)
+    {
+        var result = await dialogService.ShowDialogAsync<NugetInstallDialog>(new DialogOptions()
+        {
+            Modal = true,
+            Parameters = { ["Content"] = "" },
+        });
+
+        return result.Cancelled ? null : result.Value as PluginInstallResponse;
+    }
+}

@@ -1,100 +1,112 @@
+using System.Collections.Immutable;
 using Mars.Server.Abstractions.Managers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Mars.Server.Managers;
 
 /// <summary>
-/// Singletone service
+/// Singleton service. Thread-safe: subscriptions live in an immutable snapshot (copy-on-write);
+/// <see cref="TriggerEvent"/> dispatches lock-free against the snapshot it read.
 /// </summary>
-internal class EventManager : IEventManager
+internal sealed class EventManager : IEventManager
 {
-    Dictionary<string, List<Action<ManagerEventPayload>>> _events = [];
+    private sealed record Subscription(CompiledTopic Topic, Action<ManagerEventPayload> Handler);
 
-    // <startSegment<topic,action>>
-    Dictionary<string, Dictionary<string, List<Action<ManagerEventPayload>>>> _groupedByStartSegmentEvents = [];
-
-    //public delegate void ManagerEventPayloadHandler(ManagerEventPayload payload);
-
-    public event Mars.Server.Abstractions.Managers.IEventManager.ManagerEventPayloadHandler OnTrigger = default!;
-
-    EventManagerDefaults _defaults = new();
-    public EventManagerDefaults Defaults => _defaults;
-
-    void RecalcGroup()
+    private sealed class RouteTable
     {
-        _groupedByStartSegmentEvents = _events.GroupBy(s => StartSegment(s.Key))
-            .ToDictionary(s => s.Key, s => s.ToDictionary());
+        public static readonly RouteTable Empty = new([]);
+
+        public ImmutableArray<Subscription> All { get; }
+        public ImmutableDictionary<string, ImmutableArray<Subscription>> ByStartSegment { get; }
+        public ImmutableArray<Subscription> CatchAll { get; }
+
+        public RouteTable(ImmutableArray<Subscription> all)
+        {
+            All = all;
+            ByStartSegment = all
+                .Where(s => s.Topic.StartSegment is not null)
+                .GroupBy(s => s.Topic.StartSegment!, StringComparer.Ordinal)
+                .ToImmutableDictionary(g => g.Key, g => g.ToImmutableArray(), StringComparer.Ordinal);
+            CatchAll = all.Where(s => s.Topic.StartSegment is null).ToImmutableArray();
+        }
     }
+
+    private readonly object _sync = new();
+    private readonly ILogger<EventManager> _logger;
+    private volatile RouteTable _routes = RouteTable.Empty;
+
+    public EventManager(ILogger<EventManager>? logger = null) =>
+        _logger = logger ?? NullLogger<EventManager>.Instance;
+
+    public event IEventManager.ManagerEventPayloadHandler OnTrigger = default!;
+
+    public EventManagerDefaults Defaults { get; } = new();
 
     public void AddEventListener(string eventName, Action<ManagerEventPayload> listener)
     {
-        if (!_events.TryGetValue(eventName, out var listeners))
-        {
-            listeners = [];
-            _events.Add(eventName, listeners);
-        }
+        ArgumentNullException.ThrowIfNull(listener);
 
-        listeners.Add(listener);
-        RecalcGroup();
+        var subscription = new Subscription(TopicMatcher.Compile(eventName), listener);
+        lock (_sync)
+        {
+            _routes = new RouteTable(_routes.All.Add(subscription));
+        }
     }
 
     public void RemoveEventListener(string eventName, Action<ManagerEventPayload> listener)
     {
-        if (_events.TryGetValue(eventName, out var listeners))
+        lock (_sync)
         {
-            listeners.Remove(listener);
-
-            if (listeners.Count == 0)
-            {
-                _events.Remove(eventName);
-            }
+            _routes = new RouteTable(_routes.All.RemoveAll(s =>
+                s.Topic.Pattern == eventName && s.Handler == listener));
         }
-        RecalcGroup();
     }
 
     public void TriggerEvent(ManagerEventPayload payload)
     {
-#if DEBUG
-        Console.WriteLine($">TriggerEvent={payload.Topic}");
-#endif
+        _logger.LogTrace("TriggerEvent {Topic}", payload.Topic);
 
-        if (_groupedByStartSegmentEvents.TryGetValue(StartSegment(payload.Topic), out var group))
+        var routes = _routes;
+        var start = StartSegment(payload.Topic);
+
+        if (start is not null && routes.ByStartSegment.TryGetValue(start, out var group))
         {
-            foreach (var topic in group.Keys)
-            {
-                bool isMatch = IEventManager.TestTopic(topic, payload.Topic);
-
-                if (isMatch)
-                {
-                    List<Action<ManagerEventPayload>> listeners = group[topic];
-
-                    foreach (var listener in listeners)
-                    {
-                        try
-                        {
-                            listener(payload);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.Error.WriteLine($"TriggerEvent={payload.Topic} " + ex.Message);
-                            //throw;
-                        }
-                    }
-                }
-            }
+            Dispatch(group, payload);
         }
+        Dispatch(routes.CatchAll, payload);
 
         OnTrigger?.Invoke(payload);
     }
 
-    public IReadOnlyCollection<KeyValuePair<string, string>> DeclaredEvents()
+    public IReadOnlyCollection<KeyValuePair<string, string>> DeclaredEvents() =>
+        _routes.All
+            .Select(s => s.Topic.Pattern)
+            .Distinct(StringComparer.Ordinal)
+            .Select(t => new KeyValuePair<string, string>(t, t))
+            .ToList();
+
+    private void Dispatch(ImmutableArray<Subscription> subscriptions, ManagerEventPayload payload)
     {
-        return _events.Select(s => s.Key).Select(s => new KeyValuePair<string, string>(s, s)).ToList();
+        foreach (var subscription in subscriptions)
+        {
+            if (!subscription.Topic.IsMatch(payload.Topic)) continue;
+
+            try
+            {
+                subscription.Handler(payload);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Event listener for topic {Topic} failed", payload.Topic);
+            }
+        }
     }
 
-    static string StartSegment(string topic)
+    private static string? StartSegment(string topic)
     {
-        var ss = topic.Split('/');
-        return ss[0];
+        if (string.IsNullOrWhiteSpace(topic)) return null;
+        var i = topic.IndexOf('/');
+        return (i < 0 ? topic : topic[..i]).ToLowerInvariant();
     }
 }
-

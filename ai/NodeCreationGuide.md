@@ -305,11 +305,11 @@ public class UpperNodeImpl : INodeImplement<UpperNode>
 - Конвенция всех нод-тестов: строка `_ = nameof(XxxNodeImpl.Execute);` — маркерная ссылка на
   тестируемый impl (копировать из эталона, не удалять «как мусор»).
 - Секции `//Arrange` / `//Act` / `//Assert` обязательны (указание пользователя 2026-09-14).
-- Запуск: `dotnet build tests/Mars.Nodes.Tests`, затем
-  `tests\Mars.Nodes.Tests\bin\Debug\net10.0\Mars.Nodes.Tests.exe`
-  (**не** `dotnet test` — MTP-драйвер сломан SDK 10.0.400, см. QWEN.md).
-  Точечно один класс: `Mars.Nodes.Tests.exe -class Mars.Nodes.Tests.Nodes.XxxNodeTests`
-  (MTP-синтаксис; `--filter` не существует).
+- Запуск: `dotnet test tests/Mars.Nodes.Tests` (MTP, opt-in в `global.json`) либо быстрый путь —
+  `dotnet build tests/Mars.Nodes.Tests`, затем
+  `tests\Mars.Nodes.Tests\bin\Debug\net10.0\Mars.Nodes.Tests.exe` (см. QWEN.md «Build & Test»).
+  Точечно один класс: `dotnet test tests/Mars.Nodes.Tests --filter "FullyQualifiedName~XxxNodeTests"`
+  или `Mars.Nodes.Tests.exe -class Mars.Nodes.Tests.Nodes.XxxNodeTests` (у exe опции с одним тире).
 
 ## Регистрация
 
@@ -330,7 +330,7 @@ public class UpperNodeImpl : INodeImplement<UpperNode>
   `Mars.Nodes.Tests.exe`.
 - Правки css/js под `_content` — поднять `MarsAppVersion` в `Directory.Build.props`
   (cache-busting `?v=`; без bump браузер держит старое).
-- Визуальную проверку в редакторе (`/dev/nodered`) делает пользователь — браузер без команды не открывать.
+- Визуальную проверку в редакторе (`/dev/tech/automation`) делает пользователь — браузер без команды не открывать.
 
 ## Грабли
 

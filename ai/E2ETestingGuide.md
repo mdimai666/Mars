@@ -62,27 +62,40 @@ public async Task MyTest_Scenario_ExpectedResult()
 
 Fluent UI Blazor ренерит web components с shadow DOM. Обычные Playwright методы не работают.
 
-### Правильный паттерн для заполнения полей
+### Правильный паттерн для заполнения полей (v5)
 
 ```csharp
-// 1. Добавить Name атрибут в Razor
-<FluentTextField Name="@nameof(model.FieldName)" @bind-Value=@model.FieldName />
+// 1. Добавить Name атрибут в Razor (v5-компонент — FluentTextInput)
+<FluentTextInput Name="@nameof(model.FieldName)" @bind-Value=@model.FieldName />
 
-// 2. В тесте использовать Click + Ctrl+A + PressSequentially
+// 2. В тесте — Click + Ctrl+A + PressSequentially по ВНУТРЕННЕМУ input
 await FillTextField(Page, "FieldName", "value");
 
 // Helper метод
 private static async Task FillTextField(IPage page, string fieldName, string value)
 {
-    await page.Locator($"[name='{fieldName}']").ClickAsync();
+    var input = page.Locator($"[name='{fieldName}'] input");
+    await input.ClickAsync();
     await page.Keyboard.PressAsync("Control+a");
-    await page.Locator($"[name='{fieldName}']").PressSequentiallyAsync(value, new() { Delay = 10 });
+    await input.PressSequentiallyAsync(value, new() { Delay = 10 });
 }
 ```
 
-### Почему не работает FillAsync
+### Селекторы v5 (почему обычные не работают)
 
-`FluentTextField` ренерит `<fluent-text-field>` с input внутри shadow DOM. Playwright не может найти input через обычные CSS selectors.
+- `FluentTextInput` рендерит `<fluent-text-input>`: `name` живёт на ХОСТЕ, настоящий
+  `input` — в shadow DOM. Playwright пробивает shadow descendant-селектором
+  `[name='x'] input`; FillAsync по хосту не работает.
+- У `fluent-button` НЕТ внутреннего `<button>` (shadow = slot + span.content) —
+  клик по самому хосту: `fluent-button[type='submit']`. Селекторы
+  `[type='submit'] button` и `GetByRole("button")` мертвы.
+- `FluentDataGrid` рендерит `table.fluent-data-grid` (обычная HTML-таблица, НЕ custom
+  element) — селектор-класс `.fluent-data-grid`, не тег.
+- `input[type='text']` у FluentTextInput может отсутствовать — для поля цвета исключать
+  палитру: `input:not([type='color'])`.
+- SetupWizard (`/setup/*`) — обычный Bootstrap cshtml (НЕ FluentUI): его `input[name=]`,
+  `button:has-text()`, `.alert-danger` живы.
+- Полный справочник host-тегов и селекторов — `ai/FluentV5Reference.md` §3, №18.
 
 ## Timeouts
 
@@ -94,7 +107,7 @@ await Page.WaitForSelectorAsync("[name='FieldName']", new() { Timeout = 3000 });
 
 // Ожидание ответа API
 var response = await Page.RunAndWaitForResponseAsync(
-    async () => await Page.Locator("button[type='submit']").ClickAsync(),
+    async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
     response => response.Url.Contains("/api/..."),
     new() { Timeout = 3000 });
 
@@ -109,7 +122,7 @@ await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 ```csharp
 // Ожидание и проверка ответа
 var saveResponse = await Page.RunAndWaitForResponseAsync(
-    async () => await Page.Locator("button[type='submit']").ClickAsync(),
+    async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
     response => response.Url.Contains("/api/User") && response.Request.Method == "PUT",
     new() { Timeout = 3000 });
 
@@ -135,7 +148,7 @@ await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 ### Button Click
 
 ```csharp
-await Page.Locator("button[type='submit']").ClickAsync();
+await Page.Locator("fluent-button[type='submit']").ClickAsync();
 ```
 
 ### Error Tracking
@@ -185,7 +198,7 @@ public async Task EditUserPage_UpdateFields_ShouldPersist()
 
     // Save and verify API response
     var saveResponse = await Page.RunAndWaitForResponseAsync(
-        async () => await Page.Locator("button[type='submit']").ClickAsync(),
+        async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
         response => response.Url.Contains("/api/User") && response.Request.Method == "PUT",
         new() { Timeout = 3000 });
 

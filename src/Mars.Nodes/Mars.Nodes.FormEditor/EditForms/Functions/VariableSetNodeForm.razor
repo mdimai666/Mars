@@ -25,7 +25,7 @@
                 <span class="input-group-text">=</span>
                 <MarsValueInput Class="mvi-fill" Value="@ExprValue(setter)" ValueChanged="v => SetExprValue(setter, v)" For="() => setter.Expression" />
                 <div class="input-group-text py-0">
-                    <FluentButton OnClick=@(() => DeleteItem(setter)) IconStart="@(new Icons.Regular.Size16.Delete())" Appearance="Appearance.Stealth" />
+                    <FluentButton OnClick=@(() => DeleteItem(setter)) IconStart="@(new Icons.Regular.Size16.Delete())" Appearance="ButtonAppearance.Subtle" />
                 </div>
             </div>
             <FluentValidationMessage For=@(() => setter.ValuePath) />

@@ -1,0 +1,400 @@
+/* Scheduler — BEM-блок страницы tech-зоны. Цвета только через --ct-*/прототипные
+   токены зоны; исключения — rgba-проливки статусов (работают в обеих темах).
+   Скин FluentDataGrid — по DOM-контракту v5 (FluentV5Reference №22): в display-mode=grid
+   thead/tbody/tr = display:contents, поэтому «строка» собирается по ячейкам. */
+
+.scheduler-page {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/*------------- hero -------------*/
+.scheduler-page__hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: none;
+}
+
+.scheduler-page__title {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ct-ink);
+}
+
+.scheduler-page__subtitle {
+    margin: 0;
+    max-width: 660px;
+    color: var(--ct-muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.scheduler-page__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.scheduler-page__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 1px solid rgba(34, 197, 94, .4);
+    border-radius: 10px;
+    background: rgba(34, 197, 94, .1);
+    color: var(--tint-green);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.scheduler-page__status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ct-ok);
+    box-shadow: 0 0 8px rgba(34, 197, 94, .8);
+}
+
+.scheduler-page__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--ct-line);
+    border-radius: 10px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.scheduler-page__btn:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.scheduler-page__btn i {
+    font-size: 13px;
+}
+
+.scheduler-page__btn--icon {
+    padding: 9px 11px;
+}
+
+/*------------- панель заданий -------------*/
+/* Без backdrop-filter: он создаёт containing block для fixed-потомков (тултипы/меню
+   грида) — как в datasource-page__workspace. Фон панели полупрозрачный сам по себе. */
+.scheduler-page__panel {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ct-line);
+    border-radius: 14px;
+    background: var(--ct-panel);
+    overflow: hidden;
+}
+
+.scheduler-page__panel-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.scheduler-page__panel-head h2 {
+    margin: 0;
+    color: var(--ct-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.scheduler-page__count {
+    padding: 1px 9px;
+    border-radius: 999px;
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.scheduler-page__rule {
+    flex: 1;
+    border-top: 1px solid var(--ct-line);
+}
+
+.scheduler-page__grid {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.scheduler-page__empty {
+    padding: 28px 16px;
+    color: var(--ct-muted);
+    font-size: 13.5px;
+    text-align: center;
+}
+
+/*------------- скин FluentDataGrid -------------*/
+.scheduler-page__grid ::deep table.fluent-data-grid {
+    width: 100%;
+    height: auto;
+    /* зазор 0: sticky-заголовок должен быть сплошной непрозрачной полосой */
+    column-gap: 0;
+    --datagrid-hover-color: var(--ct-hover-bg);
+}
+
+.scheduler-page__grid ::deep th,
+.scheduler-page__grid ::deep td {
+    border-bottom: 1px solid var(--ct-line);
+    background: transparent;
+    padding: 11px 10px;
+    color: var(--ct-item-ink);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.scheduler-page__grid ::deep th:first-child,
+.scheduler-page__grid ::deep td:first-child {
+    padding-left: 16px;
+}
+
+.scheduler-page__grid ::deep th:last-child,
+.scheduler-page__grid ::deep td:last-child {
+    padding-right: 16px;
+}
+
+.scheduler-page__grid ::deep th[col-justify=end],
+.scheduler-page__grid ::deep td[col-justify=end] {
+    text-align: end;
+}
+
+.scheduler-page__grid ::deep th[cell-type=columnheader] {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    color: var(--ct-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+/* грабля v5: fluent-button host несёт min-width:96px */
+.scheduler-page__grid ::deep th[cell-type=columnheader] [col-sort-button] {
+    min-width: auto;
+    color: inherit;
+}
+
+.scheduler-page__grid ::deep th[cell-type=columnheader] [col-sort-button]:hover {
+    background-color: var(--ct-hover-bg);
+}
+
+.scheduler-page__grid ::deep tr[row-type=sticky-header] > th {
+    background-color: var(--ct-card);
+    border-bottom: 1px solid var(--ct-line);
+}
+
+.scheduler-page__grid ::deep tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* hover бандла имеет высокую специфичность (:not-цепочка) — дублируем селектор,
+   чтобы убрать cursor:pointer: строки планировщика не кликабельны */
+.scheduler-page__grid ::deep tr[hover]:not([row-type=header],[row-type=sticky-header],[row-state=loading-content],[row-state=detail-content],[row-state=empty-content],[row-state=error-content]):hover td {
+    cursor: default;
+}
+
+.scheduler-page__grid ::deep tr[row-state=empty-content] > td,
+.scheduler-page__grid ::deep tr[row-state=loading-content] > td {
+    border-bottom: none;
+    padding: 0;
+}
+
+/*------------- ячейки -------------*/
+.scheduler-page__grid ::deep .scheduler-job-name {
+    color: var(--ct-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.scheduler-page__grid ::deep .scheduler-job-group {
+    color: var(--ct-muted);
+    font-size: 12.5px;
+}
+
+.scheduler-page__grid ::deep .scheduler-job-next {
+    color: var(--ct-muted);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.scheduler-page__grid ::deep .scheduler-triggers {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__state {
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 7px;
+    background: rgba(154, 161, 181, .14);
+    color: var(--ct-muted);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__state--normal {
+    color: var(--tint-green);
+    background: rgba(34, 197, 94, .15);
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__state--paused {
+    color: var(--tint-orange);
+    background: rgba(245, 158, 11, .15);
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__state--error,
+.scheduler-page__grid ::deep .scheduler-trigger__state--blocked {
+    color: var(--tint-red);
+    background: rgba(239, 68, 68, .15);
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__state--complete {
+    color: var(--tint-blue);
+    background: rgba(59, 130, 246, .15);
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__mask {
+    padding: 1px 7px;
+    border: 1px solid var(--ct-line);
+    border-radius: 6px;
+    background: var(--ct-card);
+    color: var(--ct-active-ink);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11.5px;
+}
+
+.scheduler-page__grid ::deep .scheduler-trigger__desc {
+    color: var(--ct-muted);
+    font-size: 12px;
+    min-width: 0;
+}
+
+.scheduler-page__grid ::deep .scheduler-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.scheduler-page__grid ::deep .scheduler-icon-btn {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ct-muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.scheduler-page__grid ::deep .scheduler-icon-btn:hover {
+    color: var(--ct-ink);
+    background: var(--ct-hover-bg);
+}
+
+/*------------- футер: сводка + страницы -------------*/
+.scheduler-page__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: none;
+    padding: 10px 16px;
+    border-top: 1px solid var(--ct-line);
+}
+
+/* bootstrap .text-secondary несёт !important — перебиваем тем же приёмом */
+.scheduler-page__foot ::deep .d-paginator {
+    color: var(--ct-muted) !important;
+    font-size: 12.5px;
+}
+
+.scheduler-page__pages {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.scheduler-page__page {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--ct-line);
+    border-radius: 8px;
+    background: var(--ct-card);
+    color: var(--ct-item-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+
+.scheduler-page__page:hover {
+    border-color: var(--ct-hover-border);
+    color: var(--ct-ink);
+}
+
+.scheduler-page__page.active {
+    border-color: transparent;
+    background: var(--ct-accent-soft);
+    color: var(--ct-active-ink);
+}
+
+@media (max-width: 760px) {
+    .scheduler-page__title {
+        font-size: 24px;
+    }
+
+    .scheduler-page__hero {
+        align-items: flex-start;
+    }
+}

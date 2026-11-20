@@ -63,10 +63,11 @@ public static class LogFileFilter
     }
 
     /// <summary>
-    /// Читает строки лога и возвращает только записи указанных уровней и не старше <paramref name="since"/>.
-    /// Значение null означает отсутствие соответствующего фильтра.
+    /// Читает строки лога и возвращает только записи указанных уровней в диапазоне
+    /// <paramref name="since"/>..<paramref name="until"/>. Значение null означает отсутствие
+    /// соответствующего фильтра.
     /// </summary>
-    public static IEnumerable<string> FilterLines(TextReader reader, IReadOnlyCollection<string>? levels, DateTime? since)
+    public static IEnumerable<string> FilterLines(TextReader reader, IReadOnlyCollection<string>? levels, DateTime? since, DateTime? until = null)
     {
         var entry = new List<string>();
         var timestamp = default(DateTime);
@@ -78,7 +79,7 @@ public static class LogFileFilter
             var match = EntryStartRegex.Match(line);
             if (match.Success)
             {
-                foreach (var entryLine in EntryLinesIfPass(entry, timestamp, level, levels, since))
+                foreach (var entryLine in EntryLinesIfPass(entry, timestamp, level, levels, since, until))
                     yield return entryLine;
 
                 entry.Clear();
@@ -89,7 +90,7 @@ public static class LogFileFilter
             entry.Add(line);
         }
 
-        foreach (var entryLine in EntryLinesIfPass(entry, timestamp, level, levels, since))
+        foreach (var entryLine in EntryLinesIfPass(entry, timestamp, level, levels, since, until))
             yield return entryLine;
     }
 
@@ -98,7 +99,7 @@ public static class LogFileFilter
     /// по уровням и времени, суммарно не более <paramref name="maxLines"/> строк,
     /// результат в хронологическом порядке.
     /// </summary>
-    public static string[] ReadSeamless(string logsDir, IReadOnlyCollection<string>? levels, DateTime? since, int maxLines)
+    public static string[] ReadSeamless(string logsDir, IReadOnlyCollection<string>? levels, DateTime? since, int maxLines, DateTime? until = null)
     {
         if (string.IsNullOrEmpty(logsDir) || !Directory.Exists(logsDir)) return [];
 
@@ -111,14 +112,20 @@ public static class LogFileFilter
         foreach (var file in files)
         {
             // файл app_YYYY-MM-DD.log содержит записи только этого дня
-            if (since is not null && TryGetFileDate(file, out var fileDate) && fileDate < since.Value.Date)
-                break;
+            if (TryGetFileDate(file, out var fileDate))
+            {
+                if (until is not null && fileDate > until.Value.Date)
+                    continue;
+
+                if (since is not null && fileDate < since.Value.Date)
+                    break;
+            }
 
             string[] fileLines;
             using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs))
             {
-                fileLines = FilterLines(sr, levels, since).TakeLast(maxLines).ToArray();
+                fileLines = FilterLines(sr, levels, since, until).TakeLast(maxLines).ToArray();
             }
 
             if (fileLines.Length == 0) continue;
@@ -182,12 +189,12 @@ public static class LogFileFilter
     }
 
     static List<string> EntryLinesIfPass(List<string> entry, DateTime timestamp, string level,
-        IReadOnlyCollection<string>? levels, DateTime? since)
+        IReadOnlyCollection<string>? levels, DateTime? since, DateTime? until)
     {
         if (entry.Count == 0) return [];
 
         var levelOk = levels is null || (level.Length > 0 && levels.Contains(level));
-        var timeOk = since is null || timestamp >= since;
+        var timeOk = (since is null || timestamp >= since) && (until is null || timestamp <= until);
 
         return levelOk && timeOk ? entry : [];
     }

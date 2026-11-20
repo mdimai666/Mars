@@ -21,6 +21,9 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// </summary>
 public partial class MetaValueChildrenList
 {
+    public MetaValueChildrenList(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
@@ -153,15 +156,6 @@ public partial class MetaValueChildrenList
     {
         if (_childTypeName is null) return;
 
-        DialogParameters parameters = new()
-        {
-            Title = ModelName,
-            SecondaryAction = null,
-            Width = "500px",
-            Modal = true,
-            PreventScroll = true
-        };
-
         var data = new MetaValueRelationSelectDialogData
         {
             ModelName = ModelName,
@@ -170,10 +164,15 @@ public partial class MetaValueChildrenList
             SelectedIds = SelectedIds().ToArray(),
         };
 
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
-        DialogResult? result = await dialog.Result;
+        DialogResult result = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(new DialogOptions
+        {
+            Header = { Title = ModelName },
+            Width = "500px",
+            Modal = true,
+            Parameters = { ["Content"] = data },
+        });
 
-        if (result.Cancelled || result.Data is not IReadOnlyCollection<Guid> ids) return;
+        if (result.Cancelled || result.Value is not IReadOnlyCollection<Guid> ids) return;
 
         foreach (var id in ids) LinkPost(id);
     }

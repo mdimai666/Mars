@@ -33,7 +33,7 @@
     @if (_rows.Count > 0)
     {
         <FluentSortableList Id=@_sortableId Items="_rows" OnUpdate="OnSort" Context="row"
-                            ListItemHeight="auto"
+                            Style="--fluent-sortable-list-item-height: auto"
                             Class="@(IsCardsView ? "d-file-cards" : "")">
             <ItemTemplate>
                 @{
@@ -51,7 +51,7 @@
                             <div class="text-secondary small">@file.Size.ToHumanizedSize()</div>
                         }
                         <div class="d-file-card-actions">
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
+                            <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </FluentButton>
                         </div>
@@ -71,9 +71,9 @@
                                 <div class="text-secondary small">@file.Size.ToHumanizedSize()</div>
                                 <div class="d-flex gap-1">
                                     <a href="@file.Url" target="_blank">
-                                        <FluentButton Size="small" Appearance="Appearance.Neutral">открыть</FluentButton>
+                                        <FluentButton Size="ButtonSize.Small" Appearance="ButtonAppearance.Default">открыть</FluentButton>
                                     </a>
-                                    <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
+                                    <FluentButton Size="ButtonSize.Small" Appearance="ButtonAppearance.Subtle" OnClick="@(() => RemoveAsync(row))" Title="Убрать из списка">
                                         <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                                     </FluentButton>
                                 </div>
@@ -90,7 +90,7 @@
     }
     else
     {
-        <FluentLabel Color="Color.Neutral">-⚪ Не выбрано-</FluentLabel>
+        <FluentText Color="Color.Default">-⚪ Не выбрано-</FluentText>
     }
 
     @if (DropZoneEnabled)
@@ -167,14 +167,14 @@
     .d-file-card {
         position: relative;
         width: 140px;
-        border: 1px solid var(--neutral-stroke-rest);
+        border: 1px solid var(--colorNeutralStroke1);
         border-radius: 6px;
         padding: 6px;
-        background: var(--neutral-layer-2);
+        background: var(--colorNeutralBackground2);
     }
 
         .d-file-card:hover {
-            border-color: var(--accent-fill-rest);
+            border-color: var(--colorBrandStroke1);
         }
 
         .d-file-card .d-file-preview-box {

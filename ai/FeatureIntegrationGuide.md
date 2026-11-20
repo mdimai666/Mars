@@ -189,6 +189,21 @@ app.Services.UseAppFrontMain()...UseSemanticKernelFront().Use<Feature>Front();  
 `HybridCache` уже зарегистрирован в WebApp (L2 — Postgres distributed cache). Пример использования
 с ключами/тегами/TTL: `Mars.AiChat.Host/Services/AiChatSessionStore.cs`.
 
+### 7.1. KPI-метрики для админки
+
+Карточки KPI на страницах админки считают серверные хендлеры, не фронтовые запросы-хаки:
+1. Ключ-константа в Contracts модуля (образец: `Mars.Identity.Contracts/Users/UserKpiKeys.cs`).
+2. Хендлер `IKpiHandler` (`Mars.Contracts/Common/IKpiHandler.cs`) в `Main<Module>.Host`
+   (образец: `Mars.Identity.Host/Kpi/`); чем считать, кэшировать (IMemoryCache + TTL) и
+   инвалидировать (слушатели `IEventManager`, подписка В КОНСТРУКТОРЕ) — решает хендлер.
+3. Регистрация в `Main<Module>.cs` — `services.AddSingleton<IKpiHandler, MyHandler>()`
+   (singleton конструируется один раз; НЕ через `IMarsAppLifetimeService` — его `GetOrderedList`
+   ломается на нескольких регистрациях под одним интерфейсом, см. CloudyGuide §KPI).
+4. Фронт: `_client.Kpi.Get([ключи])` — один батч-вызов `GET api/Kpi?keys=…`
+   (`Mars.Server/Controllers/KpiController.cs`, Admin-only, БЕЗ кэша — агрегатор).
+5. Label — стабильный ключ, перевод в `Mars.Contracts/Resources/AppRes*.resx` (имя записи = ключ).
+Детали паттерна — `ai/CloudyGuide.md` §«KPI-карточки».
+
 ### 8. Проверка
 
 ```
@@ -201,7 +216,7 @@ E2E — `tests/Mars.E2E.Tests` (Playwright + Testcontainers), см. `ai/E2ETesti
 ## Фронты и движки рендера (если фича связана с фронтом)
 
 С 2026-08 фронт — это папка с файлами, а не настройки в appsettings и не посты в БД
-(план рефакторинга: `ai/FrontReworkPlan.md`, пользовательская документация: `docs/dev_docs/AppFront/Fronts.md`).
+(гайд: `ai/FrontsGuide.md`, пользовательская документация: `docs/dev_docs/AppFront/Fronts.md`).
 
 - **Источник истины** — опция `FrontsOption` (`List<FrontItem>`: Slug/Title/Url/Path/EngineId/Enabled)
   в таблице Options; читается через `IOptionService`, изменения применяются в рантайме без рестарта.

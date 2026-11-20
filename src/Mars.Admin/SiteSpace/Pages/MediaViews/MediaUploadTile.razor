@@ -1,0 +1,68 @@
+@using Mars.Core.Exceptions
+@using Mars.Media.Contracts.Files
+@using Mars.WebApiClient.Interfaces
+
+<label class="cloudy-tile cloudy-tile--upload @(_dragging ? "cloudy-tile--drag" : null)"
+       title="Click or drop files to upload"
+       @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondrop="OnDrop">
+    <InputFile id="media-upload-input" class="cloudy-tile__input" OnChange="OnInputFileChange" multiple />
+    <i class="bi bi-cloud-arrow-up cloudy-tile__icon"></i>
+    <span class="cloudy-tile__name">@(_busy ? "Uploading…" : "Upload")</span>
+    <span class="cloudy-tile__meta">click or drop files</span>
+</label>
+
+@code {
+    [Parameter] public Guid? FolderId { get; set; }
+
+    /// <summary>Успешно загруженные файлы (после завершения всей пачки)</summary>
+    [Parameter] public EventCallback<IReadOnlyCollection<FileDetailResponse>> OnFilesUploaded { get; set; }
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+
+    const long MaxFileSize = 1000L * 1024 * 1024;
+    const int MaxFileCount = 50;
+
+    bool _busy;
+    bool _dragging;
+
+    void OnDragEnter() => _dragging = true;
+    void OnDragLeave() => _dragging = false;
+    void OnDrop() => _dragging = false;
+
+    async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        if (_busy) return;
+
+        _busy = true;
+        var uploaded = new List<FileDetailResponse>();
+        try
+        {
+            foreach (var file in e.GetMultipleFiles(MaxFileCount))
+            {
+                try
+                {
+                    await using var stream = file.OpenReadStream(MaxFileSize);
+                    uploaded.Add(await client.Media.Upload(stream, file.Name, FolderId));
+                }
+                catch (MarsValidationException ex)
+                {
+                    _ = _messageService.Error($"{file.Name}: {string.Join("; ", ex.Errors.Values.SelectMany(x => x))}");
+                }
+                catch (Exception ex)
+                {
+                    _ = _messageService.Error($"{file.Name}: {ex.Message}");
+                }
+            }
+        }
+        finally
+        {
+            _busy = false;
+        }
+
+        if (uploaded.Count > 0)
+        {
+            await OnFilesUploaded.InvokeAsync(uploaded);
+        }
+    }
+}

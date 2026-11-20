@@ -1,5 +1,8 @@
-.fluent-data-grid .fluent-data-grid-row .column-header {
-    height: unset !important;
+// v5: у th больше нет класса column-header, а компонент пишет на th inline
+// height: <ItemSize> (ожидаемая высота строки виртуализации) — заголовок растягивается.
+// Возвращаем контентный размер (inline перебивается только important).
+.fluent-data-grid th {
+    height: auto !important;
 }
 
 .fluent-data-grid tr.fluent-data-grid-row.empty-content-row td.empty-content-row.empty-content-cell {
@@ -12,28 +15,28 @@
             grid-template-columns: auto !important;
         }
 
-        td[role="gridcell"]:not(:nth-child(1)), th.column-header {
+        td[role="gridcell"]:not(:nth-child(1)), th {
             display: none;
         }
     }
 }
 
-fluent-badge {
-    --badge-fill-highlight: #ffd800;
-    --badge-color-highlight: #000;
-    //
-    --badge-fill-lowlight: #333;
-    --badge-color-lowlight: #fff;
-    //
-    --badge-fill-error: var(--error);
-    --badge-color-error: #fff;
-    //
-    --badge-fill-black: black;
-    --badge-color-black: #fff;
-    //
-    --badge-fill-success: #b6ff00;
-    --badge-color-success: #000;
-    //
-    --badge-fill-info: #73cdff;
-    --badge-color-info: #000;
+// v5: веб-компонент fluent-button несёт min-width: 96px (стандарт текстовой кнопки Fluent v9).
+// Icon-only через IconStart/IconEnd компонент-square'ит сам, а кнопка с иконкой в ChildContent
+// (DFluentDeleteButton и подобные) растягивается 3:1 — возвращаем контентный размер.
+// (v5 FluentIcon рендерит голый <svg> без обёртки fluent-icon)
+fluent-button:has(> svg:only-child) {
+    min-width: auto;
+}
+
+// v5: дефолт бейджа — brand-синий (компонент всегда пишет color="brand"), в v4 был neutral.
+// Возвращаем серый дефолт глобально; осознанный акцент — класс badge-accent.
+fluent-badge[color="brand"]:not(.badge-accent) {
+    background-color: var(--colorNeutralBackground5);
+    color: var(--colorNeutralForeground3);
+}
+
+fluent-badge.badge-accent[fuib] {
+    background-color: var(--colorBrandBackground);
+    color: var(--colorNeutralForegroundOnBrand);
 }

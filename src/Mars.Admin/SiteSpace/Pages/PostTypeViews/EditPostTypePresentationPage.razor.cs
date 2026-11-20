@@ -1,0 +1,83 @@
+﻿using Mars.Cms.Contracts.MetaFields;
+using Mars.WebApiClient.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
+
+namespace Mars.Admin.SiteSpace.Pages.PostTypeViews;
+
+public partial class EditPostTypePresentationPage
+{
+    IReadOnlyCollection<MetaFieldDetailResponse> _metaFields = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // мета-поля нужны редактору колонок грида
+        var detail = await _client.PostType.Get(ID);
+        _metaFields = detail?.MetaFields ?? [];
+    }
+
+    [Inject] protected IMarsWebApiClient _client { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] NavigationManager _navigationManager { get; set; } = default!;
+    [Inject] ViewModelService _viewModelService { get; set; } = default!;
+    [Inject] IActAppService _actAppService { get; set; } = default!;
+
+    [Parameter] public Guid ID { get; set; }
+
+    StandardEditContainer<PostTypePresentationEditModel> f = default!;
+
+    readonly string _listViewMenuId = "listview-template-menu-" + Guid.NewGuid();
+
+    void AfterSave()
+    {
+        _ = _viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
+    }
+
+    /// <summary>
+    /// Сброс раскладки формы: дерево по умолчанию собирает провайдер на сервере,
+    /// поэтому дизайнеру подменяем определение (сохранится null-раскладка).
+    /// </summary>
+    async Task ResetFormLayoutAsync(PostTypePresentationEditModel model)
+    {
+        model.FormDefinition = await _client.PostType.GetFormDefinition(model.Id, saved: false);
+        StateHasChanged();
+    }
+
+    private async Task HandleOnMenuListViewTemplateChanged(MenuItemEventArgs args)
+    {
+        var id = args.Item?.Id;
+        if (id == "open_presentation_template")
+        {
+            // шаблон списка живёт в специальном фронте админки (data/admin/front)
+            _navigationManager.NavigateTo("tech/frontend/editor/admin");
+            return;
+        }
+        else if (id == "create_presentation_template")
+        {
+            var commandId = "mars.content.templates.createPresentation";
+            var xresult = await _actAppService.Inject(commandId, new Dictionary<string, string>
+            {
+                ["postTypeName"] = f.Model.PostType.TypeName,
+            });
+            //TODO: как то коряво, пересмотреть XActions
+
+            if (xresult.Ok)
+            {
+                var postTypeName = f.Model.PostType.TypeName;
+                var fileRelPath = $"postTypes/{postTypeName}/listView.hbs";
+
+                f.Model.ListViewTemplate = fileRelPath;
+                var saved = await f.Save();
+
+                if (!saved)
+                {
+                    _ = _messageService.Warning("Не удалось сохранить");
+                }
+
+                _navigationManager.NavigateTo("tech/frontend/editor/admin");
+            }
+            return;
+        }
+        throw new NotImplementedException($"id '{id}' is not implement");
+    }
+}

@@ -13,16 +13,15 @@
     <h3>Настройки AIToolOption</h3>
     <FormItem2 For=@(() => context.DefaultAIToolConfig)>
 
-        <FluentSelect TOption="AIConfigNodeResponse"
+        <FluentSelect TOption="AIConfigNodeResponse" TValue="string"
                       Items="_configs"
                       Width="250px"
-                      OptionValue="f=>f.NodeId"
-                      OptionText="f=>f.Title"
+                      OptionValue="@((AIConfigNodeResponse f) => f.NodeId)"
+                      OptionText="@((AIConfigNodeResponse f) => f.Title)"
                       Context="opt"
-                      Style="--base-height-multiplier:10"
                       @bind-Value="@context.DefaultAIToolConfig">
             <OptionTemplate>
-                <FluentLabel>@opt.Title</FluentLabel>
+                <FluentText>@opt.Title</FluentText>
                 <label class="text-fade fz12px">@opt.Description</label>
             </OptionTemplate>
         </FluentSelect>

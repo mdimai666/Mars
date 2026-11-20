@@ -4,15 +4,19 @@ using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Options;
 using Mars.Cms.Host.Controllers;
 using Mars.Cms.Host.Handlers;
+using Mars.Cms.Host.Kpi;
 using Mars.Cms.Host.Seeding;
 using Mars.Cms.Host.Services;
 using Mars.Cms.Host.XActions;
 using Mars.Cms.Host.XActions.ContentRecipes;
+using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
 using Mars.Data.Seeding;
 using Mars.Forms.Abstractions;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.XActions.Abstractions.Managers;
 using Mars.XActions.Contracts;
@@ -59,6 +63,17 @@ public static class MainCms
         services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();
         services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();
 
+        services.AddSingleton<IKpiHandler, FeedbacksTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, FeedbacksNewThisWeekKpiHandler>();
+        services.AddSingleton<IKpiHandler, FeedbacksUnreadKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostTypesTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostTypesComponentKpiHandler>();
+        services.AddSingleton<IKpiHandler, MetaFieldsTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, MetaValuesTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostCategoryTypesTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostsTotalKpiHandler>();
+        services.AddSingleton<IKpiHandler, PostCategoriesTotalKpiHandler>();
+
         UseIMetaRelationModelProviderHandler(services);
         UseIMetaValueGeneratorHandler(services);
         services.AddScoped<IPostTransformer, PostTransformer>();
@@ -70,11 +85,15 @@ public static class MainCms
     }
 
     /// <summary>
-    /// XActions контентной области. Команды регистрируются без привязки к страницам
+    /// Опции и XActions контентной области. Команды регистрируются без привязки к страницам
     /// админки — фронтовые контексты навешивает сторона, знающая админку (Mars.Admin.Host).
     /// </summary>
     public static IApplicationBuilder UseMarsCms(this WebApplication app)
     {
+        // appendToInitialSiteData: публичная /privacy читает опцию анонимно из initial site data
+        app.Services.GetRequiredService<IOptionService>()
+            .RegisterOption<PrivacyPolicyOption>(appendToInitialSiteData: true);
+
         var actionManager = app.Services.GetRequiredService<IActionManager>();
 
         // динамический источник вариантов «типы записей» — фронт запрашивает его

@@ -26,7 +26,7 @@
 
 ///ADMIN-------------------------
 .admin-layout {
-    background: var(--mars-bg-surface);
+    background: var(--mars-bg-page);
 }
 
 .admin-layout .logo {
@@ -34,6 +34,12 @@
     background-image: url(/mars/img/logo.svg);
     width: 237px;
     height: 51px;
+}
+
+/* v5 FluentNav красит каждый пункт в --nav-bg-color (Background4) — в сайдбаре админки
+   это серая "панель" посреди страницы; делаем пункты прозрачными, hover остаётся */
+.admin-layout .menu-admin1 {
+    --nav-bg-color: transparent;
 }
 
 .btn-backbutton {

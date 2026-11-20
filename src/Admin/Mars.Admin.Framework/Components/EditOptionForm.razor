@@ -42,12 +42,12 @@
                             <div class="float-end">
                                 @if (isEditJsonMode)
                                 {
-                                    <FluentButton Appearance="Appearance.Stealth" OnClick="CancelJsonEditMode">
+                                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="CancelJsonEditMode">
                                         Отмена
                                     </FluentButton>
                                 }
-                                <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleEditMode">
-                                    <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Neutral" />
+                                <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="ToggleEditMode">
+                                    <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Default" />
                                 </FluentButton>
                             </div>
 
@@ -70,7 +70,7 @@
                                 @*</div>*@
                             }
                             <div class="EditOptionForm_footer gap-3 mt-3 d-flex flex-nowrap justify-content-center">
-                                <FluentButton Appearance="@Appearance.Accent" Loading=saveButtonBusy Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit">
+                                <FluentButton Appearance="ButtonAppearance.Primary" Loading=saveButtonBusy Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit">
                                     Сохранить
                                 </FluentButton>
                             </div>

@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.QueryLang.Contracts\Mars.QueryLang.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

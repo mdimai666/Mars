@@ -9,7 +9,7 @@
     }
     else
     {
-        <FluentButton OnClick=OnClick Appearance="Appearance.Stealth" IconStart="_infoIcon">@Label</FluentButton>
+        <FluentButton OnClick=OnClick Appearance="ButtonAppearance.Subtle" IconStart="_infoIcon">@Label</FluentButton>
     }
 </mars-help-doc-button>
 
@@ -29,19 +29,13 @@
 
     private async void OnClick()
     {
-        DialogParameters parameters = new()
+        DialogResult result = await _dialogService.ShowDialogAsync<HelpDocButtonDialog>(new DialogOptions
         {
-            Title = "Help",
-            PrimaryActionEnabled = false,
-            SecondaryActionEnabled = false,
+            Header = { Title = "Help" },
             Width = "1200px",
-            TrapFocus = false,
             Modal = true,
-            PreventScroll = true
-        };
-
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<HelpDocButtonDialog>(Url, parameters);
-        DialogResult? result = await dialog.Result;
+            Parameters = { ["Content"] = Url },
+        });
 
         _ = OnClose.InvokeAsync();
     }

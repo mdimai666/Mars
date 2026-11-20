@@ -1,0 +1,25 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<div class="cloudy-public">
+    <div class="cloudy-backdrop" aria-hidden="true"></div>
+
+    <div class="cloudy-public__shell">
+        <header class="cloudy-public__brand">
+            <a class="cloudy-brand" href="/">
+                <span class="cloudy-brand__mark"></span>
+                <span class="cloudy-brand__name">@Q.Site?.SiteSettings?.SiteName</span>
+            </a>
+        </header>
+
+        <main class="cloudy-public__body">
+            @Body
+        </main>
+
+        <footer class="cloudy-public__footer">
+            <a href="/">Главная</a>
+            <span aria-hidden="true">·</span>
+            <a href="@(Navigation.BaseUri)privacy">Политика конфиденциальности</a>
+        </footer>
+    </div>
+</div>

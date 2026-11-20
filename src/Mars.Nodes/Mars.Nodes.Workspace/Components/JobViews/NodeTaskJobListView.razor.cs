@@ -29,19 +29,17 @@ public partial class NodeTaskJobListView
         dataProvider = new GridItemsProvider<NodeTaskResultSummaryResponse>(
             async req =>
             {
-                _ = req.SortByAscending;
-                _ = req.SortByColumn;
+                var sortBy = req.GetSortByProperties();
+                var sortColumn = sortBy.Count == 0 ? nameof(NodeTaskResultSummaryResponse.StartDate) : sortBy.First().PropertyName;
 
-                var sortColumn = req.GetSortByProperties().Count == 0 ? nameof(NodeTaskResultSummaryResponse.StartDate) : req.GetSortByProperties().First().PropertyName;
-
-                var sort = (req.SortByAscending ? "" : "-") + sortColumn;
+                var sort = ((req.SortColumns.FirstOrDefault()?.Ascending ?? false) ? "" : "-") + sortColumn;
 
                 data = await _client.JobList(new()
                 {
                     //Page = pagination.CurrentPageIndex + 1,
                     //PageSize = pagination.ItemsPerPage,
                     Skip = req.StartIndex,
-                    Take = req.Count ?? BasicListQuery.DefaultPageSize,
+                    Take = req.Count is > 0 ? req.Count.Value : BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
                 });
@@ -79,11 +77,11 @@ public partial class NodeTaskJobListView
         return "Running";
     }
 
-    public static string GetStatusColorFillName(NodeTaskResultSummaryResponse task)
+    public static BadgeColor GetStatusBadgeColor(NodeTaskResultSummaryResponse task)
     {
-        if (task.ErrorCount > 0) return "error";
-        if (task.IsTerminated) return "black";
-        if (task.IsDone) return "success";
-        return "info";
+        if (task.ErrorCount > 0) return BadgeColor.Danger;
+        if (task.IsTerminated) return BadgeColor.Important;
+        if (task.IsDone) return BadgeColor.Success;
+        return BadgeColor.Informative;
     }
 }

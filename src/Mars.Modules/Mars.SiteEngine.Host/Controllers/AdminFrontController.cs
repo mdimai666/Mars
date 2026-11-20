@@ -39,4 +39,19 @@ public class AdminFrontController : ControllerBase
 
         return Content(html, MediaTypeNames.Text.Html);
     }
+
+    /// <summary>
+    /// Рендер страницы админ-фронта по URL из директивы @page (например / или /help) —
+    /// адрес /dev/p/{path} в админке. Пустой path — индексная страница.
+    /// queryString пробрасывается в шаблон как _req.Query (используется RemotePageViewer).
+    /// </summary>
+    [HttpGet]
+    [Produces(MediaTypeNames.Text.Html)]
+    public async Task<IActionResult> RenderByPath(string? path, string? queryString, CancellationToken cancellationToken)
+    {
+        var html = await _adminFrontRenderHandler.RenderByPath(path, queryString, HttpContext, cancellationToken)
+            ?? throw new NotFoundException($"Страница админ-фронта '{path}' не найдена");
+
+        return Content(html, MediaTypeNames.Text.Html);
+    }
 }

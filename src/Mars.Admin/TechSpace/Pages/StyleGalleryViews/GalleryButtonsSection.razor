@@ -1,0 +1,48 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Buttons">
+
+    <GalleryVariant Caption="Appearance: Default / Primary / Outline / Subtle / Transparent">
+        <div class="hstack gap-2 flex-wrap">
+            <FluentButton>Default</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary">Primary</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Outline">Outline</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Subtle">Subtle</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Transparent">Transparent</FluentButton>
+        </div>
+    </GalleryVariant>
+
+    <div class="mt-3">
+        <GalleryVariant Caption="Size: Small / Medium / Large">
+            <div class="hstack gap-2 align-items-center flex-wrap">
+                <FluentButton Size="ButtonSize.Small">Small</FluentButton>
+                <FluentButton Size="ButtonSize.Medium">Medium</FluentButton>
+                <FluentButton Size="ButtonSize.Large">Large</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" Size="ButtonSize.Small">Small Primary</FluentButton>
+            </div>
+        </GalleryVariant>
+    </div>
+
+    <div class="mt-3">
+        <GalleryVariant Caption="Icon: IconStart / IconEnd / иконка-контент">
+            <div class="hstack gap-2 flex-wrap">
+                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
+                <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowRight())">Далее</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Subtle" Title="Только иконка">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Settings())" />
+                </FluentButton>
+            </div>
+        </GalleryVariant>
+    </div>
+
+    <div class="mt-3">
+        <GalleryVariant Caption="Состояния: Disabled / Loading">
+            <div class="hstack gap-2 flex-wrap">
+                <FluentButton Disabled>Disabled</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" Disabled>Disabled Primary</FluentButton>
+                <FluentButton Loading>Loading</FluentButton>
+            </div>
+        </GalleryVariant>
+    </div>
+
+</GallerySection>

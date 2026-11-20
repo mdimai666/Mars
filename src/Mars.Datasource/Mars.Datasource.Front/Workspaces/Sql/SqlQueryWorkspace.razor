@@ -7,7 +7,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits Mars.Datasource.Front.Workspaces.QueryWorkspaceBase
 
-<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Sources="@listDatasources" Source="source"
+<WorkspaceShell Busy="@Busy" Error="@errorMessage" Slug="@DataSourceConfigSlug" Source="source"
                 SourceLabel="@SourceLabel" Catalog="catalog" Tree="Tree" Tabs="tabs" ActiveTab="activeTab"
                 ObjectCount="objectCount" Hint="@Hint" TrailingLabel="@TrailingLabel" TrailingTitle="@TrailingTitle"
                 OnRetry="LoadAsync" OnOpenObject="OpenObjectAsync" OnRefreshCatalog="RefreshCatalogAsync"
@@ -24,10 +24,10 @@
     <ToolbarActions>
         @if (CanManageViews && activeTab?.Object?.ObjectType == DatasourceObjectType.View)
         {
-            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@Busy" OnClick="ShowViewDefinitionAsync">
                 определение
             </FluentButton>
-            <FluentButton Appearance="Appearance.Neutral" Disabled="@Busy" OnClick="DropViewAsync">
+            <FluentButton Appearance="ButtonAppearance.Default" Disabled="@Busy" OnClick="DropViewAsync">
                 удалить
             </FluentButton>
         }

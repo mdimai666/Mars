@@ -102,8 +102,10 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   копируются в output; папка ai-skills, чтобы не смешиваться со `skills/` модуля SemanticKernel;
   кастомный скилл с тем же именем перекрывает bundled). Формат — стандартный SKILL.md с YAML frontmatter
   (name/description), как у Qwen Code CLI. MAF `AgentSkillsProvider` НЕ используется: его источники
-  требуют живого агента в контексте, а свой каталог даёт контроль над масштабированием
-  (поиск, роутинг) — см. `ai/AiHarnessSkillsPlan.md`.
+  требуют живого агента в контексте, `load_skill` по умолчанию требует approval (без настроенного
+  approver — кандидат на пустые ходы), а свой каталог даёт контроль над масштабированием
+  (поиск, роутинг) и русскими инструкциями. История инициативы (план схлопнут):
+  `git show 3b13b36a:ai/AiHarnessSkillsPlan.md`.
   Каталог сканируется один раз и лежит в памяти индексом; `FileSystemWatcher` на обоих корнях
   сбрасывает кеш при изменении файлов — правка скилла подхватывается без перезапуска.
   Frontmatter поддерживает `tags: a, b` — учитываются в поиске и выводятся в выдаче.
@@ -115,10 +117,12 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   2. `SearchSkills(query)` (до 20 результатов, поиск по имени/описанию/тегам) / `LoadSkill(name)`
      (`SkillsToolset`, `MarsSkillsTools`) — модель сама ищет и подгружает полные инструкции;
   3. `PageSkillRouter` — детерминированный preload полных инструкций по открытой странице:
-     `/front/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
-     `EnableSqlAccess` → `mars-sql`. Агент сразу знает, какими инструментами работать,
-     не тратя ходы на discovery.
-  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`.
+     `/tech/frontend/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
+     `EnableSqlAccess` → `mars-sql`; страницы админ-фронта `/p/{path}`, редактор фронта `admin`,
+     `/NavMenu` и `/EditNavMenu/{id}` → `mars-admin-pages`. Агент сразу знает, какими инструментами
+     работать, не тратя ходы на discovery.
+  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`, `mars-media`,
+  `mars-datasource`, `mars-privacy-policy`, `mars-admin-pages`.
   Скиллы включены всегда (флага нет): A/B-прогоны фазы 0 показали, что DeepSeek-v4-flash уверенно
   работает и с провайдерами, и с каталогом — прежняя гипотеза «провайдеры ломают модель» не подтвердилась
   (регрессия была из-за битых сохранённых сессий и потерянных front-инструкций).
@@ -126,8 +130,8 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   approve отключён), включена по умолчанию: агент сам создаёт скиллы и артефакты,
   админ может править файлы руками.
 
-Планы развития: `ai/AiHarnessSkillsPlan.md` (масштабирование каталога, поиск, MCP),
-`ai/AiSkillsMemoryNodesPlan.md` (следующая фаза — ноды).
+Планы развития: бэклог каталога скиллов — в «Как развивать агента» ниже;
+ноды — `ai/AiSkillsMemoryNodesPlan.md` (следующая фаза).
 
 ### Полигон: headless-прогон агента (CLI)
 
@@ -136,7 +140,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 ```
 cd src/Mars.WebApp
-dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/editor/landing] [-u userId] [--skills true|false] [--access true|false]
+dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/tech/frontend/editor/landing] [-u userId] [--skills true|false] [--access true|false]
 ```
 
 - создаёт свежий чат, один раз прогоняет `AiChatAgentService.RunChatAsync` и печатает транскрипт
@@ -195,6 +199,13 @@ dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/e
   и попадает в инструкции агента.
 
 Чтобы подключить новую страницу к мосту — реализуй `IAiChatPageHandler` и зарегистрируй его так же.
+
+Третий пример — `EditNavMenuPage` (partial-файл `EditNavMenuPage.AiChat.cs`): поля меню
+(title/slug/class/style/disabled/rolesInverse/roles/tags) + `menuItems` (полная замена списка
+пунктов JSON-массивом; признак `isSystem` сохраняется по id существующих пунктов). `Save` —
+через `f.Save()` контейнера; AfterSave страницы сам обновляет InitialSiteData (как `EditPostTypePage`).
+При открытой странице редактирования меню мост приоритетнее серверных `MarsNavMenuTools`
+(правило скилла `mars-admin-pages`) — иначе сохранение формы перезапишет правки агента.
 
 ## Как добавить новый инструмент агента
 
@@ -339,7 +350,7 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 
 `Mars.AiChat.Host/Tools/MarsSqlTools.cs` — доступ к SQL через каноничный слой данных Mars
 `IDatasourceService` (singleton, `src/Mars.Datasource/Mars.Datasource.Host/Services`): тот же путь,
-что у SQL-нод и страницы `/datasource/query`. Инструменты:
+что у SQL-нод и страницы `/tech/datasource`. Инструменты:
 
 - `list_data_sources` — список баз (slug/название/драйвер). Виртуальный slug `"default"` —
   основная БД самого Mars (connection string `DefaultConnection`); остальные — из `DatasourceOption`;
@@ -365,6 +376,36 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
   на уровне правил промпта и подтверждения пользователем.
 - Ошибки драйверы возвращают как `Ok=false + Message` (не исключениями) — инструменты отдают их модели строкой.
 
+### Меню навигации (MarsNavMenuTools)
+
+`Mars.AiChat.Host/Tools/MarsNavMenuTools.cs` — меню CMS, в т.ч. сайдбар админки (системное меню
+slug `dev`). Тулсет `NavMenuToolset` включён всегда. Инструменты: `ListNavMenus`, `GetNavMenu(slug)`,
+`AddMenuItem`, `UpdateMenuItem`, `RemoveMenuItem` — через singleton `INavMenuService`
+(`Mars.Cms.Host/Services/NavMenuService.cs`, кеш уже внутри).
+
+- Поиск меню по slug — через `ListForAdmin` (он подмешивает несохранённое системное меню `dev`),
+  затем `GetDetail(id)`. Константы `DevMenuFactory` живут в `Mars.Cms.Host` — в тулзах не используются.
+- Правка = read-modify-write полного меню (`Update` с полным `UpdateNavMenuQuery`), как сохранение
+  из редактора меню. Первое изменение `dev` сохраняет копию в БД (merge с дефолтом — в сервисе).
+- Системные пункты (`IsSystem`) удалить нельзя — тулз отказывает и предлагает `disabled="true"`
+  (то же правило, что в UI `EditNavMenuPage`). `RemoveMenuItem` удаляет и подпункты;
+  подтверждение через `ask_user` — правило скилла.
+- `UpdateMenuItem`: пустая строка = не менять, `-` = очистить icon/roles; `parentId="root"` — в корень;
+  защита от циклов при перемещении.
+- Правила и рецепт «страница админ-фронта + пункт сайдбара» — скилл `mars-admin-pages`.
+
+**Обновление сайдбара — явное, по команде агента.** После правки меню агент вызывает
+`RefreshInitialSiteData` (`MarsSiteDataTools`, тулсет `core`, per-run экземпляр с chatId):
+событие `AiChatHubEvents.RefreshSiteData` в группу чата → `AiChatTerminal.HubOnRefreshSiteData` →
+`ViewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true)` —
+как `AfterSave` у `EditPostTypePage`; сайдбар (`CloudyLayout`/`AdminLayout`) обновляется по событию
+`Q.Root` без перезагрузки. В headless-прогоне браузера нет — событие уходит в пустоту.
+
+**Отклонено:** автоматическая рассылка `NavMenuChanged` через `ChatHub` из `NavMenuService` при любой
+правке меню (пользователь отверг 2026-11-17: «убери эту гадость») — обновление должно быть явным
+действием агента, а не побочным эффектом записи. Страницы сами обновляют InitialSiteData после
+сохранения (`EditNavMenuPage.RefreshInitialSiteData` в AfterSave/AfterDelete/OnResetDevMenu).
+
 ### Файлы фронта (MarsFrontFilesTools)
 
 `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs` — ИИ правит файлы фронта (Handlebars-шаблоны сайта)
@@ -379,10 +420,13 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 
 - Экземпляр создаётся на каждый запуск агента в `AiChatAgentService.RunChatAsync` (как `MarsOpenPageTools`),
   и ТОЛЬКО если открыт редактор фронта: slug парсится из PageContext —
-  `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/front/editor/{slug}`).
+  `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/tech/frontend/editor/{slug}`).
 - Правила работы — скилл `mars-front-editor` (структура фронта `_root.hbs`/`pages`/`blocks`/
   `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`); при открытом редакторе
   фронта `PageSkillRouter` preload-ит его инструкции в контекст запуска.
+- Админ-фронт (slug `admin`, `data/admin/front`) — особый: страницы открываются в админке
+  по `/dev/p/{url из @page}` (`ai/AdminHostingGuide.md`), сайдбар — не в блоках, а меню CMS `dev`;
+  для него дополнительно preload-ится скилл `mars-admin-pages` (см. «Меню навигации»).
 - Сохранение автоматическое: `WriteFrontFile` пишет прямо в папку фронта; `FrontFilesService` после записи
   явно уведомляет движок фронта (`IWebTemplateService.NotifyFileChanged`) — кеш рендера чистится и SignalR
   `reload` обновляет предпросмотр (FileSystemWatcher — только страховка: рендер кеширует скомпилированный
@@ -467,6 +511,8 @@ SQL-доступ к базам (схема/чтение/запись через 
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
 вложения в чат (скрепка/буфер, превью + spotlight, отправка картинок в vision-модели через `DataContent`),
 медиатека (`MarsMediaTools`: список/детали/чтение содержимого/добавление/удаление, скилл `mars-media`),
+меню навигации и сайдбар админки (`MarsNavMenuTools`, скилл `mars-admin-pages`, мост `EditNavMenuPage`),
+обновление InitialSiteData в открытой админке по команде агента (`RefreshInitialSiteData`),
 выбор модели на чат (селектор подключений в терминале, если их больше одного),
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
@@ -476,6 +522,15 @@ SQL-доступ к базам (схема/чтение/запись через 
 - **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).
 - **Подтверждения опасных действий**: расширить `AskUserTool` до `confirm_action(action)` с ответом да/нет.
 - **Другие скиллы**: пользователи (`IUserService`), ноды-флоу, плагины, Docker.
+- **Масштабирование каталога скиллов** (бэклог former AiHarnessSkillsPlan, фаза 2+):
+  семантический поиск (эмбеддинги name+description+tags через Semantic Kernel, векторы
+  в памяти, при росте pgvector; гибрид с substring по точным совпадениям); каталог как
+  сущность Mars (таблица name/description/tags/source/version/enabled — триггер: появление
+  внешнего источника, не раньше); внешние источники — скиллы из плагинов и каталога
+  плагинов, MCP-скиллы (MAF `UseMcpSkills` — тогда `AgentSkillsProvider` возвращается
+  только как источник). Фаза 3 — ноды (`INodeSandbox` + MarsNodesTools, скилл `mars-nodes`)
+  по `ai/AiSkillsMemoryNodesPlan.md`. Память (`FileMemoryProvider`) и реестр `IAiToolset`
+  не трогаем — работают.
 
 ## Известные ограничения
 

@@ -14,11 +14,11 @@ public class TestDummyJob : IJob
         _triggerService = triggerService;
     }
 
-    public Task Execute(IJobExecutionContext context)
+    public ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
         _logger.LogWarning($"{context.JobDetail.Key.Name}");
         _triggerService.Execute();
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

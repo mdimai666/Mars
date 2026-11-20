@@ -94,7 +94,9 @@ public static class QDatabaseStructureBuilder
             {
                 TableName = table.TableName,
                 TableSchema = ToSchema(table),
-                Columns = (tableColumns ?? []).ToDictionary(c => c.ColumnName, ToColumn),
+                // Дедупликация: грязные метаданные (например, раздутый join каталога) не должны
+                // ронять загрузку всей структуры — берём первую строку на колонку.
+                Columns = (tableColumns ?? []).DistinctBy(c => c.ColumnName).ToDictionary(c => c.ColumnName, ToColumn),
             });
         }
 

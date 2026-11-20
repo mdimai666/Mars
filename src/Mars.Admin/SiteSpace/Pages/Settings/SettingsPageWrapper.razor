@@ -1,0 +1,43 @@
+<div class="flex-fill d-flex flex-column">
+    <header class="cloudy-hero">
+        <div class="hstack">
+            <div class="flex-fill">
+                <h1>@Title</h1>
+                @if (Subtitle is not null)
+                {
+                    <p>@Subtitle</p>
+                }
+            </div>
+            <div>
+                <XActionsDropDown />
+            </div>
+        </div>
+    </header>
+
+    <section class="cloudy-acrylic">
+        <div class="cloudy-acrylic__body">
+            <div class="SettingsPageWrapper d-flex flex-column flex-lg-row flex-fill gap-4">
+                <aside class="SettingsPageWrapper__aside">
+                    <ASideOptions />
+                </aside>
+                <div class="flex-fill">
+                    @ChildContent
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Title { get; set; } = "Настройки";
+    [Parameter] public string? Subtitle { get; set; }
+}
+
+<style>
+    @@media (min-width: 1200px) {
+        .SettingsPageWrapper .SettingsPageWrapper__aside {
+            flex: 0 0 200px
+        }
+    }
+</style>

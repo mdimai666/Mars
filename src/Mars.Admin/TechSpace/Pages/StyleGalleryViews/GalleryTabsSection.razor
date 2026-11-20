@@ -1,0 +1,32 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Tabs">
+
+    <FluentTabs>
+        <FluentTab Header="Обзор">
+            <div class="p-3">
+                <FluentText Block>Содержимое первой вкладки. FluentTab использует Header (v4 Label — мёртв).</FluentText>
+                <FluentBadge Color="BadgeColor.Informative" Content="tab 1" />
+            </div>
+        </FluentTab>
+        <FluentTab Header="Настройки">
+            <div class="p-3 vstack gap-2">
+                <FluentText Block>Содержимое второй вкладки с формой:</FluentText>
+                <FluentTextInput Label="Параметр" @bind-Value="_tabParam" Style="width:220px;" />
+            </div>
+        </FluentTab>
+        <FluentTab Header="С иконкой" IconStart="@(new Icons.Regular.Size20.Info())">
+            <div class="p-3">
+                <FluentText Block>Вкладка с IconStart.</FluentText>
+            </div>
+        </FluentTab>
+        <FluentTab Header="Disabled" Disabled>
+            <div class="p-3">Не должно быть видно.</div>
+        </FluentTab>
+    </FluentTabs>
+
+</GallerySection>
+
+@code {
+    string _tabParam = "Значение";
+}

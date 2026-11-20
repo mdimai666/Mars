@@ -87,6 +87,24 @@ internal class FeedbackRepository : IFeedbackRepository, IDisposable
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<bool> MarkRead(Guid id, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        var entity = await _marsDbContext.Feedbacks.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+
+        if (entity is null) throw new NotFoundException();
+
+        if (entity.IsRead) return false;
+
+        entity.IsRead = true;
+        entity.ModifiedAt = DateTimeOffset.Now;
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     /// <summary>
     /// Throws if this class has been disposed.
     /// </summary>
@@ -135,7 +153,9 @@ internal class FeedbackRepository : IFeedbackRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
+        var queryable = _listAllQuery.AsNoTracking()
+            .Where(s => query.IsRead == null || s.IsRead == query.IsRead)
+            .Where(s => query.Search == null
                                     || (EF.Functions.ILike(s.Email!, $"%{query.Search}%")
                                         || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
 
@@ -150,7 +170,9 @@ internal class FeedbackRepository : IFeedbackRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
+        var queryable = _listAllQuery.AsNoTracking()
+            .Where(s => query.IsRead == null || s.IsRead == query.IsRead)
+            .Where(s => query.Search == null
                                     || (EF.Functions.ILike(s.Email!, $"%{query.Search}%")
                                         || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
 

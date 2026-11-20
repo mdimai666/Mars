@@ -7,6 +7,8 @@ using Mars.Media.Abstractions.Repositories;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.Abstractions.Validators;
@@ -24,6 +26,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     protected readonly IOptionService _optionService;
     protected readonly IFileRepository _fileRepository;
     protected readonly IImageProcessor _imageProcessor;
+    protected readonly IEventManager _eventManager;
     private readonly IValidatorFactory _validatorFactory;
     protected readonly FileHostingInfo _hostingInfo;
 
@@ -32,13 +35,15 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         IOptionService optionService,
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
-        IValidatorFactory validatorFactory)
+        IValidatorFactory validatorFactory,
+        IEventManager eventManager)
     {
         _fileStorage = fileStorage;
         _optionService = optionService;
         _fileRepository = fileRepository;
         _imageProcessor = imageProcessor;
         _validatorFactory = validatorFactory;
+        _eventManager = eventManager;
         _hostingInfo = _optionService.FileHostingInfo();
     }
 
@@ -77,6 +82,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         await _fileRepository.Delete(id, cancellationToken);
 
         DeletePhysicalFile(file);
+        _eventManager.TriggerEvent(new ManagerEventPayload(_eventManager.Defaults.MediaFileDelete(), id));
 
         return file;
     }
@@ -105,9 +111,8 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         foreach (var file in files)
         {
             DeletePhysicalFile(file);
-            //var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
-            //_eventManager.TriggerEvent(payload);
         }
+        _eventManager.TriggerEvent(new ManagerEventPayload(_eventManager.Defaults.MediaFileDelete(), files.Count));
         return files;
     }
 
@@ -311,6 +316,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
             };
 
             var createdId = await _fileRepository.Create(createFileQuery, hostingInfo, cancellationToken);
+            _eventManager.TriggerEvent(new ManagerEventPayload(_eventManager.Defaults.MediaFileAdd(), createdId));
 
             //return await _fileRepository.GetDetail(createdId, hostingInfo, cancellationToken);
 

@@ -1,4 +1,5 @@
 // Command Palette (ActionCenter) — стиль по мотивам VS Code Quick Input.
+// Токены FluentUI v5: тёмная тема флипается автоматически через IThemeService.
 
 // Кнопка-триггер в шапке (вместо прежнего поля поиска).
 .ac-trigger {
@@ -8,14 +9,14 @@
     min-width: 280px;
     padding: 5px 10px;
     font-size: 13px;
-    color: var(--neutral-foreground-rest, #444444);
-    background: var(--neutral-fill-stealth-rest, #f3f3f3);
-    border: 1px solid var(--neutral-stroke-rest, #d9d9d9);
+    color: var(--colorNeutralForeground1);
+    background: var(--colorNeutralBackground3);
+    border: 1px solid var(--colorNeutralStroke1);
     border-radius: 5px;
     cursor: pointer;
 
     &:hover {
-        background: var(--neutral-fill-stealth-hover, #e9e9e9);
+        background: var(--colorNeutralBackground4);
     }
 
     .ac-trigger-text {
@@ -27,9 +28,9 @@
     .ac-trigger-kbd {
         font-size: 11px;
         padding: 1px 6px;
-        border: 1px solid var(--neutral-stroke-rest, #cccccc);
+        border: 1px solid var(--colorNeutralStroke1);
         border-radius: 3px;
-        background: var(--neutral-fill-rest, #ffffff);
+        background: var(--colorNeutralBackground1);
         opacity: 0.8;
     }
 }
@@ -50,8 +51,8 @@
     max-height: 60vh;
     display: flex;
     flex-direction: column;
-    background: var(--neutral-layer-1, #ffffff);
-    border: 1px solid var(--neutral-stroke-rest, #d6d6d6);
+    background: var(--colorNeutralBackground1);
+    border: 1px solid var(--colorNeutralStroke1);
     border-radius: 6px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     overflow: hidden;
@@ -62,10 +63,10 @@
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
-    border-bottom: 1px solid var(--neutral-stroke-rest, #e1e1e1);
+    border-bottom: 1px solid var(--colorNeutralStroke1);
 
     .ac-input-icon {
-        color: var(--neutral-foreground-rest, #616161);
+        color: var(--colorNeutralForeground3);
         flex-shrink: 0;
     }
 }
@@ -76,10 +77,10 @@
     outline: none;
     background: transparent;
     font-size: 14px;
-    color: var(--neutral-foreground-rest, #1f1f1f);
+    color: var(--colorNeutralForeground1);
 
     &::placeholder {
-        color: var(--neutral-foreground-hint, #9a9a9a);
+        color: var(--colorNeutralForeground3);
     }
 }
 
@@ -88,8 +89,8 @@
     width: 15px;
     height: 15px;
     flex-shrink: 0;
-    border: 2px solid var(--neutral-stroke-rest, #d0d0d0);
-    border-top-color: var(--accent-fill-rest, #0060c0);
+    border: 2px solid var(--colorNeutralStroke1);
+    border-top-color: var(--colorBrandForeground1);
     border-radius: 50%;
     animation: ac-spin 0.7s linear infinite;
 }
@@ -108,7 +109,7 @@
 .ac-divider {
     height: 1px;
     margin: 5px 0;
-    background: var(--neutral-stroke-rest, #e5e5e5);
+    background: var(--colorNeutralStroke1);
 }
 
 // Пункт в одну строку: иконка, название, затем с отступом хвост (описание/категория/url).
@@ -121,7 +122,7 @@
     white-space: nowrap;
 
     .ac-item-icon {
-        color: var(--neutral-foreground-hint, #7a7a7a);
+        color: var(--colorNeutralForeground3);
         flex-shrink: 0;
         width: 18px;
         text-align: center;
@@ -131,7 +132,7 @@
         flex: 0 1 auto;
         min-width: 0;
         font-size: 13.5px;
-        color: var(--neutral-foreground-rest, #1f1f1f);
+        color: var(--colorNeutralForeground1);
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -141,18 +142,18 @@
         min-width: 0;
         max-width: 45%;
         font-size: 12px;
-        color: var(--neutral-foreground-hint, #8a8a8a);
+        color: var(--colorNeutralForeground3);
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     &.ac-selected {
-        background: var(--accent-fill-rest, #0060c0);
+        background: var(--colorBrandBackground);
 
         .ac-item-title,
         .ac-item-desc,
         .ac-item-icon {
-            color: #ffffff;
+            color: var(--colorNeutralForegroundOnBrand);
         }
     }
 }
@@ -160,6 +161,6 @@
 .ac-empty {
     padding: 16px 12px;
     font-size: 13px;
-    color: var(--neutral-foreground-hint, #8a8a8a);
+    color: var(--colorNeutralForeground3);
     text-align: center;
 }

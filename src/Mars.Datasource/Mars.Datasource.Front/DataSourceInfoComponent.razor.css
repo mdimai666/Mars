@@ -1,0 +1,109 @@
+.ds-maintenance {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.ds-maintenance__empty {
+    margin: 0;
+    color: var(--ct-muted, #6c757d);
+    font-size: 13px;
+}
+
+.ds-maintenance__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ds-maintenance__action {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid var(--ct-line, #dee2e6);
+    border-radius: 10px;
+    background: var(--ct-card, #fff);
+    color: var(--ct-item-ink, #212529);
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s ease;
+}
+
+.ds-maintenance__action:hover:not(:disabled) {
+    border-color: var(--ct-hover-border, #cdd3e6);
+}
+
+.ds-maintenance__action:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+.ds-maintenance__action-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.ds-maintenance__action-text strong {
+    font-size: 13px;
+    color: var(--ct-ink, #212529);
+}
+
+.ds-maintenance__action-text small {
+    font-size: 11.5px;
+    color: var(--ct-muted, #6c757d);
+}
+
+.ds-maintenance__action i {
+    color: var(--ct-accent, #6954f9);
+}
+
+.ds-maintenance__busy {
+    padding: 8px 0;
+}
+
+.ds-maintenance__result {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+}
+
+.ds-maintenance__ok {
+    border: 1px solid rgba(34, 197, 94, .4);
+    border-radius: 10px;
+    background: rgba(34, 197, 94, .1);
+    color: var(--ct-ok, #22c55e);
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.ds-maintenance__data {
+    max-height: 40vh;
+    border: 1px solid var(--ct-line, #dee2e6);
+    border-radius: 10px;
+}
+
+.ds-maintenance__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    color: var(--ct-item-ink, #212529);
+}
+
+.ds-maintenance__table td {
+    border-bottom: 1px solid var(--ct-line, #dee2e6);
+    padding: 6px 10px;
+}
+
+.ds-maintenance__table tr:last-child td {
+    border-bottom: none;
+}

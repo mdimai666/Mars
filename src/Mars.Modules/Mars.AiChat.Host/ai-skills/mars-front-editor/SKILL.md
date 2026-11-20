@@ -1,12 +1,12 @@
 ---
 name: mars-front-editor
-description: Правка Handlebars-шаблонов сайта (фронта) из редактора фронта: ListFrontFiles / ReadFrontFile / WriteFrontFile / CreateFrontFile / RenameFrontFile / DeleteFrontFile. Используй, когда пользователь открыл редактор фронта (pageContext содержит /front/editor/{slug}) или задача про шаблоны/страницы/стили сайта.
+description: Правка Handlebars-шаблонов сайта (фронта) из редактора фронта: ListFrontFiles / ReadFrontFile / WriteFrontFile / CreateFrontFile / RenameFrontFile / DeleteFrontFile. Используй, когда пользователь открыл редактор фронта (pageContext содержит /tech/frontend/editor/{slug}) или задача про шаблоны/страницы/стили сайта.
 tags: фронт, шаблоны, handlebars, стили, css
 ---
 
 # Файлы фронта (шаблоны сайта)
 
-Slug редактируемого фронта возьми из URL открытой страницы: `/front/editor/{slug}`.
+Slug редактируемого фронта возьми из URL открытой страницы: `/tech/frontend/editor/{slug}`.
 Для этого фронта доступны инструменты ListFrontFiles / ReadFrontFile / WriteFrontFile /
 CreateFrontFile / RenameFrontFile / DeleteFrontFile.
 
@@ -24,6 +24,9 @@ CreateFrontFile / RenameFrontFile / DeleteFrontFile.
   обновится автоматически. После правки перечитай файл и убедись, что изменение на месте.
 - Новая страница — новый файл в pages/ с @page "/url" в первой строке; если у сайта есть меню/шапка
   (blocks/), добавь туда ссылку на новую страницу, если это уместно.
+- Фронт admin (slug admin) — особый: его страницы открываются в админке по адресу /dev/p/{url из @page},
+  а боковое меню админки — НЕ в blocks/, это меню CMS со slug "dev" (инструменты ListNavMenus /
+  GetNavMenu / AddMenuItem / …, скилл mars-admin-pages). Для admin не ищи меню в блоках фронта.
 - Переименование и перемещение файлов — только RenameFrontFile (атомарно, старый путь исчезает);
   не создавай файл с новым именем рядом со старым. Если на переименованный файл ссылались другие
   шаблоны ({{>blocks/...}}, layout, ссылки) — поправь и их.

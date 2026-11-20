@@ -44,7 +44,7 @@ public class EditUserPageTests : BaseE2ETests
 
         // Save form and wait for API response
         var saveResponse = await Page.RunAndWaitForResponseAsync(
-            async () => await Page.Locator("button[type='submit']").ClickAsync(),
+            async () => await Page.Locator("fluent-button[type='submit']").ClickAsync(),
             response => response.Url.Contains("/api/User") && response.Request.Method == "PUT",
             new() { Timeout = 10000 });
 
@@ -70,11 +70,13 @@ public class EditUserPageTests : BaseE2ETests
 
     /// <summary>
     /// Fills a Fluent UI text field by clicking, selecting all, and typing new value.
+    /// v5: name lives on the fluent-text-input host, the real input is in its shadow DOM.
     /// </summary>
     private static async Task FillTextField(IPage page, string fieldName, string value)
     {
-        await page.Locator($"[name='{fieldName}']").ClickAsync();
+        var input = page.Locator($"[name='{fieldName}'] input");
+        await input.ClickAsync();
         await page.Keyboard.PressAsync("Control+a");
-        await page.Locator($"[name='{fieldName}']").PressSequentiallyAsync(value, new() { Delay = 10 });
+        await input.PressSequentiallyAsync(value, new() { Delay = 10 });
     }
 }

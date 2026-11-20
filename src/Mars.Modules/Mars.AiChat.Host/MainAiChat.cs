@@ -56,6 +56,7 @@ public static class MainAiChat
         services.AddScoped<IAiToolset, PageToolset>();
         services.AddScoped<IAiToolset, SqlToolset>();
         services.AddScoped<IAiToolset, FrontToolset>();
+        services.AddScoped<IAiToolset, NavMenuToolset>();
         services.AddScoped<IAiToolset, SkillsToolset>();
 
         return services;

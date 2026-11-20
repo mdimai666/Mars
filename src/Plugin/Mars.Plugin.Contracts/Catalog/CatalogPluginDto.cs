@@ -16,6 +16,7 @@ public sealed record CatalogPluginDto(
     string? LicenseUrl,
     string? IconUrl,
     IReadOnlyList<string> Tags,
+    string? Category,
     string Status,
     bool IsRecommended,
     string? MarsVersionMin,

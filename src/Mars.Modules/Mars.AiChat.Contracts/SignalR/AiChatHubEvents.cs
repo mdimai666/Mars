@@ -31,4 +31,7 @@ public static class AiChatHubEvents
 
     /// <summary>Выполнить инструмент на открытой странице клиента: (Guid chatId, AiPageToolRequest request)</summary>
     public const string PageToolRequest = "AiChatPageToolRequest";
+
+    /// <summary>Агент просит обновить InitialSiteData в админке (сайдбар/меню/настройки): (Guid chatId)</summary>
+    public const string RefreshSiteData = "AiChatRefreshSiteData";
 }

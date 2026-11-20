@@ -16,6 +16,9 @@ namespace Mars.Admin.Framework.Components.MediaViews;
 /// </summary>
 public partial class MediaUploadZone
 {
+    public MediaUploadZone(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IMarsWebApiClient client { get; set; } = default!;
 
     [Parameter] public string Label { get; set; } = "Загрузка файла";

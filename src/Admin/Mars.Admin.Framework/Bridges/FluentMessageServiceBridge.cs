@@ -1,53 +1,34 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Bridges;
 
 public class FluentMessageServiceBridge : Interfaces.IMessageService
 {
-    private readonly IToastService _toastService;
+    private readonly INotificationService _notifications;
 
-    public FluentMessageServiceBridge(IToastService toastService)
+    public FluentMessageServiceBridge(INotificationService notifications)
     {
-        _toastService = toastService;
+        _notifications = notifications;
     }
+
     public void Dispose()
     {
     }
 
     public Task Error(string content, double? durationMs = null, Action? onClose = null)
-    {
-        EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowError(content, (int?)durationMs, callback: callback);
-        return Task.CompletedTask;
-    }
+        => ShowAsync(ToastIntent.Error, content, durationMs, onClose);
 
     public Task Info(string content, double? durationMs = null, Action? onClose = null)
-    {
-        EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowInfo(content, (int?)durationMs, callback: callback);
-        return Task.CompletedTask;
-    }
+        => ShowAsync(ToastIntent.Info, content, durationMs, onClose);
 
     public Task Success(string content, double? durationMs = null, Action? onClose = null)
-    {
-        EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowSuccess(content, (int?)durationMs, callback: callback);
-        return Task.CompletedTask;
-    }
+        => ShowAsync(ToastIntent.Success, content, durationMs, onClose);
 
     public Task Warning(string content, double? durationMs = null, Action? onClose = null)
-    {
-        EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowWarning(content, (int?)durationMs, callback: callback);
-        return Task.CompletedTask;
-    }
+        => ShowAsync(ToastIntent.Warning, content, durationMs, onClose);
 
     public Task Show(string content, Mars.Core.Models.MessageIntent messageIntent, double? durationMs = null, Action? onClose = null)
-    {
-        EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-
-        _toastService.ShowToast(
+        => ShowAsync(
             messageIntent switch
             {
                 Mars.Core.Models.MessageIntent.Error => ToastIntent.Error,
@@ -57,11 +38,19 @@ public class FluentMessageServiceBridge : Interfaces.IMessageService
                 Mars.Core.Models.MessageIntent.Custom => ToastIntent.Info,
                 _ => throw new NotImplementedException()
             },
-            content,
-            (int?)durationMs,
-            callback: callback
-        );
-        return Task.CompletedTask;
+            content, durationMs, onClose);
 
+    // await завершается при закрытии тоста (ResultTiming.Closed по умолчанию) — как onClose в v4
+    private async Task ShowAsync(ToastIntent intent, string content, double? durationMs, Action? onClose)
+    {
+        await _notifications.ShowToastAsync(options =>
+        {
+            options.Intent = intent;
+            options.Title = content;
+            if (durationMs is { } ms)
+                options.Lifetime = TimeSpan.FromMilliseconds(ms);
+        });
+
+        onClose?.Invoke();
     }
 }

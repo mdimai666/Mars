@@ -18,6 +18,9 @@
                 @bind-Value="TextAreaValue" />
 
 @code {
+    public DictionaryTextArea(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Parameter]
     public Dictionary<string, string> Value { get; set; } = new();
 

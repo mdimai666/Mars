@@ -1,0 +1,78 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (IsLoginLoading)
+{
+    <div class="flex-fill xcenter">
+        <FluentSpinner />
+    </div>
+}
+else if (!_isAlreadyAuth)
+{
+    <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
+        <DataAnnotationsValidator />
+        <FormItem2 For="() => auth.Login" Label="@AppRes.LoginOrEmail">
+            <FluentTextInput @bind-Value=@auth.Login name="login-email" Immediate AutoFocus Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="() => auth.Password" Label="@AppRes.Password">
+            <FluentTextInput TextInputType="TextInputType.Password" @bind-Value=@auth.Password name="password" Immediate Class="w-100" />
+        </FormItem2>
+        <div class="spacer-1"></div>
+
+        <FluentButton Appearance=@ButtonAppearance.Primary Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
+
+        @if (_passkeyAvailable)
+        {
+            <div class="mt-2">
+                <FluentButton Class="w-100" OnClick="ExecutePasskeyLogin"
+                              IconStart="@(new Icons.Regular.Size16.Fingerprint())">Войти с пасскеем</FluentButton>
+            </div>
+        }
+    </EditForm>
+
+    @if (authVariantConstOption is not null)
+    {
+        <div class="cloudy-auth-divider">или</div>
+
+        <div class="vstack gap-2">
+            @foreach (var sso in authVariantConstOption.SSOConfigs)
+            {
+                <FluentButton OnClick=@(() => SsoProviderLogin(sso.Slug)) Class="w-100">
+                    @if (!string.IsNullOrEmpty(sso.IconUrl))
+                    {
+                        <FluentIcon Slot="start" Value="@(Icon.FromImageUrl(sso.IconUrl ?? ""))" />
+                    }
+                    @(sso.Label ?? "Авторизация")
+                </FluentButton>
+            }
+        </div>
+    }
+
+    @if (Q.Site.SiteSettings.AllowUsersSelfRegister)
+    {
+        <div class="cloudy-auth-alt">
+            Нет аккаунта? <a href="@(_navigationManager.BaseUri)Register">Зарегистрироваться</a>
+        </div>
+    }
+
+    <FluentOverlay @bind-Visible=@_loginOverlayVisible Transparent="false">
+        <FluentSpinner />
+    </FluentOverlay>
+
+    if (_successAlertMessage is not null)
+    {
+        <div class="mt-3">
+            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageBarIntent.Success" AllowDismiss=false>
+                @_successAlertMessage
+            </FluentMessageBar>
+        </div>
+    }
+}
+
+@if (ShowAuthError && Error is not null)
+{
+    <div class="mt-3">
+        <FluentMessageBar Intent="@MessageBarIntent.Error" AllowDismiss=false>
+            @Error
+        </FluentMessageBar>
+    </div>
+}

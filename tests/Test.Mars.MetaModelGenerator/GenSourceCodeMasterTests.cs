@@ -21,7 +21,7 @@ public class GenSourceCodeMasterTests
     [InlineData("mytype", "MytypeMto")]
     [InlineData("temp-page", "TempPageMto")]
     [InlineData("MyType", "MyTypeMto")]
-    [InlineData("a_b-c", "A_bCMto")]
+    [InlineData("a_b-c", "ABCMto")]
     public void GetNormalizedTypeName_InvalidChars_PascalCasesSegments(string typeName, string expected)
     {
         GenSourceCodeMasterHelper.GetNormalizedTypeName(typeName).Should().Be(expected);

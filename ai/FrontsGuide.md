@@ -30,7 +30,7 @@
   `Mars.TemplateEngine.Providers.*` и QueryLang — карта проектов и поток рендера в
   `ai/SiteEngineGuide.md`.
 - Админка: страница `/Settings/Front` (список фронтов) и редактор
-  `src/Mars.Admin/Builder/FrontEditorViews/FrontEditorPage.razor` (`/front/editor/{Slug}`).
+  `src/Mars.Admin/TechSpace/Pages/FrontEditorViews/FrontEditorPage.razor` (`/tech/frontend/editor/{Slug}`).
 - ИИ-инструменты: `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`.
 - Стартовые шаблоны: `Res/front_templates/<name>` в content root (в репо — `src/Mars.WebApp/Res/front_templates`:
   `default`, `landing`, `scriban` (движок Scriban, `*.sbn`), служебный `admin`).
@@ -106,7 +106,7 @@
   внешние папки через API не удаляются).
   Грабля FluentUI 4.14: `FluentSelect.Value` — **string** (значение опции), привязка к
   объекту-элементу не компилируется — биндить имя/Id и резолвить объект в коде.
-- `/front/editor/{Slug}` — редактор в стиле VSCode: дерево файлов | `CodeEditor2` (Ctrl+S) | iframe-превью
+- `/tech/frontend/editor/{Slug}` — редактор в стиле VSCode: дерево файлов | `CodeEditor2` (Ctrl+S) | iframe-превью
   сайта; полноэкранный предпросмотр; live-reload превью через ChatHub; защита от затирания
   (по событию `reload` открытый файл перечитывается, только если пользователь не вносил несохранённых правок).
 - Файловый CRUD — `FrontController` через общий `FrontFilesService`: нормализация путей,
@@ -115,7 +115,7 @@
 ## ИИ в редакторе
 
 - Инструменты `MarsFrontFilesTools` (list/read/write/create/rename/delete front files) подключаются
-  к агенту только когда открыт редактор фронта: slug парсится из PageContext по URL `/front/editor/{slug}`.
+  к агенту только когда открыт редактор фронта: slug парсится из PageContext по URL `/tech/frontend/editor/{slug}`.
 - Правила работы — в промпте (структура фронта, относительные пути, «прочитай перед правкой»,
   удаление только через AskUser).
 - Страница реализует `IAiChatPageHandler` (контекст: фронт, открытый файл).
@@ -146,7 +146,7 @@
 пайплайн стал полностью динамическим (без рестарта), фронты — только файлы в `data/fronts/`,
 демонтирован DB-легаси (посты `page/template/block/layout`, Blazor-движок), добавлены список
 фронтов в админке, редактор с live-превью и ИИ-чатом. Полный план с заметками по фазам —
-в истории git (`ai/FrontReworkPlan.md`, файл схлопнут).
+в истории git: `git show 7660625a^:ai/FrontReworkPlan.md`.
 
 SiteEngine-реворк (сентябрь 2026): `MyHandlebars`/`IMarsHtmlTemplator` демонтированы — сайт-движки
 строятся на фабричном слое `TemplateEngine.Providers.*`, добавлен движок Scriban (`*.sbn`),

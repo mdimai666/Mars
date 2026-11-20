@@ -1,0 +1,75 @@
+@page "/tech"
+
+<PageTitle>Overview</PageTitle>
+
+<div class="tech-hub">
+    <header class="tech-hub__hero">
+        <div class="tech-hub__hero-text">
+            <h1>Overview</h1>
+            <p>
+                Tech zone of the Mars admin panel — automation, content models, frontend and platform
+                tooling. Pick a section to open its workbench.
+            </p>
+        </div>
+    </header>
+
+    @foreach (var category in _items)
+    {
+        <section class="tech-hub__section">
+            <header class="tech-hub__section-head">
+                <h2>@category.Title</h2>
+                <span class="tech-hub__count">@category.Items.Length</span>
+                <span class="tech-hub__line"></span>
+            </header>
+
+            <div class="tech-hub__grid">
+                @foreach (var item in category.Items)
+                {
+                    <a class="tech-hub__card" href="@item.Url">
+                        <span class="tech-hub__icon tech-hub__icon--@category.Tint">
+                            <i class="@item.Icon"></i>
+                        </span>
+                        <span class="tech-hub__text">
+                            <span class="tech-hub__title">@item.Title</span>
+                            <span class="tech-hub__subtitle">@item.Subtitle</span>
+                        </span>
+                        <i class="bi bi-arrow-right tech-hub__arrow"></i>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    private record AppMenuItem(string Title, string Url, string Icon, string Subtitle);
+    private record AppMenuCategory(string Title, string Tint, AppMenuItem[] Items);
+
+    private AppMenuCategory[] _items = [
+        new("Main", "purple", [
+            new("Automation", "/dev/tech/automation", "bi bi-lightning-charge", "Visual programming with nodes"),
+            new("Entities", "/dev/tech/models", "bi bi-box", "Post types and model domains"),
+            new("Frontend", "/dev/tech/frontend", "bi bi-files", "Site fronts and template files"),
+            new("Datasources", "/dev/tech/datasource", "bi bi-database", "External database connections"),
+        ]),
+        new("Manage", "blue", [
+            new("Plugins", "/dev/tech/plugins", "bi bi-plug", "Installed .NET assemblies"),
+            new("Market", "/dev/tech/marketplace", "bi bi-bag", "Plugin catalog and installs"),
+            new("Media", "/dev/Media", "bi bi-image", "Files and image library"),
+            new("Users", "/dev/Users", "bi bi-people", "Accounts, roles and access"),
+            new("Logs", "/dev/tech/logs", "bi bi-file-earmark-text", "Platform events and diagnostics"),
+        ]),
+        new("System", "teal", [
+            new("Settings", "/dev/Settings", "bi bi-gear", "Platform configuration"),
+            new("Scheduler", "/dev/tech/scheduler", "bi bi-journal-check", "Background jobs and triggers"),
+            new("Style Designer", "/dev/tech/styledesigner", "bi bi-brilliance", "Fluent UI theme editor"),
+        ]),
+        new("Dev utilities", "green", [
+            new("Playbooks", "/dev/tech/playbooks", "bi bi-file-earmark-code", "C# functions and snippets"),
+            new("Class Models", "/dev/tech/models/classmodels", "bi bi-diamond", "C# class reflection browser"),
+            new("Components", "/dev/tech/components", "bi bi-puzzle", "Registered Blazor components"),
+            new("Style Gallery", "/dev/tech/style-gallery", "bi bi-palette", "Fluent UI component showcase"),
+            new("DevPages", "/dev/tech/devtest", "bi bi-ladder", "Development test pages"),
+        ]),
+    ];
+}

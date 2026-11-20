@@ -1,0 +1,72 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="DataGrid">
+
+    <FluentText Size="TextSize.Size200" Class="text-secondary d-block mb-2">
+        Регрессионный кейс заголовка: ItemSize="76" + Virtualize — th должен остаться 40px (оверрайд в fluent-ui.less).
+        Данные статические (60 строк), провайдер клампит Count.
+    </FluentText>
+
+    <div style="height: 340px; overflow: auto;">
+        <FluentDataGrid ItemsProvider="_dataProvider"
+                        ItemSize="76"
+                        Virtualize
+                        ShowHover
+                        ResizableColumns
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        GridTemplateColumns="2fr 1fr 1fr 1fr"
+                        Class="data-table--adaptive"
+                        TGridItem="GalleryGridRow">
+            <PropertyColumn Property="@(f => f.Name)" Title="Название" Sortable="true" />
+            <TemplateColumn Title="Статус">
+                <FluentBadge Color="@StatusColor(context.Status)" Content="@context.Status" />
+            </TemplateColumn>
+            <PropertyColumn Property="@(f => f.CreatedAt)" Title="Создано" Format="d" Sortable="true"
+                            Align="DataGridCellAlignment.End" />
+            <TemplateColumn Title="Автор" Align="DataGridCellAlignment.End">
+                <div class="hstack gap-2 justify-content-end">
+                    <FluentAvatar Initials="@context.AuthorInitials" Size="AvatarSize.Size24" Color="AvatarColor.Brand" />
+                    <span>@context.Author</span>
+                </div>
+            </TemplateColumn>
+        </FluentDataGrid>
+    </div>
+
+</GallerySection>
+
+@code {
+    public record GalleryGridRow(string Name, string Status, DateTime CreatedAt, string Author, string AuthorInitials);
+
+    static readonly IReadOnlyList<GalleryGridRow> Rows =
+    [
+        .. Enumerable.Range(1, 60).Select(i => new GalleryGridRow(
+            $"Запись №{i:D2}",
+            (i % 3) switch { 0 => "Active", 1 => "Draft", _ => "Archived" },
+            new DateTime(2026, 1, 1).AddDays(i),
+            i % 2 == 0 ? "Иван Петров" : "Мария Смирнова",
+            i % 2 == 0 ? "ИП" : "МС")),
+    ];
+
+    GridItemsProvider<GalleryGridRow> _dataProvider = default!;
+
+    protected override void OnInitialized()
+    {
+        _dataProvider = new GridItemsProvider<GalleryGridRow>(async req =>
+        {
+            await Task.CompletedTask;
+            var count = req.Count is > 0 ? req.Count.Value : 20;
+            var items = req.ApplySorting(Rows.AsQueryable())
+                           .Skip(req.StartIndex)
+                           .Take(count)
+                           .ToList();
+            return GridItemsProviderResult.From(items, Rows.Count);
+        });
+    }
+
+    static BadgeColor StatusColor(string status) => status switch
+    {
+        "Active" => BadgeColor.Success,
+        "Draft" => BadgeColor.Warning,
+        _ => BadgeColor.Informative,
+    };
+}

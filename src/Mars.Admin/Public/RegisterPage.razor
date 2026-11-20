@@ -1,0 +1,79 @@
+@page "/Register"
+@using Microsoft.FluentUI.AspNetCore.Components
+@layout CloudyPublicLayout
+
+<div class="cloudy-auth-card">
+    <h1 class="cloudy-auth-card__title">Регистрация</h1>
+
+    @if (Q.Site.SiteSettings.AllowUsersSelfRegister == false)
+    {
+        <FluentMessageBar Intent="@MessageBarIntent.Info" AllowDismiss=false>
+            Самостоятельная регистрация недоступна
+        </FluentMessageBar>
+    }
+    else if (!regiterComplete)
+    {
+        <EditForm Model="_userForRegistration" OnSubmit=ExecuteRegister>
+            <DataAnnotationsValidator />
+
+            @if (ShowRegistrationErrors && Errors is not null)
+            {
+                <div class="mb-3">
+                    <FluentMessageBar Intent="@MessageBarIntent.Error" AllowDismiss=false>
+                        @foreach (var error in Errors)
+                        {
+                            <div>@error</div>
+                        }
+                    </FluentMessageBar>
+                </div>
+            }
+
+            <div class="vstack gap-3">
+                <FormItem2 For="()=>_userForRegistration.Email" Label="@AppRes.Email">
+                    <FluentTextInput @bind-Value=_userForRegistration.Email Class="w-100" />
+                </FormItem2>
+
+                <FormItem2 For="()=>_userForRegistration.FirstName" Label="@AppRes.FirstName">
+                    <FluentTextInput @bind-Value=_userForRegistration.FirstName Class="w-100" />
+                </FormItem2>
+
+                <FormItem2 For="()=>_userForRegistration.LastName" Label="@AppRes.LastName">
+                    <FluentTextInput @bind-Value=_userForRegistration.LastName Class="w-100" />
+                </FormItem2>
+
+                <FormItem2 For="()=>_userForRegistration.Password" Label="@AppRes.Password">
+                    <FluentTextInput @bind-Value=_userForRegistration.Password TextInputType="@TextInputType.Password" Class="w-100" />
+                </FormItem2>
+
+                <FormItem2 For="()=>_userForRegistration.ConfirmPassword" Label="Подтверждение пароля">
+                    <FluentTextInput @bind-Value=_userForRegistration.ConfirmPassword TextInputType="@TextInputType.Password" Class="w-100" />
+                </FormItem2>
+            </div>
+
+            <FluentCheckbox @bind-Value=_acceptPrivacy Class="my-3">
+                Я согласен с <a href="@(NavigationManager.BaseUri)privacy">политикой и условиями конфиденциальности</a>
+            </FluentCheckbox>
+
+            <FluentButton Disabled=@(!_acceptPrivacy) Appearance="ButtonAppearance.Primary"
+                          Type="ButtonType.Submit" Class="w-100">
+                Зарегистрироваться
+            </FluentButton>
+        </EditForm>
+
+        <div class="cloudy-auth-alt">
+            Есть аккаунт? <a href="@(NavigationManager.BaseUri)Login">Войти</a>
+        </div>
+    }
+    else
+    {
+        <div class="cloudy-auth-success">
+            <FluentIcon Value="@(new Icons.Regular.Size48.CheckmarkCircle())" Color="Color.Success" />
+            <div class="cloudy-auth-success__title">Вы успешно зарегистрированы</div>
+            <div class="cloudy-auth-success__sub">Вы можете войти в свой аккаунт</div>
+            <FluentButton Appearance="ButtonAppearance.Primary" Class="w-100"
+                          OnClick="@(() => NavigationManager.NavigateTo(NavigationManager.BaseUri + "Login"))">
+                Войти
+            </FluentButton>
+        </div>
+    }
+</div>

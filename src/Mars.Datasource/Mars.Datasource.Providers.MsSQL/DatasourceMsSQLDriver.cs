@@ -45,6 +45,7 @@ public class DatasourceMsSQLDriver(DatasourceConfig config) : SqlDatasourceDrive
             JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
               ON kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
              AND kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA
+             AND kcu.TABLE_NAME = tc.TABLE_NAME
              AND kcu.TABLE_CATALOG = tc.TABLE_CATALOG
             WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
         ) pk ON pk.TABLE_CATALOG = c.TABLE_CATALOG

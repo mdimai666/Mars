@@ -38,6 +38,8 @@ public class RegisterAccountTests : BaseWebApiClientTests
         result.Code.Should().Be(StatusCodes.Status201Created);
         var user = await GetEntity<UserEntity>(s => s.Email == request.Email);
         user.FirstName.Should().Be(request.FirstName);
+        // username — local-part почты, не полное письмо
+        user.UserName.Should().Be(request.Email.Split('@', 2)[0]);
     }
 
     [IntegrationFact]

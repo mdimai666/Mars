@@ -2,7 +2,6 @@ using System.Reflection;
 using Mars.Scheduler.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using Quartz.AspNetCore;
 
 namespace Mars.Scheduler.Host;
 
@@ -18,8 +17,7 @@ public static class MainScheduler
 
         });
 
-        // ASP.NET Core hosting
-        services.AddQuartzServer(options =>
+        services.AddQuartzHostedService(options =>
         {
             // when shutting down we want jobs to complete gracefully
             options.WaitForJobsToComplete = true;

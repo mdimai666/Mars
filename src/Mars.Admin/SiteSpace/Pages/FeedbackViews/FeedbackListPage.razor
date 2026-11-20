@@ -1,0 +1,89 @@
+@page "/FeedbackList"
+@using Mars.Cms.Contracts.Feedbacks
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IStringLocalizer<AppRes> L
+
+<CloudyPageHead Title="@AppRes.Feedbacks" Subtitle="Visitor messages and contact requests." KpiCols="2">
+    <Kpis>
+        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.Unread)" Value="@KpiValue(FeedbackKpiKeys.Unread)" Icon="bi-envelope" />
+        <CloudyKpi Label="@KpiLabel(FeedbackKpiKeys.NewThisWeek)" Value="@KpiValue(FeedbackKpiKeys.NewThisWeek)" Icon="bi-envelope-plus" />
+    </Kpis>
+</CloudyPageHead>
+
+<CloudyBrowser Scrollable>
+    <HeadLeft>
+        <CloudySearchBox Placeholder="Search feedback…" ValueChanged="OnSearchChanged" />
+        <CloudyChips Items="ReadFilterOptions" Selected="_readFilter" SelectedChanged="SetReadFilter" />
+    </HeadLeft>
+    <HeadRight>
+        <button type="button" class="cloudy-btn-primary" @onclick="DownloadExcel">
+            <i class="bi bi-table"></i>
+            @AppRes.DownloadExcel
+        </button>
+    </HeadRight>
+
+    <ChildContent>
+        <FluentDataGrid TGridItem="FeedbackSummaryResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) 130px minmax(0,1fr) minmax(0,1.2fr) 172px 56px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        OnRowClick="OnRowClick"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Title" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Title))">
+                    <div class="cloudy-stack">
+                        <span class="cloudy-stack__title @(context.IsRead ? "" : "feedback-title--unread")" title="@context.Title">
+                            @if (!context.IsRead)
+                            {
+                                <span class="feedback-unread-dot" title="Unread"></span>
+                            }
+                            @context.Title
+                        </span>
+                        <span class="cloudy-stack__sub" title="@context.Excerpt">@context.Excerpt</span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@L["Type"]">
+                    <div class="cloudy-tags">
+                        <CloudyTag Text="@context.Type" Tint="@CloudyTint.Feedback(context.Type)" />
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Phone" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Phone))">
+                    @context.Phone
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Email" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByAscending(f => f.Email))">
+                    @context.Email
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f => f.CreatedAt))"
+                                IsDefaultSortColumn="true"
+                                Align="DataGridCellAlignment.End">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.FormatTime()</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No feedbacks match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
+
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

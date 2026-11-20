@@ -24,7 +24,6 @@ public abstract partial class QueryWorkspaceBase : ComponentBase
     [Inject] protected IDatasourceServiceClient service { get; set; } = default!;
     [Inject] protected Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] protected IDialogService _dialogService { get; set; } = default!;
-    [Inject] protected NavigationManager nav { get; set; } = default!;
 
     protected bool Busy;
     protected string? errorMessage;
@@ -80,8 +79,6 @@ public abstract partial class QueryWorkspaceBase : ComponentBase
 
     /// <summary>Язык, под который создан текущий JS-редактор: при смене язык меняется и компонент (по `@key`).</summary>
     protected string? _editorLang;
-
-    protected string datasourceConfigUrl => $"{nav.BaseUri}datasource/config";
 
     /// <summary>
     /// Профиль типа источника: язык, подсветка, подсказки и возможности приходят от провайдера
@@ -439,16 +436,12 @@ public abstract partial class QueryWorkspaceBase : ComponentBase
 
     protected async Task<bool> ConfirmChangeAsync(string keyword, string what)
     {
-        var dialog = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(
-            (MarkupString)$"Запрос <b>{System.Net.WebUtility.HtmlEncode(keyword)}</b> {what}. Выполнить?",
-            new DialogParameters
-            {
-                Title = "Подтверждение запроса",
-                Modal = true,
-                PreventDismissOnOverlayClick = false,
-            });
-
-        var result = await dialog.Result;
+        var result = await _dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
+        {
+            Header = { Title = "Подтверждение запроса" },
+            Modal = true,
+            Parameters = { ["Content"] = (MarkupString)$"Запрос <b>{System.Net.WebUtility.HtmlEncode(keyword)}</b> {what}. Выполнить?" }
+        });
 
         return !result.Cancelled;
     }

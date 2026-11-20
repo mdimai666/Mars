@@ -66,8 +66,9 @@ internal class PluginNugetInstaller
             List<PackageDependency> rootDependencies;
             using (var rootResult = await DownloadPackageAsync(originRepo, packageId, resolvedVersion, cache, cancellationToken))
             {
-                iconFile = ExtractPackage(rootResult.PackageReader, staging, marsAssemblyNames, filterLibs: false, includeIcon: true, cancellationToken);
-                rootDependencies = DependencyPackagesOf(rootResult.PackageReader).ToList();
+                var rootReader = rootResult.PackageReader!;
+                iconFile = ExtractPackage(rootReader, staging, marsAssemblyNames, filterLibs: false, includeIcon: true, cancellationToken);
+                rootDependencies = DependencyPackagesOf(rootReader).ToList();
             }
 
             await EnqueueAndExtractDependenciesAsync(rootDependencies, staging, marsAssemblyNames, marsPackageIds, repos, cache, resolveCache, cancellationToken);
@@ -157,9 +158,10 @@ internal class PluginNugetInstaller
             _logger.LogDebug("Dependency {Id} resolved to {Version}", depId, depVersion);
 
             using var depResult = await DownloadPackageAsync(depRepo, depId, depVersion, cache, ct);
-            ExtractPackage(depResult.PackageReader, staging, marsAssemblyNames, filterLibs: true, includeIcon: false, ct);
+            var depReader = depResult.PackageReader!;
+            ExtractPackage(depReader, staging, marsAssemblyNames, filterLibs: true, includeIcon: false, ct);
 
-            foreach (var dep in DependencyPackagesOf(depResult.PackageReader))
+            foreach (var dep in DependencyPackagesOf(depReader))
                 if (!installed.Contains(dep.Id))
                     EnqueueIfRelevant(dep.Id, dep.VersionRange, marsAssemblyNames, marsPackageIds, queue);
         }

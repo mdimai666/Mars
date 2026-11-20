@@ -11,6 +11,14 @@
         <AutoInputLabel For="@(() => context.AllowUploadZipManually)" />
     </FluentCheckbox>
 
+    <FormItem2 For="() => context.NugetSources" Class="col">
+        <FluentTextInput @bind-Value="@context.NugetSources" Class="w-100" />
+    </FormItem2>
+
+    <FormItem2 For="() => context.BlockedPackageIds" Class="col">
+        <FluentTextInput @bind-Value="@context.BlockedPackageIds" Class="w-100" />
+    </FormItem2>
+
 </EditOptionForm>
 
 @code {

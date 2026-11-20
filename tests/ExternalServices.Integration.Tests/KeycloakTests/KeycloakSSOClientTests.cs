@@ -1,8 +1,8 @@
-using System.Web;
+﻿using System.Web;
 using ExternalServices.TestContainers.Fixtures;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Admin.Pages.Public;
+using Mars.Admin.Public;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.Cms.Host.Controllers;
 using Mars.Identity.Contracts.Users.UserProfiles;

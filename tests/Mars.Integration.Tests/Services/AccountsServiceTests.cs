@@ -78,7 +78,9 @@ public class AccountsServiceTests
             Substitute.For<IHttpContextAccessor>(),
             _tokenService,
             Substitute.For<IUserRepository>(),
-            Substitute.For<IUserTypeRepository>());
+            Substitute.For<IUserTypeRepository>(),
+            Substitute.For<Mars.Server.Abstractions.Services.IFileStorage>(),
+            Substitute.For<Mars.Media.Abstractions.Services.IImageProcessor>());
     }
 
     private static AuthCredentialsDto Credentials(string login = "test@test", string password = "pwd")

@@ -1,0 +1,903 @@
+//-------------------------------------------------------------
+// CLOUDY REDESIGN — «облачный» лэйаут админки
+// Источник: прототип mars-redesign-project (Vue), admin_*.png
+// Переменные скоупятся на .cloudy-layout, префикс --cld-*
+// База — светлая палитра; тёмная — блок body[data-theme="dark"]
+// ниже (ночная версия на языке tech-палитры прототипа).
+//-------------------------------------------------------------
+
+// Токены зоны — миксины: вызываются на .cloudy-layout и дублируются на хосты
+// вне лэйаута (fluent-dialog/fluent-drawer в cloudy-dialog.less) — единый
+// источник, рассинхрон невозможен.
+.cloudy-tokens() {
+    // палитра (светлая зона прототипа)
+    --cld-surface: #f5f7fc;
+    --cld-card: #f6f8fc;
+    --cld-line: #e9ebf4;
+    --cld-ink: #262d3a;
+    --cld-muted: #8b93a5;
+    --cld-muted-strong: #79839a;
+    --cld-primary: #5661d6;
+    --cld-primary-soft: #e2e6fa;
+    --cld-primary-pale: #e0e4fa;
+    --cld-field: #fbfcff;
+    --cld-canvas: #c3d0f4;
+    --cld-sky-a: #b1ccf3;
+    --cld-sky-b: #bdc5f4;
+    --cld-sky-c: #cdc3f5;
+    --cld-ink-soft: #333a49;
+    --cld-ink-ui: #333c4c;
+    --cld-ink-mid: #3a4252;
+    --cld-icon-ink: #5a6272;
+    --cld-lavender: #aeb6ee;
+    --cld-avatar-bg: #c3caf3;
+    --cld-avatar-ink: #8d97dd;
+    --cld-green-soft: #dcefdd;
+    --cld-green: #5a945e;
+    --cld-green-live: #67b26f;
+    --cld-amber-soft: #f7e9c9;
+    --cld-amber: #a9822c;
+    --cld-red-badge: #e5484d;
+    --cld-dev: #d9820b;
+    --cld-dev-soft: #fdf1dc;
+    --cld-white: #fff;
+    --cld-black: #000;
+    --cld-shell-max: 1440px;
+
+    // фон: слои бэкдропа (в прототипе — константы светлой зоны)
+    --cld-corner: rgba(186, 158, 240, .35);
+    --cld-haze: rgba(255, 255, 255, .35);
+    --cld-horizon-strong: rgba(255, 255, 255, .9);
+    --cld-horizon-soft: rgba(255, 255, 255, .55);
+    --cld-grid-line: rgba(255, 255, 255, .4);
+
+    // интерактив
+    --cld-hover-bg: rgba(38, 45, 58, .06);
+    --cld-acrylic-bg: rgba(255, 255, 255, .45);
+    --cld-acrylic-border: rgba(255, 255, 255, .65);
+    --cld-acrylic-shadow: rgba(38, 45, 58, .1);
+    --cld-chip-bg: rgba(255, 255, 255, .5);
+    --cld-chip-hover-bg: #fff;
+    --cld-kbd-bg: #fff;
+
+    // user-меню (семантика; tech-зона ремапит их на --ct-* в cloudy-tech.less)
+    --cld-menu-bg: #fff;
+    --cld-menu-border: var(--cld-line);
+    --cld-menu-shadow: rgba(38, 45, 58, .16);
+    --cld-menu-ink: var(--cld-ink-ui);
+    --cld-menu-hover-bg: var(--cld-primary-soft);
+    --cld-menu-hover-ink: var(--cld-primary);
+    --cld-menu-danger: var(--cld-red-badge);
+    --cld-menu-danger-bg: rgba(229, 72, 77, .1);
+
+    // токены прототипа для страниц (Dashboard/Legion), светлая зона
+    --muted-out: #b6bccd;
+    --muted-dim: #b9c0d4;
+    --line-strong: #cdd3e6;
+    --line-track: #e3e7f3;
+    --line-dot: #d4d9e8;
+    --blue-soft: #ddebfb;
+    --blue: #4c82d6;
+    --blue-deep: #2f7de0;
+    --purple: #7c5cf6;
+    --teal: #0f9e8e;
+    --green-deep: #2f9e57;
+    --amber-live: #e8c468;
+    --violet-dot: #8b93e8;
+    --red: #cc5f5f;
+    --red-live: #d97070;
+}
+
+.cloudy-layout {
+    .cloudy-tokens();
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 24px 56px;
+    position: relative;
+    color: var(--cld-ink);
+    background: var(--cld-canvas);
+}
+
+//------------- тёмная тема: ночная версия на языке tech-палитры прототипа -------------
+.cloudy-tokens-dark() {
+    --cld-surface: #141824;
+    --cld-card: #141824;
+    --cld-line: #1d2637;
+    --cld-ink: #e8eaf6;
+    --cld-muted: #8b93a8;
+    --cld-muted-strong: #8f97b8;
+    --cld-primary: #8375fa;
+    --cld-primary-soft: rgba(105, 84, 249, .16);
+    --cld-primary-pale: rgba(105, 84, 249, .22);
+    --cld-field: #10151f;
+    --cld-canvas: #0a0f18;
+    --cld-sky-a: #0a0f1e;
+    --cld-sky-b: #0e1328;
+    --cld-sky-c: #181234;
+    --cld-ink-soft: #d5d8e8;
+    --cld-ink-ui: #d5d8e8;
+    --cld-ink-mid: #d5d8e8;
+    --cld-icon-ink: #c6cadd;
+    --cld-lavender: #6954f9;
+    --cld-avatar-bg: #1c2333;
+    --cld-avatar-ink: #8f97b8;
+    --cld-green-soft: rgba(134, 224, 168, .14);
+    --cld-green: #86e0a8;
+    --cld-green-live: #22c55e;
+    --cld-amber-soft: rgba(249, 201, 124, .14);
+    --cld-amber: #f9c97c;
+    --cld-red-badge: #ff6b70;
+    --cld-dev: #f9c97c;
+    --cld-dev-soft: rgba(249, 201, 124, .14);
+
+    --cld-corner: rgba(105, 84, 249, .22);
+    --cld-haze: rgba(105, 84, 249, .1);
+    --cld-horizon-strong: rgba(124, 105, 255, .22);
+    --cld-horizon-soft: rgba(124, 105, 255, .1);
+    --cld-grid-line: rgba(131, 117, 250, .12);
+
+    --cld-hover-bg: rgba(255, 255, 255, .04);
+    --cld-acrylic-bg: rgba(20, 24, 36, .55);
+    --cld-acrylic-border: rgba(255, 255, 255, .08);
+    --cld-acrylic-shadow: rgba(0, 0, 0, .4);
+    --cld-chip-bg: rgba(255, 255, 255, .06);
+    --cld-chip-hover-bg: rgba(255, 255, 255, .12);
+    --cld-kbd-bg: #1c2333;
+
+    --cld-menu-bg: #141824;
+    --cld-menu-border: #1d2637;
+    --cld-menu-shadow: rgba(0, 0, 0, .5);
+    --cld-menu-ink: #d5d8e8;
+    --cld-menu-hover-bg: rgba(105, 84, 249, .16);
+    --cld-menu-hover-ink: #fff;
+    --cld-menu-danger: #ff6b70;
+    --cld-menu-danger-bg: rgba(255, 107, 112, .12);
+
+    --muted-out: #79839a;
+    --muted-dim: #6a7288;
+    --line-strong: #2a3650;
+    --line-track: #1d2637;
+    --line-dot: #2a3650;
+    --blue-soft: rgba(124, 179, 249, .14);
+    --blue: #7cb3f9;
+    --blue-deep: #7cb3f9;
+    --purple: #b3a1f9;
+    --teal: #7ce0d3;
+    --green-deep: #86e0a8;
+    --violet-dot: #8375fa;
+    --red: #f99a9a;
+}
+
+body[data-theme="dark"] .cloudy-layout {
+    .cloudy-tokens-dark();
+}
+
+//------------- фон: градиент + перспективная сетка -------------
+.cloudy-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(90% 70% at 100% 100%, var(--cld-corner), transparent 60%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, var(--cld-haze) 58%, rgba(255, 255, 255, 0) 80%),
+        linear-gradient(90deg, var(--cld-sky-a) 0%, var(--cld-sky-b) 50%, var(--cld-sky-c) 100%);
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: -30%;
+        right: -30%;
+        top: 58%;
+        height: 90%;
+        background-image: linear-gradient(to right, var(--cld-grid-line) 1px, transparent 1px),
+            linear-gradient(to top, var(--cld-grid-line) 1px, transparent 1px);
+        background-size: 56px 56px;
+        transform: perspective(900px) rotateX(58deg);
+        transform-origin: top center;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%);
+        mask-image: linear-gradient(to bottom, transparent, #000 15%);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 28%;
+        background: linear-gradient(180deg, transparent 0%, var(--cld-horizon-strong) 42%, var(--cld-horizon-soft) 65%, transparent 100%);
+        filter: blur(6px);
+    }
+}
+
+.cloudy-shell {
+    width: 100%;
+    max-width: var(--cld-shell-max);
+    margin-inline: auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+//------------- топбар -------------
+.cloudy-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    height: 88px;
+    padding: 0 28px;
+    border-radius: 18px;
+    background: var(--cld-surface);
+    margin-bottom: 24px;
+    flex: none;
+}
+
+.cloudy-brand {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+
+    &__mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--cld-lavender);
+        flex: none;
+    }
+
+    &__name {
+        font-size: 24px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--cld-ink);
+    }
+}
+
+.cloudy-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    max-width: 300px;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--cld-line);
+    background: var(--cld-field);
+    color: var(--cld-muted);
+    cursor: pointer;
+    font-size: 15px;
+
+    &__text {
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    kbd {
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 7px;
+        border-radius: 6px;
+        border: 1px solid var(--cld-line);
+        background: var(--cld-kbd-bg);
+        color: var(--cld-muted);
+    }
+}
+
+.cloudy-actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cloudy-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--cld-ink-ui);
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-primary);
+    }
+}
+
+.cloudy-avatar {
+    display: flex;
+    align-items: center;
+}
+
+//------------- юзер-меню (UserBar) -------------
+.cloudy-userbar {
+    &__trigger {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        text-decoration: none;
+    }
+}
+
+.cloudy-user-menu {
+    min-width: 220px;
+    padding: 8px;
+    border: 1px solid var(--cld-menu-border);
+    border-radius: 14px;
+    background: var(--cld-menu-bg);
+    box-shadow: 0 18px 44px var(--cld-menu-shadow);
+
+    &__item {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--cld-menu-ink);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+
+        &:hover,
+        &:active {
+            background: var(--cld-menu-hover-bg);
+            color: var(--cld-menu-hover-ink);
+        }
+
+        &--danger {
+            color: var(--cld-menu-danger);
+
+            &:hover,
+            &:active {
+                background: var(--cld-menu-danger-bg);
+                color: var(--cld-menu-danger);
+            }
+        }
+    }
+
+    &__sep {
+        height: 1px;
+        margin: 6px 4px;
+        background: var(--cld-menu-border);
+    }
+}
+
+//------------- тело: сайдбар + контент -------------
+.cloudy-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 56px;
+    flex: 1;
+}
+
+.cloudy-sidebar {
+    width: 80px;
+    min-height: 560px;
+    max-height: calc(100vh - 48px);
+    flex: none;
+    align-self: flex-start;
+    border-radius: 18px;
+    background: var(--cld-surface);
+    position: sticky;
+    top: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    &__scroll {
+        flex: 1;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        gap: 22px;
+    }
+
+    &__bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 0 16px;
+        gap: 22px;
+        flex: none;
+        margin-top: auto;
+    }
+
+    &__sep {
+        width: 40px;
+        height: 1px;
+        min-height: 1px;
+        background: var(--cld-line);
+        flex: none;
+    }
+}
+
+.cloudy-side-btn {
+    width: 52px;
+    height: 52px;
+    min-height: 52px;
+    border-radius: 14px;
+    border: none;
+    background: transparent;
+    color: var(--cld-icon-ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: none;
+    font-size: 22px;
+    text-decoration: none;
+
+    &:hover {
+        background: var(--cld-hover-bg);
+        color: var(--cld-ink);
+    }
+
+    &.active {
+        background: var(--cld-primary-soft);
+        color: var(--cld-primary);
+    }
+}
+
+.cloudy-content {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    padding-top: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+//------------- паттерны страниц -------------
+.cloudy-hero {
+    margin-bottom: 30px;
+
+    h1 {
+        margin: 0 0 10px;
+        font-size: 34px;
+        font-weight: 700;
+        color: var(--cld-ink);
+    }
+
+    p {
+        margin: 0;
+        color: var(--cld-muted-strong);
+        font-size: 17px;
+    }
+
+    &--split {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+}
+
+.cloudy-kpis {
+    --cloudy-kpi-cols: 4;
+    --cloudy-kpi-width: 180px;
+    display: grid;
+    grid-template-columns: repeat(var(--cloudy-kpi-cols), minmax(0, var(--cloudy-kpi-width)));
+    gap: 16px;
+}
+
+.cloudy-kpi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 14px;
+    background: var(--cld-card);
+    padding: 14px 18px;
+    min-width: 150px;
+
+    > div {
+        min-width: 0;
+    }
+
+    &__label {
+        display: block;
+        color: var(--cld-muted);
+        font-size: 13px;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--cld-ink);
+    }
+
+    &__icon {
+        color: var(--cld-primary);
+        font-size: 22px;
+    }
+
+    &__dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex: none;
+
+        &--green {
+            background: var(--cld-green-live);
+        }
+    }
+}
+
+.cloudy-card {
+    border-radius: 18px;
+    background: var(--cld-card);
+    padding: 26px;
+}
+
+.cloudy-acrylic {
+    border-radius: 18px;
+    background: var(--cld-acrylic-bg);
+    border: 1px solid var(--cld-acrylic-border);
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--cld-line);
+        flex-wrap: wrap;
+    }
+
+    &__body {
+        padding: 20px 28px;
+    }
+}
+
+.cloudy-chip {
+    border: none;
+    background: var(--cld-chip-bg);
+    color: var(--cld-icon-ink);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+    text-decoration: none;
+
+    &:hover {
+        background: var(--cld-chip-hover-bg);
+    }
+
+    &.active {
+        background: var(--cld-primary-soft);
+        color: var(--cld-primary);
+    }
+}
+
+.cloudy-btn-primary {
+    border: none;
+    background: var(--cld-primary);
+    color: var(--cld-white);
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+
+    &:hover {
+        color: var(--cld-white);
+        filter: brightness(1.08);
+    }
+}
+
+.cloudy-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1;
+
+    &--draft {
+        background: var(--cld-amber-soft);
+        color: var(--cld-amber);
+    }
+
+    &--published {
+        background: var(--cld-green-soft);
+        color: var(--cld-green);
+    }
+
+    &--muted {
+        background: var(--cld-primary-soft);
+        color: var(--cld-primary);
+    }
+}
+
+//------------- профиль: под-навигация, hero, карточки, списки полей -------------
+.cloudy-subnav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+}
+
+.cloudy-profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+
+    h1 {
+        margin: 0 0 4px;
+    }
+
+    &__sub {
+        color: var(--cld-muted-strong);
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+}
+
+.cloudy-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cloudy-avatar--lg {
+    width: 72px;
+    height: 72px;
+    font-size: 24px;
+}
+
+.cloudy-profile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h2 {
+        margin: 0 0 16px;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--cld-ink);
+    }
+}
+
+.cloudy-deflist {
+    display: grid;
+    grid-template-columns: minmax(160px, 240px) 1fr;
+    gap: 12px 24px;
+    margin: 0;
+
+    &__term {
+        color: var(--cld-muted-strong);
+        font-size: 14px;
+    }
+
+    &__value {
+        color: var(--cld-ink);
+        font-size: 14.5px;
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+//------------- home: stat-карточки + recent posts -------------
+.cloudy-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 26px;
+}
+
+.cloudy-stat {
+    display: flex;
+    gap: 18px;
+    padding: 26px;
+    border-radius: 18px;
+    background: var(--cld-card);
+
+    &__icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        background: var(--cld-primary-pale);
+        color: var(--cld-primary);
+        display: grid;
+        place-items: center;
+        flex: none;
+        font-size: 26px;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__label {
+        font-size: 15px;
+        color: var(--cld-ink);
+    }
+
+    &__value {
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    &__sub {
+        color: var(--cld-muted);
+        font-size: 14px;
+    }
+}
+
+.cloudy-recent {
+    grid-column: span 3;
+    border-radius: 18px;
+    background: var(--cld-card);
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 24px;
+
+        h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+    }
+
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 17px 24px;
+            border-top: 1px solid var(--cld-line);
+        }
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--cld-lavender);
+        flex: none;
+    }
+
+    &__title {
+        color: var(--cld-ink-soft);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: var(--cld-primary);
+            }
+        }
+    }
+
+    &__date {
+        color: var(--cld-muted);
+        font-size: 13.5px;
+        min-width: 92px;
+        text-align: right;
+    }
+}
+
+//------------- адаптив -------------
+@media (max-width: 1200px) {
+    .cloudy-kpis {
+        grid-template-columns: repeat(2, minmax(0, var(--cloudy-kpi-width)));
+    }
+}
+
+@media (max-width: 1100px) {
+    .cloudy-search {
+        width: 320px;
+
+        kbd {
+            display: none;
+        }
+    }
+
+    .cloudy-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cloudy-recent {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .cloudy-search {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .cloudy-body {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .cloudy-sidebar {
+        width: 100%;
+        min-height: 0;
+        position: static;
+
+        &__scroll {
+            flex-direction: row;
+            padding: 8px 12px;
+            gap: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        &__bottom {
+            flex-direction: row;
+            padding: 0 12px 8px;
+            gap: 8px;
+        }
+
+        &__sep {
+            display: none;
+        }
+    }
+
+    .cloudy-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .cloudy-recent {
+        grid-column: span 1;
+    }
+
+    .cloudy-kpis {
+        grid-template-columns: minmax(0, var(--cloudy-kpi-width));
+    }
+}

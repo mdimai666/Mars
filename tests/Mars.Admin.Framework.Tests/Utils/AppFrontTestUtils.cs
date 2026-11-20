@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 using NSubstitute;
 
@@ -17,6 +18,7 @@ public static class AppFrontTestUtils
     {
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
+        services.AddFluentUIComponents();
         var jsMock = Substitute.For<IJSRuntime>();
         services.AddSingleton<IJSRuntime>(jsMock);
         var flurl = Substitute.For<IFlurlClient>();

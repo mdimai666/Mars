@@ -1,0 +1,43 @@
+@implements IDisposable
+
+<div class="cloudy-searchbox">
+    <i class="bi bi-search"></i>
+    <input type="text" placeholder="@Placeholder" aria-label="@Placeholder" @oninput="OnInput" @onkeydown="OnKeyDown" />
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public int DebounceMs { get; set; } = 300;
+
+    string _text = "";
+    Debouncer? _debouncer;
+
+    protected override void OnInitialized() => _debouncer = new Debouncer(DebounceMs);
+
+    void OnInput(ChangeEventArgs e)
+    {
+        var text = _text = e.Value?.ToString() ?? "";
+        _debouncer?.Debounce(() =>
+        {
+            Value = text;
+            _ = ValueChanged.InvokeAsync(text);
+        });
+    }
+
+    async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key != "Enter") return;
+
+        // Enter — немедленный поиск: ожидающий дебаунс снимается, чтобы не выстрелил повторно
+        var pending = _debouncer;
+        _debouncer = new Debouncer(DebounceMs);
+        pending?.Dispose();
+
+        Value = _text;
+        await ValueChanged.InvokeAsync(_text);
+    }
+
+    public void Dispose() => _debouncer?.Dispose();
+}

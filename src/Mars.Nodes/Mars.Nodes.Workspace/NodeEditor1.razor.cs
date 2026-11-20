@@ -105,10 +105,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     QuickNodeAddMenu? quickNodeAddMenu = default!;
     NodeEditContainer1? nodeEditContainer1 = default!;
 
-    bool _showWorkspaceContextMenu;
     FluentMenu _workspaceContextMenu = default!;
 
-    bool _showPaletteNodeContextMenu;
     FluentMenu _paletteNodeContextMenu = default!;
     ElementReference _paletteSidebarRef;
     // fallback until the first JS measurement of the palette sidebar position
@@ -119,6 +117,20 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     #region MenuTabs
     string activeMasterTab = "tabs";
+
+    /// <summary>Плавающая левая панель ситуативна: открывается чипом табов в тулбаре, повторный клик по тому же табу закрывает.</summary>
+    bool _paletteVisible;
+
+    void TogglePalette(string tabKey)
+    {
+        if (_paletteVisible && activeMasterTab == tabKey)
+            _paletteVisible = false;
+        else
+        {
+            activeMasterTab = tabKey;
+            _paletteVisible = true;
+        }
+    }
 
     class MasterTab
     {
@@ -138,7 +150,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     IReadOnlyCollection<NodeExampleInfo> _examplesList = [];
     IReadOnlyCollection<NodeExampleInfo> _currentPaletteNodeExamples = [];
-    Orientation? _editorSpaceOrientation;
 
     protected override void OnInitialized()
     {
@@ -160,15 +171,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _examplesList = _nodesLocator.CreateExamplesList();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         EnsureDefaultFlow();
-
-        if (_editorSpaceOrientation is null)
-        {
-            var viewPort = await _js.GetViewportMetricsAsync();
-            _editorSpaceOrientation = viewPort.Orientation == ScreenOrientationType.PortraitPrimary ? Orientation.Vertical : Orientation.Horizontal;
-        }
     }
 
     public async ValueTask DisposeAsync()
@@ -193,9 +198,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnMouseDownPaletteNode(NodeComponentMouseEventArgs e)
     {
-        if (e.MouseEvent.Button != (long)MouseButton.Left) return;
+        // 0 = left button per DOM MouseEvent.button
+        if (e.MouseEvent.Button != 0) return;
 
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         CreateNewNodeFromPalette(e);
     }
@@ -238,9 +244,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public void AddDebugMessage(string text) => AddDebugMessage(DebugMessage.ConsoleMessage(text));
     public void AddDebugMessage(DebugMessage msg) => _debugMessagesConsole.AddMessage(msg);
 
-    internal void ToggleConsolePosition()
+    /// <summary>Правая панель занята формой ноды — консоль скрыта (но остаётся в DOM и копит сообщения).</summary>
+    bool _isEditingNode;
+
+    void OnNodeEditingChanged(bool editing)
     {
-        _editorSpaceOrientation = _editorSpaceOrientation == Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
+        _isEditingNode = editing;
+        StateHasChanged();
     }
     #endregion
 
@@ -259,8 +269,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         _selectedNode = e.Node;
 
-        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _workspaceContextMenu.CloseMenuAsync();
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         _debugSnapshotsDebouncer.Debounce(RefreshDebugSnapshots);
     }
@@ -336,7 +346,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         await Task.Delay(10);
         appendNewConfigNodeEvent.ConfigNodeSetter(instance);
         EditNode = instance;
-        nodeEditContainer1.StartEditNode(instance);
+        nodeEditContainer1.StartEditNodeStacked(instance);
         RefreshDebugSnapshots();
         StateHasChanged();
     }
@@ -350,7 +360,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             return;
         }
         EditNode = node;
-        nodeEditContainer1.StartEditNode(node);
+        nodeEditContainer1.StartEditNodeStacked(node);
         RefreshDebugSnapshots();
     }
 
@@ -401,8 +411,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnWorkspaceClick(MouseEventArgs e)
     {
-        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
-        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+        _ = _workspaceContextMenu.CloseMenuAsync();
+        _ = _paletteNodeContextMenu.CloseMenuAsync();
 
         if (quickNodeAddMenu.Visible)
         {
@@ -568,9 +578,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     async Task OpenWorkspaceContextMenuAsync(FluentMenu menu, MouseEventArgs e)
     {
         await _nodeWorkspace1.RefreshContainerOffsetAsync();
-        await menu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                             (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX + _nodeWorkspace1.ScrollInfo.ScrollLeft),
-                             (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY + _nodeWorkspace1.ScrollInfo.ScrollTop));
+        await menu.OpenMenuAsync("red-ui-workspace-chart",
+                                 (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX + _nodeWorkspace1.ScrollInfo.ScrollLeft),
+                                 (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY + _nodeWorkspace1.ScrollInfo.ScrollTop));
     }
 
     private static readonly Dictionary<string, string> NodeContextMenuItems = new()
@@ -580,7 +590,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         ["CopySelectedNodesAsJsonAction"] = "Копировать JSON",
     };
 
-    void OnNodeContextMenuItemClick(MouseEventArgs e, string actionId)
+    void OnNodeContextMenuItemClick(string actionId)
     {
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else if (actionId == "DuplicateSelectedNodes") _actionManager.ExecuteAction<DuplicateSelectedNodesAction>();
@@ -596,10 +606,21 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     async Task OpenPaletteContextMenuAsync(MouseEventArgs e)
     {
-        await UpdatePaletteOffsetAsync();
-        await _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
-                                                (int)(e.ClientX - _paletteOffsetX),
-                                                (int)(e.ClientY - _paletteOffsetY));
+        if (_paletteVisible)
+        {
+            await UpdatePaletteOffsetAsync();
+            await _paletteNodeContextMenu.OpenMenuAsync("nodes-palette-sidebar",
+                                                        (int)(e.ClientX - _paletteOffsetX),
+                                                        (int)(e.ClientY - _paletteOffsetY));
+        }
+        else
+        {
+            // палитра скрыта (вызов из QuickNodeAddMenu) — якорим меню к канвасу
+            await _nodeWorkspace1.RefreshContainerOffsetAsync();
+            await _paletteNodeContextMenu.OpenMenuAsync("red-ui-workspace-chart",
+                                                        (int)(e.ClientX - _nodeWorkspace1.ContainerOffsetX),
+                                                        (int)(e.ClientY - _nodeWorkspace1.ContainerOffsetY));
+        }
     }
 
     async Task UpdatePaletteOffsetAsync()
@@ -635,7 +656,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         ["DeleteSelectedNodes"] = AppRes.Delete,
     };
 
-    void OnWireContextMenuItemClick(MouseEventArgs e, string actionId)
+    void OnWireContextMenuItemClick(string actionId)
     {
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else throw new NotImplementedException();

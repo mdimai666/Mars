@@ -64,7 +64,8 @@
   (Handlebars root-фронт + Scriban маунт `/sbn`); обязательна при изменениях рендера.
 - `tests/Mars.Server.Tests/TemplateEngines` — контракт фабрик/контрибьюторов Providers.
 - Парсинг стартовых шаблонов — `StarterFrontTemplatesTests` в `Mars.Integration.Tests`.
-- Прогоны: MTP-exe из `bin\Debug\net10.0` (`dotnet test` в репо заблокирован), Docker — `MARS_DOCKER_TESTS=1`.
+- Прогоны: `dotnet test tests/Mars.SiteEngine.Integration.Tests` (MTP, opt-in в `global.json`)
+  или exe из `bin\Debug\net10.0`; Docker — `MARS_DOCKER_TESTS=1`.
 
 ## Грабли
 
@@ -80,6 +81,16 @@
 - **Маунт-фронты**: страницы объявляют url относительно маунта; `_req.Path`, кэш-ключ и
   route-переменные — фронто-относительные (срезка `StripMount`); `site_base` корня — `/`, маунта —
   `/sbn/` (trailing slash обязателен).
+- **Поиск поста по slug** (`PostRepository.GetDetailBySlug`/`ExistAsync`,
+  `src/Server/Mars.Data.Repositories/`): сравнение `Slug.ToLower() == slug.ToLower()`,
+  НЕ `ILike` — планировщик PostgreSQL не использует выражение-индекс по `lower(slug)`
+  для ILIKE (проверено EXPLAIN). Индексы — raw SQL в миграции
+  `20260815151932_AddPostSlugIndexes` (`ix_posts_post_type_id_slug_lower`,
+  `ix_posts_slug_lower`); EF Core 10 не умеет выражение-индексы через `HasIndex`
+  (позиция Npgsql — efcore.pg#293: только raw SQL или citext). Без индексов — seq scan
+  10–12 мс и деградация записи ×3 на раздутой БД (цифры — `benchmarks/README.md`).
+  Уникальный индекс не добавляли (мешает soft-delete; коллизии проверяются кодом).
+  История задачи: `git show 3b13b36a:ai/PostSlugIndexTask.md`.
 
 ## Инварианты
 

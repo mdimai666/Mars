@@ -1,0 +1,111 @@
+@page "/tech/scheduler"
+@using Mars.Scheduler.Contracts.Schedulers
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<PageTitle>Scheduler</PageTitle>
+
+<div class="scheduler-page">
+    <header class="scheduler-page__hero">
+        <div class="scheduler-page__hero-text">
+            <h1 class="scheduler-page__title">Scheduler</h1>
+            <p class="scheduler-page__subtitle">
+                Фоновые задания платформы: cron-маски, состояние триггеров и ближайший запуск.
+                Управляйте каждым заданием отдельно или всеми сразу.
+            </p>
+        </div>
+        <div class="scheduler-page__actions">
+            <span class="scheduler-page__status" title="Состояние планировщика">
+                <span class="scheduler-page__status-dot"></span>
+                online
+            </span>
+            <button class="scheduler-page__btn" type="button" aria-label="play all" title="Play all" @onclick="PlayAll">
+                <i class="bi bi-play-fill"></i>
+                Play all
+            </button>
+            <button class="scheduler-page__btn" type="button" aria-label="pause all" title="Pause all" @onclick="PauseAll">
+                <i class="bi bi-pause-fill"></i>
+                Pause all
+            </button>
+            <button class="scheduler-page__btn scheduler-page__btn--icon" type="button" aria-label="refresh"
+                    title="Обновить список" @onclick="RefreshClick">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            @* ContentWrapper раньше рендерил этот дропдаун в заголовке (GeneralSectionActions) *@
+            <XActionsDropDown />
+        </div>
+    </header>
+
+    <section class="scheduler-page__panel">
+        <header class="scheduler-page__panel-head">
+            <h2>Jobs</h2>
+            <span class="scheduler-page__count">@(res?.TotalCount ?? res?.ItemsCount ?? 0)</span>
+            <span class="scheduler-page__rule"></span>
+        </header>
+
+        <div class="scheduler-page__grid">
+            <FluentDataGrid Items="@res?.Items.AsQueryable()"
+                            TGridItem="SchedulerJobResponse"
+                            GridTemplateColumns="2fr 0.5fr 2fr 1.5fr 1.2fr"
+                            GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+                <ChildContent>
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" Tooltip Class="scheduler-job-name" />
+                    <PropertyColumn Property="@(p => p.Group)" Sortable="true" Class="scheduler-job-group" />
+                    <TemplateColumn Title="Mask" Class="scheduler-job-mask">
+                        <div class="scheduler-triggers">
+                            @foreach (var t in context.Triggers)
+                            {
+                                <div class="scheduler-trigger">
+                                    <span class="scheduler-trigger__state scheduler-trigger__state--@t.TriggerState.ToLowerInvariant()">@t.TriggerState</span>
+                                    <code class="scheduler-trigger__mask" title="@t.Description">@t.Mask</code>
+                                    <span class="scheduler-trigger__desc">@t.Description</span>
+                                </div>
+                            }
+                        </div>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(p => p.NextExecutionTime)" Sortable="true" Tooltip Class="scheduler-job-next" />
+                    <TemplateColumn Title="Actions" Align="DataGridCellAlignment.End" Class="scheduler-job-actions">
+                        <div class="scheduler-row-actions">
+                            <button class="scheduler-icon-btn" type="button" aria-label="trigger item"
+                                    title="Запустить сейчас" @onclick="@(e => InjectItem(context))">
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </button>
+                            <button class="scheduler-icon-btn" type="button" aria-label="play item"
+                                    title="Возобновить" @onclick="@(e => PlayItem(context))">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            <button class="scheduler-icon-btn" type="button" aria-label="pause item"
+                                    title="Приостановить" @onclick="@(e => PauseItem(context))">
+                                <i class="bi bi-pause-fill"></i>
+                            </button>
+                        </div>
+                    </TemplateColumn>
+                </ChildContent>
+                <EmptyContent>
+                    <div class="scheduler-page__empty">Заданий нет.</div>
+                </EmptyContent>
+            </FluentDataGrid>
+        </div>
+
+        <footer class="scheduler-page__foot">
+            <PagesTotal Page=@(pagination.CurrentPageIndex+1) PageSize=pagination.ItemsPerPage
+                        TotalPages=@(pagination.TotalItemCount??0) Class="scheduler-page__total" />
+
+            <div class="scheduler-page__pages">
+                @if (pagination.TotalItemCount.HasValue)
+                {
+                    for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
+                    {
+                        var capturedIndex = pageIndex;
+                        <button type="button"
+                                class="scheduler-page__page @(pagination.CurrentPageIndex == capturedIndex ? "active" : null)"
+                                aria-current="@AriaCurrentValue(capturedIndex)"
+                                aria-label="@AriaLabel(capturedIndex + 1)"
+                                @onclick="@(() => GoToPageAsync(capturedIndex))">
+                            @(capturedIndex + 1)
+                        </button>
+                    }
+                }
+            </div>
+        </footer>
+    </section>
+</div>

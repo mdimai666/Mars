@@ -6,7 +6,7 @@
         <div class="d-flex align-items-center">
             <div class="flex-fill">
                 <div class="d-flex gap-2">
-                    <FluentTextField @bind-Value="@value" Placeholder="название" />
+                    <FluentTextInput @bind-Value="@value" Placeholder="название" />
                     <FluentButton OnClick=OnAddClick >Добавить</FluentButton>
                 </div>
             </div>
@@ -39,16 +39,16 @@
                 <div class="d-flex flex-fill gap-3">
                     <div class="">
                         <FormItem2 For="@(()=>item.Title)">
-                            <FluentTextField @bind-Value=@item.Title MaxLength="255" />
+                            <FluentTextInput @bind-Value=@item.Title MaxLength="255" />
                         </FormItem2>
                     </div>
                     <div class="">
                         <FormItem2 For="@(()=>item.Key)">
-                            <FluentTextField @bind-Value=@item.Key MaxLength="255" Placeholder="(авто)" />
+                            <FluentTextInput @bind-Value=@item.Key MaxLength="255" Placeholder="(авто)" />
                         </FormItem2>
                     </div>
                     <div>
-                        <FluentNumberField @bind-Value=@item.Value Size="2" Label="Value" />
+                        <FluentNumberInput @bind-Value=@item.Value Label="Value" />
                     </div>
                     <div>
                         <div class="spacer-2"></div>

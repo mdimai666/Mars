@@ -67,6 +67,38 @@ window.blazor_newTab = function (url) {
     window.open(url, '_blank').focus();
 }
 
+window.blazor_fetch_text = async function (url, maxChars, encoding) {
+    var resp = await fetch(url);
+    if (!resp.ok) {
+        throw new Error('HTTP ' + resp.status);
+    }
+    var buffer = await resp.arrayBuffer();
+    var enc = encoding;
+    var text;
+    if (enc) {
+        text = new TextDecoder(enc).decode(buffer);
+    } else {
+        try {
+            text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+            enc = 'utf-8';
+        } catch (e) {
+            text = new TextDecoder('windows-1251').decode(buffer);
+            enc = 'windows-1251';
+        }
+    }
+    if (maxChars && text.length > maxChars) {
+        text = text.substring(0, maxChars) + '\n…';
+    }
+    return { text: text, encoding: enc };
+}
+
+window.blazor_click_element = function (id) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.click();
+    }
+}
+
 //===========
 
 //console.log('0. CTRL + S');
@@ -283,4 +315,23 @@ window.d_actionCenter_preventArrowCaret = function (element) {
             e.preventDefault();
         }
     });
+};
+
+// Скачать текст как файл (Export на странице логов и т.п.)
+window.marsDownloadText = function (filename, text) {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+};
+
+// Текущая эффективная тема FluentUI v5 (data-theme на body ставит IThemeService)
+window.marsIsDarkTheme = function () {
+    const t = document.body.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 };

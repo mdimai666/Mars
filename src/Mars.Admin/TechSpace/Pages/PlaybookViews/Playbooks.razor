@@ -1,0 +1,32 @@
+@page "/tech/playbooks"
+@using MarsCodeEditor2
+
+<PageTitle>Playbooks</PageTitle>
+
+<div class="playbooks-page">
+    <header class="playbooks-page__hero">
+        <div class="playbooks-page__hero-text">
+            <h1>Playbooks</h1>
+            <p>C# functions, node functions and controllers executed by the platform.</p>
+        </div>
+        <div class="playbooks-page__hero-actions">
+            <a class="playbooks-page__ghost" href="/dev/tech/models/classmodels">
+                <i class="bi bi-diamond"></i>
+                Class models
+            </a>
+        </div>
+    </header>
+
+    <section class="playbooks-page__panel">
+        <header class="playbooks-page__head">
+            <i class="bi bi-file-earmark-code playbooks-page__head-icon"></i>
+            <span class="playbooks-page__head-title">Sample playbook</span>
+            <span class="playbooks-page__lang">csharp</span>
+        </header>
+        @* CodeEditor2 по умолчанию 80vh — высота задаётся обёрткой, редактор тянется на 100% *@
+        <div class="playbooks-page__editor">
+            <CodeEditor2 Lang="@CodeEditor2.Language.csharp" Value="@code1"
+                         ContainerCssStyle="height:100%;border:none;border-radius:0;overflow:hidden;" />
+        </div>
+    </section>
+</div>

@@ -10,22 +10,25 @@ public class ViewDdlBuilderTests
     static ViewDdlResult Create(string? body, bool replace = false, SqlDialect dialect = SqlDialect.Postgres, string? schema = "public", string? name = "todo_done")
         => ViewDdlBuilder.Create(dialect, schema, name, body, replace);
 
+    // Raw-литералы берут переводы строк из файла (CRLF при чекауте на Windows), а билдер всегда выдаёт \n.
+    static string Lf(string s) => s.Replace("\r\n", "\n");
+
     [Fact]
     public void Create_Postgres_GeneratesCreateViewWithQuotedSchema()
     {
-        Create("SELECT * FROM todo").Sql.Should().Be("""
+        Create("SELECT * FROM todo").Sql.Should().Be(Lf("""
 CREATE VIEW "public"."todo_done" AS
 SELECT * FROM todo
-""");
+"""));
     }
 
     [Fact]
     public void Create_Replace_PostgresUsesOrReplace()
     {
-        Create("SELECT 1", replace: true).Sql.Should().Be("""
+        Create("SELECT 1", replace: true).Sql.Should().Be(Lf("""
 CREATE OR REPLACE VIEW "public"."todo_done" AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
@@ -33,10 +36,10 @@ SELECT 1
     {
         var result = Create("SELECT 1", replace: true, dialect: SqlDialect.MsSql, schema: "dbo");
 
-        result.Sql.Should().Be("""
+        result.Sql.Should().Be(Lf("""
 CREATE OR ALTER VIEW [dbo].[todo_done] AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
@@ -44,10 +47,10 @@ SELECT 1
     {
         var result = Create("SELECT 1", dialect: SqlDialect.MsSql, schema: "dbo");
 
-        result.Sql.Should().Be("""
+        result.Sql.Should().Be(Lf("""
 CREATE VIEW [dbo].[todo_done] AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
@@ -55,19 +58,19 @@ SELECT 1
     {
         var result = Create("SELECT 1", replace: true, dialect: SqlDialect.MySql, schema: "shop");
 
-        result.Sql.Should().Be("""
+        result.Sql.Should().Be(Lf("""
 CREATE OR REPLACE VIEW `shop`.`todo_done` AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
     public void Create_NoSchema_UsesTableNameOnly()
     {
-        Create("SELECT 1", schema: null).Sql.Should().Be("""
+        Create("SELECT 1", schema: null).Sql.Should().Be(Lf("""
 CREATE VIEW "todo_done" AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
@@ -75,28 +78,28 @@ SELECT 1
     {
         var result = Create("SELECT 1", dialect: SqlDialect.MsSql, schema: null, name: "we]ird");
 
-        result.Sql.Should().Be("""
+        result.Sql.Should().Be(Lf("""
 CREATE VIEW [we]]ird] AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
     public void Create_TrailingSemicolon_DroppedFromBody()
     {
-        Create("SELECT 1;\n").Sql.Should().Be("""
+        Create("SELECT 1;\n").Sql.Should().Be(Lf("""
 CREATE VIEW "public"."todo_done" AS
 SELECT 1
-""");
+"""));
     }
 
     [Fact]
     public void Create_TrailingSemicolonFollowedByComment_KeepsCommentWithoutSemicolon()
     {
-        Create("SELECT 1; -- keep").Sql.Should().Be("""
+        Create("SELECT 1; -- keep").Sql.Should().Be(Lf("""
 CREATE VIEW "public"."todo_done" AS
 SELECT 1 -- keep
-""");
+"""));
     }
 
     [Fact]

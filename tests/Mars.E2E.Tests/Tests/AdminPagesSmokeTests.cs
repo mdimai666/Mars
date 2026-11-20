@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Framework.Services;
 
@@ -32,9 +32,14 @@ public class AdminPagesSmokeTests
         login.LayoutType.Should().NotBeNull();
         login.LayoutType!.Name.Should().Be("BlankLayout");
 
+        var techLogs = pages.Single(p => p.Name == "TechLogsPage");
+        techLogs.LayoutType.Should().NotBeNull();
+        techLogs.LayoutType!.Name.Should().Be("CloudyTechLayout");
+
+        // у cloudy-страниц своего @layout нет: default задаёт App.razor (DefaultLayout=CloudyLayout),
+        // а он в LayoutAttribute страницы не попадает — сервис его не видит
         var users = pages.Single(p => p.Name == "UsersPage");
-        users.LayoutType.Should().NotBeNull();
-        users.LayoutType!.Name.Should().Be("AdminLayout");
+        users.LayoutType.Should().BeNull();
     }
 
     [Fact]
@@ -64,7 +69,7 @@ public class AdminPagesSmokeTests
         var index = pages.Single(p => p.Name == "Index");
 
         // относительный путь заполнен всегда и указывает на Pages/Index.razor
-        index.SourceRelativePath.Should().Be("Mars.Admin/Pages/Index.razor");
+        index.SourceRelativePath.Should().Be("Mars.Admin/SiteSpace/Pages/Index.razor");
 
         // в Debug внутри репозитория может резолвиться и абсолютный путь
         var resolved = _service.ResolveSourceFilePath(index.PageType);

@@ -1,12 +1,12 @@
 # Mars Project Context
 
-Full overview: @ai/ProjectDescription.md
+Full overview (read on demand, not imported): `ai/ProjectDescription.md`
 
 ## Quick Summary
 
 Mars is an open-source visual programming platform (inspired by Node-RED and WordPress) built on .NET 10 / Blazor. It combines:
-- **Visual programming** — 55+ node types for flow-based workflows
-- **Content management** — flexible PostTypes with 15 MetaField types
+- **Visual programming** — many node types for flow-based workflows
+- **Content management** — flexible PostTypes with a typed MetaField set
 - **Multi-database** — PostgreSQL, MsSQL, MySQL
 - **Plugin system** — .NET assemblies loaded at runtime
 - **Docker, Scheduler, AI/Semantic Kernel, OpenTelemetry**
@@ -16,9 +16,12 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 - `src/Mars.WebApp` — composition root (main application)
 - `src/Server` — core `Mars.Server` and data `Mars.Data*`
 - `src/Mars.Modules` — platform modules (flat on disk, virtual folders in `Mars.slnx`)
+- `src/Modules` — older standalone module libraries (`MarsEditors`, `MarsCodeEditor2`,
+  `BlazoredHtmlRender`, `EditorJsBlazored`, `Mars.HttpSmartAuthFlow`); new modules go to `src/Mars.Modules`
 - `src/Mars.Nodes` — visual programming engine
 - `src/Admin` — admin panel libraries; `src/Mars.Admin` — admin WASM app
-- `src/Plugin` — plugin system
+- `src/Plugin` — plugin system; `src/Mars.Datasource` — external data source providers
+- `src/Mars.Core`, `src/Mars.Contracts`, `src/Mars.WebApiClient` — shared core, contracts, API client
 - `docs/` — documentation site
 - `ai/` — AI agent context files
 
@@ -26,8 +29,8 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 Каталог плагинов, кабинет подписок (CloudPanel), Keycloak и облачная инфраструктура живут
 в отдельном репо `C:\Users\D\Documents\VisualStudio\2026\Mars.Cloud` (план — там в
-`ai/CloudInfraPlan.md`). С этим репо связаны: фазы 4–5 плана каталога
-(`ai/PluginServer/PluginCatalogPlan.md`), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
+`ai/CloudInfraPlan.md`). С этим репо связаны: каталог плагинов
+(`ai/PluginSystemGuide.md` §«Каталог плагинов»), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
 и будущая документация каталога в `docs/dev_docs/`.
 
 ## Структура решения и правила агентам
@@ -50,7 +53,20 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
   «Инварианты», «Отклонено», рецепты «как добавить».
 - Публичная документация сайта — `docs/dev_docs/`, конвенция в `ai/DocsGuide.md`.
 
+## Вёрстка админки (FluentUI v5)
+
+- Начинать с `ai/FluentUiGuide.md` (инструменты, правила вёрстки, цикл правки); факты
+  библиотеки — `ai/FluentV5Reference.md`, CSS/токены/less — `ai/CssRefactoringGuide.md`.
+- Устройство админки и Cloudy-паттерны (что переиспользовать при новой странице) —
+  `ai/CloudyGuide.md`; хостинг `/dev` и отдача ассетов — `ai/AdminHostingGuide.md`.
+- Не раскапывать nuget-пакет/GitHub ради фактов, которые уже есть в гайдах; новую находку
+  дописывать в гайд (амортизация расследований).
+- Правки стилей — только `.less`; визуальная проверка без скриншотов — харнесс `tools/ui/`
+  (crawl/probe/tokens/diff/sweep, см. `tools/ui/README.md`).
+
 ## Build & Test
+
+Test suite guide (harness, opt-in gates, verification recipes, rejected ideas): `ai/TestingGuide.md`
 
 ```
 dotnet build Mars.slnx                          # full solution build
@@ -60,14 +76,31 @@ pwsh -NoProfile -File test-all.ps1 -List        # list projects that would run (
 ```
 
 Tests are **xUnit v3 + Microsoft Testing Platform**: each test project builds as an MTP
-executable (`OutputType=Exe`) and is run directly. The `dotnet test` MTP driver path is
-blocked by an SDK 10.0.400 incompatibility (exit code 5, "Zero tests ran") — do not use it.
-Single project: build, then run its exe from the bin directory:
+executable (`OutputType=Exe`). Two interchangeable ways to run them:
+
+Canonical — `dotnet test` (MTP mode; enabled repo-wide by `global.json` →
+`"test": { "runner": "Microsoft.Testing.Platform" }`, without it `dotnet test` fails with
+`Testing with VSTest target is no longer supported ... on .NET 10 SDK and later`):
+
+```
+dotnet test tests/Mars.Server.Tests
+dotnet test tests/Mars.Server.Tests --filter "FullyQualifiedName~FileServiceTests"
+```
+
+Fast path — the exe directly (no MSBuild, starts ~5x faster; xUnit in-process runner):
 
 ```
 dotnet build tests/Mars.Server.Tests
-tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe
+tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe -class "Mars.Server.Tests.Files.FileServiceTests"
 ```
+
+The two CLIs are **not** interchangeable. The exe takes single-dash xUnit options (`-class`,
+`-method`, `-filter "/Assembly/Namespace/Class"`, `-list classes`; `--help` is the only
+double-dash one) — `--filter` there fails with `unknown option` (exit 3). `dotnet test` takes
+double-dash MTP options with VSTest filter syntax; xUnit's own options there give
+`Handshake failures` / zero tests (exit 5 or 8), and `-- --help` crashes the SDK host — use the
+exe for help. A wrong filter can exit "successfully" with zero tests, so always check the
+summary count is non-zero.
 
 `test-all.ps1` runs exes with cwd = their `bin\Debug\net10.0`, so fixtures write into the
 bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<timestamp>\`.
@@ -76,7 +109,9 @@ bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<tim
 
 - **Solution**: `Mars.slnx` — everything builds from here
 - **Modules**: `src/Mars.Modules/<ModuleName>/` — each module is a self-contained project
-- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration)
+- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration), plus
+  non-`Mars.*` projects: `ExternalServices.Integration.Tests`, `Test.Mars.MetaModelGenerator`,
+  and shared harnesses `Mars.Test.AppHost` / `Mars.Test.Common` / `ExternalServices.TestContainers`
 
 ## Mars CLI — thin client to a running instance
 
@@ -85,50 +120,29 @@ for the current directory, commands execute directly inside that live process ov
 domain socket (no second startup); otherwise they run in-process.
 
 - `Mars.exe status` — is the instance alive (pid, version, uptime); exit 1 if not.
+- `Mars.exe pages list|show|find|layouts` — Blazor pages for dev agents: routes, roles, layout,
+  source file paths and code (`--code`, `--json`). Read-only. Guide: `ai/CliPagesGuide.md`.
 - The command set is not fixed — discover it via `-h` and the sources
   (`src/Mars.Modules/Mars.CommandLine`, `src/Mars.WebApp/CommandLine`, CommandCli classes in modules).
+  General CLI mechanics (UDS, root flags, quiet/JSON) and `fn` (one-shot C# scripts): `ai/CliGuide.md`.
 - Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
 - Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
+  Root flags go BEFORE the command (`Mars.exe --quiet pages list`), after a subcommand they fail to parse.
 - In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
 
 ## Release: тег (NuGet-публикация)
 
 - Версия — `<MarsAppVersion>` в `Directory.Build.props`; тег = `v<версия>`.
-- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI, 54 пакета).
+- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI пакует все `src/**`-проекты, объявившие `<PackageId>`).
 - Если версия занята — bump в props, коммит `bump version <версия>`, push, затем скрипт.
 - Агентский запуск: `pwsh -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
 
 ## PS1-скрипты: UTF-8 без BOM, запуск через pwsh
 
-- `.ps1` в репо — UTF-8 **без BOM**; при правке BOM не добавлять.
+- Новые `.ps1` — UTF-8 **без BOM**; при правке существующих BOM не добавлять и не снимать
+  (несколько исторических скриптов, включая `test-all.ps1`, `benchmarks/run-perf.ps1`,
+  `tools/ui/build-css.ps1`, `tools/ui/serve.ps1`, сохранены с BOM — оставить как есть).
 - Запуск и синтакс-проверку ps1 делать только через `pwsh` (PowerShell 7). Windows PowerShell 5.1 (`powershell.exe`) без BOM читает файл как ANSI и ложно падает на кириллице/эмодзи — для ps1 его не использовать.
-
-## codebase-memory MCP (граф кода)
-
-Граф кода доступен через MCP `codebase-memory`; имя проекта индекса выводится из пути клонирования
-(зависит от места открытия репо). Переиндексация после больших внешних изменений — `index_repository`
-(~3–4 минуты).
-
-**Когда использовать:**
-- Структурный анализ вместо grep: `trace_path` (точный список вызывающих/вызываемых со счётчиками),
-  `search_graph`/`search_code` (поиск с дедупликацией по функциям), `get_architecture` со скоупом `path`
-  (обзор + хотспоты), `query_graph` для пофайловых агрегаций (карта потребителей пакета).
-- Вопросы «кто использует тип/метод» и радиус влияния изменений.
-
-**Когда НЕ использовать (фронт — слабое место):**
-- razor-разметка (`.razor`) не индексируется — только `.razor.cs`; фронтовые зависимости
-  (`Mars.Admin`, `Mars.Admin.Framework`) проверять grep'ом.
-- Generic-инстанциации и типы свойств record часто не дают USAGE-рёбер: «0 внешних» из графа —
-  только гипотеза о мёртвом коде, подтверждать grep'ом.
-- Атрибуты: попадают в граф как DECORATES, а не USAGE.
-
-**Известные баги (проверено 2026-08-28):**
-- `NOT x.file_path STARTS WITH '...'` молча возвращает 0 строк (любая форма). Обход: два запроса
-  (все пользователи / внутренние) и вычитание.
-- `split()` не поддерживается (ошибка `unsupported function`); доступны только функции из текста ошибки
-  (count/sum/avg/min/max/collect, toLower/toUpper/toString/…, labels/type/id/keys/properties).
-- Обход рёбер и мульти-типовые паттерны `[:CALLS|CALL_REFERENCE|USAGE]` работают (после обновления сервера 2026-08-28).
-- Сырые результаты MCP пользователю не показывать — только сжатый итог.
 
 ## Language
 

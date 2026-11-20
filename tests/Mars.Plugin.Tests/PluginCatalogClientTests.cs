@@ -27,6 +27,7 @@ public class PluginCatalogClientTests
             "licenseUrl": null,
             "iconUrl": "https://icon",
             "tags": ["http", "demo"],
+            "category": "integrations",
             "status": "recommended",
             "isRecommended": true,
             "marsVersionMin": "0.8",
@@ -88,6 +89,7 @@ public class PluginCatalogClientTests
         var result = await client.SearchAsync(new MarketplaceSearchRequest
         {
             Q = "example",
+            Category = "integrations",
             Recommended = true,
             Sort = "rating",
             Page = 2,
@@ -104,6 +106,7 @@ public class PluginCatalogClientTests
         plugin.DisplayName.Should().Be("Example Plugin");
         plugin.IsRecommended.Should().BeTrue();
         plugin.Tags.Should().Equal("http", "demo");
+        plugin.Category.Should().Be("integrations");
         plugin.LatestVersion.Should().Be("1.2.0");
         plugin.TotalDownloads.Should().Be(42);
         plugin.AvgRating.Should().Be(4.5);
@@ -112,6 +115,7 @@ public class PluginCatalogClientTests
         uri.AbsolutePath.Should().Be("/api/plugins");
         var query = QueryHelpers.ParseQuery(uri.Query);
         query["q"].ToString().Should().Be("example");
+        query["category"].ToString().Should().Be("integrations");
         query["recommended"].ToString().Should().Be("true");
         query["sort"].ToString().Should().Be("rating");
         query["minVersion"].ToString().Should().Be("0.8.3");

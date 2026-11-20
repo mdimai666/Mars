@@ -1,0 +1,32 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<GallerySection Title="Typography">
+
+    <div class="hstack gap-4 flex-wrap align-items-start">
+
+        <GalleryVariant Caption="FluentText Size300..Size900">
+            <div class="vstack gap-1">
+                <FluentText Size="TextSize.Size300" Block>Size300 — основной текст (Body)</FluentText>
+                <FluentText Size="TextSize.Size400" Block>Size400 — Subject</FluentText>
+                <FluentText Size="TextSize.Size500" Block>Size500 — Header</FluentText>
+                <FluentText Size="TextSize.Size600" Block>Size600 — PaneHeader</FluentText>
+                <FluentText Size="TextSize.Size700" Block>Size700 — EmailHeader</FluentText>
+                <FluentText Size="TextSize.Size800" Block>Size800 — PageTitle</FluentText>
+                <FluentText Size="TextSize.Size900" Block>Size900 — HeroTitle</FluentText>
+            </div>
+        </GalleryVariant>
+
+        <GalleryVariant Caption="FluentText As=TextTag.H1..H6">
+            <div class="vstack gap-1">
+                <FluentText As="TextTag.H1" Size="TextSize.Size800" Block>H1 — заголовок страницы</FluentText>
+                <FluentText As="TextTag.H2" Size="TextSize.Size700" Block>H2 — раздел</FluentText>
+                <FluentText As="TextTag.H3" Size="TextSize.Size600" Block>H3 — подраздел</FluentText>
+                <FluentText As="TextTag.H4" Size="TextSize.Size500" Block>H4 — карточка</FluentText>
+                <FluentText As="TextTag.H5" Size="TextSize.Size400" Block>H5 — блок</FluentText>
+                <FluentText As="TextTag.H6" Size="TextSize.Size300" Block>H6 — мелкий заголовок</FluentText>
+            </div>
+        </GalleryVariant>
+
+    </div>
+
+</GallerySection>

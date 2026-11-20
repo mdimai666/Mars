@@ -11,18 +11,11 @@ public static class DialogExtensions
     {
         var content = (MarkupString)(message ?? AppRes.DeletionConfirmationMessage);
 
-        var dialog = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(content, new DialogParameters()
+        var result = await dialogService.ShowDialogAsync<DeleteConfirmationDialog>(new DialogOptions
         {
-            //Height = "240px",
-            //Title = $"Updating the {DialogData.Name} sheet",
-            PreventDismissOnOverlayClick = false,
-            PreventScroll = true,
             Modal = true,
-            TrapFocus = false,
-            //Class = "DeletionConfirmationDialog" class not support
+            Parameters = { ["Content"] = content },
         });
-
-        var result = await dialog.Result;
 
         return !result.Cancelled;
     }

@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     xUnit v3 test projects build as MTP executables (OutputType=Exe). This script runs them
-    directly (the "dotnet test" MTP driver path is blocked on SDK 10.0.400, exit 5).
+    directly (fastest path; "dotnet test" also works via the MTP opt-in in global.json).
     Default: unit + Docker-integration projects. Mars.E2E.Tests and Mars.DockerImage.Tests
     are excluded unless -IncludeE2E (E2E inside that suite включаются переменной
     окружения MARS_E2E_TESTS=1, которую ставит сам -IncludeE2E).

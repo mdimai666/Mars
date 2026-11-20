@@ -47,3 +47,11 @@ timestamp,commit,version,mode,scenario,rps,avg_ms,p95_ms,failed_pct
 2026-08-31 09:00:37,93ff3690,0.8.1-alpha.4,full,post_list,2426,7.94,11.83,0
 2026-08-31 09:01:08,93ff3690,0.8.1-alpha.4,full,post_update,599,8.2,14.23,0
 2026-08-31 09:01:39,93ff3690,0.8.1-alpha.4,full,post_create,1074,9.16,11.75,0
+2026-09-26 23:18:11,63e31e35,0.8.3-alpha.32,full,render_static_anon,47961,0.35,1.51,0
+2026-09-26 23:18:42,63e31e35,0.8.3-alpha.32,full,render_static_auth,3128,6.23,9.51,0
+2026-09-26 23:19:12,63e31e35,0.8.3-alpha.32,full,render_db_anon,1332,14.8,20.27,0
+2026-09-26 23:19:43,63e31e35,0.8.3-alpha.32,full,render_db_auth,1045,18.91,24.43,0
+2026-09-26 23:20:14,63e31e35,0.8.3-alpha.32,full,post_read,3106,6.29,9.16,0
+2026-09-26 23:20:44,63e31e35,0.8.3-alpha.32,full,post_list,2580,7.47,10.93,0
+2026-09-26 23:21:15,63e31e35,0.8.3-alpha.32,full,post_update,611,8.02,13.74,0
+2026-09-26 23:21:46,63e31e35,0.8.3-alpha.32,full,post_create,1100,8.93,11.53,0

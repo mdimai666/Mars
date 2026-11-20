@@ -13,5 +13,6 @@ public record FeedbackDetail : IHasId
     public required bool IsAuthorizedUser { get; init; }
     public required string FilledUsername { get; init; }
     public required string Content { get; init; }
+    public required bool IsRead { get; init; }
 
 }

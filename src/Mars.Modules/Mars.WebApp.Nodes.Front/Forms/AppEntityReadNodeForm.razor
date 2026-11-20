@@ -2,6 +2,7 @@
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Core.Utils
 @using Mars.Nodes.Core.Models.EntityQuery
+@using Mars.QueryLang.Contracts
 @using Mars.Contracts.Resources
 @using Mars.WebApp.Nodes.Front.Forms.Components
 @using Mars.WebApp.Nodes.Front.Models.NodeEntityQuery
@@ -14,12 +15,14 @@
 <div class="form-group d-flex flex-column flex-fill gap-2">
 
     <FormItem2 For="() => Node.ExpressionInput">
-        <FluentSelect Items="Enum.GetValues<NodeExpressionInput>()" @bind-SelectedOption=@Node.ExpressionInput Class="" />
+        <FluentSelect TOption="NodeExpressionInput" TValue="NodeExpressionInput"
+                      Items="@(Enum.GetValues<NodeExpressionInput>())"
+                      @bind-Value=@Node.ExpressionInput Class="" />
     </FormItem2>
 
     @if (_busy)
     {
-        <FluentProgressRing />
+        <FluentSpinner />
     }
     else if (BuilderModel is null)
     {
@@ -59,7 +62,7 @@
                                     @for (int i = 0; i < item.Parameters.Count; i++)
                                     {
                                         var p = i;
-                                        <FluentTextField Placeholder="@item.Method?.Parameters.ElementAtOrDefault(p)?.Name"
+                                        <FluentTextInput Placeholder="@item.Method?.Parameters.ElementAtOrDefault(p)?.Name"
                                                          @bind-Value="item.Parameters[p]" />
                                     }
                                 </div>
@@ -70,11 +73,15 @@
                     </ItemTemplate>
                 </FluentSortableList>
                 <div class="mt-1 hstack gap-1">
-                    <FluentMenuButton IconStart="@(new Icons.Regular.Size16.Add())"
-                                      Text="@AppRes.Add"
-                                      Items="AddButtonMenuItems"
-                                      UseMenuService="false"
-                                      OnMenuChanged="HandleOnAddItemMenuChanged" />
+                    <FluentButton Id="@_addMenuButtonId" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
+                    <FluentMenu Trigger="@_addMenuButtonId" OnClick="HandleOnAddItemMenuClick">
+                        <FluentMenuList>
+                            @foreach (var item in AddButtonMenuItems)
+                            {
+                                <FluentMenuItem Id="@item.Key">@item.Value</FluentMenuItem>
+                            }
+                        </FluentMenuList>
+                    </FluentMenu>
                 </div>
                 <div class="my-2">
                     <b class="text-secondary">expression:</b>
@@ -101,6 +108,8 @@
     NodeEntityQueryRequestModelEditModel? BuilderModel;
 
     Dictionary<string, string> AddButtonMenuItems = [];
+
+    readonly string _addMenuButtonId = "addbtn-" + Guid.NewGuid();
 
     protected override void OnParametersSet()
     {
@@ -162,9 +171,11 @@
         BuilderModel!.CallChains = BuilderModel!.CallChains.Where(s => s != item).ToArray();
     }
 
-    void HandleOnAddItemMenuChanged(MenuChangeEventArgs e)
+    void HandleOnAddItemMenuClick(MenuItemEventArgs args)
     {
-        var key = e.Id;
+        var key = args.Item?.Id;
+        if (key is null) return;
+
         var method = _builderDictionary!.Providers[BuilderModel!.EntityName].Methods.First(s => s.Name == key);
         AddItem(method);
     }

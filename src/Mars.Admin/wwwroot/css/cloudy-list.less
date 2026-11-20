@@ -1,0 +1,812 @@
+//-------------------------------------------------------------
+// CLOUDY LIST — общие паттерны списочных страниц редизайна
+// (browser-панель, список-грид, тинты, теги, поиск, пейджер)
+// Источник: прототип mars-redesign-project (Users/Posts/Categories)
+// Колонки списка задаёт страница: --cloudy-list-cols
+//-------------------------------------------------------------
+
+//------------- панель-браузер: акрил + слоты head/foot -------------
+.cloudy-browser {
+    border-radius: 18px;
+    background: var(--cld-acrylic-bg);
+    border: 1px solid var(--cld-acrylic-border);
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--cld-line);
+        flex-wrap: wrap;
+    }
+
+    &__head-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    &__head-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-left: auto;
+    }
+
+    // полноширинный ряд под тулбаром (панель фильтров); пустой фрагмент схлопывается
+    &__subhead {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    &__foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 28px;
+        border-top: 1px solid var(--cld-line);
+    }
+
+    //------------- scrollable-вариант: тело — flex-fill с внутренним скроллом -------------
+    // Используется страницами с FluentDataGrid (Virtualize нужен ограниченный по высоте
+    // scroll-контейнер). --cloudy-browser-inset — суммарная высота ВСЕГО вокруг тела
+    // (топбар, page head, head/foot панели, отступы лэйаута); страница уточняет его
+    // в своём scoped-css через Class-параметр.
+    &--scroll {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - var(--cloudy-browser-inset, 320px));
+        min-height: 480px;
+
+        .cloudy-browser__head,
+        .cloudy-browser__foot {
+            flex: none;
+        }
+
+        .cloudy-browser__body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
+    }
+}
+
+//------------- список: head + строки на общем гриде -------------
+// ВАЖНО: --cloudy-list-cols здесь НЕ объявлять — собственное объявление
+// перебило бы значение, заданное страницей; дефолт — через var(..., fallback)
+.cloudy-list {
+    &__head,
+    &__row {
+        display: grid;
+        grid-template-columns: var(--cloudy-list-cols, minmax(0, 1fr));
+        gap: 14px;
+        align-items: center;
+    }
+
+    &__head {
+        padding: 12px 28px;
+        border-bottom: 1px solid var(--cld-line);
+        color: var(--cld-muted);
+        font-size: 13px;
+    }
+
+    &__items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__row {
+        padding: 13px 28px;
+        transition: background .15s ease;
+
+        + .cloudy-list__row {
+            border-top: 1px solid var(--cld-line);
+        }
+
+        &:hover {
+            background: var(--cld-hover-bg);
+        }
+    }
+}
+
+//------------- FluentDataGrid в cloudy-скине -------------
+// DOM v5 (bundle.scp.css): table.fluent-data-grid[display-mode=grid] — display:grid,
+// thead/tbody/tr — display:contents, th/td — прямые grid-элементы; вид «строки»
+// собирается по ячейкам. Hover-фон управляется переменной --datagrid-hover-color.
+table.cloudy-grid.fluent-data-grid {
+    width: 100%;
+    height: auto;
+    column-gap: 14px;
+    --datagrid-hover-color: var(--cld-hover-bg);
+
+    th,
+    td {
+        border-bottom: 1px solid var(--cld-line);
+        /*padding: 13px 0;*/
+        background: transparent;
+    }
+    // боковые поля страницы (как padding 28px у .cloudy-list__row) — крайними ячейками
+    th:first-child,
+    td:first-child {
+        padding-left: 28px;
+    }
+
+    th:last-child,
+    td:last-child {
+        padding-right: 28px;
+    }
+
+    th[col-justify=end],
+    td[col-justify=end] {
+        text-align: end;
+    }
+
+    th[cell-type=columnheader] {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        color: var(--cld-muted);
+        font-size: 13px;
+        font-weight: 500;
+
+        [col-sort-button] {
+            min-width: auto; // грабля v5: fluent-button host несёт min-width:96px
+
+            &:hover {
+                background-color: #ffffff57;
+            }
+        }
+    }
+    // sticky-заголовок: фон непрозрачный, строки скроллятся под ним
+    tr[row-type=sticky-header] > th {
+        background-color: transparent;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+    // hover-правило бандла имеет высокую специфичность (:not-цепочка) —
+    // дублируем селектор со своим префиксом, чтобы убрать cursor:pointer
+    tr[hover]:not([row-type=header],[row-type=sticky-header],[row-state=loading-content],[row-state=detail-content],[row-state=empty-content],[row-state=error-content]):hover td {
+        cursor: default;
+    }
+
+    tr[row-state=empty-content] > td,
+    tr[row-state=loading-content] > td {
+        border-bottom: none;
+        padding: 0;
+    }
+}
+
+// ячейка «Member»: аватар + имя/почта (замена связке колонок .cloudy-list)
+.cloudy-grid-member {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+//------------- ячейки -------------
+.cloudy-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    &__title {
+        color: var(--cld-ink-soft);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+            color: var(--cld-primary);
+        }
+    }
+
+    &__sub {
+        color: var(--cld-muted);
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.cloudy-time {
+    color: var(--cld-muted);
+    font-size: 13.5px;
+}
+
+.cloudy-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.cloudy-empty {
+    margin: 0;
+    padding: 40px 28px;
+    color: var(--cld-muted);
+    font-size: 14px;
+    text-align: center;
+}
+
+//------------- тинты: цикл из 5 цветов (прототип) -------------
+.cloudy-tint-0 {
+    background: rgba(47, 125, 224, .14);
+    color: var(--blue-deep);
+}
+
+.cloudy-tint-1 {
+    background: rgba(124, 92, 246, .14);
+    color: var(--purple);
+}
+
+.cloudy-tint-2 {
+    background: rgba(47, 158, 87, .14);
+    color: var(--green-deep);
+}
+
+.cloudy-tint-3 {
+    background: rgba(217, 130, 11, .14);
+    color: var(--cld-dev);
+}
+
+.cloudy-tint-4 {
+    background: rgba(15, 158, 142, .14);
+    color: var(--teal);
+}
+
+// плотные точки (KPI-индикаторы)
+.cloudy-dot-0 {
+    background: var(--blue-deep);
+}
+
+.cloudy-dot-1 {
+    background: var(--purple);
+}
+
+.cloudy-dot-2 {
+    background: var(--green-deep);
+}
+
+.cloudy-dot-3 {
+    background: var(--cld-dev);
+}
+
+.cloudy-dot-4 {
+    background: var(--teal);
+}
+
+//------------- аватар -------------
+.cloudy-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    flex: none;
+
+    &--img {
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+//------------- теги/бейджи -------------
+.cloudy-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-self: start;
+    min-width: 0;
+}
+
+.cloudy-tag {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--primary {
+        background: var(--cld-primary-soft);
+        color: var(--cld-primary);
+    }
+
+    &--muted {
+        background: rgba(121, 131, 154, .14);
+        color: var(--cld-icon-ink);
+    }
+}
+
+//------------- чипы-фильтры -------------
+.cloudy-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+//------------- поле поиска -------------
+.cloudy-searchbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid var(--cld-line);
+    border-radius: 10px;
+    background: var(--cld-field);
+    color: var(--cld-muted);
+    transition: border-color .15s ease;
+
+    &:focus-within {
+        border-color: var(--cld-primary);
+    }
+
+    input {
+        border: none;
+        background: transparent;
+        font: inherit;
+        font-size: 14px;
+        color: var(--cld-ink);
+        outline: none;
+        width: 170px;
+
+        &::placeholder {
+            color: var(--cld-muted);
+        }
+    }
+}
+
+//------------- пейджер -------------
+.cloudy-pager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--cld-muted);
+    font-size: 13.5px;
+
+    &__btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+
+        &[disabled] {
+            opacity: .4;
+            pointer-events: none;
+        }
+    }
+}
+
+//------------- скрытие колонок на брейкпоинтах -------------
+@media (max-width: 1100px) {
+    .u-hide-1100 {
+        display: none !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .u-hide-900 {
+        display: none !important;
+    }
+
+    .cloudy-list__head {
+        display: none;
+    }
+
+    .cloudy-browser__head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cloudy-browser__head-right {
+        justify-content: space-between;
+        margin-left: 0;
+    }
+}
+
+//------------- медиа: хлебные крошки, группы, плитки папок/файлов -------------
+// Источник: прототип mars-redesign-project CategoriesPage.vue
+.cloudy-crumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    min-width: 0;
+    flex-wrap: wrap;
+
+    &__sep {
+        color: var(--cld-muted);
+    }
+}
+
+.cloudy-crumb {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--cld-muted);
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-primary);
+    }
+
+    &--current {
+        color: var(--cld-ink);
+        font-weight: 600;
+        cursor: default;
+
+        &:hover {
+            color: var(--cld-ink);
+        }
+    }
+}
+
+.cloudy-count {
+    color: var(--cld-muted);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+//------------- иконочная кнопка без текста (напр. переключатель вида Folders/All files) -------------
+.cloudy-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cld-line);
+    border-radius: 9px;
+    background: var(--cld-field);
+    color: var(--cld-icon-ink);
+    font-size: 15px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cld-primary);
+        border-color: var(--cld-primary);
+    }
+
+    &--active {
+        color: var(--cld-primary);
+        border-color: var(--cld-primary);
+        background: var(--cld-primary-soft);
+    }
+}
+
+//------------- панель продвинутых фильтров (ряд под тулбаром browser-панели) -------------
+.cloudy-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+
+    &__col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 150px;
+    }
+
+    &__label {
+        color: var(--cld-muted);
+        font-size: 12.5px;
+    }
+
+    &__row {
+        display: flex;
+        gap: 6px;
+    }
+}
+
+.cloudy-browser-group {
+    padding: 24px 28px;
+
+    + .cloudy-browser-group {
+        border-top: 1px solid var(--cld-line);
+    }
+
+    h2 {
+        margin: 0 0 18px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--cld-ink);
+    }
+
+    d-media-upload-zone {
+        display: block;
+        margin-bottom: 18px;
+    }
+}
+
+.cloudy-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 18px;
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.cloudy-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 16px;
+}
+
+.cloudy-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 20px 12px 16px;
+    border-radius: 14px;
+    background: var(--cld-card);
+    border: 1px solid var(--cld-line);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    // имя+размер прижаты вниз, иконка — по центру оставшейся части (папки/загрузка)
+    > .cloudy-tile__icon {
+        margin: auto 0;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px var(--cld-acrylic-shadow);
+
+        .cloudy-tile__actions {
+            opacity: 1;
+        }
+    }
+
+    &--folder .cloudy-tile__icon {
+        color: var(--cld-dev);
+    }
+
+    &--file .cloudy-tile__icon {
+        color: var(--cld-primary);
+    }
+
+    &--image .cloudy-tile__icon {
+        color: var(--green-deep);
+    }
+
+    //------------- плитка загрузки (MediaUploadTile): пунктирная рамка,
+    // прозрачный InputFile на всю плитку (клик = выбор, drop = нативный) -------------
+    &--upload {
+        margin: 0;
+        border-style: dashed;
+        background: transparent;
+
+        .cloudy-tile__icon,
+        .cloudy-tile__name {
+            color: var(--cld-muted);
+        }
+
+        &:hover {
+            border-color: var(--cld-primary);
+
+            .cloudy-tile__icon,
+            .cloudy-tile__name {
+                color: var(--cld-primary);
+            }
+        }
+
+        // файл над плиткой: сплошная рамка + hover-вид
+        &.cloudy-tile--drag {
+            border-style: solid;
+            border-color: var(--cld-primary);
+            background: var(--cld-hover-bg);
+
+            .cloudy-tile__icon,
+            .cloudy-tile__name {
+                color: var(--cld-primary);
+            }
+        }
+    }
+
+    &__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    //------------- выбор файла (Select*-режимы MediaBrowser) -------------
+    &--selected {
+        border-color: var(--cld-primary);
+        box-shadow: 0 0 0 1px var(--cld-primary);
+    }
+
+    &__check {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--cld-line);
+        border-radius: 50%;
+        background: var(--cld-field);
+        color: transparent;
+        font-size: 13px;
+        pointer-events: none;
+
+        &.on {
+            border-color: var(--cld-primary);
+            background: var(--cld-primary);
+            color: var(--cld-white);
+        }
+    }
+
+    &__icon {
+        font-size: 34px;
+        line-height: 1;
+    }
+
+    &__thumb {
+        width: 100%;
+        height: 76px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    &__open {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        text-decoration: none;
+
+        // то же для файловых плиток: иконка/превью по центру, имя внизу
+        > .cloudy-tile__icon,
+        > .cloudy-tile__thumb {
+            margin: auto 0;
+        }
+    }
+
+    &__name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--cld-ink-soft);
+        font-size: 14.5px;
+        font-weight: 600;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    &__meta {
+        color: var(--cld-muted);
+        font-size: 13px;
+    }
+
+    &__actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity .15s ease;
+    }
+
+    &__action {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: none;
+        border-radius: 8px;
+        background: var(--cld-field);
+        color: var(--cld-icon-ink);
+        cursor: pointer;
+
+        &:hover {
+            color: var(--cld-primary);
+        }
+    }
+}
+
+//------------- медиа: popover свойств файла -------------
+.cloudy-file-props {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 280px;
+    font-size: 13px;
+
+    &__name {
+        font-weight: 700;
+        color: var(--cld-ink);
+        word-break: break-all;
+    }
+
+    dl {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 4px 12px;
+        margin: 0;
+    }
+
+    dt {
+        color: var(--cld-muted);
+    }
+
+    dd {
+        margin: 0;
+        color: var(--cld-ink);
+        word-break: break-all;
+    }
+
+    &__note {
+        color: var(--cld-muted);
+        font-size: 12.5px;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+//------------- bootstrap-dropdown в cloudy-скине (меню New на странице медиа) -------------
+.cloudy-dropdown-menu {
+    padding: 6px;
+    background: var(--cld-card);
+    border: 1px solid var(--cld-line);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px var(--cld-acrylic-shadow);
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: var(--cld-ink-soft);
+        font-size: 14px;
+
+        &:hover,
+        &:focus {
+            background: var(--cld-hover-bg);
+            color: var(--cld-ink);
+        }
+    }
+}

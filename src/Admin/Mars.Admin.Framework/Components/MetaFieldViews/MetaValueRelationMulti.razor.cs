@@ -16,6 +16,9 @@ namespace Mars.Admin.Framework.Components.MetaFieldViews;
 /// </summary>
 public partial class MetaValueRelationMulti
 {
+    public MetaValueRelationMulti(LibraryConfiguration configuration) : base(configuration)
+    {
+    }
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
@@ -75,15 +78,6 @@ public partial class MetaValueRelationMulti
 
     async Task AddAsync()
     {
-        DialogParameters parameters = new()
-        {
-            Title = ModelName,
-            SecondaryAction = null,
-            Width = "500px",
-            Modal = true,
-            PreventScroll = true
-        };
-
         var data = new MetaValueRelationSelectDialogData
         {
             ModelName = ModelName,
@@ -92,10 +86,15 @@ public partial class MetaValueRelationMulti
             SelectedIds = _rows.ToArray(),
         };
 
-        IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
-        DialogResult? result = await dialog.Result;
+        DialogResult result = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(new DialogOptions
+        {
+            Header = { Title = ModelName },
+            Width = "500px",
+            Modal = true,
+            Parameters = { ["Content"] = data },
+        });
 
-        if (result.Cancelled || result.Data is not IReadOnlyCollection<Guid> ids) return;
+        if (result.Cancelled || result.Value is not IReadOnlyCollection<Guid> ids) return;
 
         foreach (var id in ids)
         {

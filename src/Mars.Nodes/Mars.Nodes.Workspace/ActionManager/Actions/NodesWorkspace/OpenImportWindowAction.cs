@@ -12,10 +12,9 @@ public class OpenImportWindowAction(INodeEditorApi _editor,
     public void Execute() => _ = ExecuteAsync();
     public async ValueTask ExecuteAsync()
     {
-        var dialog = await ImportNodesDialog.ShowDialog(_dialogService);
-        var result = await dialog.Result;
+        var result = await ImportNodesDialog.ShowDialog(_dialogService);
 
-        if (!result.Cancelled && result.Data is string json)
+        if (!result.Cancelled && result.Value is string json)
         {
             var action = new ImportNodesFromJsonAction(_editor, json);
 

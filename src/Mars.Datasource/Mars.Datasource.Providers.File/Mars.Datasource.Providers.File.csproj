@@ -2,8 +2,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" />
-		<!-- Пин: без него ClosedXML подтягивает уязвимый System.IO.Packaging 6.0.0 (NU1903) -->
-		<PackageReference Include="System.IO.Packaging" />
 		<PackageReference Include="System.Linq.Dynamic.Core" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
 	</ItemGroup>

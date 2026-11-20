@@ -1,0 +1,196 @@
+@page "/tech/styledesigner"
+@using Mars.Admin.Contracts.Options
+@using Mars.Options.Contracts.Dto.Options;
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+@inject IThemeService ThemeService
+
+<PageTitle>Style Designer</PageTitle>
+
+<div class="styledesigner-page">
+    <header class="styledesigner-page__hero">
+        <div class="styledesigner-page__hero-text">
+            <h1 class="styledesigner-page__title">Style Designer</h1>
+            <p class="styledesigner-page__subtitle">
+                Токены темы FluentUI: бренд-цвет, режим, радиусы, обводка и тени.
+                Контролы применяются только к образцу справа — глобально тема меняется после Save.
+            </p>
+        </div>
+        <div class="styledesigner-page__actions">
+            <span class="styledesigner-page__hint">
+                <i class="bi bi-eye"></i>
+                live preview
+            </span>
+            @* ContentWrapper раньше рендерил этот дропдаун в заголовке (GeneralSectionActions) *@
+            <XActionsDropDown />
+        </div>
+    </header>
+
+    <div class="styledesigner-page__workspace">
+        <section class="styledesigner-page__panel styledesigner-page__panel--controls">
+            <header class="styledesigner-page__panel-head">
+                <h2>Control</h2>
+                <span class="styledesigner-page__rule"></span>
+            </header>
+            <div class="styledesigner-page__panel-body">
+                <EditOptionForm @ref=form TModel="DevAdminStyleOption" OnLoadData="OnLoadData" AfterSave="AfterSave">
+                    <ChildContent Context="context">
+                        <div class="styledesigner-page__controls">
+
+                            <button class="styledesigner-page__btn" type="button" @onclick="ResetStyle">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Reset
+                            </button>
+
+                            <div class="styledesigner-page__field">
+                                <label class="styledesigner-page__label">BrandColor</label>
+                                <input class="styledesigner-page__color" type="color"
+                                       @bind-value=@context.StylerStyle.BrandColor @bind-value:event="oninput" @bind-value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__field">
+                                <label class="styledesigner-page__label">Mode</label>
+                                <select class="styledesigner-page__select" @bind=@context.StylerStyle.Mode @bind:after="PreviewThemeAsync">
+                                    <option>Light</option>
+                                    <option>Dark</option>
+                                    <option>System</option>
+                                </select>
+                            </div>
+
+                            <div class="styledesigner-page__field styledesigner-page__field--inline">
+                                <label class="styledesigner-page__label">IsExact</label>
+                                <FluentSwitch @bind-Value=@context.StylerStyle.IsExact @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__group">
+                                <FluentSlider TValue="double" Label="HueTorsion" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.HueTorsion @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="double" Label="Vibrancy" Min="-0.5" Max="0.5" Step="0.05" @bind-Value=@context.StylerStyle.Vibrancy @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                            <div class="styledesigner-page__group">
+                                <FluentSlider TValue="int" Label="Radius" Min="0" Max="12" Step="1" @bind-Value=@context.StylerStyle.Radius @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="int" Label="StrokeWidth" Min="1" Max="3" Step="1" @bind-Value=@context.StylerStyle.StrokeWidth @bind-Value:after="PreviewThemeAsync" />
+                                <FluentSlider TValue="double" Label="ShadowIntensity" Min="0" Max="2" Step="0.1" @bind-Value=@context.StylerStyle.ShadowIntensity @bind-Value:after="PreviewThemeAsync" />
+                            </div>
+
+                        </div>
+                    </ChildContent>
+                </EditOptionForm>
+            </div>
+        </section>
+
+        <section class="styledesigner-page__panel styledesigner-page__panel--preview">
+            <header class="styledesigner-page__panel-head">
+                <h2>Preview</h2>
+                <span class="styledesigner-page__panel-note">образец компонентов — не перекрашивается токенами зоны</span>
+                <span class="styledesigner-page__rule"></span>
+            </header>
+            @* Поверхность образца — штатная FluentCard (тема приложения), а не tech-панель:
+               превью должно показывать компоненты на их родном фоне в обоих режимах. *@
+            <div class="styledesigner-page__panel-body styledesigner-page__preview">
+                <FluentCard>
+                    @* JS-тема (SetThemeToElementAsync) пишет полный набор токенов inline на внешний div;
+                       геометрия стайлера — на внутренний: он ближе к компонентам и перебивает
+                       унаследованные JS-дефолты radius/shadow/stroke. *@
+                    <div @ref="previewElement">
+                    <div style="@PreviewStyle">
+
+                        <FluentStack VerticalGap="20" Orientation="@Orientation.Vertical">
+
+                            <h4>Buttons</h4>
+
+                            <FluentStack HorizontalGap="10" Wrap>
+                                <FluentButton>Button</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Primary">Accent</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Transparent">Lightweight</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Outline">Outline</FluentButton>
+                                <FluentButton Appearance="ButtonAppearance.Subtle">Stealth</FluentButton>
+                                <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
+                                              Appearance="ButtonAppearance.Primary">
+                                    Refresh
+                                </FluentButton>
+                                <FluentButton Loading="@true" Appearance="ButtonAppearance.Primary">Loading</FluentButton>
+                            </FluentStack>
+
+                            <StyleSampleForm />
+
+                            <h4>Card</h4>
+
+                            <FluentCard Width="400px">
+                                <p>Just some content in a card (with a button that does not do anything).</p>
+                                <FluentButton Appearance="ButtonAppearance.Primary">Hello</FluentButton>
+                            </FluentCard>
+
+                            <h4>Typography</h4>
+
+                            <div class="card card-body">
+                                <FluentText Size="TextSize.Size300"> Example 'Body' label </FluentText>
+                                <FluentText Size="TextSize.Size400"> Example 'Subject' label </FluentText>
+                                <FluentText Size="TextSize.Size500"> Example 'Header' label </FluentText>
+                                <FluentText Size="TextSize.Size600"> Example 'PaneHeader' label </FluentText>
+                                <FluentText Size="TextSize.Size700"> Example 'EmailHeader' label </FluentText>
+                                <FluentText Size="TextSize.Size800"> Example 'PageTitle' label </FluentText>
+                                <FluentText Size="TextSize.Size900"> Example 'HeroTitle' label </FluentText>
+                                <FluentText As="TextTag.H1" Size="TextSize.Size800"> Example 'H1' label </FluentText>
+                                <FluentText As="TextTag.H2" Size="TextSize.Size700"> Example 'H2' label </FluentText>
+                                <FluentText As="TextTag.H3" Size="TextSize.Size600"> Example 'H3' label </FluentText>
+                                <FluentText As="TextTag.H4" Size="TextSize.Size500"> Example 'H4' label </FluentText>
+                                <FluentText As="TextTag.H5" Size="TextSize.Size400"> Example 'H5' label </FluentText>
+                                <FluentText As="TextTag.H6" Size="TextSize.Size300"> Example 'H6' label </FluentText>
+                            </div>
+
+                        </FluentStack>
+
+                    </div>
+                    </div>
+                </FluentCard>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    EditOptionForm<DevAdminStyleOption>? form;
+
+    ElementReference previewElement;
+
+    string PreviewStyle => form?.Model is null ? "" : StylerCssVars.PreviewVars(form.Model.StylerStyle);
+
+    // Скоуп-превью: тема применяется только к контейнеру компонентов, глобальная — после Save.
+    async Task PreviewThemeAsync()
+    {
+        if (form?.Model is null) return;
+        var s = form.Model.StylerStyle;
+        var mode = Enum.TryParse<ThemeMode>(s.Mode, true, out var m) ? m : ThemeMode.System;
+        await ThemeService.SetThemeToElementAsync(previewElement, new ThemeSettings(s.BrandColor, s.HueTorsion, s.Vibrancy, mode, s.IsExact));
+    }
+
+    async Task ResetStyle()
+    {
+        form!.Model.StylerStyle = new();
+        await PreviewThemeAsync();
+    }
+
+    void OnLoadData()
+    {
+        // EditOptionForm._model стартует как new() (не null) и грузится асинхронно,
+        // поэтому тему превью надо применять ЗДЕСЬ (реальная модель готова), а не по
+        // firstRender — иначе превью залипает на дефолтном BrandColor до первого контроля.
+        StateHasChanged();
+        _ = PreviewThemeAsync();
+    }
+
+    void AfterSave(DevAdminStyleOption value)
+    {
+        var key = value.GetType().Name;
+        var opt = new OptionSummaryResponse
+        {
+            Key = key,
+            Type = value.GetType().FullName!,
+            Value = JsonSerializer.Serialize(value)
+        };
+        Q.Site.Options = [.. Q.Site.Options.Where(s => s.Key != key), opt];
+
+        Q.Root.Emit("App.SetupTheme");
+    }
+}

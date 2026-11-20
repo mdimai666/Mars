@@ -1,0 +1,24 @@
+<div class="cloudy-chips">
+    @if (IncludeAll)
+    {
+        <button type="button" class="cloudy-chip @(Selected is null ? "active" : "")"
+                @onclick="() => SelectedChanged.InvokeAsync(null)">
+            @AllLabel
+        </button>
+    }
+    @foreach (var item in Items)
+    {
+        <button type="button" class="cloudy-chip @(Selected == item ? "active" : "")"
+                @onclick="() => SelectedChanged.InvokeAsync(item)">
+            @item
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public IReadOnlyCollection<string> Items { get; set; } = [];
+    [Parameter] public string? Selected { get; set; }
+    [Parameter] public bool IncludeAll { get; set; } = true;
+    [Parameter] public string AllLabel { get; set; } = "All";
+    [Parameter] public EventCallback<string?> SelectedChanged { get; set; }
+}

@@ -1,4 +1,3 @@
-using System.Collections;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Scheduler.Abstractions.Dto.Schedulers;
@@ -11,10 +10,10 @@ namespace Mars.Scheduler.Abstractions;
 /// </summary>
 public interface ISchedulerManager
 {
-    public Task AddDailyJob<T>(string jobName, string jobGroup, TimeOnly dailyTime, IDictionary? data = null, bool startNow = false) where T : IJob;
-    public Task AddIntervalJob<T>(string jobName, string jobGroup, TimeSpan jobInterval, IDictionary? data = null, bool startNow = false) where T : IJob;
-    public Task AddJob<T>(string jobName, string jobGroup, string cronString, IDictionary? data = null, bool startNow = false) where T : IJob;
-    public Task AddJob<T>(string jobName, string jobGroup, ITrigger trigger, IDictionary? data = null) where T : IJob;
+    public Task AddDailyJob<T>(string jobName, string jobGroup, TimeOnly dailyTime, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob;
+    public Task AddIntervalJob<T>(string jobName, string jobGroup, TimeSpan jobInterval, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob;
+    public Task AddJob<T>(string jobName, string jobGroup, string cronString, IDictionary<string, object>? data = null, bool startNow = false) where T : IJob;
+    public Task AddJob<T>(string jobName, string jobGroup, ITrigger trigger, IDictionary<string, object>? data = null) where T : IJob;
     public Task DeleteJob(string jobName, string jobGroup);
     public Task DeleteJobGroup(string jobGroup);
     public Task PauseAll();

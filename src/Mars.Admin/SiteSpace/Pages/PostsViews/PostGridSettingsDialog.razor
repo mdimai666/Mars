@@ -1,0 +1,18 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="Колонки списка" />
+    </TitleTemplate>
+    <ChildContent>
+        <PostTypeGridSettingsEditor @bind-Value="_draft"
+                                    EnabledFeatures="Content.EnabledFeatures"
+                                    MetaFields="Content.MetaFields" />
+    </ChildContent>
+    <ActionTemplate>
+        <div class="hstack gap-2 justify-content-end">
+            <FluentButton OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="SaveAsync">@AppRes.Save</FluentButton>
+        </div>
+    </ActionTemplate>
+</FluentDialogBody>

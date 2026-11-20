@@ -582,4 +582,52 @@
   <data name="CopyToClipboard" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
+  <data name="users.total" xml:space="preserve">
+    <value>Total users</value>
+  </data>
+  <data name="users.newThisMonth" xml:space="preserve">
+    <value>New this month</value>
+  </data>
+  <data name="posts.total" xml:space="preserve">
+    <value>Total posts</value>
+  </data>
+  <data name="postcategories.total" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="feedbacks.total" xml:space="preserve">
+    <value>Total feedbacks</value>
+  </data>
+  <data name="feedbacks.newThisWeek" xml:space="preserve">
+    <value>New this week</value>
+  </data>
+  <data name="feedbacks.unread" xml:space="preserve">
+    <value>Unread feedbacks</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="posttypes.total" xml:space="preserve">
+    <value>Total post types</value>
+  </data>
+  <data name="posttypes.componentTypes" xml:space="preserve">
+    <value>Component types</value>
+  </data>
+  <data name="posttypes.metaFields" xml:space="preserve">
+    <value>Meta fields</value>
+  </data>
+  <data name="posttypes.metaValues" xml:space="preserve">
+    <value>Meta values</value>
+  </data>
+  <data name="usertypes.total" xml:space="preserve">
+    <value>Total user types</value>
+  </data>
+  <data name="postcategorytypes.total" xml:space="preserve">
+    <value>Total category types</value>
+  </data>
+  <data name="media.files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="media.storage" xml:space="preserve">
+    <value>Storage used</value>
+  </data>
 </root>

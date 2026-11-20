@@ -7,7 +7,6 @@ using Mars.Nodes.Front.Abstractions.Services;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
-using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Nodes.FormEditor;
 
@@ -20,7 +19,6 @@ public partial class NodeEditContainer1
 
     [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
-    FluentDialog _dialog = default!;
     bool _visible;
 
     Node? _node = default!;
@@ -46,12 +44,12 @@ public partial class NodeEditContainer1
 
     [Parameter] public EventCallback<Node> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
-    [Parameter] public EventCallback OnBackdropCancel { get; set; }
     [Parameter] public EventCallback<string> OnDelete { get; set; }
     [Parameter] public EventCallback<string> OnClickEditConfigNode { get; set; } //TODO: Убрать это и все делать через _nodeEditorApi
     [Parameter] public EventCallback<AppendNewConfigNodeEvent> OnClickNewConfigNode { get; set; } // и это
 
-    [Parameter] public bool DisableSaveOnBackdropClick { get; set; } = false;
+    /// <summary>Панель открылась/закрылась — хост (NodeEditor1) переключает правую панель между формой и консолью.</summary>
+    [Parameter] public EventCallback<bool> EditingChanged { get; set; }
 
     CodeEditor2 codeEditor = default!;
     bool isEditJsonMode;
@@ -60,6 +58,7 @@ public partial class NodeEditContainer1
     NodeFormEditor1 nodeFormEditor1 = default!;
     bool saveLoading;
 
+    /// <summary>Стек вложенных форм (напр. создание конфига из формы ноды): закрытие верхней возвращает предыдущую.</summary>
     private readonly Stack<Node> _windowStack = new();
 
     protected override void OnInitialized()
@@ -77,29 +76,49 @@ public partial class NodeEditContainer1
         };
     }
 
-    void OpenOffcanvasEditor(bool show)
+    void SetVisible(bool show)
     {
+        if (_visible == show) return;
         _visible = show;
+        _ = EditingChanged.InvokeAsync(show);
     }
 
+    /// <summary>Обычное открытие ноды (dblclick/палитра): БЕЗ стека — заменяет текущую форму.</summary>
     public void StartEditNode(Node node)
+    {
+        _windowStack.Clear();
+        OpenNode(node);
+    }
+
+    /// <summary>Вложенное открытие (создание/редактирование конфига из формы): в стек, закрытие вернёт предыдущую форму.</summary>
+    public void StartEditNodeStacked(Node node)
+    {
+        OpenNode(node);
+    }
+
+    void OpenNode(Node node)
     {
         _node = node.Copy(_nodeEditorApi.NodesJsonSerializerOptions);
         _windowStack.Push(_node);
-        OpenOffcanvasEditor(true);
+        _mode = NepMode.Form;
+        isEditJsonMode = false;
+        SetVisible(true);
     }
 
     void CloseEditNode()
     {
-        OpenOffcanvasEditor(false);
+        SetVisible(false);
         _node = null;
 
         _logger.LogTrace("CloseEditNode");
-        _windowStack.Pop();
+        if (_windowStack.Count > 0)
+            _windowStack.Pop();
         if (_windowStack.Any())
         {
             _node = _windowStack.Peek();
-            OpenOffcanvasEditor(true);
+            _mode = NepMode.Form;
+            isEditJsonMode = false;
+            SetVisible(true);
         }
     }
 
@@ -155,22 +174,24 @@ public partial class NodeEditContainer1
         return FormSaveClick();
     }
 
-    async void OnDialogDismiss(DialogEventArgs e)
-    {
-        if (DisableSaveOnBackdropClick)
-        {
-            await FormCloseClick();
-        }
-        else
-        {
-            await FormSaveClick();
-        }
+    #region panel modes (Form / Docs) + json toggle inside Form
 
-        await OnBackdropCancel.InvokeAsync();
+    enum NepMode { Form, Docs }
+
+    NepMode _mode = NepMode.Form;
+
+    async Task SetModeAsync(NepMode mode)
+    {
+        if (_mode == mode) return;
+
+        if (isEditJsonMode && !await TryApplyJsonAsync()) return;
+
+        _mode = mode;
+        StateHasChanged();
     }
 
-    //json editor
-    async void ToggleEditMode()
+    /// <summary>Тумблер JSON в шапке формы (как в старом диалоге): туда — сериализуем модель, обратно — применяем текст.</summary>
+    async Task ToggleEditMode()
     {
         if (!isEditJsonMode)
         {
@@ -183,16 +204,28 @@ public partial class NodeEditContainer1
         }
         else
         {
-            try
-            {
-                await CodeEditorJsonToModel();
-                isEditJsonMode = false;
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                _ = _messageService.Error("Проблема json: " + ex.Message);
-            }
+            await TryApplyJsonAsync();
+        }
+    }
+
+    void CancelJsonEditMode()
+    {
+        isEditJsonMode = false;
+    }
+
+    async Task<bool> TryApplyJsonAsync()
+    {
+        try
+        {
+            await CodeEditorJsonToModel();
+            isEditJsonMode = false;
+            StateHasChanged();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error("Проблема json: " + ex.Message);
+            return false;
         }
     }
 
@@ -214,8 +247,5 @@ public partial class NodeEditContainer1
         return json;
     }
 
-    void CancelJsonEditMode()
-    {
-        isEditJsonMode = false;
-    }
+    #endregion
 }

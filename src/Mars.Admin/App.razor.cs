@@ -1,8 +1,8 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Mars.Admin.Contracts.Options;
 using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Hub;
-using Mars.Admin.Pages.Public;
+using Mars.Admin.Public;
 using Mars.Plugin.Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,6 +21,7 @@ public partial class App
     [Inject] AuthenticationStateProvider authStateProvider { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] IThemeService ThemeService { get; set; } = default!;
 
     [Inject] HttpClientInterceptor Interceptor { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
@@ -33,7 +34,6 @@ public partial class App
     public static bool IsDevelopment => Q.IsDevelopment;
 
     HotKeysContext appHotKeysContext = default!;
-    FluentDesignSystemProvider? _fluentDesignSystemProvider;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,7 +48,7 @@ public partial class App
         var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
         Q.UpdateInitialSiteData(vm);
         _logger.LogTrace("App.OnInitializedAsync - UpdateInitialSiteData updated.");
-        SetupTheme();
+        await SetupThemeAsync();
 
         hub.OnShowNotifyMessage += Hub_OnShowNotifyMessage;
         _logger.LogTrace("App.OnInitializedAsync - finish.");
@@ -56,7 +56,7 @@ public partial class App
 
     private void Interceptor_AfterSend(object sender, HttpClientInterceptorEventArgs e)
     {
-        bool isPublicPage = PageType.Namespace.StartsWith("Mars.Admin.Pages.Public");
+        bool isPublicPage = PageType.Namespace.StartsWith("Mars.Admin.Public");
 
         //!NavigationManager.Path().Equals("Login", StringComparison.OrdinalIgnoreCase)
 
@@ -86,16 +86,19 @@ public partial class App
 
     StylerStyle styler = new();
 
-    void SetupTheme()
+    async Task SetupThemeAsync()
     {
         var devAdminStyle = Q.Site.GetOption<DevAdminStyleOption>();
         styler = devAdminStyle.StylerStyle;
+
+        var mode = Enum.TryParse<ThemeMode>(styler.Mode, true, out var m) ? m : ThemeMode.System;
+        await ThemeService.SetThemeAsync(new ThemeSettings(styler.BrandColor, styler.HueTorsion, styler.Vibrancy, mode, styler.IsExact));
+        await InvokeAsync(StateHasChanged);
     }
 
     void SetupThemeExternal()
     {
-        SetupTheme();
-        StateHasChanged();
+        _ = SetupThemeAsync();
     }
     IEnumerable<Assembly> AdditionalAssemblies => WebAssemblyPluginFrontExtensions.PluginLoadAssemblies;
 

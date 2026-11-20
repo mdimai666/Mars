@@ -1,9 +1,13 @@
 using System.Reflection;
 using Mars.Admin.Contracts.Options;
 using Mars.Admin.Framework;
+#if !NOADMIN
+using Mars.Admin.Host.CommandLine;
+#endif
 using Mars.Admin.Host.Handlers;
 using Mars.Admin.Host.Services;
 using Mars.Admin.Host.XActions;
+using Mars.CommandLine.Abstractions;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
@@ -66,6 +70,8 @@ public static class MainAdmin
 #if NOADMIN
         return app;
 #endif
+
+        app.Services.GetService<ICommandLineApi>()?.Register<PagesCommandCli>();
 
         app.Services.GetRequiredService<IOptionService>().RegisterOption<DevAdminStyleOption>(appendToInitialSiteData: true);
 

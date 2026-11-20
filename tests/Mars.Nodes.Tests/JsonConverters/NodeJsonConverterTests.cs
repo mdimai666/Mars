@@ -15,7 +15,7 @@ public class NodeJsonConverterTests
     {
         _nodesLocator = new NodesLocator();
         _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-        _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
+        _nodesLocator.RegisterAssembly(typeof(ExcelNode).Assembly);
 
         //NodeFormsLocator.RegisterAssembly(typeof(InjectNodeForm).Assembly);
         //NodeFormsLocator.RefreshDict();

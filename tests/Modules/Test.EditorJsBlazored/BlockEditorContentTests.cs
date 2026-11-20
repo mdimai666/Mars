@@ -1,6 +1,6 @@
-using System.Text.Json;
 using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
+using System.Text.Json;
 
 namespace Test.EditorJsBlazored;
 
@@ -51,7 +51,7 @@ public class BlockEditorContentTests
     public void EditorJsContent_ModifiedTimestamp_ConvertsToDateTime()
     {
         //Arrange
-        //1739976214843 - 19.02.2025 23:43:40
+        //1739976214843 - 19.02.2025 14:43:40
         var content = new EditorJsContent
         {
             Time = 1739976214843
@@ -61,7 +61,7 @@ public class BlockEditorContentTests
         var dateTime = content.TimeAsDateTime;
 
         //Assert
-        Assert.Equal("19.02.2025 23:43:34", dateTime.LocalDateTime.ToString("dd.MM.yyyy HH:mm:ss"));
+        Assert.Equal("19.02.2025 14:43:34", dateTime.UtcDateTime.ToString("dd.MM.yyyy HH:mm:ss"));
     }
 
 }

@@ -1,7 +1,9 @@
 using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Models;
@@ -19,7 +21,7 @@ namespace Mars.SiteEngine.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.FrontCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]

@@ -9,6 +9,8 @@ using Mars.Identity.Abstractions.Dto.UserTypes;
 using Mars.Identity.Abstractions.Mappings.UserTypes;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.UserTypes;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ namespace Mars.Identity.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.UserTypeCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

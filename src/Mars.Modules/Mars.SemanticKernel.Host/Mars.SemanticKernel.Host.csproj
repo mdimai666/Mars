@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
       <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
       <ProjectReference Include="..\Mars.SemanticKernel.Abstractions\Mars.SemanticKernel.Abstractions.csproj" />
       <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />

@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
         <ProjectReference Include="..\Mars.CodeCompletion.Contracts\Mars.CodeCompletion.Contracts.csproj" />
     </ItemGroup>
 

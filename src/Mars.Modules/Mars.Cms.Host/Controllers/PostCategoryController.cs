@@ -8,6 +8,8 @@ using Mars.Cms.Contracts.PostCategories;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -80,7 +82,7 @@ public class PostCategoryController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Cap(RoleCaps.PostCategoryCap.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostCategoryDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -96,7 +98,7 @@ public class PostCategoryController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
+    [Cap(RoleCaps.PostCategoryCap.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PostCategoryDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -160,7 +162,7 @@ public class PostCategoryController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize]
+    [Cap(RoleCaps.PostCategoryCap.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -173,7 +175,7 @@ public class PostCategoryController : ControllerBase
     }
 
     [HttpDelete("DeleteMany")]
-    [Authorize]
+    [Cap(RoleCaps.PostCategoryCap.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -1,0 +1,65 @@
+//-------------------------------------------------------------
+// CLOUDY ROLES — страница редактирования роли (EditRolePage):
+// карточка имени + матрица прав по группам. Токены --cld-* из
+// cloudy.less; фоллбеки — светлая зона прототипа.
+//-------------------------------------------------------------
+
+.role-edit {
+    &__note {
+        margin-bottom: 16px;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+    }
+}
+
+.role-caps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.role-cap-group {
+    min-width: 0;
+    // группы лежат внутри .cloudy-card — field-фон даёт контраст в обеих темах
+    background: var(--cld-field, #fbfcff);
+    border: 1px solid var(--cld-line, #e9ebf4);
+    border-radius: 14px;
+    padding: 14px 16px;
+
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    &__title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--cld-ink, #262d3a);
+    }
+
+    &__count {
+        margin-left: auto;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: var(--cld-hover-bg, rgba(38, 45, 58, .06));
+        color: var(--cld-muted-strong, #79839a);
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+}

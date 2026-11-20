@@ -44,12 +44,11 @@ internal class RoleServiceClient : BasicServiceClient, IRoleServiceClient
                     .GetJsonAsync<PagingResult<RoleSummaryResponse>>();
 
     public Task<EditRolesViewModelDto> EditRolesViewModel()
-    {
-        throw new NotImplementedException();
-    }
+        => _client.Request($"{_basePath}{_controllerName}/{nameof(EditRolesViewModel)}")
+                    .GetJsonAsync<EditRolesViewModelDto>();
 
     public Task<UserActionResult> SaveRoleClaims(EditRolesViewModelDto dto)
-    {
-        throw new NotImplementedException();
-    }
+        => _client.Request($"{_basePath}{_controllerName}/{nameof(SaveRoleClaims)}")
+                    .PutJsonAsync(dto)
+                    .ReceiveJson<UserActionResult>();
 }

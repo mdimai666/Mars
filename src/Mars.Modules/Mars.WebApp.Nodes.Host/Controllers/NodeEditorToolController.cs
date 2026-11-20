@@ -1,15 +1,16 @@
 using System.Net.Mime;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Nodes.Core.Models.EntityQuery;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.WebApp.Nodes.Host.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.WebApp.Nodes.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Cap(RoleCaps.FlowCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

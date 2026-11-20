@@ -5,9 +5,11 @@ using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Contracts.Options;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Features;
 using Mars.Server.Abstractions.Validators;
@@ -20,7 +22,7 @@ namespace Mars.AiChat.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.AiChatCap.Use)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

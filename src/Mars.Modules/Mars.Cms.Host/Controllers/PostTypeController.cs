@@ -12,6 +12,8 @@ using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Forms.Contracts;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +23,7 @@ namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.PostTypeCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

@@ -29,16 +29,16 @@ public class RoleRefreshTests(ApplicationFixture appFixture) : BaseWebApiClientT
         login!.IsAuthSuccessful.Should().BeTrue();
 
         var before = await GetPrimaryInfoAsync(http);
-        before.Roles.Should().NotContain(r => string.Equals(r, "manager", StringComparison.OrdinalIgnoreCase));
+        before.Roles.Should().NotContain(r => string.Equals(r, "editor", StringComparison.OrdinalIgnoreCase));
 
         using var scope = AppFixture.ServiceProvider.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-        var result = await userRepo.UpdateUserRoles(TestUserId, ["admin", "manager"], default);
+        var result = await userRepo.UpdateUserRoles(TestUserId, ["admin", "editor"], default);
         result.Ok.Should().BeTrue();
 
         // та же cookie, без перелогина — claims в principal уже свежие
         var after = await GetPrimaryInfoAsync(http);
-        after.Roles.Should().Contain(r => string.Equals(r, "manager", StringComparison.OrdinalIgnoreCase));
+        after.Roles.Should().Contain(r => string.Equals(r, "editor", StringComparison.OrdinalIgnoreCase));
     }
 
     static async Task<UserPrimaryInfo> GetPrimaryInfoAsync(HttpClient http)

@@ -7,6 +7,7 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Options;
+using Mars.Identity.Host.Authorization;
 using Mars.Identity.Host.CommandLine;
 using Mars.Identity.Host.Kpi;
 using Mars.Identity.Host.Locators;
@@ -15,6 +16,7 @@ using Mars.Identity.Host.Services;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Server.Contracts.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -70,6 +72,11 @@ public static class MainIdentity
         services.AddSingleton<IUserMetaLocator, UserMetaLocator>();
         services.AddMemoryCache();
         services.AddSingleton<ISecurityStampCache, SecurityStampCache>();
+        services.AddSingleton<IRoleCapsCache, RoleCapsCache>();
+
+        // гейт по гранулярным правам (CapAttribute): политики "Cap:<право>" + handler через кэш прав ролей
+        services.AddSingleton<IAuthorizationPolicyProvider, CapPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, CapAuthorizationHandler>();
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();

@@ -16,6 +16,8 @@ using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Forms.Abstractions;
 using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Server.Abstractions.Validators;
@@ -32,6 +34,10 @@ internal class PostService : IPostService
     private readonly IPostTransformer _postTransformer;
     private readonly IMetaValuesGeneratorService _metaValuesGenerator;
     private readonly IFormDefinitionNormalizer _formNormalizer;
+    private readonly IRoleCapsCache _roleCapsCache;
+
+    // слаг опубликованного статуса из PostStatusEntity.DefaultStatuses (статусы — слаги, не флаг)
+    const string PublishStatusSlug = "publish";
 
     public PostService(
         IPostRepository postRepository,
@@ -41,7 +47,8 @@ internal class PostService : IPostService
         IValidatorFactory validatorFactory,
         IPostTransformer postTransformer,
         IMetaValuesGeneratorService metaValuesGenerator,
-        IFormDefinitionNormalizer formNormalizer)
+        IFormDefinitionNormalizer formNormalizer,
+        IRoleCapsCache roleCapsCache)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
@@ -51,6 +58,7 @@ internal class PostService : IPostService
         _postTransformer = postTransformer;
         _metaValuesGenerator = metaValuesGenerator;
         _formNormalizer = formNormalizer;
+        _roleCapsCache = roleCapsCache;
     }
 
     public Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -88,6 +96,9 @@ internal class PostService : IPostService
     public async Task<PostDetail> Create(CreatePostQuery query, CancellationToken cancellationToken)
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        if (query.Status == PublishStatusSlug)
+            await EnsurePublishCap(cancellationToken);
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
         if (postType is not null)
@@ -159,6 +170,13 @@ internal class PostService : IPostService
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
+        var exist = await Get(query.Id, cancellationToken) ?? throw new NotFoundException();
+        await EnsurePostCap(exist.Author.Id, RoleCaps.PostCap.Update, RoleCaps.PostCap.UpdateAny, cancellationToken);
+
+        // публикация — отдельное право; повторная установка уже опубликованного статуса не триггерит
+        if (query.Status == PublishStatusSlug && exist.Status?.Key != PublishStatusSlug)
+            await EnsurePublishCap(cancellationToken);
+
         await _postRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, renderContent: false, cancellationToken);
 
@@ -173,6 +191,7 @@ internal class PostService : IPostService
         await _validatorFactory.ValidateAndThrowAsync<Guid, DeletePostQueryValidator>(id, cancellationToken);
 
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
+        await EnsurePostCap(post.Author.Id, RoleCaps.PostCap.Delete, RoleCaps.PostCap.DeleteAny, cancellationToken);
 
         await _postRepository.Delete(id, cancellationToken);
 
@@ -187,6 +206,12 @@ internal class PostService : IPostService
 
         var posts = await _postRepository.ListAll(new() { Type = null, Ids = query.Ids }, cancellationToken);
 
+        // проверяем все посты до удаления: чужой пост в выборке запрещает всю операцию
+        foreach (var post in posts)
+        {
+            await EnsurePostCap(post.Author.Id, RoleCaps.PostCap.Delete, RoleCaps.PostCap.DeleteAny, cancellationToken);
+        }
+
         await _postRepository.DeleteMany(query, cancellationToken);
 
         foreach (var post in posts)
@@ -197,10 +222,50 @@ internal class PostService : IPostService
         return posts;
     }
 
+    /// <summary>
+    /// Фаза 1 «роли = наборы прав»: свой пост — <paramref name="ownCap"/>, чужой — <paramref name="anyCap"/>
+    /// (Any покрывает и свои). Admin — суперпользователь; фоновые флоу (scheduler, ноды) идут
+    /// без HTTP-пользователя — не ограничиваем их, пользовательские HTTP-эндпоинты закрыты [Cap]/[Authorize].
+    /// </summary>
+    async Task EnsurePostCap(Guid postOwnerId, string ownCap, string anyCap, CancellationToken cancellationToken)
+    {
+        if (_requestContext.User is null) return;
+
+        var roles = _requestContext.Roles;
+        if (roles?.Contains("Admin") == true) return;
+
+        var isOwner = _requestContext.User.Id == postOwnerId;
+        var roleCaps = await _roleCapsCache.GetRoleCaps(cancellationToken);
+
+        bool Has(string cap) => roles?.Any(role => roleCaps.TryGetValue(role, out var caps) && caps.Contains(cap)) == true;
+
+        if (isOwner ? Has(ownCap) || Has(anyCap) : Has(anyCap)) return;
+
+        throw new ForbiddenException(isOwner
+            ? $"Недостаточно прав для изменения своих постов (нужно {ownCap})"
+            : $"Недостаточно прав для изменения чужих постов (нужно {anyCap})");
+    }
+
+    /// <summary>Публикация (смена статуса на опубликованный) — отдельное право Post.Publish.</summary>
+    async Task EnsurePublishCap(CancellationToken cancellationToken)
+    {
+        if (_requestContext.User is null) return;
+
+        var roles = _requestContext.Roles;
+        if (roles?.Contains("Admin") == true) return;
+
+        var roleCaps = await _roleCapsCache.GetRoleCaps(cancellationToken);
+        if (roles?.Any(role => roleCaps.TryGetValue(role, out var caps) && caps.Contains(RoleCaps.PostCap.Publish)) == true) return;
+
+        throw new ForbiddenException($"Публикация постов требует права {RoleCaps.PostCap.Publish}");
+    }
+
     #region EDIT_MODEL
     public async Task<PostEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetPostEditDetail(id, cancellationToken) ?? throw new NotFoundException();
+        await EnsurePostCap(post.Author.Id, RoleCaps.PostCap.Update, RoleCaps.PostCap.UpdateAny, cancellationToken);
+
         var postType = _metaModelTypesLocator.GetPostTypeByName(post.Type);
 
         if (post.MetaValues.Count != postType.MetaFields.Count)

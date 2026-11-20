@@ -9,7 +9,7 @@
 @using MarsCodeEditor2
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Developer")]
 @attribute [Display(Name = "Редактор фронта")]
 @implements IDisposable
 @implements IAiChatPageHandler

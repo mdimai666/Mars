@@ -2,7 +2,8 @@
 @using Mars.Admin.Shared.ActionCenter
 @inherits LayoutComponentBase
 
-<AuthorizeView Roles="Admin">
+@* тех-зона: Admin + Developer (пресет тех-капов); Admin-only страницы держат свой [Authorize(Roles="Admin")] *@
+<AuthorizeView Roles="Admin,Developer">
     <Authorized>
         <CascadingValue Value=this>
             <div class="cloudy-tech">

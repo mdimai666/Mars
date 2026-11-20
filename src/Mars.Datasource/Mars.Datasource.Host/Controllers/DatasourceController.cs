@@ -6,6 +6,8 @@ using Mars.Datasource.Contracts.Document;
 using Mars.Datasource.Contracts.Query;
 using Mars.Datasource.Contracts.Catalog;
 using Mars.Datasource.Contracts.Config;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Mars.Datasource.Host.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.DatasourceCap.Manage)]
 [Route("api/[controller]/[action]")]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]

@@ -1,8 +1,9 @@
 using System.Net.Mime;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.SiteEngine.Host.Handlers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.SiteEngine.Host.Controllers;
@@ -13,7 +14,7 @@ namespace Mars.SiteEngine.Host.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.FrontCap.Manage)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]

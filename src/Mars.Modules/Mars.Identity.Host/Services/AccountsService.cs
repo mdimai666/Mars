@@ -170,7 +170,9 @@ internal class AccountsService : IAccountsService
             };
         }
 
-        //await _userManager.AddToRoleAsync(user, "Viewer");
+        // Новые локальные пользователи получают Author — «обычные юзеры создают свои посты»
+        // (ai/RolesPermissionsPlan.md, «Решения генерала»). SSO-пользователи остаются Viewer.
+        await _userManager.AddToRoleAsync(user, "Author");
 
         return new RegistrationResponseDto
         {

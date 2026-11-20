@@ -1,6 +1,6 @@
 @page "/p/{**catch}"
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Developer")]
 
 @* Страница специального фронта админки (data/admin/front): catch — URL из директивы @page,
    рендерится на сервере через handlebars, HTML рисует RemotePageViewer в обвязке админки *@

@@ -7,6 +7,7 @@ using Mars.Data.Extensions;
 using Mars.Data.Repositories.Mappings;
 using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Contracts.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -140,6 +141,36 @@ internal class RoleRepository : IRoleRepository
         ThrowIfDisposed();
 
         return (await _marsDbContext.RoleClaims.AsNoTracking().ToListAsync(cancellationToken)).ToSummaryList();
+    }
+
+    public async Task SetRoleClaims(Guid roleId, IReadOnlyCollection<string> caps, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(caps, nameof(caps));
+
+        var target = caps.ToHashSet();
+
+        var existing = await _marsDbContext.RoleClaims
+            .Where(s => s.RoleId == roleId && s.ClaimType == RoleCaps.ClaimType)
+            .ToListAsync(cancellationToken);
+
+        // строки mars_cap по инварианту каталога всегда с заданным ClaimValue
+        var existingValues = existing.Select(s => s.ClaimValue!).ToHashSet();
+
+        var toRemove = existing.Where(s => !target.Contains(s.ClaimValue!)).ToList();
+        var toAdd = target.Except(existingValues)
+            .Select(cap => new RoleClaimEntity
+            {
+                RoleId = roleId,
+                ClaimType = RoleCaps.ClaimType,
+                ClaimValue = cap,
+            })
+            .ToList();
+
+        _marsDbContext.RoleClaims.RemoveRange(toRemove);
+        await _marsDbContext.RoleClaims.AddRangeAsync(toAdd, cancellationToken);
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> RolesExsists(IReadOnlyCollection<string> roleNames, CancellationToken cancellationToken)

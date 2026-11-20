@@ -1,7 +1,7 @@
 @page "/Media"
 @using Mars.Media.Contracts.Files
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Editor")]
 
 @inject IStringLocalizer<AppRes> L
 

@@ -1,0 +1,83 @@
+@page "/EditRole/{Id:guid}"
+@using Mars.Admin.Shared.Cloudy
+@using Mars.Identity.Contracts.ViewModels
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Редактирование роли")]
+@attribute [DParentPage(typeof(RolesPage))]
+
+@if (_matrix is null)
+{
+    <p class="cloudy-empty">Загрузка…</p>
+}
+else if (CurrentRole is null)
+{
+    <p class="cloudy-empty">Роль не найдена. <a href="/dev/Roles">К списку ролей</a></p>
+}
+else
+{
+    <header class="cloudy-hero cloudy-hero--split">
+        <div>
+            <h1>@CurrentRole.Role.Title</h1>
+            <p>@CurrentRole.Role.Name</p>
+        </div>
+        <div class="cloudy-hero-actions">
+            <FluentSelect TOption="RoleClaimsDto" TValue="RoleClaimsDto"
+                          Items="@_matrix.RoleClaims"
+                          @bind-Value="SelectedRole"
+                          OptionText="@(r => r?.Role?.Title ?? "")"
+                          Width="220px" />
+            <a class="cloudy-chip" href="/dev/Roles">К списку</a>
+        </div>
+    </header>
+
+    <StandardEditForm1 TModel="RoleEditModel"
+                       Class="cloudy-card role-edit"
+                       @ref="_editForm1"
+                       GetAction="@(() => Task.FromResult(BuildModel()))"
+                       SaveAction="SaveAction"
+                       DeleteAction="DeleteAction"
+                       AfterDelete="AfterDelete"
+                       AfterSave="AfterSave"
+                       IsAddNew="false"
+                       HideFooterActions="@IsAdminRole">
+        @if (context.IsSuperuser)
+        {
+            <FluentMessageBar Intent="MessageBarIntent.Info" AllowDismiss="false" Class="role-edit__note">
+                Суперпользователь: все права включены и защищены от редактирования.
+            </FluentMessageBar>
+        }
+
+        <FormItem2 For="() => context.Name">
+            <FluentTextInput @bind-Value="context.Name" Disabled="@context.IsSuperuser" AutoComplete="off" />
+        </FormItem2>
+
+        <div class="role-caps">
+            @foreach (var group in context.Groups)
+            {
+                <section class="role-cap-group">
+                    <div class="role-cap-group__head">
+                        <span class="role-cap-group__title" title="@group.Description">@group.Title</span>
+                        <span class="role-cap-group__count">@group.RoleCapElements.Count(c => c.Checked) / @group.RoleCapElements.Length</span>
+                    </div>
+                    <div class="role-cap-group__list">
+                        @foreach (var cap in group.RoleCapElements)
+                        {
+                            <FluentCheckbox @bind-Value="cap.Checked" Disabled="@context.IsSuperuser">
+                                <span title="@cap.Description">@cap.Title</span>
+                            </FluentCheckbox>
+                        }
+                    </div>
+                </section>
+            }
+        </div>
+
+        @if (context.IsSuperuser)
+        {
+            <div class="role-edit__actions">
+                <FluentButton Appearance="ButtonAppearance.Primary" Type="ButtonType.Submit">@AppRes.Save</FluentButton>
+            </div>
+        }
+    </StandardEditForm1>
+}

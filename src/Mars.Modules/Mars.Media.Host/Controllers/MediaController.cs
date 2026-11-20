@@ -3,10 +3,12 @@ using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Mappings.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -64,6 +66,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Cap(RoleCaps.MediaCap.Delete)] // владения у медиа нет — общая библиотека
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -76,6 +79,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpDelete("DeleteMany")]
+    [Cap(RoleCaps.MediaCap.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -88,6 +92,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpPost("Upload")]
+    [Cap(RoleCaps.MediaCap.Add)]
     [RequestSizeLimit(2_147_483_648)]//2GB
     public async Task<ActionResult<FileDetailResponse>> Upload(
             IFormFile file,
@@ -115,6 +120,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpPost("folders")]
+    [Cap(RoleCaps.MediaCap.Add)]
     public async Task<FolderResponse> CreateFolder([FromBody] CreateFolderRequest request, CancellationToken cancellationToken)
     {
         var query = new CreateFolderQuery
@@ -127,24 +133,28 @@ public class MediaController : ControllerBase
     }
 
     [HttpPut("folders/{id:guid}/rename")]
+    [Cap(RoleCaps.MediaCap.Update)]
     public async Task<FolderResponse> RenameFolder(Guid id, [FromBody] RenameFolderRequest request, CancellationToken cancellationToken)
     {
         return (await _folderService.Rename(id, request.NewName.Trim(), cancellationToken)).ToResponse();
     }
 
     [HttpDelete("folders/{id:guid}")]
+    [Cap(RoleCaps.MediaCap.Update)]
     public Task DeleteFolder(Guid id, CancellationToken cancellationToken)
     {
         return _folderService.Delete(id, cancellationToken);
     }
 
     [HttpPost("move-files")]
+    [Cap(RoleCaps.MediaCap.Update)] // перемещение изменяет файлы
     public Task<UserActionResult> MoveFiles([FromBody] MoveFilesRequest request, CancellationToken cancellationToken)
     {
         return _folderService.MoveFiles(new MoveFilesQuery { Ids = request.Ids, FolderId = request.FolderId }, cancellationToken);
     }
 
     [HttpPost(nameof(Upload2))]
+    [Cap(RoleCaps.MediaCap.Add)]
     [RequestSizeLimit(150_000_000)]
     public Task<ActionResult<UserActionResult<List<FileDetailResponse>>>> Upload2(IFormFileCollection files, [FromQuery] string file_group = "Files")
     {

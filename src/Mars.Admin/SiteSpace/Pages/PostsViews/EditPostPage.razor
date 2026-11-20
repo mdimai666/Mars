@@ -6,7 +6,7 @@
 @inject NavigationManager navigationManager
 @inject Mars.WebApiClient.Interfaces.IMarsWebApiClient client
 
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Editor, Author")]
 
 <div class="flex-fill d-flex flex-column">
 

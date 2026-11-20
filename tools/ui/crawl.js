@@ -19,7 +19,7 @@ const PAGES = args.pages
   ? String(args.pages).split(',')
   : [
       '/dev', '/dev/Post', '/dev/PostType', '/dev/PostCategory', '/dev/PostCategoryType',
-      '/dev/Media', '/dev/Users', '/dev/UserType',
+      '/dev/Media', '/dev/Users', '/dev/UserType', '/dev/Roles',
       '/dev/Profile', '/dev/Profile/Edit', '/dev/Profile/ApiKeys', '/dev/Profile/Passkeys',
       '/dev/NavMenu', '/dev/FeedbackList', '/dev/Settings',
       '/dev/Settings/HostCache', '/dev/Settings/About', '/dev/Settings/Front',

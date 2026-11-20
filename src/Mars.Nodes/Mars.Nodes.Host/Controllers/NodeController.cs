@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Contracts.NodeTaskJob;
 using Mars.Nodes.Contracts.Nodes;
@@ -9,6 +10,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings.Nodes;
 using Mars.Nodes.Host.Mappings.NodeTaskJobs;
 using Mars.Nodes.Host.Services;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.Constants;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +21,7 @@ namespace Mars.Nodes.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.FlowCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

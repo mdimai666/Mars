@@ -4,7 +4,7 @@
 @using Mars.Cms.Contracts.Posts
 @using Mars.Cms.Contracts.PostTypes
 @inject IStringLocalizer<AppRes> L
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Editor, Author")]
 
 <div class="flex-fill d-flex flex-column">
     @if (_isSingle)

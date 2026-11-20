@@ -630,4 +630,136 @@
   <data name="media.storage" xml:space="preserve">
     <value>Занято места</value>
   </data>
+  <data name="PostCap" xml:space="preserve">
+    <value>Посты</value>
+  </data>
+  <data name="PostCap.Add" xml:space="preserve">
+    <value>Добавлять</value>
+  </data>
+  <data name="PostCap.Update" xml:space="preserve">
+    <value>Редактировать свои</value>
+  </data>
+  <data name="PostCap.UpdateAny" xml:space="preserve">
+    <value>Редактировать любые</value>
+  </data>
+  <data name="PostCap.Delete" xml:space="preserve">
+    <value>Удалять свои</value>
+  </data>
+  <data name="PostCap.DeleteAny" xml:space="preserve">
+    <value>Удалять любые</value>
+  </data>
+  <data name="PostCap.Publish" xml:space="preserve">
+    <value>Публиковать</value>
+  </data>
+  <data name="MediaCap" xml:space="preserve">
+    <value>Медиа</value>
+  </data>
+  <data name="MediaCap.Add" xml:space="preserve">
+    <value>Загружать</value>
+  </data>
+  <data name="MediaCap.Update" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="MediaCap.Delete" xml:space="preserve">
+    <value>Удалять</value>
+  </data>
+  <data name="PostCategoryCap" xml:space="preserve">
+    <value>Категории записей</value>
+  </data>
+  <data name="PostCategoryCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="PostTypeCap" xml:space="preserve">
+    <value>Типы записей</value>
+  </data>
+  <data name="PostTypeCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="NavMenuCap" xml:space="preserve">
+    <value>Навигационное меню</value>
+  </data>
+  <data name="NavMenuCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="UserCap" xml:space="preserve">
+    <value>Пользователи</value>
+  </data>
+  <data name="UserCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="UserCap.UpdateRole" xml:space="preserve">
+    <value>Назначать роли</value>
+  </data>
+  <data name="UserTypeCap" xml:space="preserve">
+    <value>Типы пользователей</value>
+  </data>
+  <data name="UserTypeCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="RoleCap" xml:space="preserve">
+    <value>Роли</value>
+  </data>
+  <data name="RoleCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="FeedbackCap" xml:space="preserve">
+    <value>Обратная связь</value>
+  </data>
+  <data name="FeedbackCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="SettingsCap" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="SettingsCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="NotificationsCap" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="NotificationsCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="PluginCap" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="PluginCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="FlowCap" xml:space="preserve">
+    <value>Флоу</value>
+  </data>
+  <data name="FlowCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="DatasourceCap" xml:space="preserve">
+    <value>Источники данных</value>
+  </data>
+  <data name="DatasourceCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="SchedulerCap" xml:space="preserve">
+    <value>Планировщик</value>
+  </data>
+  <data name="SchedulerCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="FrontCap" xml:space="preserve">
+    <value>Фронты</value>
+  </data>
+  <data name="FrontCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
+  <data name="AiChatCap" xml:space="preserve">
+    <value>AI-чат</value>
+  </data>
+  <data name="AiChatCap.Use" xml:space="preserve">
+    <value>Использовать</value>
+  </data>
+  <data name="SystemCap" xml:space="preserve">
+    <value>Система</value>
+  </data>
+  <data name="SystemCap.Manage" xml:space="preserve">
+    <value>Управлять</value>
+  </data>
 </root>

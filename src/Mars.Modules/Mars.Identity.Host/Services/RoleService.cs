@@ -4,6 +4,7 @@ using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Dto.Roles;
+using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.ViewModels;
@@ -18,12 +19,17 @@ public class RoleService : IRoleService
     readonly IStringLocalizer<AppRes> L;
     private readonly IEventManager _eventManager;
     private readonly IRoleRepository _roleRepository;
+    private readonly IRequestContext _requestContext;
+    private readonly IRoleCapsCache _roleCapsCache;
 
-    public RoleService(IRoleRepository roleRepository, IStringLocalizer<AppRes> stringLocalizer, IEventManager eventManager)
+    public RoleService(IRoleRepository roleRepository, IStringLocalizer<AppRes> stringLocalizer, IEventManager eventManager,
+        IRequestContext requestContext, IRoleCapsCache roleCapsCache)
     {
         L = stringLocalizer;
         _eventManager = eventManager;
         _roleRepository = roleRepository;
+        _requestContext = requestContext;
+        _roleCapsCache = roleCapsCache;
     }
 
     public Task<RoleDetail?> Get(Guid id, CancellationToken cancellationToken)
@@ -43,6 +49,8 @@ public class RoleService : IRoleService
         var payload = new ManagerEventPayload(_eventManager.Defaults.RoleAdd(), created!);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
 
+        _roleCapsCache.Invalidate();
+
         return created!;
     }
 
@@ -53,6 +61,9 @@ public class RoleService : IRoleService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.RoleUpdate(), updated);
         _eventManager.TriggerEvent(payload);
+
+        // rename роли меняет ключ снимка кэша
+        _roleCapsCache.Invalidate();
 
         return updated;
     }
@@ -66,16 +77,18 @@ public class RoleService : IRoleService
         var payload = new ManagerEventPayload(_eventManager.Defaults.RoleDelete(), role);
         _eventManager.TriggerEvent(payload);
 
+        _roleCapsCache.Invalidate();
+
         return UserActionResult.Success();
     }
 
-    #region OLD
     List<RoleCapGroup>? _cachedList;
 
     public List<RoleCapGroup> GetClaimsBlankList()
     {
         return _cachedList ??= GetTypeAsClaimsListGrouped(typeof(RoleCaps));
     }
+
     public List<RoleCapGroup> GetTypeAsClaimsListGrouped(Type type)
     {
 
@@ -93,11 +106,14 @@ public class RoleService : IRoleService
 
             foreach (var field in constants)
             {
-                var display = field.GetCustomAttribute<DisplayAttribute>()!;
+                var display = field.GetCustomAttribute<DisplayAttribute>();
 
                 string name = field.Name;
                 string value = (field.GetRawConstantValue() as string)!;
-                string title = display?.Name ?? L[name];
+                // ключ "{группа}.{право}" различает одноимённые права разных групп
+                // (Manage/Add/...); fallback на короткое имя — для прав без своего ключа
+                var localized = L[$"{model.Name}.{name}"];
+                string title = display?.Name ?? (localized.ResourceNotFound ? L[name].Value : localized.Value);
                 string desc = display?.Description ?? "";
 
                 caps.Add(new RoleCapElement(value, title, desc));
@@ -126,144 +142,80 @@ public class RoleService : IRoleService
         return fieldInfos.Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
     }
 
-    public Task<EditRolesViewModelDto> EditRolesViewModel()
+    public async Task<EditRolesViewModelDto> EditRolesViewModel()
     {
-        throw new NotImplementedException();
-        //if (_cachedEditRolesViewModelDto is not null) return _cachedEditRolesViewModelDto;
+        var roles = await _roleRepository.ListAll(CancellationToken.None);
+        var allClaims = await _roleRepository.ListAllClaims(CancellationToken.None);
 
-        //var ef = GetEFContext();
+        var granted = allClaims
+            .Where(s => s.ClaimType == RoleCaps.ClaimType)
+            .Select(s => (s.RoleId, s.ClaimValue))
+            .ToHashSet();
 
-        //var roles = ef.Roles.AsNoTracking().ToList();
+        var groups = GetClaimsBlankList();
 
-        //List<RoleClaimsDto> roleClaims = new List<RoleClaimsDto>();
+        var roleClaims = roles.Select(role => new RoleClaimsDto
+        {
+            Role = new RoleShortDto
+            {
+                Id = role.Id,
+                Name = role.Name,
+                Title = L[role.Name],
+            },
+            Groups = groups.Select(group =>
+            {
+                var checkable = new RoleCapGroupCheckable(group);
+                foreach (var cap in checkable.RoleCapElements)
+                {
+                    cap.Checked = granted.Contains((role.Id, cap.Id));
+                }
+                return checkable;
+            }).ToArray(),
+        });
 
-        //var list = GetClaimsBlankList();
-        //var listAsIds = list.SelectMany(s => s.RoleCapElements).Select(s => s.Id);
-
-        //var allClaims = await ef.RoleClaims.AsNoTracking().ToListAsync();
-
-        //var dict = allClaims.ToDictionary(s => $"{s.RoleId}+{s.ClaimType}+{s.ClaimValue}");
-
-        //foreach (var role in roles)
-        //{
-
-        //    List<RoleCapGroupCheckable> groups = new List<RoleCapGroupCheckable>();
-
-        //    foreach (var group in list)
-        //    {
-
-        //        var groupCheckable = new RoleCapGroupCheckable(group);
-
-        //        foreach (var cap in groupCheckable.RoleCapElements)
-        //        {
-        //            //cap.Checked = true;
-        //            cap.Checked = dict.ContainsKey($"{role.Id}++{cap.Id}");
-        //        }
-
-        //        groups.Add(groupCheckable);
-        //    }
-
-        //    roleClaims.Add(new RoleClaimsDto
-        //    {
-        //        Role = new RoleShortDto(role, L[role.Name]),
-        //        Groups = groups.ToArray()
-
-        //    });
-        //}
-
-        //return _cachedEditRolesViewModelDto = new EditRolesViewModelDto
-        //{
-        //    //Roles = roles,
-        //    RoleClaims = roleClaims,
-        //};
+        return new EditRolesViewModelDto
+        {
+            RoleClaims = roleClaims,
+        };
     }
 
     public async Task<UserActionResult> SaveRoleClaims(EditRolesViewModelDto dto, CancellationToken cancellationToken)
     {
-        var roles = await _roleRepository.ListAll(cancellationToken);
+        var knownCaps = GetClaimsBlankList()
+            .SelectMany(s => s.RoleCapElements)
+            .Select(s => s.Id)
+            .ToHashSet();
 
-        throw new NotImplementedException();
+        var roleIds = (await _roleRepository.ListAll(cancellationToken))
+            .Select(s => s.Id)
+            .ToHashSet();
 
-        //var list = GetClaimsBlankList();
-        //var listAsIds = list.SelectMany(s => s.RoleCapElements).Select(s => s.Id);
+        foreach (var roleClaim in dto.RoleClaims)
+        {
+            // роли не из БД игнорируем — иначе получились бы claims-сироты
+            if (!roleIds.Contains(roleClaim.Role.Id)) continue;
 
-        //var allClaims = await _roleRepository.ListAllClaims(cancellationToken);
+            var caps = roleClaim.Groups
+                .SelectMany(s => s.RoleCapElements)
+                .Where(s => s.Checked && knownCaps.Contains(s.Id))
+                .Select(s => s.Id)
+                .ToHashSet();
 
-        //foreach (var role in roles)
-        //{
-        //    var roleClaim = dto.RoleClaims.FirstOrDefault(s => s.Role.Id == role.Id);
+            await _roleRepository.SetRoleClaims(roleClaim.Role.Id, caps, cancellationToken);
+        }
 
-        //    if (roleClaim is null) continue;
+        _roleCapsCache.Invalidate();
 
-        //    var existClaims = allClaims.Where(s => s.RoleId == role.Id && listAsIds.Contains(s.ClaimValue)).ToList();
-
-        //    var setupClaims = roleClaim.Groups
-        //                        .SelectMany(s => s.RoleCapElements)
-        //                        .Where(s => s.Checked).ToList();
-
-        //    var unsetupClaims = roleClaim.Groups
-        //                        .SelectMany(s => s.RoleCapElements)
-        //                        .Where(s => s.Checked == false).ToList();
-
-        //    var forAddList = setupClaims.Select(s => s.Id).Except(existClaims.Select(e => e.ClaimValue)).ToList();
-        //    var forRemoveList = existClaims.Select(s => s.ClaimValue).Intersect(unsetupClaims.Select(e => e.Id)).ToList();
-
-        //    foreach (var cap in forAddList)
-        //    {
-        //        ef.RoleClaims.Add(new()
-        //        {
-        //            RoleId = role.Id,
-        //            ClaimType = "",
-        //            ClaimValue = cap
-        //        });
-        //    }
-
-        //    var removeRange = existClaims.Where(s => s.RoleId == role.Id && forRemoveList.Contains(s.ClaimValue));
-
-        //    ef.RoleClaims.RemoveRange(removeRange);
-        //}
-
-        //await ef.SaveChangesAsync();
-
-        //_cachedEditRolesViewModelDto = null;
-
-        //return new UserActionResult { Ok = true, Message = "Сохранено" };
+        return UserActionResult.Success();
     }
 
-    public Task<bool> HasCap(string cap)
+    public async Task<bool> HasCap(string cap)
     {
-        throw new NotImplementedException();
-        //using var ef = GetEFContext();
+        var roles = _requestContext.Roles;
+        if (roles is null || roles.Count == 0) return false;
 
-        //if (!_user.Identity.IsAuthenticated) return false;
+        var roleCaps = await _roleCapsCache.GetRoleCaps();
 
-        //var userManager = _serviceProvider.GetService<UserManager<UserEntity>>();
-
-        //var user = userManager.GetUserAsync(_user).Result;
-        //var userRoles = userManager.GetRolesAsync(user).Result;
-
-        ////var allClaims = ef.RoleClaims.AsNoTracking().Any(s => s.RoleId == );
-
-        //var rolesCaps = await RolesCaps(userRoles);
-
-        //return rolesCaps.Contains(cap);
-
+        return roles.Any(role => roleCaps.TryGetValue(role, out var caps) && caps.Contains(cap));
     }
-
-    async Task<IList<string>> RolesCaps(IList<string> roles)
-    {
-        var list = await EditRolesViewModel();
-
-        //TODO: move to dictionary role.id+type+value
-        return list.RoleClaims
-                    .Where(s => roles.Contains(s.Role.Name))
-                    .SelectMany(s => s.Groups)
-                    .SelectMany(s => s.RoleCapElements)
-                    .Where(s => s.Checked)
-                    .Select(s => s.Id)
-                    .Distinct()
-                    .ToList();
-    }
-    #endregion
-
 }

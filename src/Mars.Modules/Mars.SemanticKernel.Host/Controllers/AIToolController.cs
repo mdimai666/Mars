@@ -2,9 +2,11 @@ using System.ComponentModel;
 using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Abstractions.Mappings;
 using Mars.SemanticKernel.Contracts.AIService;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Features;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +18,7 @@ namespace Mars.SemanticKernel.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Cap(RoleCaps.AiChatCap.Use)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

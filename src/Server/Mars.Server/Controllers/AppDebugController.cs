@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using Mars.Contracts.Common;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +15,7 @@ namespace Mars.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.SystemCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]

@@ -48,6 +48,7 @@ public static class DevMenuFactory
             //    Item("users", AppRes.Users, d + "Users", parentId: ManageId),
             //    Item("user-types", AppRes.UserTypes, d + "UserType", parentId: ManageId),
             //    Item("post-category-types", AppRes.PostCategoryTypes, d + "PostCategoryType", parentId: ManageId),
+            Item("roles", "Роли", d + "Roles", roles: adminRoles),
             Divider("divider-3"),
             Item("plugins", AppRes.Plugins, d + "tech/plugins", roles: adminRoles),
             Item("settings", "Настройки", d + "Settings", roles: adminRoles),

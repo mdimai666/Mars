@@ -1,6 +1,8 @@
 using System.Net.Mime;
 using Mars.CodeCompletion.Contracts.Dto;
 using Mars.CodeCompletion.Host.Services;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Features;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,7 @@ namespace Mars.CodeCompletion.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.FlowCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

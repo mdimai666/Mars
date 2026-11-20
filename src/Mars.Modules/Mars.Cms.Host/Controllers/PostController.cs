@@ -8,10 +8,12 @@ using Mars.Cms.Contracts.Posts;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Mappings.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +27,7 @@ namespace Mars.Cms.Host.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
+[ForbiddenExceptionFilter]
 [FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
 public class PostController : ControllerBase
@@ -69,6 +72,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("edit/{id:guid}")]
+    [Authorize] // капы Post.Update/UpdateAny по владельцу проверяются в PostService.GetEditModel
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,7 +97,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("single/{type}")]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Add)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -107,7 +111,7 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Add)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -123,7 +127,7 @@ public class PostController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Update)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PostDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -226,7 +230,7 @@ public class PostController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -239,7 +243,7 @@ public class PostController : ControllerBase
     }
 
     [HttpDelete("DeleteMany")]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

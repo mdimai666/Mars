@@ -4,7 +4,7 @@
 @using Mars.Cms.Contracts.PostCategories
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IStringLocalizer<AppRes> L
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin, Editor")]
 
 <div class="flex-fill d-flex flex-column">
     <div class="container mb-3">

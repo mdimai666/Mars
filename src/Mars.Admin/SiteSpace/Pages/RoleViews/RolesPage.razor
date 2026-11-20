@@ -1,0 +1,74 @@
+@page "/Roles"
+@using Mars.Admin.Shared.Cloudy
+@using Mars.Identity.Contracts.Roles
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Роли")]
+
+<CloudyPageHead Title="@AppRes.Roles" Subtitle="Named sets of granular permissions." />
+
+<CloudyBrowser Scrollable>
+    <HeadLeft>
+        <CloudySearchBox Placeholder="Search roles…" ValueChanged="OnSearchChanged" />
+    </HeadLeft>
+    <HeadRight>
+        <button type="button" class="cloudy-btn-primary" @onclick="OnClickCreateRole">@AppRes.Create</button>
+    </HeadRight>
+
+    <ChildContent>
+        <FluentDataGrid TGridItem="RoleSummaryResponse"
+                        @ref="_grid"
+                        ItemsProvider="_dataProvider"
+                        Virtualize
+                        ItemSize="67"
+                        GridTemplateColumns="minmax(0,2fr) minmax(120px,1fr) 172px 92px"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                        OverscanCount="10"
+                        Class="cloudy-grid">
+            <ChildContent>
+                <TemplateColumn Title="@AppRes.Name" Sortable="true"
+                                SortBy="@(GridSort<RoleSummaryResponse>.ByAscending(r => r.Name))">
+                    <div class="cloudy-stack">
+                        <a class="cloudy-stack__title" href="@urlEditPage/@context.Id" title="@context.Name">@context.Name</a>
+                        <span class="cloudy-stack__sub" title="@TitleFor(context)">@TitleFor(context)</span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Permissions">
+                    <div class="cloudy-tags">
+                        <CloudyTag Text="@CapCountText(context.Id)" Muted />
+                        @if (IsAdmin(context.Name))
+                        {
+                            <CloudyTag Text="superuser" />
+                        }
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.CreatedAt" Sortable="true"
+                                SortBy="@(GridSort<RoleSummaryResponse>.ByDescending(r => r.CreatedAt))"
+                                IsDefaultSortColumn="true" Align="DataGridCellAlignment.End">
+                    <time class="cloudy-time" title="@context.CreatedAt.ToString("g")">@context.CreatedAt.ToString("dd.MM.yy")</time>
+                </TemplateColumn>
+                <TemplateColumn Align="DataGridCellAlignment.End">
+                    <div class="cloudy-row-actions">
+                        <a href="@urlEditPage/@context.Id" title="@AppRes.Edit" aria-label="@AppRes.Edit">
+                            <FluentIcon Color="Color.Default" Value="@(new Icons.Regular.Size16.Edit())" />
+                        </a>
+                        @if (!IsAdmin(context.Name))
+                        {
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </DFluentDeleteButton>
+                        }
+                    </div>
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <p class="cloudy-empty">No roles match your search.</p>
+            </EmptyContent>
+        </FluentDataGrid>
+    </ChildContent>
+
+    <Foot>
+        <TotalResultsFound TotalCount="@_total" />
+    </Foot>
+</CloudyBrowser>

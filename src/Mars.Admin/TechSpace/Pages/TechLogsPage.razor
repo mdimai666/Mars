@@ -1,4 +1,5 @@
 @page "/tech/logs"
+@attribute [Authorize(Roles = "Admin")]
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IMarsWebApiClient client

@@ -39,6 +39,16 @@
     "/dev/Users": [
       { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } }
     ],
+    "/dev/Roles": [
+      { "name": "cloudy browser rendered", "selector": ".cloudy-browser", "exists": { "min": 1 } },
+      { "name": "cloudy-grid rendered", "selector": "table.cloudy-grid.fluent-data-grid", "exists": { "min": 1 } },
+      { "name": "sidebar has Roles item", "selector": ".cloudy-sidebar a[href=\"/dev/Roles\"]", "exists": { "min": 1 } }
+    ],
+    "/dev/EditRole/*": [
+      { "name": "role caps matrix rendered", "selector": ".role-caps .role-cap-group", "exists": { "min": 1 } },
+      { "name": "cap checkboxes rendered (catalog 26)", "selector": ".role-caps fluent-checkbox", "exists": { "min": 26 } },
+      { "name": "role name input rendered", "selector": "fluent-text-input", "exists": { "min": 1 } }
+    ],
     "/dev/EditNavMenu/*": [
       { "name": "navmenu tree rendered", "selector": ".nmt", "exists": { "min": 1 } },
       { "name": "navmenu rows rendered", "selector": ".nmt-row", "exists": { "min": 1 } },

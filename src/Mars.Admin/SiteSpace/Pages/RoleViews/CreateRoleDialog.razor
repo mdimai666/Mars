@@ -1,0 +1,18 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+
+<FluentDialogBody Class="text-start">
+    <TitleTemplate>
+        <CloudyDialogHead Title="@AppRes.Create" />
+    </TitleTemplate>
+    <ChildContent>
+        <StandardEditForm1 TModel="CreateRoleModel"
+                           GetAction="@(() => Task.FromResult(Content))"
+                           AfterSave="AfterSave"
+                           SaveAction="SaveAction">
+            <FormItem2 For="() => Content.Name">
+                <FluentTextInput @bind-Value="Content.Name" AutoComplete="off" />
+            </FormItem2>
+        </StandardEditForm1>
+    </ChildContent>
+</FluentDialogBody>

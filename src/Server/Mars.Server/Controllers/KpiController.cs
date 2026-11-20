@@ -1,5 +1,7 @@
 using System.Net.Mime;
 using Mars.Contracts.Common;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +10,7 @@ namespace Mars.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.SystemCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [AllExceptionCatchToUserActionResultFilter]
 public class KpiController(IEnumerable<IKpiHandler> handlers) : ControllerBase

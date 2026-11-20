@@ -6,6 +6,8 @@ using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +17,7 @@ namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.NavMenuCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
@@ -128,14 +130,12 @@ public class NavMenuController : ControllerBase
 
     //---------------
 
-    [Authorize(Roles = "Admin")]
     [HttpGet("Export/{id:guid}")]
     public Task<NavMenuExport> Export(Guid id)
     {
         return _navMenuService.Export(id);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("Import/{id:guid}")]
     public Task<UserActionResult> Import(Guid id, NavMenuImport navmenu)
     {

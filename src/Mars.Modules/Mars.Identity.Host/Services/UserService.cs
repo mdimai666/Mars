@@ -8,12 +8,14 @@ using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
 using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Roles;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Identity.Abstractions.Mappings.UserTypes;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Notifications.Abstractions;
 using Mars.Options.Abstractions.Services;
@@ -32,6 +34,8 @@ internal class UserService : IUserService
     private readonly IOptionService _optionService;
     private readonly IEventManager _eventManager;
     private readonly INotifyService _notifyService;
+    private readonly IRequestContext _requestContext;
+    private readonly IRoleCapsCache _roleCapsCache;
 
     public UserService(IUserRepository userRepository,
                         IRoleRepository roleRepository,
@@ -39,7 +43,9 @@ internal class UserService : IUserService
                         IValidatorFactory validatorFactory,
                         IOptionService optionService,
                         IEventManager eventManager,
-                        INotifyService notifyService)
+                        INotifyService notifyService,
+                        IRequestContext requestContext,
+                        IRoleCapsCache roleCapsCache)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
@@ -48,6 +54,8 @@ internal class UserService : IUserService
         _optionService = optionService;
         _eventManager = eventManager;
         _notifyService = notifyService;
+        _requestContext = requestContext;
+        _roleCapsCache = roleCapsCache;
     }
 
     public Task<UserSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -92,6 +100,10 @@ internal class UserService : IUserService
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
+        // назначение ролей при создании — та же эскалация, что и смена ролей
+        if (query.Roles.Count > 0)
+            await EnsureUpdateRoleCap(cancellationToken);
+
         var createdId = await _userRepository.Create(query, cancellationToken);
         var user = (await _userRepository.GetDetail(createdId, cancellationToken))!;
 
@@ -106,6 +118,12 @@ internal class UserService : IUserService
     public async Task<UserDetail> Update(UpdateUserQuery query, CancellationToken cancellationToken)
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        // смена ролей требует отдельного права User.UpdateRole (эскалация); UpdateProfile
+        // копирует текущие роли в запрос, поэтому для самообслуживания проверка не срабатывает
+        var current = await GetDetail(query.Id, cancellationToken) ?? throw new NotFoundException();
+        if (!current.Roles.ToHashSet(StringComparer.OrdinalIgnoreCase).SetEquals(query.Roles))
+            await EnsureUpdateRoleCap(cancellationToken);
 
         await _userRepository.Update(query, cancellationToken);
         var updated = (await GetDetail(query.Id, cancellationToken))!;
@@ -284,9 +302,28 @@ internal class UserService : IUserService
         return await Update(query, cancellationToken);
     }
 
-    public Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
+    public async Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
     {
-        return _userRepository.UpdateUserRoles(id, roles, cancellationToken);
+        await EnsureUpdateRoleCap(cancellationToken);
+        return await _userRepository.UpdateUserRoles(id, roles, cancellationToken);
+    }
+
+    /// <summary>
+    /// Назначение/смена ролей — отдельное право User.UpdateRole: одного User.Manage недостаточно,
+    /// иначе менеджер пользователей мог бы выдать себе Admin. Admin — суперпользователь;
+    /// фоновый контекст без HTTP-пользователя не ограничивается (флоу/scheduler/CLI).
+    /// </summary>
+    async Task EnsureUpdateRoleCap(CancellationToken cancellationToken)
+    {
+        if (_requestContext.User is null) return;
+
+        var roles = _requestContext.Roles;
+        if (roles?.Contains("Admin") == true) return;
+
+        var roleCaps = await _roleCapsCache.GetRoleCaps(cancellationToken);
+        if (roles?.Any(role => roleCaps.TryGetValue(role, out var caps) && caps.Contains(RoleCaps.UserCap.UpdateRole)) == true) return;
+
+        throw new ForbiddenException($"Назначение ролей пользователям требует права {RoleCaps.UserCap.UpdateRole}");
     }
 
     public async Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken)

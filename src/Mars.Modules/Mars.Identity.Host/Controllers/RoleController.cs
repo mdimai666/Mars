@@ -6,6 +6,8 @@ using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Identity.Abstractions.Mappings.Roles;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +17,7 @@ namespace Mars.Identity.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.RoleCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
@@ -95,34 +97,22 @@ public class RoleController : ControllerBase
         return _roleService.Delete(id, cancellationToken);
     }
 
-    //--------------------
+    [HttpGet(nameof(EditRolesViewModel))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public Task<EditRolesViewModelDto> EditRolesViewModel()
+    {
+        return _roleService.EditRolesViewModel();
+    }
 
-    //EditRolesViewModelDto
-
-    //[HttpGet(nameof(EditRolesViewModel))]
-    //public async Task<ActionResult<EditRolesViewModelDto>> EditRolesViewModel()
-    //{
-    //    return await _roleService.EditRolesViewModel();
-    //}
-
-    //[HttpPut(nameof(SaveRoleClaims))]
-    //public async Task<UserActionResult> SaveRoleClaims(EditRolesViewModelDto dto)
-    //{
-    //    return await _roleService.SaveRoleClaims(dto);
-    //}
-
-    //#if DEBUG
-    //    [HttpGet(nameof(TestClaim))]
-    //    //[claim]
-    //    public async Task<UserActionResult> TestClaim()
-    //    {
-    //        var result = _roleService.HasCap(RoleCaps.PostCap.Add).Result;
-
-    //        return new UserActionResult
-    //        {
-    //            Ok = result,
-    //            Message = result ? "Да" : "Нет"
-    //        };
-    //    }
-    //#endif
+    [HttpPut(nameof(SaveRoleClaims))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task<UserActionResult> SaveRoleClaims(EditRolesViewModelDto dto, CancellationToken cancellationToken)
+    {
+        return _roleService.SaveRoleClaims(dto, cancellationToken);
+    }
 }

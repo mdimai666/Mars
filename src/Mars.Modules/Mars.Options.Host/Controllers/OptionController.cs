@@ -2,7 +2,9 @@ using System.Net.Mime;
 using System.Text.Json.Nodes;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Contracts.Options;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +16,7 @@ namespace Mars.Options.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.SettingsCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [OptionNotRegisteredExceptionFilter]

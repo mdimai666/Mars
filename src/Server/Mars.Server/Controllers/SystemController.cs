@@ -1,4 +1,6 @@
 using System.Net.Mime;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Contracts.Systems;
@@ -91,7 +93,7 @@ public class SystemController : ControllerBase
         => _marsSystemService.SystemMinStat();
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Cap(RoleCaps.SystemCap.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,7 +102,7 @@ public class SystemController : ControllerBase
         => _marsSystemService.AboutSystem();
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Cap(RoleCaps.SystemCap.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

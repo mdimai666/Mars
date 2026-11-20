@@ -11,6 +11,8 @@ using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +25,7 @@ namespace Mars.Cms.Host.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
+[ForbiddenExceptionFilter]
 [FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
 public class PostJsonController : ControllerBase
@@ -74,7 +77,7 @@ public class PostJsonController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Add)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -89,7 +92,7 @@ public class PostJsonController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
+    [Cap(RoleCaps.PostCap.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]

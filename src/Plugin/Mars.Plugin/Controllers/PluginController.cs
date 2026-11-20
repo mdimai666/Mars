@@ -1,10 +1,12 @@
 using System.Net.Mime;
 using Mars.Contracts.Common;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Abstractions.Mappings.Plugins;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Contracts.Catalog;
 using Mars.Plugin.Contracts.Plugins;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +16,7 @@ namespace Mars.Plugin.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin, Developer")]
+[Cap(RoleCaps.PluginCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]

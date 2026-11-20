@@ -1,8 +1,10 @@
 using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Notifications.Abstractions;
 using Mars.Notifications.Contracts;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +14,7 @@ namespace Mars.Notifications.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.NotificationsCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [FluentValidationExceptionFilter]

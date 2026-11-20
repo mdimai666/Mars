@@ -9,6 +9,8 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Abstractions.Authorization;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,10 +20,11 @@ namespace Mars.Identity.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Cap(RoleCaps.UserCap.Manage)]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
+[ForbiddenExceptionFilter] // сервисная проверка User.UpdateRole кидает ForbiddenException
 [FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
 public class UserController : ControllerBase
@@ -68,7 +71,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -84,7 +86,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDetailResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -153,7 +154,8 @@ public class UserController : ControllerBase
         return (await _userService.UsersEditViewModel(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [Authorize(Roles = "Admin")]
+    // смена ролей — отдельное право поверх User.Manage (эскалация); дублируется в UserService
+    [Cap(RoleCaps.UserCap.UpdateRole)]
     [HttpPut("UpdateUserRoles/{id:guid}")]
     public async Task<UserActionResult> UpdateUserRoles(Guid id, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
     {
@@ -168,14 +170,12 @@ public class UserController : ControllerBase
     //    //return modelService.SetUserState(id, state.ElementAt(0));
     //}
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("SetPassword")]
     public async Task<UserActionResult> SetPassword(SetUserPasswordByIdRequest request, CancellationToken cancellationToken)
     {
         return await _userService.SetPassword(request.ToQuery(), cancellationToken);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("SendInvation/{id:guid}")]
     public async Task<UserActionResult> SendInvation(Guid id, CancellationToken cancellationToken)
     {
